@@ -5,10 +5,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.modulith.core.ApplicationModules;
 
 @SpringBootTest
-class NotesSpringApplicationTests {
+class NotesApplicationTests {
 
     @Test
     void contextLoads() {
-        ApplicationModules.of(NotesSpringApplication.class).verify();
+        ApplicationModules.of(NotesApplication.class).verify();
     }
 }
