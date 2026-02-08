@@ -1,6 +1,5 @@
 package com.example.notes_spring.repository;
 
-import com.example.notes_spring.repository.model.NotesEntity;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

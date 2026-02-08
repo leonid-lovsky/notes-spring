@@ -1,4 +1,4 @@
-package com.example.notes_spring.controller.model;
+package com.example.notes_spring.payload;
 
 import java.util.Date;
 import java.util.UUID;

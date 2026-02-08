@@ -1,36 +1,46 @@
 package com.example.notes_spring.controller;
 
-import com.example.notes_spring.controller.model.NotesRead;
-import com.example.notes_spring.controller.model.NotesWrite;
+import com.example.notes_spring.payload.NotesRead;
+import com.example.notes_spring.payload.NotesWrite;
 import com.example.notes_spring.service.NotesService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.UUID;
 
 @Controller
 @RequiredArgsConstructor
-public class NotesController implements NotesControllerInterface {
+public class NotesController {
 
     private final NotesService service;
 
-    @Override
-    public NotesRead create(NotesWrite record) {
-        return null;
+    @RequestMapping(method = RequestMethod.POST, path = "/notes")
+    public ResponseEntity<Object> create(@RequestBody NotesWrite payload) {
+        NotesRead result = service.create(payload);
+        return new ResponseEntity<>(result, HttpStatus.CREATED);
     }
 
-    @Override
-    public NotesRead getById(UUID id) {
-        return null;
+    @RequestMapping(method = RequestMethod.GET, path = "/notes/{id}")
+    public ResponseEntity<Object> getById(@PathVariable UUID id) {
+        NotesRead result = service.getById(id);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @Override
-    public NotesRead update(UUID id, NotesWrite record) {
-        return null;
+    @RequestMapping(method = RequestMethod.PUT, path = "/notes/{id}")
+    public ResponseEntity<Object> update(@PathVariable UUID id, @RequestBody NotesWrite payload) {
+        NotesRead result = service.update(id, payload);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @Override
-    public void delete(UUID id) {
-
+    @RequestMapping(method = RequestMethod.DELETE, path = "/notes/{id}")
+    public ResponseEntity<Object> delete(@PathVariable UUID id) {
+        NotesRead result = service.delete(id);
+        return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
     }
 }

@@ -1,12 +1,27 @@
 package com.example.notes_spring.service;
 
-import com.example.notes_spring.repository.NotesRepository;
-import lombok.RequiredArgsConstructor;
+import com.example.notes_spring.payload.NotesRead;
+import com.example.notes_spring.payload.NotesWrite;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
-@RequiredArgsConstructor
 public class NotesService {
 
-    private final NotesRepository repository;
+    public NotesRead create(NotesWrite payload) {
+        return null;
+    }
+
+    public NotesRead getById(UUID id) {
+        return null;
+    }
+
+    public NotesRead update(UUID id, NotesWrite payload) {
+        return null;
+    }
+
+    public NotesRead delete(UUID id) {
+        return null;
+    }
 }
