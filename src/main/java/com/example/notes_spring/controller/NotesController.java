@@ -21,25 +21,25 @@ public class NotesController {
     private final NotesService service;
 
     @RequestMapping(method = RequestMethod.POST, path = "/notes")
-    public ResponseEntity<Object> create(@RequestBody NotesWrite payload) {
+    public ResponseEntity<NotesRead> create(@RequestBody NotesWrite payload) {
         NotesRead result = service.create(payload);
         return new ResponseEntity<>(result, HttpStatus.CREATED);
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/notes/{id}")
-    public ResponseEntity<Object> getById(@PathVariable UUID id) {
+    public ResponseEntity<NotesRead> getById(@PathVariable UUID id) {
         NotesRead result = service.getById(id);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.PUT, path = "/notes/{id}")
-    public ResponseEntity<Object> update(@PathVariable UUID id, @RequestBody NotesWrite payload) {
+    public ResponseEntity<NotesRead> update(@PathVariable UUID id, @RequestBody NotesWrite payload) {
         NotesRead result = service.update(id, payload);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.DELETE, path = "/notes/{id}")
-    public ResponseEntity<Object> delete(@PathVariable UUID id) {
+    public ResponseEntity<NotesRead> delete(@PathVariable UUID id) {
         NotesRead result = service.delete(id);
         return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
     }
