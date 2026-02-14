@@ -1,8 +1,8 @@
-package com.example.notes_spring.controller;
+package com.example.notes.controller;
 
-import com.example.notes_spring.payload.NotesRead;
-import com.example.notes_spring.payload.NotesWrite;
-import com.example.notes_spring.service.NotesService;
+import com.example.notes.payload.NotesRead;
+import com.example.notes.payload.NotesWrite;
+import com.example.notes.service.NotesService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,7 +1,7 @@
-package com.example.notes_spring.service;
+package com.example.notes.service;
 
-import com.example.notes_spring.payload.NotesRead;
-import com.example.notes_spring.payload.NotesWrite;
+import com.example.notes.payload.NotesRead;
+import com.example.notes.payload.NotesWrite;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;

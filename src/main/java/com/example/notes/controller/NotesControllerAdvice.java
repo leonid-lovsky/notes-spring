@@ -1,4 +1,4 @@
-package com.example.notes_spring.controller;
+package com.example.notes.controller;
 
 import org.springframework.web.bind.annotation.ControllerAdvice;
 

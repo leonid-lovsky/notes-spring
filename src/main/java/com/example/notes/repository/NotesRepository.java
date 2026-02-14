@@ -1,4 +1,4 @@
-package com.example.notes_spring.repository;
+package com.example.notes.repository;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;

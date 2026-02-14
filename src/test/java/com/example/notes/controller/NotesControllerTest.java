@@ -1,4 +1,4 @@
-package com.example.notes_spring.controller;
+package com.example.notes.controller;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

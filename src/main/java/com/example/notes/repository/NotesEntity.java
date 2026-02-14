@@ -1,4 +1,4 @@
-package com.example.notes_spring.repository;
+package com.example.notes.repository;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

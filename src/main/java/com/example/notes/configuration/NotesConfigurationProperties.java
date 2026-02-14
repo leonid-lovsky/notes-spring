@@ -1,4 +1,4 @@
-package com.example.notes_spring.configuration;
+package com.example.notes.configuration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

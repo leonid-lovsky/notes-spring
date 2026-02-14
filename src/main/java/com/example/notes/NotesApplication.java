@@ -1,6 +1,6 @@
-package com.example.notes_spring;
+package com.example.notes;
 
-import com.example.notes_spring.configuration.NotesConfigurationProperties;
+import com.example.notes.configuration.NotesConfigurationProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
