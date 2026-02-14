@@ -21,7 +21,6 @@ public class NotesService {
         return null;
     }
 
-    public NotesRead delete(UUID id) {
-        return null;
+    public void delete(UUID id) {
     }
 }
