@@ -14,22 +14,22 @@ public class NotesController {
 
     private final NotesService service;
 
-    @RequestMapping(method = RequestMethod.POST)
+    @PostMapping
     public NotesRead create(@RequestBody NotesWrite payload) {
         return service.create(payload);
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = "{id}")
+    @GetMapping(path = "{id}")
     public NotesRead getById(@PathVariable UUID id) {
         return service.getById(id);
     }
 
-    @RequestMapping(method = RequestMethod.PUT, path = "{id}")
+    @PutMapping(path = "{id}")
     public NotesRead update(@PathVariable UUID id, @RequestBody NotesWrite payload) {
         return service.update(id, payload);
     }
 
-    @RequestMapping(method = RequestMethod.DELETE, path = "{id}")
+    @DeleteMapping(path = "{id}")
     public void delete(@PathVariable UUID id) {
         service.delete(id);
     }
