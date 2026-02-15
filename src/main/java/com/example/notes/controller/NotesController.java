@@ -14,6 +14,11 @@ public class NotesController {
 
     private final NotesService service;
 
+    @GetMapping("/")
+    public String greeting() {
+        return "Hello, World";
+    }
+
     @PostMapping
     public NotesRead create(@RequestBody NotesWrite payload) {
         return service.create(payload);
