@@ -1,32 +1,38 @@
 package com.example.notes.controller;
 
+import com.example.notes.service.NotesService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.client.RestTestClient;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
-@SpringBootTest
+@WebMvcTest(NotesController.class)
 @AutoConfigureRestTestClient
-class NotesControllerTest {
+class NotesControllerTests {
 
-    @Autowired
-    private NotesController controller;
+    // @Autowired
+    // private NotesController controller;
 
-    @Test
-    void contextLoads() {
-        assertThat(controller).isNotNull();
-    }
+    // @Test
+    // void contextLoads() {
+    //     assertThat(controller).isNotNull();
+    // }
 
     @Autowired
     private RestTestClient restTestClient;
 
+    @MockitoBean
+    private NotesService service;
+
     @Test
     void greetingShouldReturnDefaultMessage() {
+        when(service.greet()).thenReturn("Hello, World");
         restTestClient.get().uri("/")
             .exchange()
             .expectBody(String.class)

@@ -11,6 +11,10 @@ import java.util.UUID;
 @Transactional(rollbackFor = Exception.class)
 public class NotesService {
 
+    public String greet() {
+        return "Hello, World";
+    }
+
     public NotesRead create(NotesWrite payload) {
         return null;
     }
