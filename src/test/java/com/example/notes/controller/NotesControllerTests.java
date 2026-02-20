@@ -1,7 +1,7 @@
 package com.example.notes.controller;
 
-import com.example.notes.payload.NotesRead;
-import com.example.notes.payload.NotesWrite;
+import com.example.notes.payload.NotesInput;
+import com.example.notes.payload.NotesOutput;
 import com.example.notes.service.NotesService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ class NotesControllerTests {
     @Test
     void greetingShouldReturnDefaultMessage() {
         when(service.greet()).thenReturn("Hello, World");
-        restTestClient.get().uri("/")
+        restTestClient.get().uri("/greeting")
             .exchange()
             .expectBody(String.class)
             .isEqualTo("Hello, World");
@@ -40,13 +40,13 @@ class NotesControllerTests {
         var content = "Hello, World";
         var uuid = UUID.randomUUID();
         var date = new Date();
-        var requestBody = new NotesWrite(content);
-        var responseBody = new NotesRead(uuid, content, date, date);
+        var requestBody = new NotesInput(content);
+        var responseBody = new NotesOutput(uuid, content, date, date);
         when(service.create(requestBody)).thenReturn(responseBody);
         restTestClient.post().uri("/")
             .body(requestBody)
             .exchange()
-            .expectBody(NotesRead.class)
+            .expectBody(NotesOutput.class)
             .value(result -> {
                 assertThat(result).isNotNull();
                 assertThat(result.id()).isEqualTo(uuid);
@@ -55,17 +55,5 @@ class NotesControllerTests {
                 assertThat(result.updatedAt()).isEqualTo(date);
             })
             .isEqualTo(responseBody);
-    }
-
-    @Test
-    void getById() {
-    }
-
-    @Test
-    void update() {
-    }
-
-    @Test
-    void delete() {
     }
 }

@@ -1,6 +1,6 @@
 package com.example.notes.payload;
 
-public record NotesWrite(
+public record NotesInput(
     String content
 ) {
 

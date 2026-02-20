@@ -1,10 +1,11 @@
 package com.example.notes.service;
 
-import com.example.notes.payload.NotesRead;
-import com.example.notes.payload.NotesWrite;
+import com.example.notes.payload.NotesInput;
+import com.example.notes.payload.NotesOutput;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -15,18 +16,23 @@ public class NotesService {
         return "Hello, World";
     }
 
-    public NotesRead create(NotesWrite payload) {
+    public List<NotesOutput> findAll() {
         return null;
     }
 
-    public NotesRead getById(UUID id) {
+    public NotesOutput findById(UUID id) {
         return null;
     }
 
-    public NotesRead update(UUID id, NotesWrite payload) {
+    public NotesOutput create(NotesInput input) {
+        return null;
+    }
+
+    public NotesOutput replace(UUID id, NotesInput input) {
         return null;
     }
 
     public void delete(UUID id) {
+
     }
 }

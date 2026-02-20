@@ -3,7 +3,7 @@ package com.example.notes.payload;
 import java.util.Date;
 import java.util.UUID;
 
-public record NotesRead(
+public record NotesOutput(
     UUID id,
     String content,
     Date createdAt,
