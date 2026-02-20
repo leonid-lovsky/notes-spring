@@ -3,6 +3,7 @@ package com.example.notes.controller;
 import com.example.notes.payload.NotesInput;
 import com.example.notes.payload.NotesOutput;
 import com.example.notes.service.NotesService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -33,12 +34,12 @@ public class NotesController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public NotesOutput create(@RequestBody NotesInput input) {
+    public NotesOutput create(@Valid @RequestBody NotesInput input) {
         return service.create(input);
     }
 
     @PutMapping(path = "/{id}")
-    public NotesOutput replace(@PathVariable UUID id, @RequestBody NotesInput input) {
+    public NotesOutput replace(@PathVariable UUID id, @Valid @RequestBody NotesInput input) {
         return service.replace(id, input);
     }
 
