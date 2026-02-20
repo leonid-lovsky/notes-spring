@@ -1,13 +1,14 @@
 package com.example.notes.payload;
 
-import java.util.Date;
+import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
+
 import java.util.UUID;
 
+@Builder
 public record NotesOutput(
-    UUID id,
-    String content,
-    Date createdAt,
-    Date updatedAt
+    @NotNull UUID id,
+    @NotNull String content
 ) {
 
 }

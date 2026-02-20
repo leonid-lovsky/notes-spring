@@ -39,8 +39,8 @@ public class NotesController {
     }
 
     @PutMapping(path = "/{id}")
-    public NotesOutput replace(@PathVariable UUID id, @Valid @RequestBody NotesInput input) {
-        return service.replace(id, input);
+    public NotesOutput update(@PathVariable UUID id, @Valid @RequestBody NotesInput input) {
+        return service.update(id, input);
     }
 
     @DeleteMapping(path = "/{id}")

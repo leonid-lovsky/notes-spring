@@ -10,7 +10,6 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.client.RestTestClient;
 
-import java.util.Date;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,32 +27,35 @@ class NotesControllerTests {
 
     @Test
     void greetingShouldReturnDefaultMessage() {
-        when(service.greet()).thenReturn("Hello, World");
+        var content = "Hello, World";
+
+        when(service.greet()).thenReturn(content);
+
         restTestClient.get().uri("/greeting")
             .exchange()
             .expectBody(String.class)
-            .isEqualTo("Hello, World");
+            .isEqualTo(content);
     }
 
     @Test
     void create() {
         var content = "Hello, World";
         var uuid = UUID.randomUUID();
-        var date = new Date();
-        var requestBody = new NotesInput(content);
-        var responseBody = new NotesOutput(uuid, content, date, date);
-        when(service.create(requestBody)).thenReturn(responseBody);
+
+        var request = NotesInput.builder().content(content).build();
+        var response = NotesOutput.builder().id(uuid).content(content).build();
+
+        when(service.create(request)).thenReturn(response);
+
         restTestClient.post().uri("/")
-            .body(requestBody)
+            .body(request)
             .exchange()
             .expectBody(NotesOutput.class)
             .value(result -> {
                 assertThat(result).isNotNull();
                 assertThat(result.id()).isEqualTo(uuid);
                 assertThat(result.content()).isEqualTo(content);
-                assertThat(result.createdAt()).isEqualTo(date);
-                assertThat(result.updatedAt()).isEqualTo(date);
             })
-            .isEqualTo(responseBody);
+            .isEqualTo(response);
     }
 }
