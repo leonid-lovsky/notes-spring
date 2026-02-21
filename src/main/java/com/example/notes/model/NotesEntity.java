@@ -3,6 +3,7 @@ package com.example.notes.model;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.Accessors;
 
@@ -16,6 +17,6 @@ public class NotesEntity {
     @Setter @Getter @Id @GeneratedValue
     private UUID id;
 
-    @Setter @Getter @NonNull
+    @Setter @Getter @NotNull
     private String content;
 }
