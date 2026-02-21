@@ -39,7 +39,7 @@ public class NotesService {
     public NotesOutput update(UUID id, NotesInput input) {
         return repository.findById(id)
             .map(entity -> {
-                entity.content(input.content());
+                entity.setContent(input.content());
                 return mapper.notesEntityToNotesOutput(repository.save(entity));
             }).orElse(null);
     }

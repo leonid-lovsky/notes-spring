@@ -10,7 +10,7 @@ import lombok.experimental.Accessors;
 import java.util.UUID;
 
 @Entity(name = "notes")
-@Accessors(fluent = true, chain = true)
+@Accessors(chain = true)
 @Builder @NoArgsConstructor @AllArgsConstructor
 public class NotesEntity {
 
