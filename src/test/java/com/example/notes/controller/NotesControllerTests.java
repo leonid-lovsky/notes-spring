@@ -43,7 +43,7 @@ class NotesControllerTests {
 
     @Test
     @DisplayName("Test post valid data returns success result")
-    void testPostValidDataSuccessResult() {
+    void testPostValidDataReturnsSuccessResult() {
         var content = "Hello, World";
 
         var request = NotesInput.builder().content(content).build();
