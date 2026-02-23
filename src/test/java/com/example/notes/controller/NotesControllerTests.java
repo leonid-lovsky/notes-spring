@@ -46,18 +46,27 @@ class NotesControllerTests {
     }
 
     @Test
-    @DisplayName("Test create returns created notes")
-    void testCreateReturnsCreatedNotes() {
+    @DisplayName("Test post success result")
+    void testPostSuccessResult() {
         var content = "Hello, World";
 
         var request = NotesInput.builder().content(content).build();
 
         restTestClient.post().uri("/").body(request).exchange()
+            .expectStatus().isCreated()
+            .expectHeader().contentType("application/json")
+            .expectCookie().doesNotExist("JSESSIONID")
             .expectBody(NotesOutput.class)
             .value(result -> {
                 assertThat(result).isNotNull();
                 assertThat(result.id()).isNotNull();
                 assertThat(result.content()).isEqualTo(content);
             });
+
+        assertThat(repository.findAll()).hasSize(1);
+
+        var entity = repository.findAll().get(0);
+        assertThat(entity.getId()).isNotNull();
+        assertThat(entity.getContent()).isEqualTo(content);
     }
 }
