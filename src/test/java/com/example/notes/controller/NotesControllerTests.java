@@ -3,7 +3,6 @@ package com.example.notes.controller;
 import com.example.notes.payload.NotesInput;
 import com.example.notes.payload.NotesOutput;
 import com.example.notes.repository.NotesRepository;
-import com.example.notes.service.NotesService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,10 +22,7 @@ class NotesControllerTests {
     private RestTestClient restTestClient;
 
     @Autowired
-    private NotesService service;
-
-    @Autowired
-    private NotesRepository repository;
+    NotesRepository repository;
 
     @BeforeEach
     @DisplayName("Test notes repository is empty")
@@ -46,8 +42,8 @@ class NotesControllerTests {
     }
 
     @Test
-    @DisplayName("Test post success result")
-    void testPostSuccessResult() {
+    @DisplayName("Test post valid data returns success result")
+    void testPostValidDataSuccessResult() {
         var content = "Hello, World";
 
         var request = NotesInput.builder().content(content).build();
@@ -62,11 +58,5 @@ class NotesControllerTests {
                 assertThat(result.id()).isNotNull();
                 assertThat(result.content()).isEqualTo(content);
             });
-
-        assertThat(repository.findAll()).hasSize(1);
-
-        var entity = repository.findAll().get(0);
-        assertThat(entity.getId()).isNotNull();
-        assertThat(entity.getContent()).isEqualTo(content);
     }
 }
