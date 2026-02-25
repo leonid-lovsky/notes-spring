@@ -6,7 +6,7 @@ import lombok.Builder;
 import java.util.UUID;
 
 @Builder
-public record NotesOutput(
+public record NotesResponse(
     @NotNull UUID id,
     @NotNull String content
 ) {

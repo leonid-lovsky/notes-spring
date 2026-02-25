@@ -1,7 +1,7 @@
 package com.example.notes.controller;
 
-import com.example.notes.payload.NotesInput;
-import com.example.notes.payload.NotesOutput;
+import com.example.notes.payload.NotesPayload;
+import com.example.notes.payload.NotesResponse;
 import com.example.notes.service.NotesService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,23 +24,23 @@ public class NotesController {
     }
 
     @GetMapping
-    public List<NotesOutput> findAll() {
+    public List<NotesResponse> findAll() {
         return service.findAll();
     }
 
     @GetMapping(path = "/{id}")
-    public NotesOutput findById(@PathVariable UUID id) {
+    public NotesResponse findById(@PathVariable UUID id) {
         return service.findById(id);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public NotesOutput create(@Valid @RequestBody NotesInput input) {
+    public NotesResponse create(@Valid @RequestBody NotesPayload input) {
         return service.create(input);
     }
 
     @PutMapping(path = "/{id}")
-    public NotesOutput updateById(@PathVariable UUID id, @Valid @RequestBody NotesInput input) {
+    public NotesResponse updateById(@PathVariable UUID id, @Valid @RequestBody NotesPayload input) {
         return service.updateById(id, input);
     }
 

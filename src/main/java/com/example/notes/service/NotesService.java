@@ -1,15 +1,16 @@
 package com.example.notes.service;
 
-import com.example.notes.exception.NotFoundException;
 import com.example.notes.mapper.NotesMapper;
-import com.example.notes.payload.NotesInput;
-import com.example.notes.payload.NotesOutput;
+import com.example.notes.payload.NotesPayload;
+import com.example.notes.payload.NotesResponse;
 import com.example.notes.repository.NotesRepository;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.ErrorResponseException;
 
 import java.util.List;
 import java.util.UUID;
@@ -27,27 +28,27 @@ public class NotesService {
         return "Hello, World";
     }
 
-    public List<NotesOutput> findAll() {
+    public List<NotesResponse> findAll() {
         return repository.findAll().stream().map(mapper::notesEntityToNotesOutput).toList();
     }
 
-    public NotesOutput findById(@NotNull UUID id) {
-        return repository.findById(id).map(mapper::notesEntityToNotesOutput).orElseThrow(() -> new NotFoundException("Notes not found"));
+    public NotesResponse findById(@NonNull UUID id) {
+        return repository.findById(id).map(mapper::notesEntityToNotesOutput).orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND));
     }
 
-    public NotesOutput create(@NotNull NotesInput input) {
+    public NotesResponse create(@NonNull NotesPayload input) {
         return mapper.notesEntityToNotesOutput(repository.save(mapper.notesInputToNotesEntity(input)));
     }
 
-    public NotesOutput updateById(@NotNull UUID id, @NotNull NotesInput input) {
+    public NotesResponse updateById(@NonNull UUID id, @NonNull NotesPayload input) {
         return repository.findById(id)
             .map(entity -> {
                 entity.setContent(input.content());
                 return mapper.notesEntityToNotesOutput(repository.save(entity));
-            }).orElseThrow(() -> new NotFoundException("Notes not found"));
+            }).orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND));
     }
 
-    public void deleteById(@NotNull UUID id) {
+    public void deleteById(@NonNull UUID id) {
         repository.deleteById(id);
     }
 }

@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 @Builder
-public record NotesInput(
+public record NotesPayload(
     @NotNull String content
 ) {
 

@@ -6,12 +6,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.modulith.core.ApplicationModules;
 
 @SpringBootTest
-@DisplayName("Test notes application")
+@DisplayName("Notes application")
 class NotesApplicationTests {
 
     @Test
-    @DisplayName("Test context loads")
-    void testContextLoads() {
+    @DisplayName("Context loads")
+    void contextLoads() {
         ApplicationModules.of(NotesApplication.class).verify();
     }
 }

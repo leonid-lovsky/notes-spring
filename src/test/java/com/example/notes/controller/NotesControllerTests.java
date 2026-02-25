@@ -1,8 +1,8 @@
 package com.example.notes.controller;
 
 import com.example.notes.model.NotesEntity;
-import com.example.notes.payload.NotesInput;
-import com.example.notes.payload.NotesOutput;
+import com.example.notes.payload.NotesPayload;
+import com.example.notes.payload.NotesResponse;
 import com.example.notes.repository.NotesRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @AutoConfigureRestTestClient
-@DisplayName("Test notes controller")
+@DisplayName("Notes controller")
 class NotesControllerTests {
 
     @Autowired
@@ -30,15 +30,15 @@ class NotesControllerTests {
     private NotesRepository repository;
 
     @BeforeEach
-    @DisplayName("Test repository is empty")
-    void testDatabaseIsEmpty() {
+    @DisplayName("Rrepository is empty")
+    void repositoryIsEmpty() {
         repository.deleteAll();
         assertThat(repository.findAll()).isEmpty();
     }
 
     @Test
-    @DisplayName("Test greeting returns Hello World")
-    void testGreetingReturnsHelloWorld() {
+    @DisplayName("Greeting returns Hello World")
+    void greetingReturnsHelloWorld() {
         var content = "Hello, World";
 
         restTestClient.get().uri("/greeting").exchange()
@@ -47,17 +47,17 @@ class NotesControllerTests {
     }
 
     @Test
-    @DisplayName("Test post data returns data")
-    void testPostDataReturnsData() {
+    @DisplayName("Post data returns data")
+    void postDataReturnsData() {
         var content = "Hello, World";
 
-        var request = NotesInput.builder().content(content).build();
+        var request = NotesPayload.builder().content(content).build();
 
         restTestClient.post().uri("/").body(request).exchange()
             .expectStatus().isCreated()
             .expectHeader().contentType(MediaType.APPLICATION_JSON)
             .expectCookie().doesNotExist("JSESSIONID")
-            .expectBody(NotesOutput.class)
+            .expectBody(NotesResponse.class)
             .value(result -> {
                 assertThat(result).isNotNull();
                 assertThat(result.id()).isNotNull();
@@ -66,8 +66,8 @@ class NotesControllerTests {
     }
 
     @Test
-    @DisplayName("Test get data by id returns data")
-    void testGetDataByIdReturnsData() {
+    @DisplayName("Get data by id returns data")
+    void getDataByIdReturnsData() {
         var content = "Hello, World";
 
         var entity = NotesEntity.builder().content(content).build();
@@ -77,7 +77,7 @@ class NotesControllerTests {
             .expectStatus().isOk()
             .expectHeader().contentType(MediaType.APPLICATION_JSON)
             .expectCookie().doesNotExist("JSESSIONID")
-            .expectBody(NotesOutput.class)
+            .expectBody(NotesResponse.class)
             .value(result -> {
                 assertThat(result).isNotNull();
                 assertThat(result.id()).isEqualTo(entity.getId());
@@ -86,14 +86,15 @@ class NotesControllerTests {
     }
 
     @Test
-    @DisplayName("Test get data by id returns error if not exists")
-    void testGetDataByIdReturnsErrorIfNotExists() {
+    @DisplayName("Get data by id returns error if not exists")
+    void getDataByIdReturnsErrorIfNotExists() {
         var uuid = UUID.randomUUID();
 
         restTestClient.get().uri("/{id}", uuid).exchange()
             .expectStatus().isNotFound()
-            // .expectHeader().contentType(MediaType.APPLICATION_JSON)
-            // .expectCookie().doesNotExist("JSESSIONID")
-            .expectBody(ProblemDetail.class);
+            .expectHeader().contentType(MediaType.APPLICATION_PROBLEM_JSON)
+            .expectCookie().doesNotExist("JSESSIONID")
+            .expectBody(ProblemDetail.class)
+            .value(System.out::println);
     }
 }
