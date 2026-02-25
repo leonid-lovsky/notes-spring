@@ -1,5 +1,6 @@
 package com.example.notes.service;
 
+import com.example.notes.exception.NotFoundException;
 import com.example.notes.mapper.NotesMapper;
 import com.example.notes.payload.NotesInput;
 import com.example.notes.payload.NotesOutput;
@@ -31,7 +32,7 @@ public class NotesService {
     }
 
     public NotesOutput findById(@NotNull UUID id) {
-        return repository.findById(id).map(mapper::notesEntityToNotesOutput).orElse(null);
+        return repository.findById(id).map(mapper::notesEntityToNotesOutput).orElseThrow(() -> new NotFoundException("Notes not found"));
     }
 
     public NotesOutput create(@NotNull NotesInput input) {
@@ -43,7 +44,7 @@ public class NotesService {
             .map(entity -> {
                 entity.setContent(input.content());
                 return mapper.notesEntityToNotesOutput(repository.save(entity));
-            }).orElse(null);
+            }).orElseThrow(() -> new NotFoundException("Notes not found"));
     }
 
     public void deleteById(@NotNull UUID id) {

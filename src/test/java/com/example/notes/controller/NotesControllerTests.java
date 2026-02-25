@@ -11,7 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.http.ProblemDetail;
 import org.springframework.test.web.servlet.client.RestTestClient;
+
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -44,8 +47,8 @@ class NotesControllerTests {
     }
 
     @Test
-    @DisplayName("Test post valid data returns success result")
-    void testPostValidDataReturnsSuccessResult() {
+    @DisplayName("Test post data returns data")
+    void testPostDataReturnsData() {
         var content = "Hello, World";
 
         var request = NotesInput.builder().content(content).build();
@@ -63,8 +66,8 @@ class NotesControllerTests {
     }
 
     @Test
-    @DisplayName("Test find data by id returns data if exists")
-    void testFindDataByIdReturnsDataIfExists() {
+    @DisplayName("Test get data by id returns data")
+    void testGetDataByIdReturnsData() {
         var content = "Hello, World";
 
         var entity = NotesEntity.builder().content(content).build();
@@ -80,5 +83,17 @@ class NotesControllerTests {
                 assertThat(result.id()).isEqualTo(entity.getId());
                 assertThat(result.content()).isEqualTo(content);
             });
+    }
+
+    @Test
+    @DisplayName("Test get data by id returns error if not exists")
+    void testGetDataByIdReturnsErrorIfNotExists() {
+        var uuid = UUID.randomUUID();
+
+        restTestClient.get().uri("/{id}", uuid).exchange()
+            .expectStatus().isNotFound()
+            // .expectHeader().contentType(MediaType.APPLICATION_JSON)
+            // .expectCookie().doesNotExist("JSESSIONID")
+            .expectBody(ProblemDetail.class);
     }
 }
