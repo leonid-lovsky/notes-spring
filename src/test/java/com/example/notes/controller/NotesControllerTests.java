@@ -30,7 +30,7 @@ class NotesControllerTests {
     private NotesRepository repository;
 
     @BeforeEach
-    @DisplayName("Rrepository is empty")
+    @DisplayName("Repository is empty")
     void repositoryIsEmpty() {
         repository.deleteAll();
         assertThat(repository.findAll()).isEmpty();
