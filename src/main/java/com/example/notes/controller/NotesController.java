@@ -40,13 +40,13 @@ public class NotesController {
     }
 
     @PutMapping(path = "/{id}")
-    public NotesOutput update(@PathVariable UUID id, @Valid @RequestBody NotesInput input) {
-        return service.update(id, input);
+    public NotesOutput updateById(@PathVariable UUID id, @Valid @RequestBody NotesInput input) {
+        return service.updateById(id, input);
     }
 
     @DeleteMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable UUID id) {
-        service.delete(id);
+    public void deleteById(@PathVariable UUID id) {
+        service.deleteById(id);
     }
 }

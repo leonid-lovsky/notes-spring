@@ -38,7 +38,7 @@ public class NotesService {
         return mapper.notesEntityToNotesOutput(repository.save(mapper.notesInputToNotesEntity(input)));
     }
 
-    public NotesOutput update(@NotNull UUID id, @NotNull NotesInput input) {
+    public NotesOutput updateById(@NotNull UUID id, @NotNull NotesInput input) {
         return repository.findById(id)
             .map(entity -> {
                 entity.setContent(input.content());
@@ -46,7 +46,7 @@ public class NotesService {
             }).orElse(null);
     }
 
-    public void delete(@NotNull UUID id) {
+    public void deleteById(@NotNull UUID id) {
         repository.deleteById(id);
     }
 }

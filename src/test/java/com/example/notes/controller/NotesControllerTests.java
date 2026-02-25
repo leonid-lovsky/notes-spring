@@ -1,5 +1,6 @@
 package com.example.notes.controller;
 
+import com.example.notes.model.NotesEntity;
 import com.example.notes.payload.NotesInput;
 import com.example.notes.payload.NotesOutput;
 import com.example.notes.repository.NotesRepository;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.client.RestTestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,11 +24,11 @@ class NotesControllerTests {
     private RestTestClient restTestClient;
 
     @Autowired
-    NotesRepository repository;
+    private NotesRepository repository;
 
     @BeforeEach
-    @DisplayName("Test notes repository is empty")
-    void testNotesRepositoryIsEmpty() {
+    @DisplayName("Test repository is empty")
+    void testDatabaseIsEmpty() {
         repository.deleteAll();
         assertThat(repository.findAll()).isEmpty();
     }
@@ -50,12 +52,32 @@ class NotesControllerTests {
 
         restTestClient.post().uri("/").body(request).exchange()
             .expectStatus().isCreated()
-            .expectHeader().contentType("application/json")
+            .expectHeader().contentType(MediaType.APPLICATION_JSON)
             .expectCookie().doesNotExist("JSESSIONID")
             .expectBody(NotesOutput.class)
             .value(result -> {
                 assertThat(result).isNotNull();
                 assertThat(result.id()).isNotNull();
+                assertThat(result.content()).isEqualTo(content);
+            });
+    }
+
+    @Test
+    @DisplayName("Test find data by id returns data if exists")
+    void testFindDataByIdReturnsDataIfExists() {
+        var content = "Hello, World";
+
+        var entity = NotesEntity.builder().content(content).build();
+        repository.save(entity);
+
+        restTestClient.get().uri("/{id}", entity.getId()).exchange()
+            .expectStatus().isOk()
+            .expectHeader().contentType(MediaType.APPLICATION_JSON)
+            .expectCookie().doesNotExist("JSESSIONID")
+            .expectBody(NotesOutput.class)
+            .value(result -> {
+                assertThat(result).isNotNull();
+                assertThat(result.id()).isEqualTo(entity.getId());
                 assertThat(result.content()).isEqualTo(content);
             });
     }
