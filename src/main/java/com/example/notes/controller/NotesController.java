@@ -35,13 +35,13 @@ public class NotesController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public NotesResponse create(@Valid @RequestBody NotesPayload input) {
-        return service.create(input);
+    public NotesResponse create(@Valid @RequestBody NotesPayload payload) {
+        return service.create(payload);
     }
 
     @PutMapping(path = "/{id}")
-    public NotesResponse updateById(@PathVariable UUID id, @Valid @RequestBody NotesPayload input) {
-        return service.updateById(id, input);
+    public NotesResponse updateById(@PathVariable UUID id, @Valid @RequestBody NotesPayload payload) {
+        return service.updateById(id, payload);
     }
 
     @DeleteMapping(path = "/{id}")

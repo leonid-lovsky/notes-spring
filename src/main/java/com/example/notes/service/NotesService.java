@@ -29,22 +29,22 @@ public class NotesService {
     }
 
     public List<NotesResponse> findAll() {
-        return repository.findAll().stream().map(mapper::notesEntityToNotesOutput).toList();
+        return repository.findAll().stream().map(mapper::entityToResponse).toList();
     }
 
     public NotesResponse findById(@NonNull UUID id) {
-        return repository.findById(id).map(mapper::notesEntityToNotesOutput).orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND));
+        return repository.findById(id).map(mapper::entityToResponse).orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND));
     }
 
-    public NotesResponse create(@NonNull NotesPayload input) {
-        return mapper.notesEntityToNotesOutput(repository.save(mapper.notesInputToNotesEntity(input)));
+    public NotesResponse create(@NonNull NotesPayload payload) {
+        return mapper.entityToResponse(repository.save(mapper.payloadNoEntity(payload)));
     }
 
-    public NotesResponse updateById(@NonNull UUID id, @NonNull NotesPayload input) {
+    public NotesResponse updateById(@NonNull UUID id, @NonNull NotesPayload payload) {
         return repository.findById(id)
             .map(entity -> {
-                entity.setContent(input.content());
-                return mapper.notesEntityToNotesOutput(repository.save(entity));
+                entity.setContent(payload.content());
+                return mapper.entityToResponse(repository.save(entity));
             }).orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND));
     }
 
