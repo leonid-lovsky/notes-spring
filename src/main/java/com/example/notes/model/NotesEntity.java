@@ -10,13 +10,19 @@ import lombok.experimental.Accessors;
 import java.util.UUID;
 
 @Entity(name = "notes")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Accessors(chain = true)
-@Builder @NoArgsConstructor @AllArgsConstructor
 public class NotesEntity {
 
-    @Setter @Getter @Id @GeneratedValue
+    @Getter
+    @Setter
+    @Id @GeneratedValue
     private UUID id;
 
-    @Setter @Getter @NotNull
+    @Getter
+    @Setter
+    @NotNull
     private String content;
 }
