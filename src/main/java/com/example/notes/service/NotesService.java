@@ -13,8 +13,7 @@ import org.springframework.web.ErrorResponseException;
 import java.util.List;
 import java.util.UUID;
 
-@Service
-@Transactional
+@Service @Transactional
 @RequiredArgsConstructor
 public class NotesService {
 

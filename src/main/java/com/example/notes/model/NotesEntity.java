@@ -5,24 +5,16 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import lombok.experimental.Accessors;
 
 import java.util.UUID;
 
 @Entity(name = "notes")
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Accessors(chain = true)
+@Builder @NoArgsConstructor @AllArgsConstructor
 public class NotesEntity {
 
-    @Getter
-    @Setter
-    @Id @GeneratedValue
+    @Getter @Setter @Id @GeneratedValue
     private UUID id;
 
-    @Getter
-    @Setter
-    @NotNull
+    @Getter @Setter @NotNull
     private String content;
 }
