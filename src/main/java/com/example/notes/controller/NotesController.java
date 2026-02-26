@@ -6,14 +6,12 @@ import com.example.notes.service.NotesService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
 
 @RestController
-@Validated
 @RequiredArgsConstructor
 public class NotesController {
 
