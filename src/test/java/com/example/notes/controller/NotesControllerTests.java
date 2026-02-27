@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@DisplayName("NotesController Integration Tests")
+@DisplayName("NotesController Tests")
 class NotesControllerTests {
 
     @Autowired
