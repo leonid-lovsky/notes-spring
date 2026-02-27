@@ -3,7 +3,6 @@ package com.example.notes.controller;
 import com.example.notes.payload.NotesPayload;
 import com.example.notes.payload.NotesResponse;
 import com.example.notes.service.NotesService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -34,18 +33,18 @@ public class NotesController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public NotesResponse create(@Valid @RequestBody NotesPayload payload) {
+    public NotesResponse create(@RequestBody NotesPayload payload) {
         return service.create(payload);
     }
 
     @PutMapping(path = "/{id}")
-    public NotesResponse updateById(@PathVariable UUID id, @Valid @RequestBody NotesPayload payload) {
+    public NotesResponse updateById(@PathVariable UUID id, @RequestBody NotesPayload payload) {
         return service.updateById(id, payload);
     }
 
     @DeleteMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteById(@PathVariable UUID id) {
-        service.deleteById(id);
+    public NotesResponse deleteById(@PathVariable UUID id) {
+        return service.deleteById(id);
     }
 }

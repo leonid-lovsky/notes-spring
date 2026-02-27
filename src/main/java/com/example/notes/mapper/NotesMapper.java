@@ -16,7 +16,7 @@ import org.mapstruct.ReportingPolicy;
 public interface NotesMapper {
 
     @Mapping(target = "id", ignore = true)
-    NotesEntity payloadNoEntity(NotesPayload payload);
+    NotesEntity payloadToEntity(NotesPayload payload);
 
     NotesResponse entityToResponse(NotesEntity entity);
 }

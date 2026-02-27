@@ -1,14 +1,13 @@
 package com.example.notes.payload;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
+import lombok.Data;
 
 import java.util.UUID;
 
-@Builder
-public record NotesResponse(
-    @NotNull UUID id,
-    @NotNull String content
-) {
+@Data @Builder
+public class NotesResponse {
 
+    private final UUID id;
+    private final String content;
 }

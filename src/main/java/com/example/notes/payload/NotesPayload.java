@@ -1,11 +1,10 @@
 package com.example.notes.payload;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
+import lombok.Data;
 
-@Builder
-public record NotesPayload(
-    @NotNull String content
-) {
+@Data @Builder
+public class NotesPayload {
 
+    private final String content;
 }

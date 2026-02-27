@@ -34,18 +34,22 @@ public class NotesService {
     }
 
     public NotesResponse create(NotesPayload payload) {
-        return mapper.entityToResponse(repository.save(mapper.payloadNoEntity(payload)));
+        return mapper.entityToResponse(repository.save(mapper.payloadToEntity(payload)));
     }
 
     public NotesResponse updateById(UUID id, NotesPayload payload) {
         return repository.findById(id)
             .map(entity -> {
-                entity.setContent(payload.content());
+                entity.setContent(payload.getContent());
                 return mapper.entityToResponse(repository.save(entity));
             }).orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND));
     }
 
-    public void deleteById(UUID id) {
-        repository.deleteById(id);
+    public NotesResponse deleteById(UUID id) {
+        return repository.findById(id)
+            .map(entity -> {
+                repository.delete(entity);
+                return mapper.entityToResponse(entity);
+            }).orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND));
     }
 }

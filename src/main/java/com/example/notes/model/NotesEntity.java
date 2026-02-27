@@ -1,5 +1,6 @@
 package com.example.notes.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -16,5 +17,6 @@ public class NotesEntity {
     private UUID id;
 
     @Getter @Setter @NotNull
+    @Column(nullable = false)
     private String content;
 }
