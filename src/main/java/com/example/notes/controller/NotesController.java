@@ -1,8 +1,10 @@
 package com.example.notes.controller;
 
-import com.example.notes.payload.NotesPayload;
+import com.example.notes.constants.NotesConstants;
+import com.example.notes.payload.NotesRequest;
 import com.example.notes.payload.NotesResponse;
 import com.example.notes.service.NotesService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
+@RequestMapping(NotesConstants.BASE_URL)
 @RequiredArgsConstructor
 public class NotesController {
 
@@ -26,25 +29,25 @@ public class NotesController {
         return service.findAll();
     }
 
-    @GetMapping(path = "/{id}")
+    @GetMapping("/{id}")
     public NotesResponse findById(@PathVariable UUID id) {
         return service.findById(id);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public NotesResponse create(@RequestBody NotesPayload payload) {
-        return service.create(payload);
+    public NotesResponse create(@Valid @RequestBody NotesRequest request) {
+        return service.create(request);
     }
 
-    @PutMapping(path = "/{id}")
-    public NotesResponse updateById(@PathVariable UUID id, @RequestBody NotesPayload payload) {
-        return service.updateById(id, payload);
+    @PutMapping("/{id}")
+    public NotesResponse updateById(@PathVariable UUID id, @Valid @RequestBody NotesRequest request) {
+        return service.updateById(id, request);
     }
 
-    @DeleteMapping(path = "/{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public NotesResponse deleteById(@PathVariable UUID id) {
-        return service.deleteById(id);
+    public void deleteById(@PathVariable UUID id) {
+        service.deleteById(id);
     }
 }

@@ -1,22 +1,18 @@
 package com.example.notes.mapper;
 
 import com.example.notes.model.NotesEntity;
-import com.example.notes.payload.NotesPayload;
+import com.example.notes.payload.NotesRequest;
 import com.example.notes.payload.NotesResponse;
+import org.jspecify.annotations.Nullable;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
-import org.mapstruct.ReportingPolicy;
 
-@Mapper(
-    componentModel = MappingConstants.ComponentModel.SPRING,
-    unmappedSourcePolicy = ReportingPolicy.ERROR,
-    unmappedTargetPolicy = ReportingPolicy.ERROR
-)
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface NotesMapper {
 
     @Mapping(target = "id", ignore = true)
-    NotesEntity payloadToEntity(NotesPayload payload);
+    NotesEntity requestToEntity(@Nullable NotesRequest request);
 
-    NotesResponse entityToResponse(NotesEntity entity);
+    NotesResponse entityToResponse(@Nullable NotesEntity entity);
 }
