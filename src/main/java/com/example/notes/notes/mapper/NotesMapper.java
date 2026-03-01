@@ -1,8 +1,8 @@
-package com.example.notes.mapper;
+package com.example.notes.notes.mapper;
 
-import com.example.notes.model.NotesEntity;
-import com.example.notes.payload.NotesRequest;
-import com.example.notes.payload.NotesResponse;
+import com.example.notes.notes.NotesRequest;
+import com.example.notes.notes.NotesResponse;
+import com.example.notes.notes.model.NotesEntity;
 import org.jspecify.annotations.Nullable;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

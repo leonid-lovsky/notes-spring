@@ -1,8 +1,8 @@
-package com.example.notes.controller;
+package com.example.notes.notes.controller;
 
-import com.example.notes.constants.NotesConstants;
-import com.example.notes.model.NotesEntity;
-import com.example.notes.repository.NotesRepository;
+import com.example.notes.notes.constants.NotesConstants;
+import com.example.notes.notes.model.NotesEntity;
+import com.example.notes.notes.repository.NotesRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

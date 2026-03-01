@@ -1,4 +1,4 @@
-package com.example.notes.payload;
+package com.example.notes.notes;
 
 import java.util.UUID;
 

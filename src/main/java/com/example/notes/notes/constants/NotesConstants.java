@@ -1,4 +1,4 @@
-package com.example.notes.constants;
+package com.example.notes.notes.constants;
 
 public class NotesConstants {
 

@@ -1,9 +1,9 @@
-package com.example.notes.controller;
+package com.example.notes.notes.controller;
 
-import com.example.notes.constants.NotesConstants;
-import com.example.notes.payload.NotesRequest;
-import com.example.notes.payload.NotesResponse;
-import com.example.notes.service.NotesService;
+import com.example.notes.notes.NotesRequest;
+import com.example.notes.notes.NotesResponse;
+import com.example.notes.notes.constants.NotesConstants;
+import com.example.notes.notes.service.NotesService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

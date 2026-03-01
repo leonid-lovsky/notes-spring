@@ -12,6 +12,8 @@ class NotesApplicationTests {
     @Test
     @DisplayName("Context loads")
     void contextLoads() {
-        ApplicationModules.of(NotesApplication.class).verify();
+        ApplicationModules modules = ApplicationModules.of(NotesApplication.class);
+        modules.forEach(System.out::println);
+        modules.verify();
     }
 }

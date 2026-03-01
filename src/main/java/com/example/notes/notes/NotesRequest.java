@@ -1,4 +1,4 @@
-package com.example.notes.payload;
+package com.example.notes.notes;
 
 import jakarta.validation.constraints.NotBlank;
 

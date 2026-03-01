@@ -1,4 +1,4 @@
-package com.example.notes.configuration;
+package com.example.notes.notes.configuration;
 
 import org.springframework.context.annotation.Configuration;
 
