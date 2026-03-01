@@ -3,7 +3,7 @@ package com.example.notes.notes;
 import java.util.List;
 import java.util.UUID;
 
-public interface NotesFacade {
+public interface NotesApi {
 
     String greet();
 
