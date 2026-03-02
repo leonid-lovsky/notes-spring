@@ -31,24 +31,19 @@ class NotesIntegrationTests {
     @Autowired
     private NotesProperties properties;
 
-    private String baseUrl;
-    private NotesProperties.Messages messages;
-
     @BeforeEach
     void setUp() {
         repository.deleteAll();
         assertThat(repository.count()).isZero();
-        baseUrl = properties.getBaseUrl();
-        messages = properties.getMessages();
     }
 
     @Test
     @DisplayName("GET /greeting returns Hello, World")
     void greetingReturnsHelloWorld() throws Exception {
-        mockMvc.perform(get(baseUrl + "/greeting"))
+        mockMvc.perform(get(properties.baseUrl() + "/greeting"))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(content().string(messages.getHelloWorld()));
+            .andExpect(content().string(properties.messages().helloWorld()));
     }
 
     @Test
@@ -56,7 +51,7 @@ class NotesIntegrationTests {
     void createNote() throws Exception {
         String payload = "{ \"content\": \"Hello, World\" }";
 
-        mockMvc.perform(post(baseUrl)
+        mockMvc.perform(post(properties.baseUrl())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(payload))
             .andDo(print())
@@ -72,7 +67,7 @@ class NotesIntegrationTests {
     void createNoteFailsOnEmptyPayload() throws Exception {
         String payload = "{}";
 
-        mockMvc.perform(post(baseUrl)
+        mockMvc.perform(post(properties.baseUrl())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(payload))
             .andDo(print())
@@ -85,7 +80,7 @@ class NotesIntegrationTests {
     void getNoteById() throws Exception {
         NotesEntity entity = repository.save(NotesEntity.builder().content("Hello").build());
 
-        mockMvc.perform(get(baseUrl + "/{id}", entity.getId()))
+        mockMvc.perform(get(properties.baseUrl() + "/{id}", entity.getId()))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(entity.getId().toString()))
@@ -97,7 +92,7 @@ class NotesIntegrationTests {
     void getNoteByIdNotFound() throws Exception {
         UUID randomId = UUID.randomUUID();
 
-        mockMvc.perform(get(baseUrl + "/{id}", randomId))
+        mockMvc.perform(get(properties.baseUrl() + "/{id}", randomId))
             .andDo(print())
             .andExpect(status().isNotFound())
             .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
@@ -109,7 +104,7 @@ class NotesIntegrationTests {
         repository.save(NotesEntity.builder().content("A").build());
         repository.save(NotesEntity.builder().content("B").build());
 
-        mockMvc.perform(get(baseUrl))
+        mockMvc.perform(get(properties.baseUrl()))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.length()", is(2)));
@@ -121,7 +116,7 @@ class NotesIntegrationTests {
         NotesEntity entity = repository.save(NotesEntity.builder().content("Old").build());
         String payload = "{ \"content\": \"Updated\" }";
 
-        mockMvc.perform(put(baseUrl + "/{id}", entity.getId())
+        mockMvc.perform(put(properties.baseUrl() + "/{id}", entity.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(payload))
             .andDo(print())
@@ -138,7 +133,7 @@ class NotesIntegrationTests {
         UUID randomId = UUID.randomUUID();
         String payload = "{ \"content\": \"Updated\" }";
 
-        mockMvc.perform(put(baseUrl + "/{id}", randomId)
+        mockMvc.perform(put(properties.baseUrl() + "/{id}", randomId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(payload))
             .andDo(print())
@@ -151,7 +146,7 @@ class NotesIntegrationTests {
     void deleteNote() throws Exception {
         NotesEntity entity = repository.save(NotesEntity.builder().content("To delete").build());
 
-        mockMvc.perform(delete(baseUrl + "/{id}", entity.getId()))
+        mockMvc.perform(delete(properties.baseUrl() + "/{id}", entity.getId()))
             .andDo(print())
             .andExpect(status().isNoContent());
 
@@ -163,7 +158,7 @@ class NotesIntegrationTests {
     void deleteNoteNotFound() throws Exception {
         UUID randomId = UUID.randomUUID();
 
-        mockMvc.perform(delete(baseUrl + "/{id}", randomId))
+        mockMvc.perform(delete(properties.baseUrl() + "/{id}", randomId))
             .andDo(print())
             .andExpect(status().isNotFound())
             .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));

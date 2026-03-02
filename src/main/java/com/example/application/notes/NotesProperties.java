@@ -1,26 +1,19 @@
 package com.example.application.notes;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
-@Setter
-@Getter
-@Component
 @ConfigurationProperties(prefix = "app.notes")
-class NotesProperties {
+record NotesProperties(
+    String baseUrl,
+    Messages messages
+) {
 
-    private String baseUrl;
-    private Messages messages = new Messages();
+    record Messages(
+        String helloWorld,
+        String noteNotFound,
+        String cannotUpdate,
+        String cannotDelete
+    ) {
 
-    @Setter
-    @Getter
-    static class Messages {
-
-        private String helloWorld;
-        private String noteNotFound;
-        private String cannotUpdate;
-        private String cannotDelete;
     }
 }

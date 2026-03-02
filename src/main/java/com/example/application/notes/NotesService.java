@@ -20,7 +20,7 @@ class NotesService {
     private final NotesProperties properties;
 
     String greet() {
-        return properties.getMessages().getHelloWorld();
+        return properties.messages().helloWorld();
     }
 
     List<NotesResponse> findAll() {
@@ -34,7 +34,7 @@ class NotesService {
             .map(mapper::entityToResponse)
             .orElseThrow(() -> {
                 ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
-                problem.setDetail(String.format(properties.getMessages().getNoteNotFound(), id));
+                problem.setDetail(String.format(properties.messages().noteNotFound(), id));
                 return new ErrorResponseException(HttpStatus.NOT_FOUND, problem, null);
             });
     }
@@ -48,7 +48,7 @@ class NotesService {
         NotesEntity entity = repository.findById(id)
             .orElseThrow(() -> {
                 ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
-                problem.setDetail(String.format(properties.getMessages().getCannotUpdate(), id));
+                problem.setDetail(String.format(properties.messages().cannotUpdate(), id));
                 return new ErrorResponseException(HttpStatus.NOT_FOUND, problem, null);
             });
         entity.setContent(request.content());
@@ -59,7 +59,7 @@ class NotesService {
         NotesEntity entity = repository.findById(id)
             .orElseThrow(() -> {
                 ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
-                problem.setDetail(String.format(properties.getMessages().getCannotDelete(), id));
+                problem.setDetail(String.format(properties.messages().cannotDelete(), id));
                 return new ErrorResponseException(HttpStatus.NOT_FOUND, problem, null);
             });
         repository.delete(entity);
