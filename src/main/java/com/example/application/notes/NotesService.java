@@ -1,12 +1,5 @@
-package com.example.notes.notes.service;
+package com.example.application.notes;
 
-import com.example.notes.notes.NotesApi;
-import com.example.notes.notes.NotesRequest;
-import com.example.notes.notes.NotesResponse;
-import com.example.notes.notes.constants.NotesConstants;
-import com.example.notes.notes.mapper.NotesMapper;
-import com.example.notes.notes.model.NotesEntity;
-import com.example.notes.notes.repository.NotesRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -20,58 +13,53 @@ import java.util.UUID;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class NotesService implements NotesApi {
+class NotesService {
 
     private final NotesRepository repository;
     private final NotesMapper mapper;
+    private final NotesProperties properties;
 
-    @Override
-    public String greet() {
-        return NotesConstants.HELLO_WORLD;
+    String greet() {
+        return properties.getMessages().getHelloWorld();
     }
 
-    @Override
-    public List<NotesResponse> findAll() {
+    List<NotesResponse> findAll() {
         return repository.findAll().stream()
             .map(mapper::entityToResponse)
             .toList();
     }
 
-    @Override
-    public NotesResponse findById(UUID id) {
+    NotesResponse findById(UUID id) {
         return repository.findById(id)
             .map(mapper::entityToResponse)
             .orElseThrow(() -> {
                 ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
-                problem.setDetail(String.format(NotesConstants.NOTE_NOT_FOUND, id));
+                problem.setDetail(String.format(properties.getMessages().getNoteNotFound(), id));
                 return new ErrorResponseException(HttpStatus.NOT_FOUND, problem, null);
             });
     }
 
-    @Override
-    public NotesResponse create(NotesRequest payload) {
-        NotesEntity entity = mapper.requestToEntity(payload);
+    NotesResponse create(NotesRequest request) {
+        NotesEntity entity = mapper.requestToEntity(request);
         return mapper.entityToResponse(repository.save(entity));
     }
 
-    @Override
-    public NotesResponse updateById(UUID id, NotesRequest payload) {
+    NotesResponse updateById(UUID id, NotesRequest request) {
         NotesEntity entity = repository.findById(id)
             .orElseThrow(() -> {
                 ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
-                problem.setDetail(String.format(NotesConstants.CANNOT_UPDATE_NOTE, id));
+                problem.setDetail(String.format(properties.getMessages().getCannotUpdate(), id));
                 return new ErrorResponseException(HttpStatus.NOT_FOUND, problem, null);
             });
-        entity.setContent(payload.content());
+        entity.setContent(request.content());
         return mapper.entityToResponse(repository.save(entity));
     }
 
-    @Override
-    public void deleteById(UUID id) {
+    void deleteById(UUID id) {
         NotesEntity entity = repository.findById(id)
             .orElseThrow(() -> {
                 ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
-                problem.setDetail(String.format(NotesConstants.CANNOT_DELETE_NOTE, id));
+                problem.setDetail(String.format(properties.getMessages().getCannotDelete(), id));
                 return new ErrorResponseException(HttpStatus.NOT_FOUND, problem, null);
             });
         repository.delete(entity);

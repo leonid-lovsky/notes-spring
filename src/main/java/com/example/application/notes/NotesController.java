@@ -1,9 +1,5 @@
-package com.example.notes.notes.controller;
+package com.example.application.notes;
 
-import com.example.notes.notes.NotesRequest;
-import com.example.notes.notes.NotesResponse;
-import com.example.notes.notes.constants.NotesConstants;
-import com.example.notes.notes.service.NotesService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,9 +9,9 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping(NotesConstants.BASE_URL)
+@RequestMapping("${app.notes.base-url:/notes}")
 @RequiredArgsConstructor
-public class NotesController {
+class NotesController {
 
     private final NotesService service;
 

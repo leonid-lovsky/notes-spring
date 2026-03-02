@@ -1,4 +1,4 @@
-package com.example.notes.notes.model;
+package com.example.application.notes;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,7 +15,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Setter
-public class NotesEntity {
+class NotesEntity {
 
     @Id
     @GeneratedValue

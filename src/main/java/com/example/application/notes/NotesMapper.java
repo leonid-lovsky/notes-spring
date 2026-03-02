@@ -1,15 +1,12 @@
-package com.example.notes.notes.mapper;
+package com.example.application.notes;
 
-import com.example.notes.notes.NotesRequest;
-import com.example.notes.notes.NotesResponse;
-import com.example.notes.notes.model.NotesEntity;
 import org.jspecify.annotations.Nullable;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
-public interface NotesMapper {
+interface NotesMapper {
 
     @Mapping(target = "id", ignore = true)
     NotesEntity requestToEntity(@Nullable NotesRequest request);
