@@ -8,7 +8,7 @@ import org.springframework.modulith.Modulithic;
 @Modulithic
 @SpringBootApplication
 @ConfigurationPropertiesScan
-public class NotesApplication {
+class NotesApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(NotesApplication.class, args);
