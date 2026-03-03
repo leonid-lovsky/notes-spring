@@ -1,4 +1,4 @@
-package com.example.application.notes;
+package com.example.notes;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

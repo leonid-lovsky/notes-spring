@@ -1,4 +1,4 @@
 @NullMarked
-package com.example.application;
+package com.example;
 
 import org.jspecify.annotations.NullMarked;

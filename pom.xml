@@ -13,10 +13,10 @@
     </parent>
 
     <groupId>com.example</groupId>
-    <artifactId>notes-spring</artifactId>
+    <artifactId>notes</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
-    <name>notes-spring</name>
+    <name>notes</name>
     <description>Demo project for Spring Boot</description>
     <url/>
 

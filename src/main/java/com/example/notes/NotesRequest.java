@@ -1,4 +1,4 @@
-package com.example.application.notes;
+package com.example.notes;
 
 import jakarta.validation.constraints.NotBlank;
 
@@ -7,4 +7,3 @@ record NotesRequest(
 ) {
 
 }
-

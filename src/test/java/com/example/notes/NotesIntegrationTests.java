@@ -1,4 +1,4 @@
-package com.example.application.notes;
+package com.example.notes;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

@@ -1,4 +1,4 @@
-package com.example.application.notes;
+package com.example.notes;
 
 import org.jspecify.annotations.Nullable;
 import org.mapstruct.Mapper;

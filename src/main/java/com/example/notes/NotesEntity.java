@@ -1,4 +1,4 @@
-package com.example.application.notes;
+package com.example.notes;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
