@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("${app.notes.base-url:/notes}")
+@RequestMapping("${app.notes.base-url}")
 @RequiredArgsConstructor
 class NotesController {
 

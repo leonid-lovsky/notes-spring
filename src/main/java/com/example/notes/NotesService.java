@@ -17,49 +17,49 @@ class NotesService {
 
     private final NotesRepository repository;
     private final NotesMapper mapper;
-    private final NotesProperties properties;
+    private final NotesMessages messages;
 
-    String greet() {
-        return properties.messages().helloWorld();
+    public String greet() {
+        return messages.hello();
     }
 
-    List<NotesResponse> findAll() {
+    public List<NotesResponse> findAll() {
         return repository.findAll().stream()
             .map(mapper::entityToResponse)
             .toList();
     }
 
-    NotesResponse findById(UUID id) {
+    public NotesResponse findById(UUID id) {
         return repository.findById(id)
             .map(mapper::entityToResponse)
             .orElseThrow(() -> {
                 ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
-                problem.setDetail(String.format(properties.messages().noteNotFound(), id));
+                problem.setDetail("");
                 return new ErrorResponseException(HttpStatus.NOT_FOUND, problem, null);
             });
     }
 
-    NotesResponse create(NotesRequest request) {
+    public NotesResponse create(NotesRequest request) {
         NotesEntity entity = mapper.requestToEntity(request);
         return mapper.entityToResponse(repository.save(entity));
     }
 
-    NotesResponse updateById(UUID id, NotesRequest request) {
+    public NotesResponse updateById(UUID id, NotesRequest request) {
         NotesEntity entity = repository.findById(id)
             .orElseThrow(() -> {
                 ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
-                problem.setDetail(String.format(properties.messages().cannotUpdate(), id));
+                problem.setDetail("");
                 return new ErrorResponseException(HttpStatus.NOT_FOUND, problem, null);
             });
         entity.setContent(request.content());
         return mapper.entityToResponse(repository.save(entity));
     }
 
-    void deleteById(UUID id) {
+    public void deleteById(UUID id) {
         NotesEntity entity = repository.findById(id)
             .orElseThrow(() -> {
                 ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
-                problem.setDetail(String.format(properties.messages().cannotDelete(), id));
+                problem.setDetail("");
                 return new ErrorResponseException(HttpStatus.NOT_FOUND, problem, null);
             });
         repository.delete(entity);
