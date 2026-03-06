@@ -18,7 +18,7 @@ class NotesMessages {
     }
 
     String hello() {
-        return message("app.notes.messages.hello");
+        return message("app.notes.hello");
     }
 
     String noteCreateSuccess(UUID id) {
