@@ -1,67 +1,67 @@
 package com.example.notes;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.ErrorResponseException;
 
-import java.util.List;
 import java.util.UUID;
 
-@Service
+@Service @Validated
 @Transactional
 @RequiredArgsConstructor
 class NotesService {
 
     private final NotesRepository repository;
     private final NotesMapper mapper;
-    private final NotesProperties properties;
+    private final NotesMessages messages;
 
-    String greet() {
-        return properties.messages().helloWorld();
+    public String greet() {
+        return messages.hello();
     }
 
-    List<NotesResponse> findAll() {
-        return repository.findAll().stream()
-            .map(mapper::entityToResponse)
-            .toList();
+    public NotesResponse create(@Valid NotesRequest request) {
+        NotesEntity entity = mapper.requestToEntity(request);
+        NotesEntity saved = repository.save(entity);
+        return mapper.entityToResponse(saved);
     }
 
-    NotesResponse findById(UUID id) {
+    @Transactional(readOnly = true)
+    public NotesResponse read(UUID id) {
         return repository.findById(id)
             .map(mapper::entityToResponse)
             .orElseThrow(() -> {
                 ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
-                problem.setDetail(String.format(properties.messages().noteNotFound(), id));
+                problem.setDetail(messages.noteReadFailureNotFound(id));
                 return new ErrorResponseException(HttpStatus.NOT_FOUND, problem, null);
             });
     }
 
-    NotesResponse create(NotesRequest request) {
-        NotesEntity entity = mapper.requestToEntity(request);
-        return mapper.entityToResponse(repository.save(entity));
-    }
-
-    NotesResponse updateById(UUID id, NotesRequest request) {
+    public NotesResponse update(UUID id, @Valid NotesRequest request) {
         NotesEntity entity = repository.findById(id)
             .orElseThrow(() -> {
                 ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
-                problem.setDetail(String.format(properties.messages().cannotUpdate(), id));
+                problem.setDetail(messages.noteUpdateFailureNotFound(id));
                 return new ErrorResponseException(HttpStatus.NOT_FOUND, problem, null);
             });
+
         entity.setContent(request.content());
-        return mapper.entityToResponse(repository.save(entity));
+        NotesEntity updated = repository.save(entity);
+        return mapper.entityToResponse(updated);
     }
 
-    void deleteById(UUID id) {
+    public void delete(UUID id) {
         NotesEntity entity = repository.findById(id)
             .orElseThrow(() -> {
                 ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
-                problem.setDetail(String.format(properties.messages().cannotDelete(), id));
+                problem.setDetail(messages.noteDeleteFailureNotFound(id));
                 return new ErrorResponseException(HttpStatus.NOT_FOUND, problem, null);
             });
+
         repository.delete(entity);
     }
 }

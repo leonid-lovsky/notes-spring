@@ -10,18 +10,13 @@ import lombok.*;
 import java.util.UUID;
 
 @Entity(name = "notes")
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
+@Getter @Setter @Builder @NoArgsConstructor @AllArgsConstructor
 class NotesEntity {
 
-    @Id
-    @GeneratedValue
+    @Id @GeneratedValue
     private UUID id;
 
-    @NotBlank
     @Column(nullable = false)
+    @NotBlank
     private String content;
 }
