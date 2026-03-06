@@ -68,7 +68,7 @@ class NotesMockMvcTests {
     @Test
     @DisplayName("POST / fails with empty payload")
     void postFailsWithEmptyPayload() throws Exception {
-        String payload = "{}";
+        String payload = "";
 
         mockMvc.perform(post(baseUrl)
                 .contentType(MediaType.APPLICATION_JSON)
