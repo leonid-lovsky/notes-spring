@@ -20,18 +20,18 @@ class NotesService {
     private final NotesMapper mapper;
     private final NotesMessages messages;
 
-    public String greet() {
+    String greet() {
         return messages.hello();
     }
 
-    public NotesResponse create(@Valid NotesRequest request) {
+    NotesResponse create(@Valid NotesRequest request) {
         NotesEntity entity = mapper.requestToEntity(request);
         NotesEntity saved = repository.save(entity);
         return mapper.entityToResponse(saved);
     }
 
     @Transactional(readOnly = true)
-    public NotesResponse read(UUID id) {
+    NotesResponse read(UUID id) {
         return repository.findById(id)
             .map(mapper::entityToResponse)
             .orElseThrow(() -> {
@@ -41,7 +41,7 @@ class NotesService {
             });
     }
 
-    public NotesResponse update(UUID id, @Valid NotesRequest request) {
+    NotesResponse update(UUID id, @Valid NotesRequest request) {
         NotesEntity entity = repository.findById(id)
             .orElseThrow(() -> {
                 ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
@@ -54,7 +54,7 @@ class NotesService {
         return mapper.entityToResponse(updated);
     }
 
-    public void delete(UUID id) {
+    void delete(UUID id) {
         NotesEntity entity = repository.findById(id)
             .orElseThrow(() -> {
                 ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
