@@ -1,5 +1,5 @@
 package com.example.identity;
 
-class UserEntity {
+interface UsersRepository {
 
 }

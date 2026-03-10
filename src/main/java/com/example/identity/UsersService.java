@@ -1,5 +1,5 @@
 package com.example.identity;
 
-class UserService {
+class UsersService {
 
 }

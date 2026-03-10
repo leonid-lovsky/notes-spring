@@ -1,4 +1,4 @@
-package com.example.notes;
+package com.example.identity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,14 +9,14 @@ import lombok.*;
 
 import java.util.UUID;
 
-@Entity(name = "notes")
+@Entity(name = "users")
 @Getter @Setter @Builder @NoArgsConstructor @AllArgsConstructor
-class NotesEntity {
+class UsersEntity {
 
     @Id @GeneratedValue
     private UUID id;
 
     @NotBlank
-    @Column(nullable = false)
-    private String content;
+    @Column(unique = true, nullable = false)
+    private String username;
 }
