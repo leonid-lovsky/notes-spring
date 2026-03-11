@@ -1,4 +1,4 @@
-package com.example.notes;
+package com.example.note;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,24 +14,24 @@ import java.util.UUID;
 @Service @Validated
 @Transactional
 @RequiredArgsConstructor
-class NotesService {
+class NoteService {
 
-    private final NotesRepository repository;
-    private final NotesMapper mapper;
-    private final NotesMessages messages;
+    private final NoteRepository repository;
+    private final NoteMapper mapper;
+    private final NoteMessages messages;
 
     String greet() {
         return messages.hello();
     }
 
-    NotesResponse create(@Valid NotesRequest request) {
-        NotesEntity entity = mapper.requestToEntity(request);
-        NotesEntity saved = repository.save(entity);
+    NoteResponse create(@Valid NotesRequest request) {
+        NoteEntity entity = mapper.requestToEntity(request);
+        NoteEntity saved = repository.save(entity);
         return mapper.entityToResponse(saved);
     }
 
     @Transactional(readOnly = true)
-    NotesResponse read(UUID id) {
+    NoteResponse read(UUID id) {
         return repository.findById(id)
             .map(mapper::entityToResponse)
             .orElseThrow(() -> {
@@ -41,8 +41,8 @@ class NotesService {
             });
     }
 
-    NotesResponse update(UUID id, @Valid NotesRequest request) {
-        NotesEntity entity = repository.findById(id)
+    NoteResponse update(UUID id, @Valid NotesRequest request) {
+        NoteEntity entity = repository.findById(id)
             .orElseThrow(() -> {
                 ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
                 problem.setDetail(messages.noteUpdateFailureNotFound(id));
@@ -50,12 +50,12 @@ class NotesService {
             });
 
         entity.setContent(request.content());
-        NotesEntity updated = repository.save(entity);
+        NoteEntity updated = repository.save(entity);
         return mapper.entityToResponse(updated);
     }
 
     void delete(UUID id) {
-        NotesEntity entity = repository.findById(id)
+        NoteEntity entity = repository.findById(id)
             .orElseThrow(() -> {
                 ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
                 problem.setDetail(messages.noteDeleteFailureNotFound(id));

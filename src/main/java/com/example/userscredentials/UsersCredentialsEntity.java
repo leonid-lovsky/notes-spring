@@ -1,30 +1,29 @@
-package com.example.notes;
+package com.example.userscredentials;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.util.UUID;
 
-@Entity(name = "notes_access")
+@Entity(name = "users_credentials")
 @Getter @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-class NotesAccessEntity {
+class UsersCredentialsEntity {
 
     @Id
     @GeneratedValue
     private UUID id;
 
     @Column(nullable = false)
-    private UUID noteId;
-
-    @Column(nullable = false)
     private UUID userId;
 
+    @NotBlank
     @Column(nullable = false)
-    private String role;
+    private String secret;
 }

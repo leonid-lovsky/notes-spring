@@ -1,11 +1,11 @@
-package com.example.notes;
+package com.example.note;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
 
-record NotesResponse(
+record NoteResponse(
     @NotNull UUID id,
     @NotBlank String content
 ) {

@@ -1,4 +1,4 @@
-package com.example.notes;
+package com.example.note;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
-class NotesMessages {
+class NoteMessages {
 
     private final MessageSource messageSource;
 
@@ -21,11 +21,11 @@ class NotesMessages {
         return message("app.notes.hello");
     }
 
-    String noteCreateSuccess(UUID id) {
+    String createSuccess(UUID id) {
         return message("app.notes.note.create.success", id);
     }
 
-    String noteCreateFailure(UUID id) {
+    String createFailure(UUID id) {
         return message("app.notes.note.create.failure", id);
     }
 

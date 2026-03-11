@@ -1,4 +1,4 @@
-package com.example.notes;
+package com.example.note;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -11,9 +11,9 @@ import java.util.UUID;
 @RestController
 @RequestMapping("${app.notes.base-url}")
 @RequiredArgsConstructor
-class NotesController {
+class NoteController {
 
-    private final NotesService service;
+    private final NoteService service;
 
     @GetMapping("/greeting")
     ResponseEntity<String> greeting() {
@@ -22,19 +22,19 @@ class NotesController {
     }
 
     @PostMapping
-    ResponseEntity<NotesResponse> create(@Valid @RequestBody NotesRequest request) {
+    ResponseEntity<NoteResponse> create(@Valid @RequestBody NotesRequest request) {
         var result = service.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<NotesResponse> read(@PathVariable UUID id) {
+    ResponseEntity<NoteResponse> read(@PathVariable UUID id) {
         var result = service.read(id);
         return ResponseEntity.ok(result);
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<NotesResponse> update(@PathVariable UUID id, @Valid @RequestBody NotesRequest request) {
+    ResponseEntity<NoteResponse> update(@PathVariable UUID id, @Valid @RequestBody NotesRequest request) {
         var result = service.update(id, request);
         return ResponseEntity.ok(result);
     }
