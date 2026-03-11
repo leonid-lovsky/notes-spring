@@ -2,5 +2,7 @@ package com.example.notesusers;
 
 enum NoteUserRole {
 
-    CREATOR
+    OWNER,
+    EDITOR,
+    VIEWER
 }
