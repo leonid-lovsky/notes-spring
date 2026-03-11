@@ -9,7 +9,7 @@ import org.mapstruct.MappingConstants;
 interface NoteMapper {
 
     @Mapping(target = "id", ignore = true)
-    NoteEntity requestToEntity(@Nullable NotesRequest request);
+    NoteEntity requestToEntity(@Nullable NoteRequest request);
 
     NoteResponse entityToResponse(@Nullable NoteEntity entity);
 }

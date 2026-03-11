@@ -2,7 +2,7 @@ package com.example.note;
 
 import jakarta.validation.constraints.NotBlank;
 
-record NotesRequest(
+record NoteRequest(
     @NotBlank String content
 ) {
 

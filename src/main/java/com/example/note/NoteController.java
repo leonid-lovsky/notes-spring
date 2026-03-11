@@ -22,7 +22,7 @@ class NoteController {
     }
 
     @PostMapping
-    ResponseEntity<NoteResponse> create(@Valid @RequestBody NotesRequest request) {
+    ResponseEntity<NoteResponse> create(@Valid @RequestBody NoteRequest request) {
         var result = service.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
@@ -34,7 +34,7 @@ class NoteController {
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<NoteResponse> update(@PathVariable UUID id, @Valid @RequestBody NotesRequest request) {
+    ResponseEntity<NoteResponse> update(@PathVariable UUID id, @Valid @RequestBody NoteRequest request) {
         var result = service.update(id, request);
         return ResponseEntity.ok(result);
     }

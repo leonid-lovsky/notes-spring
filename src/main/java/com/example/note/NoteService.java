@@ -24,7 +24,7 @@ class NoteService {
         return messages.hello();
     }
 
-    NoteResponse create(@Valid NotesRequest request) {
+    NoteResponse create(@Valid NoteRequest request) {
         NoteEntity entity = mapper.requestToEntity(request);
         NoteEntity saved = repository.save(entity);
         return mapper.entityToResponse(saved);
@@ -41,7 +41,7 @@ class NoteService {
             });
     }
 
-    NoteResponse update(UUID id, @Valid NotesRequest request) {
+    NoteResponse update(UUID id, @Valid NoteRequest request) {
         NoteEntity entity = repository.findById(id)
             .orElseThrow(() -> {
                 ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
