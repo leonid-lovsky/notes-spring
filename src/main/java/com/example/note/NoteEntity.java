@@ -8,7 +8,7 @@ import jakarta.persistence.Id;
 import java.util.UUID;
 
 @Entity(name = "note")
-class NoteEntity {
+public class NoteEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
