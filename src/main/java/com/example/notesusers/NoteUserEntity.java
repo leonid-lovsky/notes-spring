@@ -1,15 +1,10 @@
 package com.example.notesusers;
 
 import jakarta.persistence.*;
-import lombok.*;
 
 import java.util.UUID;
 
 @Entity(name = "note_user")
-@Getter @Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 class NoteUserEntity {
 
     @Id @GeneratedValue

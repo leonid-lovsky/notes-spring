@@ -1,25 +1,34 @@
 package com.example.note;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.NotBlank;
-import lombok.*;
 
 import java.util.UUID;
 
 @Entity(name = "note")
-@Getter @Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 class NoteEntity {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @NotBlank
-    @Column(nullable = false)
     private String content;
+
+    public NoteEntity() {
+    }
+
+    UUID getId() {
+        return id;
+    }
+
+    String getContent() {
+        return content;
+    }
+
+    NoteEntity setContent(String content) {
+        this.content = content;
+        return this;
+    }
 }

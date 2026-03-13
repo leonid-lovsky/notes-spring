@@ -1,7 +1,6 @@
 package com.example.note;
 
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,10 +9,13 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("${app.notes.base-url}")
-@RequiredArgsConstructor
 class NoteController {
 
     private final NoteService service;
+
+    NoteController(NoteService service) {
+        this.service = service;
+    }
 
     @GetMapping("/greeting")
     ResponseEntity<String> greeting() {

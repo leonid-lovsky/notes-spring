@@ -1,6 +1,5 @@
 package com.example.note;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
@@ -8,10 +7,13 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Component
-@RequiredArgsConstructor
 class NoteMessages {
 
     private final MessageSource messageSource;
+
+    NoteMessages(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
 
     private String message(String key, Object... args) {
         return messageSource.getMessage(key, args, LocaleContextHolder.getLocale());

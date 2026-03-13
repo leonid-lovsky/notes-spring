@@ -1,7 +1,6 @@
 package com.example.note;
 
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.stereotype.Service;
@@ -13,12 +12,17 @@ import java.util.UUID;
 
 @Service @Validated
 @Transactional
-@RequiredArgsConstructor
 class NoteService {
 
     private final NoteRepository repository;
     private final NoteMapper mapper;
     private final NoteMessages messages;
+
+    NoteService(NoteRepository repository, NoteMapper mapper, NoteMessages messages) {
+        this.repository = repository;
+        this.mapper = mapper;
+        this.messages = messages;
+    }
 
     String greet() {
         return messages.hello();
