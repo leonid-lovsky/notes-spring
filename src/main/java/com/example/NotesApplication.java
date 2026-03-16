@@ -11,19 +11,19 @@ import org.springframework.modulith.Modulithic;
 // implements CommandLineRunner
 class NotesApplication {
 
-    public static void main(String[] args) {
+    static void main(String[] args) {
         SpringApplication.run(NotesApplication.class, args);
     }
 
     // private final BookRepository bookRepository;
     // private final PublisherRepository publisherRepository;
     //
-    // public static void main(String[] args) {
+    // static void main(String[] args) {
     //     SpringApplication.run(JpaApplication.class, args);
     // }
     //
     // @Override
-    // public void run(String... args) {
+    // void run(String... args) {
     //     // Create a couple of Book, Publisher and BookPublisher
     //     Publisher publisherA = new Publisher("Publisher A");
     //     Publisher publisherB = new Publisher("Publisher B");

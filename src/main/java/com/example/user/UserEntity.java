@@ -1,26 +1,29 @@
 package com.example.user;
 
-import com.example.notesusers.NoteUserEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.util.Set;
-import java.util.UUID;
-
-@Entity(name = "user")
-@Table(name = "user")
+@Entity
+@NoArgsConstructor
 public class UserEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id")
-    private UUID id;
+    @Getter
+    @GeneratedValue
+    private Long id;
 
-    @Column(name = "username", unique = true, nullable = false)
+    @Getter
+    @Setter
+    @Column(unique = true, nullable = false)
     private String username;
 
-    @Column(name = "password", nullable = false)
+    @Getter
+    @Setter
+    @Column(nullable = false)
     private String password;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private Set<NoteUserEntity> noteUsers;
 }

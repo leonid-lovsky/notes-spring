@@ -1,4 +1,4 @@
-package com.example.notesusers;
+package com.example.noteuser;
 
 enum NoteUserRole {
 

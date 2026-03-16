@@ -1,43 +1,22 @@
 package com.example.note;
 
-import com.example.notesusers.NoteUserEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.util.Set;
-import java.util.UUID;
-
-@Entity(name = "note")
-@Table(name = "note")
+@Entity
+@NoArgsConstructor
 public class NoteEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id")
-    private UUID id;
+    @Getter
+    @GeneratedValue
+    private Long id;
 
-    @Column(name = "content")
+    @Getter
+    @Setter
     private String content;
-
-    @OneToMany(mappedBy = "note", cascade = CascadeType.ALL)
-    private Set<NoteUserEntity> noteUsers;
-
-    public NoteEntity() {
-    }
-
-    UUID getId() {
-        return id;
-    }
-
-    String getContent() {
-        return content;
-    }
-
-    NoteEntity setContent(String content) {
-        this.content = content;
-        return this;
-    }
-
-    Set<NoteUserEntity> getNoteUsers() {
-        return noteUsers;
-    }
 }
