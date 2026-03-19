@@ -1,71 +1,74 @@
 package com.example.note;
 
-import jakarta.validation.Valid;
+import com.example.note.mapping.NoteMapper;
+import com.example.note.persistence.NoteEntity;
+import com.example.note.persistence.NoteRepository;
+import com.example.noteuser.NoteAccessService;
+import com.example.user.AuthenticatedUser;
+import com.example.user.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ProblemDetail;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.ErrorResponseException;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.UUID;
 
-@Service @Validated
+@Service
 @Transactional
-class NoteService {
+@RequiredArgsConstructor
+public class NoteService {
 
-    private final NoteRepository repository;
-    private final NoteMapper mapper;
-    private final NoteMessages messages;
+    private final NoteRepository noteRepository;
+    private final NoteMapper noteMapper;
+    private final NoteAccessService noteAccessService;
+    private final UserService userService;
 
-    NoteService(NoteRepository repository, NoteMapper mapper, NoteMessages messages) {
-        this.repository = repository;
-        this.mapper = mapper;
-        this.messages = messages;
+    @Transactional(readOnly = true)
+    public List<NoteView> getCurrentUserNotes() {
+        AuthenticatedUser currentUser = userService.getCurrentUser();
+        List<UUID> noteIds = noteAccessService.getNoteIdsForUser(currentUser.id());
+        if (noteIds.isEmpty()) {
+            return List.of();
+        }
+        return noteRepository.findAllByIdInOrderByUpdatedAtDesc(noteIds).stream()
+            .map(noteMapper::toView)
+            .toList();
     }
 
-    String greet() {
-        return messages.hello();
-    }
-
-    NoteResponse create(@Valid NoteRequest request) {
-        NoteEntity entity = mapper.requestToEntity(request);
-        NoteEntity saved = repository.save(entity);
-        return mapper.entityToResponse(saved);
+    public NoteView createNote(CreateNoteCommand command) {
+        AuthenticatedUser currentUser = userService.getCurrentUser();
+        NoteEntity noteEntity = noteMapper.createCommandToEntity(command);
+        NoteEntity savedNote = noteRepository.save(noteEntity);
+        noteAccessService.grantCreatorAccess(savedNote.getId(), currentUser.id());
+        return noteMapper.toView(savedNote);
     }
 
     @Transactional(readOnly = true)
-    NoteResponse read(UUID id) {
-        return repository.findById(id)
-            .map(mapper::entityToResponse)
-            .orElseThrow(() -> {
-                ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
-                problem.setDetail(messages.noteReadFailureNotFound(id));
-                return new ErrorResponseException(HttpStatus.NOT_FOUND, problem, null);
-            });
+    public NoteView getNote(UUID noteId) {
+        NoteEntity noteEntity = findNote(noteId);
+        noteAccessService.ensureUserCanRead(noteId, userService.getCurrentUser().id());
+        return noteMapper.toView(noteEntity);
     }
 
-    NoteResponse update(UUID id, @Valid NoteRequest request) {
-        NoteEntity entity = repository.findById(id)
-            .orElseThrow(() -> {
-                ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
-                problem.setDetail(messages.noteUpdateFailureNotFound(id));
-                return new ErrorResponseException(HttpStatus.NOT_FOUND, problem, null);
-            });
-
-        entity.setContent(request.content());
-        NoteEntity updated = repository.save(entity);
-        return mapper.entityToResponse(updated);
+    private NoteEntity findNote(UUID noteId) {
+        return noteRepository.findById(noteId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Note not found."));
     }
 
-    void delete(UUID id) {
-        NoteEntity entity = repository.findById(id)
-            .orElseThrow(() -> {
-                ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
-                problem.setDetail(messages.noteDeleteFailureNotFound(id));
-                return new ErrorResponseException(HttpStatus.NOT_FOUND, problem, null);
-            });
+    public NoteView updateNote(UUID noteId, UpdateNoteCommand command) {
+        NoteEntity noteEntity = findNote(noteId);
+        noteAccessService.ensureUserCanEdit(noteId, userService.getCurrentUser().id());
+        noteMapper.updateEntity(command, noteEntity);
+        NoteEntity updatedNote = noteRepository.save(noteEntity);
+        return noteMapper.toView(updatedNote);
+    }
 
-        repository.delete(entity);
+    public void deleteNote(UUID noteId) {
+        NoteEntity noteEntity = findNote(noteId);
+        noteAccessService.ensureUserCanDelete(noteId, userService.getCurrentUser().id());
+        noteAccessService.deleteAllAccessForNote(noteId);
+        noteRepository.delete(noteEntity);
     }
 }

@@ -10,10 +10,14 @@ import org.springframework.modulith.core.ApplicationModules;
 class NotesApplicationTests {
 
     @Test
-    @DisplayName("Context loads")
-    void contextLoads() {
+    @DisplayName("Application modules are valid")
+    void modulesAreValid() {
         ApplicationModules modules = ApplicationModules.of(NotesApplication.class);
-        modules.forEach(System.out::println);
         modules.verify();
+    }
+
+    @Test
+    @DisplayName("Application context starts")
+    void contextLoads() {
     }
 }
