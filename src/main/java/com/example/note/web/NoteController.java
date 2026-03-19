@@ -1,9 +1,7 @@
 package com.example.note.web;
 
-import com.example.note.CreateNoteCommand;
+import com.example.note.NoteResponse;
 import com.example.note.NoteService;
-import com.example.note.NoteView;
-import com.example.note.UpdateNoteCommand;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,30 +19,33 @@ class NoteController {
     private final NoteService service;
 
     @PostMapping
-    ResponseEntity<NoteView> create(@Valid @RequestBody CreateNoteRequest request) {
-        NoteView note = service.createNote(new CreateNoteCommand(request.title(), request.content()));
-        return ResponseEntity.status(HttpStatus.CREATED).body(note);
+    ResponseEntity<NoteResponse> create(@Valid @RequestBody CreateNoteRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.create(request));
     }
 
     @GetMapping
-    ResponseEntity<List<NoteView>> list() {
-        return ResponseEntity.ok(service.getCurrentUserNotes());
+    ResponseEntity<List<NoteResponse>> list() {
+        return ResponseEntity.ok(service.list());
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<NoteView> read(@PathVariable UUID id) {
-        return ResponseEntity.ok(service.getNote(id));
+    ResponseEntity<NoteResponse> read(@PathVariable UUID id) {
+        return ResponseEntity.ok(service.read(id));
+    }
+
+    @PatchMapping("/{id}")
+    ResponseEntity<NoteResponse> update(@PathVariable UUID id, @RequestBody UpdateNoteRequest request) {
+        return ResponseEntity.ok(service.update(id, request));
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<NoteView> update(@PathVariable UUID id, @Valid @RequestBody UpdateNoteRequest request) {
-        NoteView note = service.updateNote(id, new UpdateNoteCommand(request.title(), request.content()));
-        return ResponseEntity.ok(note);
+    ResponseEntity<NoteResponse> replace(@PathVariable UUID id, @Valid @RequestBody ReplaceNoteRequest request) {
+        return ResponseEntity.ok(service.replace(id, request));
     }
 
     @DeleteMapping("/{id}")
     ResponseEntity<Void> delete(@PathVariable UUID id) {
-        service.deleteNote(id);
+        service.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

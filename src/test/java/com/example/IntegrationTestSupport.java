@@ -1,6 +1,5 @@
 package com.example;
 
-import com.example.authentication.persistence.ExternalAuthenticationMethodRepository;
 import com.example.note.persistence.NoteRepository;
 import com.example.noteuser.persistence.NoteAccessRepository;
 import com.example.user.persistence.UserRepository;
@@ -25,12 +24,8 @@ public abstract class IntegrationTestSupport {
     @Autowired
     protected NoteAccessRepository noteAccessRepository;
 
-    @Autowired
-    protected ExternalAuthenticationMethodRepository externalAuthenticationMethodRepository;
-
     @AfterEach
     void cleanUp() {
-        externalAuthenticationMethodRepository.deleteAll();
         noteAccessRepository.deleteAll();
         noteRepository.deleteAll();
         userRepository.deleteAll();

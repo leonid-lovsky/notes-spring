@@ -30,8 +30,8 @@ class NoteControllerIntegrationTests extends IntegrationTestSupport {
     }
 
     @Test
-    @DisplayName("Create list read update and delete own note")
-    void createListReadUpdateAndDeleteOwnNote() throws Exception {
+    @DisplayName("Create list read update replace and delete own note")
+    void createListReadUpdateReplaceAndDeleteOwnNote() throws Exception {
         registerUser(mockMvc, "alice", "Alice", "password123");
 
         String createResponse = mockMvc.perform(post("/api/notes")
@@ -39,12 +39,10 @@ class NoteControllerIntegrationTests extends IntegrationTestSupport {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                     {
-                      "title": "First note",
                       "content": "My first note"
                     }
                     """))
             .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.title").value("First note"))
             .andExpect(jsonPath("$.content").value("My first note"))
             .andReturn()
             .getResponse()
@@ -56,27 +54,37 @@ class NoteControllerIntegrationTests extends IntegrationTestSupport {
                 .with(httpBasic("alice", "password123")))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].id").value(noteId))
-            .andExpect(jsonPath("$[0].title").value("First note"));
+            .andExpect(jsonPath("$[0].content").value("My first note"));
 
         mockMvc.perform(get("/api/notes/{id}", noteId)
                 .with(httpBasic("alice", "password123")))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(noteId))
-            .andExpect(jsonPath("$.title").value("First note"));
+            .andExpect(jsonPath("$.content").value("My first note"));
+
+        mockMvc.perform(patch("/api/notes/{id}", noteId)
+                .with(httpBasic("alice", "password123"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {
+                      "content": "Updated content"
+                    }
+                    """))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id").value(noteId))
+            .andExpect(jsonPath("$.content").value("Updated content"));
 
         mockMvc.perform(put("/api/notes/{id}", noteId)
                 .with(httpBasic("alice", "password123"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                     {
-                      "title": "Updated note",
-                      "content": "Updated content"
+                      "content": "Replaced content"
                     }
                     """))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(noteId))
-            .andExpect(jsonPath("$.title").value("Updated note"))
-            .andExpect(jsonPath("$.content").value("Updated content"));
+            .andExpect(jsonPath("$.content").value("Replaced content"));
 
         mockMvc.perform(delete("/api/notes/{id}", noteId)
                 .with(httpBasic("alice", "password123")))
@@ -100,7 +108,6 @@ class NoteControllerIntegrationTests extends IntegrationTestSupport {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                     {
-                      "title": "First note",
                       "content": "My first note"
                     }
                     """))
@@ -123,7 +130,6 @@ class NoteControllerIntegrationTests extends IntegrationTestSupport {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                     {
-                      "title": "Private note",
                       "content": "Only Alice can read this"
                     }
                     """))
@@ -149,12 +155,73 @@ class NoteControllerIntegrationTests extends IntegrationTestSupport {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                     {
-                      "title": "",
                       "content": ""
                     }
                     """))
             .andExpect(status().isBadRequest());
 
         assertThat(noteRepository.count()).isZero();
+    }
+
+    @Test
+    @DisplayName("Patch keeps note unchanged when request body does not include content")
+    void patchKeepsNoteUnchangedWhenRequestBodyDoesNotIncludeContent() throws Exception {
+        registerUser(mockMvc, "alice", "Alice", "password123");
+
+        String createResponse = mockMvc.perform(post("/api/notes")
+                .with(httpBasic("alice", "password123"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {
+                      "content": "Original content"
+                    }
+                    """))
+            .andExpect(status().isCreated())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        String noteId = readTextField(createResponse, "id");
+
+        mockMvc.perform(patch("/api/notes/{id}", noteId)
+                .with(httpBasic("alice", "password123"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {
+                    }
+                    """))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.content").value("Original content"));
+    }
+
+    @Test
+    @DisplayName("Reject invalid replace request")
+    void rejectInvalidReplaceRequest() throws Exception {
+        registerUser(mockMvc, "alice", "Alice", "password123");
+
+        String createResponse = mockMvc.perform(post("/api/notes")
+                .with(httpBasic("alice", "password123"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {
+                      "content": "Original content"
+                    }
+                    """))
+            .andExpect(status().isCreated())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        String noteId = readTextField(createResponse, "id");
+
+        mockMvc.perform(put("/api/notes/{id}", noteId)
+                .with(httpBasic("alice", "password123"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {
+                      "content": ""
+                    }
+                    """))
+            .andExpect(status().isBadRequest());
     }
 }

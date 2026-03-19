@@ -18,7 +18,6 @@ Simple notes application for local development and portfolio use.
 - `user` - user registration and current user profile
 - `note` - create, read, update, delete and list notes
 - `noteuser` - note access roles for future collaboration
-- `authentication` - linked external authentication methods for future expansion
 
 ### How to run
 
@@ -42,10 +41,9 @@ Data is reset every time the application restarts.
 - `GET /api/notes` - list current user's notes
 - `POST /api/notes` - create a note
 - `GET /api/notes/{id}` - read a note
-- `PUT /api/notes/{id}` - update a note
+- `PATCH /api/notes/{id}` - update a note partially
+- `PUT /api/notes/{id}` - replace a note
 - `DELETE /api/notes/{id}` - delete a note
-- `GET /api/authentication/methods` - list linked external methods
-- `POST /api/authentication/methods` - link an external method
 
 ### Authentication
 

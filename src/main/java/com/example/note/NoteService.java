@@ -3,6 +3,9 @@ package com.example.note;
 import com.example.note.mapping.NoteMapper;
 import com.example.note.persistence.NoteEntity;
 import com.example.note.persistence.NoteRepository;
+import com.example.note.web.CreateNoteRequest;
+import com.example.note.web.ReplaceNoteRequest;
+import com.example.note.web.UpdateNoteRequest;
 import com.example.noteuser.NoteAccessService;
 import com.example.user.AuthenticatedUser;
 import com.example.user.UserService;
@@ -26,30 +29,30 @@ public class NoteService {
     private final UserService userService;
 
     @Transactional(readOnly = true)
-    public List<NoteView> getCurrentUserNotes() {
+    public List<NoteResponse> list() {
         AuthenticatedUser currentUser = userService.getCurrentUser();
         List<UUID> noteIds = noteAccessService.getNoteIdsForUser(currentUser.id());
         if (noteIds.isEmpty()) {
             return List.of();
         }
-        return noteRepository.findAllByIdInOrderByUpdatedAtDesc(noteIds).stream()
-            .map(noteMapper::toView)
+        return noteRepository.findAllById(noteIds).stream()
+            .map(noteMapper::toResponse)
             .toList();
     }
 
-    public NoteView createNote(CreateNoteCommand command) {
+    public NoteResponse create(CreateNoteRequest request) {
         AuthenticatedUser currentUser = userService.getCurrentUser();
-        NoteEntity noteEntity = noteMapper.createCommandToEntity(command);
+        NoteEntity noteEntity = noteMapper.createEntity(request);
         NoteEntity savedNote = noteRepository.save(noteEntity);
         noteAccessService.grantCreatorAccess(savedNote.getId(), currentUser.id());
-        return noteMapper.toView(savedNote);
+        return noteMapper.toResponse(savedNote);
     }
 
     @Transactional(readOnly = true)
-    public NoteView getNote(UUID noteId) {
+    public NoteResponse read(UUID noteId) {
         NoteEntity noteEntity = findNote(noteId);
         noteAccessService.ensureUserCanRead(noteId, userService.getCurrentUser().id());
-        return noteMapper.toView(noteEntity);
+        return noteMapper.toResponse(noteEntity);
     }
 
     private NoteEntity findNote(UUID noteId) {
@@ -57,15 +60,23 @@ public class NoteService {
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Note not found."));
     }
 
-    public NoteView updateNote(UUID noteId, UpdateNoteCommand command) {
+    public NoteResponse update(UUID noteId, UpdateNoteRequest request) {
         NoteEntity noteEntity = findNote(noteId);
         noteAccessService.ensureUserCanEdit(noteId, userService.getCurrentUser().id());
-        noteMapper.updateEntity(command, noteEntity);
+        noteMapper.updateEntity(request, noteEntity);
         NoteEntity updatedNote = noteRepository.save(noteEntity);
-        return noteMapper.toView(updatedNote);
+        return noteMapper.toResponse(updatedNote);
     }
 
-    public void deleteNote(UUID noteId) {
+    public NoteResponse replace(UUID noteId, ReplaceNoteRequest request) {
+        NoteEntity noteEntity = findNote(noteId);
+        noteAccessService.ensureUserCanEdit(noteId, userService.getCurrentUser().id());
+        noteMapper.replaceEntity(request, noteEntity);
+        NoteEntity replacedNote = noteRepository.save(noteEntity);
+        return noteMapper.toResponse(replacedNote);
+    }
+
+    public void delete(UUID noteId) {
         NoteEntity noteEntity = findNote(noteId);
         noteAccessService.ensureUserCanDelete(noteId, userService.getCurrentUser().id());
         noteAccessService.deleteAllAccessForNote(noteId);

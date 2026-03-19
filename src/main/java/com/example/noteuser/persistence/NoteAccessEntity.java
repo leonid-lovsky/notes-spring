@@ -5,9 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 
-import java.time.Instant;
 import java.util.UUID;
 
 @Entity
@@ -16,7 +14,6 @@ import java.util.UUID;
     uniqueConstraints = @UniqueConstraint(name = "uk_note_access_note_user", columnNames = {"note_id", "user_id"})
 )
 @Getter
-@Setter
 @NoArgsConstructor
 public class NoteAccessEntity {
 
@@ -24,17 +21,16 @@ public class NoteAccessEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Setter
     @Column(nullable = false)
     private UUID noteId;
 
+    @Setter
     @Column(nullable = false)
     private UUID userId;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Setter
+    @Column(nullable = false)
     private NoteAccessRole role;
-
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private Instant createdAt;
 }

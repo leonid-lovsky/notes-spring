@@ -3,6 +3,7 @@ package com.example.user;
 import com.example.user.mapping.UserMapper;
 import com.example.user.persistence.UserEntity;
 import com.example.user.persistence.UserRepository;
+import com.example.user.web.UserRegistrationRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -25,23 +26,23 @@ public class UserService implements UserDetailsService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
-    public UserView registerUser(RegisterUserCommand command) {
-        if (userRepository.existsByUsername(command.username())) {
+    public UserResponse register(UserRegistrationRequest request) {
+        if (userRepository.existsByUsername(request.username())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Username is already in use.");
         }
 
         UserEntity userEntity = new UserEntity();
-        userEntity.setUsername(command.username());
-        userEntity.setDisplayName(command.displayName());
-        userEntity.setPasswordHash(passwordEncoder.encode(command.password()));
+        userEntity.setUsername(request.username());
+        userEntity.setDisplayName(request.displayName());
+        userEntity.setPasswordHash(passwordEncoder.encode(request.password()));
 
         UserEntity savedUser = userRepository.save(userEntity);
-        return userMapper.toView(savedUser);
+        return userMapper.toResponse(savedUser);
     }
 
     @Transactional(readOnly = true)
-    public UserView getCurrentUserProfile() {
-        return userMapper.toView(getCurrentUserEntity());
+    public UserResponse getCurrentUserProfile() {
+        return userMapper.toResponse(getCurrentUserEntity());
     }
 
     private UserEntity getCurrentUserEntity() {

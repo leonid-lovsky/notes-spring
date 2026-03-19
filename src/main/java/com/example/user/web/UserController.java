@@ -1,8 +1,7 @@
 package com.example.user.web;
 
-import com.example.user.RegisterUserCommand;
+import com.example.user.UserResponse;
 import com.example.user.UserService;
-import com.example.user.UserView;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,17 +16,13 @@ class UserController {
     private final UserService userService;
 
     @PostMapping
-    ResponseEntity<UserView> register(@Valid @RequestBody UserRegistrationRequest request) {
-        UserView user = userService.registerUser(new RegisterUserCommand(
-            request.username(),
-            request.displayName(),
-            request.password()
-        ));
+    ResponseEntity<UserResponse> register(@Valid @RequestBody UserRegistrationRequest request) {
+        UserResponse user = userService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
     @GetMapping("/me")
-    ResponseEntity<UserView> currentUser() {
+    ResponseEntity<UserResponse> currentUser() {
         return ResponseEntity.ok(userService.getCurrentUserProfile());
     }
 }
