@@ -6,9 +6,9 @@ import org.springframework.modulith.Modulithic;
 
 @Modulithic
 @SpringBootApplication
-public class NotesApplication {
+class NotesApplication {
 
-    public static void main(String[] args) {
+    public static void main(String... args) {
         SpringApplication.run(NotesApplication.class, args);
     }
 }

@@ -1,4 +1,4 @@
-package com.example.note.entity;
+package com.example.note.repository;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Entity
 @NoArgsConstructor @Getter @Setter
-public class NoteEntity {
+class NoteJpaEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;

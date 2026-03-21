@@ -1,8 +1,8 @@
-package com.example.note.payload;
+package com.example.note;
 
 import java.util.UUID;
 
-public record NoteResponse(
+public record NoteResponseBody(
     UUID id,
     String content
 ) {

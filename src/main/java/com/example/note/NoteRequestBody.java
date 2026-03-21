@@ -1,8 +1,8 @@
-package com.example.note.payload;
+package com.example.note;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record NoteRequest(
+public record NoteRequestBody(
     @NotBlank
     String content
 ) {
