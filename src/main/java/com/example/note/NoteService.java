@@ -1,11 +1,9 @@
 package com.example.note;
 
-import com.example.note.mapping.NoteMapper;
-import com.example.note.persistence.NoteEntity;
-import com.example.note.persistence.NoteRepository;
-import com.example.note.web.CreateNoteRequest;
-import com.example.note.web.ReplaceNoteRequest;
-import com.example.note.web.UpdateNoteRequest;
+import com.example.note.entity.NoteEntity;
+import com.example.note.mapper.NoteMapper;
+import com.example.note.payload.NoteRequest;
+import com.example.note.payload.NoteResponse;
 import com.example.noteuser.NoteAccessService;
 import com.example.user.AuthenticatedUser;
 import com.example.user.UserService;
@@ -40,7 +38,7 @@ public class NoteService {
             .toList();
     }
 
-    public NoteResponse create(CreateNoteRequest request) {
+    public NoteResponse create(NoteRequest request) {
         AuthenticatedUser currentUser = userService.getCurrentUser();
         NoteEntity noteEntity = noteMapper.createEntity(request);
         NoteEntity savedNote = noteRepository.save(noteEntity);

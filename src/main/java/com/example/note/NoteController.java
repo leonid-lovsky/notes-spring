@@ -1,7 +1,7 @@
-package com.example.note.web;
+package com.example.note;
 
-import com.example.note.NoteResponse;
-import com.example.note.NoteService;
+import com.example.note.payload.NoteRequest;
+import com.example.note.payload.NoteResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -11,15 +11,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@RestController
-@RequestMapping("/api/notes")
+@RestController @RequestMapping("/api/notes")
 @RequiredArgsConstructor
-class NoteController {
+public class NoteController {
 
     private final NoteService service;
 
     @PostMapping
-    ResponseEntity<NoteResponse> create(@Valid @RequestBody CreateNoteRequest request) {
+    ResponseEntity<NoteResponse> create(@Valid @RequestBody NoteRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.create(request));
     }
 
@@ -34,12 +33,12 @@ class NoteController {
     }
 
     @PatchMapping("/{id}")
-    ResponseEntity<NoteResponse> update(@PathVariable UUID id, @RequestBody UpdateNoteRequest request) {
+    ResponseEntity<NoteResponse> update(@PathVariable UUID id, @RequestBody NoteRequest request) {
         return ResponseEntity.ok(service.update(id, request));
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<NoteResponse> replace(@PathVariable UUID id, @Valid @RequestBody ReplaceNoteRequest request) {
+    ResponseEntity<NoteResponse> replace(@PathVariable UUID id, @Valid @RequestBody NoteRequest request) {
         return ResponseEntity.ok(service.replace(id, request));
     }
 
