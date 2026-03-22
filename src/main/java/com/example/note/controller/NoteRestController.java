@@ -1,8 +1,6 @@
 package com.example.note.controller;
 
-import com.example.note.NoteCreateService;
-import com.example.note.NoteRequestModel;
-import com.example.note.NoteResponseModel;
+import com.example.note.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,41 +17,45 @@ import java.util.UUID;
 @RequiredArgsConstructor
 class NoteRestController {
 
-    private final NoteCreateService service;
+    private final NoteCreateService noteCreateService;
+    private final NoteDeleteService noteDeleteService;
+    private final NoteReadService noteReadService;
+    private final NoteReplaceService noteReplaceService;
+    private final NoteUpdateService noteUpdateService;
 
     @PostMapping
-    ResponseEntity<NoteResponseModel> create(@Valid @RequestBody NoteRequestModel requestBody) {
-        NoteResponseModel responseBody = service.create(requestBody);
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseBody);
+    ResponseEntity<NoteResponseModel> create(@Valid @RequestBody NoteRequestModel noteRequestModel) {
+        NoteResponseModel noteResponseModel = noteCreateService.create(noteRequestModel);
+        return ResponseEntity.status(HttpStatus.CREATED).body(noteResponseModel);
     }
 
     @GetMapping
     ResponseEntity<List<NoteResponseModel>> read() {
-        List<NoteResponseModel> responseBody = service.read();
-        return ResponseEntity.ok(responseBody);
+        List<NoteResponseModel> noteResponseModel = noteReadService.read();
+        return ResponseEntity.ok(noteResponseModel);
     }
 
     @GetMapping("/{id}")
     ResponseEntity<NoteResponseModel> read(@PathVariable UUID id) {
-        NoteResponseModel responseBody = service.read(id);
-        return ResponseEntity.ok(responseBody);
+        NoteResponseModel noteResponseModel = noteReadService.read(id);
+        return ResponseEntity.ok(noteResponseModel);
     }
 
     @PatchMapping("/{id}")
-    ResponseEntity<NoteResponseModel> update(@PathVariable UUID id, @Valid @RequestBody NoteRequestModel requestBody) {
-        NoteResponseModel responseBody = service.update(id, requestBody);
-        return ResponseEntity.ok(responseBody);
+    ResponseEntity<NoteResponseModel> update(@PathVariable UUID id, @Valid @RequestBody NoteRequestModel noteRequestModel) {
+        NoteResponseModel noteResponseModel = noteUpdateService.update(id, noteRequestModel);
+        return ResponseEntity.ok(noteResponseModel);
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<NoteResponseModel> replace(@PathVariable UUID id, @Valid @RequestBody NoteRequestModel requestBody) {
-        NoteResponseModel responseBody = service.replace(id, requestBody);
-        return ResponseEntity.ok(responseBody);
+    ResponseEntity<NoteResponseModel> replace(@PathVariable UUID id, @Valid @RequestBody NoteRequestModel noteRequestModel) {
+        NoteResponseModel noteResponseModel = noteReplaceService.replace(id, noteRequestModel);
+        return ResponseEntity.ok(noteResponseModel);
     }
 
     @DeleteMapping("/{id}")
     ResponseEntity<NoteResponseModel> delete(@PathVariable UUID id) {
-        NoteResponseModel responseBody = service.delete(id);
-        return ResponseEntity.ok(responseBody);
+        NoteResponseModel noteResponseModel = noteDeleteService.delete(id);
+        return ResponseEntity.ok(noteResponseModel);
     }
 }

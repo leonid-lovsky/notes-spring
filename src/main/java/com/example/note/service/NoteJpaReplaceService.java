@@ -17,7 +17,7 @@ import java.util.UUID;
 class NoteJpaReplaceService implements NoteReplaceService {
 
     @Override
-    public NoteResponseModel replace(UUID id, NoteRequestModel requestBody) {
+    public NoteResponseModel replace(UUID id, NoteRequestModel noteRequestModel) {
         return null;
     }
 }

@@ -7,5 +7,5 @@ import java.util.UUID;
 
 public interface NoteUpdateService {
 
-    NoteResponseModel update(@NotNull UUID id, @Valid @NotNull NoteRequestModel requestBody);
+    NoteResponseModel update(@NotNull UUID id, @Valid @NotNull NoteRequestModel noteRequestModel);
 }

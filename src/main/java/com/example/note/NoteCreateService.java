@@ -5,5 +5,5 @@ import jakarta.validation.constraints.NotNull;
 
 public interface NoteCreateService {
 
-    NoteResponseModel create(@Valid @NotNull NoteRequestModel requestBody);
+    NoteResponseModel create(@Valid @NotNull NoteRequestModel noteRequestModel);
 }

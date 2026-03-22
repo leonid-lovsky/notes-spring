@@ -17,7 +17,7 @@ import java.util.UUID;
 class NoteJpaUpdateService implements NoteUpdateService {
 
     @Override
-    public NoteResponseModel update(UUID id, NoteRequestModel requestBody) {
+    public NoteResponseModel update(UUID id, NoteRequestModel noteRequestModel) {
         return null;
     }
 }

@@ -15,7 +15,7 @@ import org.springframework.validation.annotation.Validated;
 class NoteJpaCreateService implements NoteCreateService {
 
     @Override
-    public NoteResponseModel create(NoteRequestModel requestBody) {
+    public NoteResponseModel create(NoteRequestModel noteRequestModel) {
         return null;
     }
 }

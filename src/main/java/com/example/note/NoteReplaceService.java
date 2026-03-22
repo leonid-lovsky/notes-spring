@@ -7,5 +7,5 @@ import java.util.UUID;
 
 public interface NoteReplaceService {
 
-    NoteResponseModel replace(@NotNull UUID id, @Valid @NotNull NoteRequestModel requestBody);
+    NoteResponseModel replace(@NotNull UUID id, @Valid @NotNull NoteRequestModel noteRequestModel);
 }

@@ -6,7 +6,7 @@ import com.example.note.NoteResponseModel;
 import org.mapstruct.*;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
-interface NoteMapper {
+interface NoteJpaMapper {
 
     @Mapping(target = "id", ignore = true)
     NoteEntity createEntity(NoteRequestModel request);
