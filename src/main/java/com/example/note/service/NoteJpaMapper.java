@@ -9,13 +9,14 @@ import org.mapstruct.*;
 interface NoteJpaMapper {
 
     @Mapping(target = "id", ignore = true)
-    NoteEntity createEntity(NoteRequestModel request);
-
-    @Mapping(target = "id", ignore = true) @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateEntity(NoteRequestModel request, @MappingTarget NoteEntity entity);
+    NoteEntity toNoteEntity(NoteRequestModel noteRequestModel);
 
     @Mapping(target = "id", ignore = true)
-    void replaceEntity(NoteRequestModel request, @MappingTarget NoteEntity entity);
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateNoteEntity(NoteRequestModel noteRequestModel, @MappingTarget NoteEntity noteEntity);
 
-    NoteResponseModel toResponse(NoteEntity entity);
+    @Mapping(target = "id", ignore = true)
+    void replaceNoteEntity(NoteRequestModel noteRequestModel, @MappingTarget NoteEntity noteEntity);
+
+    NoteResponseModel toNoteResponseModel(NoteEntity noteEntity);
 }
