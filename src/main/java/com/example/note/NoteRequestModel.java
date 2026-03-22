@@ -2,10 +2,7 @@ package com.example.note;
 
 import jakarta.validation.constraints.NotNull;
 
-import java.util.UUID;
-
-public record NoteResponseBody(
-    @NotNull UUID id,
+public record NoteRequestModel(
     @NotNull String content
 ) {
 

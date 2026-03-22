@@ -1,21 +1,21 @@
 package com.example.note.service;
 
 import com.example.note.NoteEntity;
-import com.example.note.NoteRequestBody;
-import com.example.note.NoteResponseBody;
+import com.example.note.NoteRequestModel;
+import com.example.note.NoteResponseModel;
 import org.mapstruct.*;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 interface NoteMapper {
 
     @Mapping(target = "id", ignore = true)
-    NoteEntity createEntity(NoteRequestBody request);
+    NoteEntity createEntity(NoteRequestModel request);
 
     @Mapping(target = "id", ignore = true) @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateEntity(NoteRequestBody request, @MappingTarget NoteEntity entity);
+    void updateEntity(NoteRequestModel request, @MappingTarget NoteEntity entity);
 
     @Mapping(target = "id", ignore = true)
-    void replaceEntity(NoteRequestBody request, @MappingTarget NoteEntity entity);
+    void replaceEntity(NoteRequestModel request, @MappingTarget NoteEntity entity);
 
-    NoteResponseBody toResponse(NoteEntity entity);
+    NoteResponseModel toResponse(NoteEntity entity);
 }
