@@ -23,39 +23,50 @@ class RestNoteController {
     private final ReplaceNoteService replaceNoteService;
     private final DeleteNoteService deleteNoteService;
 
+    private final RestNoteMapper restNoteMapper;
+
     @PostMapping
     ResponseEntity<ResponseNoteBody> create(@Valid @RequestBody RequestNoteBody requestNoteBody) {
-        ResponseNoteBody responseNoteBody = createNoteService.create(requestNoteBody);
+        RequestNotePayload requestNotePayload = restNoteMapper.toRequestNotePayload(requestNoteBody);
+        ResponseNotePayload responseNotePayload = createNoteService.create(requestNotePayload);
+        ResponseNoteBody responseNoteBody = restNoteMapper.toResponseNoteBody(responseNotePayload);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseNoteBody);
     }
 
     @GetMapping
     ResponseEntity<List<ResponseNoteBody>> read() {
-        List<ResponseNoteBody> responseNoteBody = readNoteService.read();
+        List<ResponseNotePayload> responseNotePayload = readNoteService.read();
+        List<ResponseNoteBody> responseNoteBody = responseNotePayload.stream().map(restNoteMapper::toResponseNoteBody).toList();
         return ResponseEntity.ok(responseNoteBody);
     }
 
     @GetMapping("/{id}")
     ResponseEntity<ResponseNoteBody> read(@PathVariable UUID id) {
-        ResponseNoteBody responseNoteBody = readNoteService.read(id);
+        ResponseNotePayload responseNotePayload = readNoteService.read(id);
+        ResponseNoteBody responseNoteBody = restNoteMapper.toResponseNoteBody(responseNotePayload);
         return ResponseEntity.ok(responseNoteBody);
     }
 
     @PatchMapping("/{id}")
     ResponseEntity<ResponseNoteBody> update(@PathVariable UUID id, @Valid @RequestBody RequestNoteBody requestNoteBody) {
-        ResponseNoteBody responseNoteBody = updateNoteService.update(id, requestNoteBody);
+        RequestNotePayload requestNotePayload = restNoteMapper.toRequestNotePayload(requestNoteBody);
+        ResponseNotePayload responseNotePayload = updateNoteService.update(id, requestNotePayload);
+        ResponseNoteBody responseNoteBody = restNoteMapper.toResponseNoteBody(responseNotePayload);
         return ResponseEntity.ok(responseNoteBody);
     }
 
     @PutMapping("/{id}")
     ResponseEntity<ResponseNoteBody> replace(@PathVariable UUID id, @Valid @RequestBody RequestNoteBody requestNoteBody) {
-        ResponseNoteBody responseNoteBody = replaceNoteService.replace(id, requestNoteBody);
+        RequestNotePayload requestNotePayload = restNoteMapper.toRequestNotePayload(requestNoteBody);
+        ResponseNotePayload responseNotePayload = replaceNoteService.replace(id, requestNotePayload);
+        ResponseNoteBody responseNoteBody = restNoteMapper.toResponseNoteBody(responseNotePayload);
         return ResponseEntity.ok(responseNoteBody);
     }
 
     @DeleteMapping("/{id}")
     ResponseEntity<ResponseNoteBody> delete(@PathVariable UUID id) {
-        ResponseNoteBody responseNoteBody = deleteNoteService.delete(id);
+        ResponseNotePayload responseNotePayload = deleteNoteService.delete(id);
+        ResponseNoteBody responseNoteBody = restNoteMapper.toResponseNoteBody(responseNotePayload);
         return ResponseEntity.ok(responseNoteBody);
     }
 }

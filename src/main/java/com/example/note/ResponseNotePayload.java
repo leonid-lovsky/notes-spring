@@ -4,7 +4,9 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
 
-public interface DeleteNoteService {
+public record ResponseNotePayload(
+    @NotNull UUID id,
+    @NotNull String content
+) {
 
-    ResponseNotePayload delete(@NotNull UUID id);
 }

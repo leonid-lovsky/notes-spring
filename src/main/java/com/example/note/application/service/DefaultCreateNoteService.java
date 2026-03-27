@@ -1,9 +1,8 @@
 package com.example.note.application.service;
 
 import com.example.note.CreateNoteService;
-import com.example.note.application.NoteRepository;
-import com.example.note.presentation.rest.NoteRequestBody;
-import com.example.note.presentation.rest.NoteResponseBody;
+import com.example.note.RequestNotePayload;
+import com.example.note.ResponseNotePayload;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +19,7 @@ class DefaultCreateNoteService implements CreateNoteService {
     private final NoteRepository noteRepository;
 
     @Override
-    public NoteResponseBody create(@Valid @NotNull NoteRequestBody noteRequestBody) {
+    public ResponseNotePayload create(@Valid @NotNull RequestNotePayload requestNotePayload) {
         return null;
     }
 }

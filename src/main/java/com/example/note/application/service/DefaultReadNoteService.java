@@ -1,8 +1,7 @@
 package com.example.note.application.service;
 
 import com.example.note.ReadNoteService;
-import com.example.note.application.NoteRepository;
-import com.example.note.presentation.rest.NoteResponseBody;
+import com.example.note.ResponseNotePayload;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,12 +20,12 @@ class DefaultReadNoteService implements ReadNoteService {
     private final NoteRepository noteRepository;
 
     @Override
-    public List<NoteResponseBody> read() {
+    public List<ResponseNotePayload> read() {
         return List.of();
     }
 
     @Override
-    public NoteResponseBody read(@NotNull UUID id) {
+    public ResponseNotePayload read(@NotNull UUID id) {
         return null;
     }
 }

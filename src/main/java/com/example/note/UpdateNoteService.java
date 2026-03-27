@@ -1,7 +1,5 @@
 package com.example.note;
 
-import com.example.note.presentation.rest.NoteRequestBody;
-import com.example.note.presentation.rest.NoteResponseBody;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
@@ -9,5 +7,5 @@ import java.util.UUID;
 
 public interface UpdateNoteService {
 
-    NoteResponseBody update(@NotNull UUID id, @Valid @NotNull NoteRequestBody noteRequestBody);
+    ResponseNotePayload update(@NotNull UUID id, @Valid @NotNull RequestNotePayload requestNotePayload);
 }
