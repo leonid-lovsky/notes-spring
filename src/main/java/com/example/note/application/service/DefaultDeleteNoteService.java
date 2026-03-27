@@ -1,8 +1,9 @@
 package com.example.note.application.service;
 
-import com.example.note.NoteReplaceService;
-import com.example.note.presentation.rest.NoteRequest;
-import com.example.note.presentation.rest.NoteResponse;
+import com.example.note.DeleteNoteService;
+import com.example.note.application.NoteRepository;
+import com.example.note.presentation.rest.NoteResponseBody;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,10 +15,12 @@ import java.util.UUID;
 @Validated
 @Transactional
 @RequiredArgsConstructor
-class DefaultNoteReplaceService implements NoteReplaceService {
+class DefaultDeleteNoteService implements DeleteNoteService {
+
+    private final NoteRepository noteRepository;
 
     @Override
-    public NoteResponse replace(UUID id, NoteRequest noteRequestModel) {
+    public NoteResponseBody delete(@NotNull UUID id) {
         return null;
     }
 }
