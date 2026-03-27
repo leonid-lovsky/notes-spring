@@ -16,7 +16,7 @@ interface JpaNoteMapper {
     void updateNoteJpaEntity(@Nullable NotePayloadRequest notePayloadRequest, @MappingTarget @Nullable JpaNoteEntity jpaNoteEntity);
 
     @Mapping(target = "id", ignore = true)
-    void replaceNoteEntity(@Nullable NotePayloadRequest notePayloadRequest, @MappingTarget @Nullable JpaNoteEntity jpaNoteEntity);
+    void replaceNoteJpaEntity(@Nullable NotePayloadRequest notePayloadRequest, @MappingTarget @Nullable JpaNoteEntity jpaNoteEntity);
 
     NotePayloadResponse toNotePayloadResponse(@Nullable JpaNoteEntity jpaNoteEntity);
 }

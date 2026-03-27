@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
@@ -21,6 +22,12 @@ class JpaNoteServiceDelete implements NoteServiceDelete {
 
     @Override
     public NotePayloadResponse delete(@NotNull UUID id) {
-        return null;
+        JpaNoteEntity jpaNoteEntity = jpaNoteRepository.findById(id)
+            // TODO: repetitive logic findById, consider refactoring
+            // TODO: exception handling, consider refactoring
+            // TODO: internationalization, consider refactoring
+            .orElseThrow(() -> new NoSuchElementException("Note not found: " + id));
+        jpaNoteRepository.delete(jpaNoteEntity);
+        return jpaNoteMapper.toNotePayloadResponse(jpaNoteEntity);
     }
 }

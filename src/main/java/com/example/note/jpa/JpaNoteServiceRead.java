@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
@@ -22,11 +23,18 @@ class JpaNoteServiceRead implements NoteServiceRead {
 
     @Override
     public List<NotePayloadResponse> read() {
-        return List.of();
+        return jpaNoteRepository.findAll().stream()
+            .map(jpaNoteMapper::toNotePayloadResponse)
+            .toList();
     }
 
     @Override
     public NotePayloadResponse read(@NotNull UUID id) {
-        return null;
+        JpaNoteEntity jpaNoteEntity = jpaNoteRepository.findById(id)
+            // TODO: repetitive logic findById, consider refactoring
+            // TODO: exception handling, consider refactoring
+            // TODO: internationalization, consider refactoring
+            .orElseThrow(() -> new NoSuchElementException("Note not found: " + id));
+        return jpaNoteMapper.toNotePayloadResponse(jpaNoteEntity);
     }
 }

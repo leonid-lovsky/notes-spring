@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
@@ -23,6 +24,25 @@ class JpaNoteServiceUpdate implements NoteServiceUpdate {
 
     @Override
     public NotePayloadResponse update(@NotNull UUID id, @Valid @NotNull NotePayloadRequest notePayloadRequest) {
-        return null;
+        JpaNoteEntity jpaNoteEntity = jpaNoteRepository.findById(id)
+            // TODO: repetitive logic findById, consider refactoring
+            // TODO: exception handling, consider refactoring
+            // TODO: internationalization, consider refactoring
+            .orElseThrow(() -> new NoSuchElementException("Note not found: " + id));
+        jpaNoteMapper.updateNoteJpaEntity(notePayloadRequest, jpaNoteEntity);
+        jpaNoteRepository.save(jpaNoteEntity);
+        return jpaNoteMapper.toNotePayloadResponse(jpaNoteEntity);
+    }
+
+    @Override
+    public NotePayloadResponse replace(@NotNull UUID id, @Valid @NotNull NotePayloadRequest notePayloadRequest) {
+        JpaNoteEntity jpaNoteEntity = jpaNoteRepository.findById(id)
+            // TODO: repetitive logic findById, consider refactoring
+            // TODO: exception handling, consider refactoring
+            // TODO: internationalization, consider refactoring
+            .orElseThrow(() -> new NoSuchElementException("Note not found: " + id));
+        jpaNoteMapper.replaceNoteJpaEntity(notePayloadRequest, jpaNoteEntity);
+        jpaNoteRepository.save(jpaNoteEntity);
+        return jpaNoteMapper.toNotePayloadResponse(jpaNoteEntity);
     }
 }

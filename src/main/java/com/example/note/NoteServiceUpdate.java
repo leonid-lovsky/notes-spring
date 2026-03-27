@@ -8,4 +8,6 @@ import java.util.UUID;
 public interface NoteServiceUpdate {
 
     NotePayloadResponse update(@NotNull UUID id, @Valid @NotNull NotePayloadRequest notePayloadRequest);
+
+    NotePayloadResponse replace(@NotNull UUID id, @Valid @NotNull NotePayloadRequest notePayloadRequest);
 }

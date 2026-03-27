@@ -20,7 +20,6 @@ class RestNoteController {
     private final NoteServiceCreate noteServiceCreate;
     private final NoteServiceRead noteServiceRead;
     private final NoteServiceUpdate noteServiceUpdate;
-    private final NoteServiceReplace noteServiceReplace;
     private final NoteServiceDelete noteServiceDelete;
 
     @PostMapping
@@ -49,7 +48,7 @@ class RestNoteController {
 
     @PutMapping("/{id}")
     ResponseEntity<NotePayloadResponse> replace(@PathVariable UUID id, @Valid @RequestBody NotePayloadRequest notePayloadRequest) {
-        NotePayloadResponse notePayloadResponse = noteServiceReplace.replace(id, notePayloadRequest);
+        NotePayloadResponse notePayloadResponse = noteServiceUpdate.replace(id, notePayloadRequest);
         return ResponseEntity.ok(notePayloadResponse);
     }
 
