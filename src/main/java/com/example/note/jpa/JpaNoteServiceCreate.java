@@ -23,7 +23,6 @@ class JpaNoteServiceCreate implements NoteServiceCreate {
     public NotePayloadResponse create(@Valid @NotNull NotePayloadRequest notePayloadRequest) {
         JpaNoteEntity jpaNoteEntity = jpaNoteMapper.toJpaNoteEntity(notePayloadRequest);
         jpaNoteRepository.save(jpaNoteEntity);
-        NotePayloadResponse notePayloadResponse = jpaNoteMapper.toNotePayloadResponse(jpaNoteEntity);
-        return notePayloadResponse;
+        return jpaNoteMapper.toNotePayloadResponse(jpaNoteEntity);
     }
 }
