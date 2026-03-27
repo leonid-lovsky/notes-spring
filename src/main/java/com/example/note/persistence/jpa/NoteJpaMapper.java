@@ -1,8 +1,8 @@
-package com.example.note.service;
+package com.example.note.persistence.jpa;
 
 import com.example.note.NoteEntity;
-import com.example.note.NoteRequestModel;
-import com.example.note.NoteResponseModel;
+import com.example.note.presentation.rest.NoteRequestModel;
+import com.example.note.presentation.rest.NoteResponseModel;
 import org.mapstruct.*;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)

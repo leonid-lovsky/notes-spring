@@ -1,7 +1,7 @@
-package com.example.note.service;
+package com.example.note.application.service;
 
 import com.example.note.NoteReadService;
-import com.example.note.NoteResponseModel;
+import com.example.note.presentation.rest.NoteResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,15 +14,15 @@ import java.util.UUID;
 @Validated
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-class NoteJpaReadService implements NoteReadService {
+class DefaultNoteReadService implements NoteReadService {
 
     @Override
-    public List<NoteResponseModel> read() {
+    public List<NoteResponse> read() {
         return List.of();
     }
 
     @Override
-    public NoteResponseModel read(UUID id) {
+    public NoteResponse read(UUID id) {
         return null;
     }
 }

@@ -1,4 +1,4 @@
-package com.example.note.repository;
+package com.example.note.persistence.jpa;
 
 import jakarta.persistence.*;
 import lombok.Getter;

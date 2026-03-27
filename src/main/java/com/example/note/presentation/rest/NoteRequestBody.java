@@ -1,8 +1,8 @@
-package com.example.note;
+package com.example.note.presentation.rest;
 
 import jakarta.validation.constraints.NotNull;
 
-public record NoteRequestModel(
+record NoteRequestBody(
     @NotNull String content
 ) {
 

@@ -1,5 +1,6 @@
 package com.example.note;
 
+import com.example.note.presentation.rest.NoteResponseModel;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
