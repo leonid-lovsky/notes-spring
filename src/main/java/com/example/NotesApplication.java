@@ -14,3 +14,5 @@ class NotesApplication {
         SpringApplication.run(NotesApplication.class, args);
     }
 }
+
+// TODO: Structure: Logical: application: Modules: module: Named interfaces: <<UNNAMED>>: list of interfaces
