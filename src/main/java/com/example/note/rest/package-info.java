@@ -1,4 +1,4 @@
 @NullMarked
-package com.example.note.persistence.jpa;
+package com.example.note.rest;
 
 import org.jspecify.annotations.NullMarked;

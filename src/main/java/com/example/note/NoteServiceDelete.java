@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
 
-public interface DeleteNoteService {
+public interface NoteServiceDelete {
 
-    ResponseNotePayload delete(@NotNull UUID id);
+    NotePayloadResponse delete(@NotNull UUID id);
 }

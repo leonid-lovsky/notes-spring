@@ -1,7 +1,7 @@
-package com.example.note.application.service;
+package com.example.note.jpa;
 
-import com.example.note.ReadNoteService;
-import com.example.note.ResponseNotePayload;
+import com.example.note.NotePayloadResponse;
+import com.example.note.NoteServiceRead;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,17 +15,18 @@ import java.util.UUID;
 @Validated
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-class DefaultReadNoteService implements ReadNoteService {
+class JpaNoteServiceRead implements NoteServiceRead {
 
-    private final NoteRepository noteRepository;
+    private final JpaNoteRepository jpaNoteRepository;
+    private final JpaNoteMapper jpaNoteMapper;
 
     @Override
-    public List<ResponseNotePayload> read() {
+    public List<NotePayloadResponse> read() {
         return List.of();
     }
 
     @Override
-    public ResponseNotePayload read(@NotNull UUID id) {
+    public NotePayloadResponse read(@NotNull UUID id) {
         return null;
     }
 }

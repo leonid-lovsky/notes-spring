@@ -1,7 +1,7 @@
-package com.example.note.application.service;
+package com.example.note.jpa;
 
-import com.example.note.DeleteNoteService;
-import com.example.note.ResponseNotePayload;
+import com.example.note.NotePayloadResponse;
+import com.example.note.NoteServiceDelete;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,12 +14,13 @@ import java.util.UUID;
 @Validated
 @Transactional
 @RequiredArgsConstructor
-class DefaultDeleteNoteService implements DeleteNoteService {
+class JpaNoteServiceDelete implements NoteServiceDelete {
 
-    private final NoteRepository noteRepository;
+    private final JpaNoteRepository jpaNoteRepository;
+    private final JpaNoteMapper jpaNoteMapper;
 
     @Override
-    public ResponseNotePayload delete(@NotNull UUID id) {
+    public NotePayloadResponse delete(@NotNull UUID id) {
         return null;
     }
 }

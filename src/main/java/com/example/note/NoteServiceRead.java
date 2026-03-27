@@ -5,9 +5,9 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import java.util.UUID;
 
-public interface ReadNoteService {
+public interface NoteServiceRead {
 
-    List<ResponseNotePayload> read();
+    List<NotePayloadResponse> read();
 
-    ResponseNotePayload read(@NotNull UUID id);
+    NotePayloadResponse read(@NotNull UUID id);
 }
