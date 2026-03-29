@@ -19,8 +19,10 @@ class RestNoteController {
 
     private final NoteServiceCreate noteServiceCreate;
     private final NoteServiceRead noteServiceRead;
-    private final NoteServiceUpdate noteServiceUpdate;
-    private final NoteServiceDelete noteServiceDelete;
+    private final NoteServiceReadById noteServiceReadById;
+    private final NoteServiceUpdateById noteServiceUpdateById;
+    private final NoteServiceReplaceById noteServiceReplaceById;
+    private final NoteServiceDeleteById noteServiceDeleteById;
 
     @PostMapping
     ResponseEntity<NotePayloadResponse> create(@Valid @RequestBody NotePayloadRequest notePayloadRequest) {
@@ -35,26 +37,26 @@ class RestNoteController {
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<NotePayloadResponse> read(@PathVariable UUID id) {
-        NotePayloadResponse notePayloadResponse = noteServiceRead.read(id);
+    ResponseEntity<NotePayloadResponse> readById(@PathVariable UUID id) {
+        NotePayloadResponse notePayloadResponse = noteServiceReadById.readById(id);
         return ResponseEntity.ok(notePayloadResponse);
     }
 
     @PatchMapping("/{id}")
-    ResponseEntity<NotePayloadResponse> update(@PathVariable UUID id, @Valid @RequestBody NotePayloadRequest notePayloadRequest) {
-        NotePayloadResponse notePayloadResponse = noteServiceUpdate.update(id, notePayloadRequest);
+    ResponseEntity<NotePayloadResponse> updateById(@PathVariable UUID id, @Valid @RequestBody NotePayloadRequest notePayloadRequest) {
+        NotePayloadResponse notePayloadResponse = noteServiceUpdateById.updateById(id, notePayloadRequest);
         return ResponseEntity.ok(notePayloadResponse);
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<NotePayloadResponse> replace(@PathVariable UUID id, @Valid @RequestBody NotePayloadRequest notePayloadRequest) {
-        NotePayloadResponse notePayloadResponse = noteServiceUpdate.replace(id, notePayloadRequest);
+    ResponseEntity<NotePayloadResponse> replaceById(@PathVariable UUID id, @Valid @RequestBody NotePayloadRequest notePayloadRequest) {
+        NotePayloadResponse notePayloadResponse = noteServiceReplaceById.replaceById(id, notePayloadRequest);
         return ResponseEntity.ok(notePayloadResponse);
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<NotePayloadResponse> delete(@PathVariable UUID id) {
-        NotePayloadResponse notePayloadResponse = noteServiceDelete.delete(id);
+    ResponseEntity<NotePayloadResponse> deleteById(@PathVariable UUID id) {
+        NotePayloadResponse notePayloadResponse = noteServiceDeleteById.deleteById(id);
         return ResponseEntity.ok(notePayloadResponse);
     }
 }

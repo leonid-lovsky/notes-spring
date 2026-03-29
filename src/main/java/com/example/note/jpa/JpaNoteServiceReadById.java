@@ -1,7 +1,7 @@
 package com.example.note.jpa;
 
 import com.example.note.NotePayloadResponse;
-import com.example.note.NoteServiceDelete;
+import com.example.note.NoteServiceReadById;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,21 +13,20 @@ import java.util.UUID;
 
 @Service
 @Validated
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
-class JpaNoteServiceDelete implements NoteServiceDelete {
+class JpaNoteServiceReadById implements NoteServiceReadById {
 
     private final JpaNoteRepository jpaNoteRepository;
     private final JpaNoteMapper jpaNoteMapper;
 
     @Override
-    public NotePayloadResponse delete(@NotNull UUID id) {
+    public NotePayloadResponse readById(@NotNull UUID id) {
         JpaNoteEntity jpaNoteEntity = jpaNoteRepository.findById(id)
             // TODO: repetitive logic findById, consider refactoring
             // TODO: exception handling, consider refactoring
             // TODO: internationalization, consider refactoring
             .orElseThrow(() -> new NoSuchElementException("Note not found: " + id));
-        jpaNoteRepository.delete(jpaNoteEntity);
         return jpaNoteMapper.toNotePayloadResponse(jpaNoteEntity);
     }
 }
