@@ -25,9 +25,6 @@ class JpaNoteServiceReplaceById implements NoteServiceReplaceById {
     @Override
     public NotePayloadResponse replaceById(@NotNull UUID id, @Valid @NotNull NotePayloadRequest notePayloadRequest) {
         JpaNoteEntity jpaNoteEntity = jpaNoteRepository.findById(id)
-            // TODO: repetitive logic findById, consider refactoring
-            // TODO: exception handling, consider refactoring
-            // TODO: internationalization, consider refactoring
             .orElseThrow(() -> new NoSuchElementException("Note not found: " + id));
         jpaNoteMapper.replaceNoteJpaEntity(notePayloadRequest, jpaNoteEntity);
         jpaNoteRepository.save(jpaNoteEntity);

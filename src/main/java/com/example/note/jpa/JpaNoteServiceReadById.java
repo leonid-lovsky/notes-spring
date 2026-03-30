@@ -23,9 +23,6 @@ class JpaNoteServiceReadById implements NoteServiceReadById {
     @Override
     public NotePayloadResponse readById(@NotNull UUID id) {
         JpaNoteEntity jpaNoteEntity = jpaNoteRepository.findById(id)
-            // TODO: repetitive logic findById, consider refactoring
-            // TODO: exception handling, consider refactoring
-            // TODO: internationalization, consider refactoring
             .orElseThrow(() -> new NoSuchElementException("Note not found: " + id));
         return jpaNoteMapper.toNotePayloadResponse(jpaNoteEntity);
     }
