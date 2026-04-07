@@ -1,7 +1,7 @@
-package com.example.note.rest;
+package com.example.user.rest;
 
-import com.example.note.NotePayloadResponse;
-import com.example.note.NoteServiceReadById;
+import com.example.user.UserPayloadResponse;
+import com.example.user.UserServiceReadById;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -14,15 +14,15 @@ import java.util.UUID;
 
 @RestController
 @Validated
-@RequestMapping("${application.rest.notes.path}")
+@RequestMapping("${application.rest.users.path}")
 @RequiredArgsConstructor
-class RestNoteControllerReadById {
+class RestUserControllerReadById {
 
-    private final NoteServiceReadById noteServiceReadById;
+    private final UserServiceReadById userServiceReadById;
 
     @GetMapping("/{id}")
-    ResponseEntity<NotePayloadResponse> readById(@PathVariable UUID id) {
-        NotePayloadResponse notePayloadResponse = noteServiceReadById.readById(id);
-        return ResponseEntity.ok(notePayloadResponse);
+    ResponseEntity<UserPayloadResponse> readById(@PathVariable UUID id) {
+        UserPayloadResponse userPayloadResponse = userServiceReadById.readById(id);
+        return ResponseEntity.ok(userPayloadResponse);
     }
 }

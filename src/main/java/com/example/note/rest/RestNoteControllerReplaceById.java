@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @RestController
 @Validated
-@RequestMapping("${application.notes.path}")
+@RequestMapping("${application.rest.notes.path}")
 @RequiredArgsConstructor
 class RestNoteControllerReplaceById {
 

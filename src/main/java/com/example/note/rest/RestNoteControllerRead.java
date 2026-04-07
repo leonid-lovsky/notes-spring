@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @Validated
-@RequestMapping("${application.notes.path}")
+@RequestMapping("${application.rest.notes.path}")
 @RequiredArgsConstructor
 class RestNoteControllerRead {
 

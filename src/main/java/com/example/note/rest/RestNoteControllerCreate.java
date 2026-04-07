@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Validated
-@RequestMapping("${application.notes.path}")
+@RequestMapping("${application.rest.notes.path}")
 @RequiredArgsConstructor
 class RestNoteControllerCreate {
 

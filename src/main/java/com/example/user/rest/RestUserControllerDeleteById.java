@@ -1,7 +1,7 @@
-package com.example.note.rest;
+package com.example.user.rest;
 
-import com.example.note.NotePayloadResponse;
-import com.example.note.NoteServiceDeleteById;
+import com.example.user.UserPayloadResponse;
+import com.example.user.UserServiceDeleteById;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -14,15 +14,15 @@ import java.util.UUID;
 
 @RestController
 @Validated
-@RequestMapping("${application.rest.notes.path}")
+@RequestMapping("${application.rest.users.path}")
 @RequiredArgsConstructor
-class RestNoteControllerDeleteById {
+class RestUserControllerDeleteById {
 
-    private final NoteServiceDeleteById noteServiceDeleteById;
+    private final UserServiceDeleteById userServiceDeleteById;
 
     @DeleteMapping("/{id}")
-    ResponseEntity<NotePayloadResponse> deleteById(@PathVariable UUID id) {
-        NotePayloadResponse notePayloadResponse = noteServiceDeleteById.deleteById(id);
-        return ResponseEntity.ok(notePayloadResponse);
+    ResponseEntity<UserPayloadResponse> deleteById(@PathVariable UUID id) {
+        UserPayloadResponse userPayloadResponse = userServiceDeleteById.deleteById(id);
+        return ResponseEntity.ok(userPayloadResponse);
     }
 }
