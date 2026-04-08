@@ -8,7 +8,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.springframework.modulith.NamedInterface;
 
 @NamedInterface
-public interface JpaMapper<Request, Response, Entity> {
+public interface EntityMapper<Request, Response, Entity> {
 
     @Mapping(target = "id", ignore = true)
     Entity toEntity(@Nullable Request request);
