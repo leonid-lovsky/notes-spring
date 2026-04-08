@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Entity
 @NoArgsConstructor @Getter @Setter
-class JpaNoteEntity {
+class NoteEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;

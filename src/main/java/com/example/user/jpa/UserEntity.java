@@ -9,11 +9,11 @@ import java.util.UUID;
 
 @Entity
 @NoArgsConstructor @Getter @Setter
-class JpaUserEntity {
+class UserEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false)
-    private String content;
+    @Column(unique = true, nullable = false)
+    private String username;
 }
