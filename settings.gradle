@@ -1,7 +1,5 @@
 rootProject.name = 'notes-spring'
 
-//include('note-presentation', 'note-persistence', 'user-presentation', 'user-persistence')
-
 include 'note-presentation'
 include 'note-persistence'
 include 'user-presentation'
