@@ -1,5 +1,7 @@
 rootProject.name = 'notes-spring'
 
+include 'application'
+
 include 'note-presentation'
 include 'note-persistence'
 include 'user-presentation'
