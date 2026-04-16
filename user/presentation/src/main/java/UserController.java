@@ -1,5 +1,3 @@
-package com.example.application.user.rest;
-
 import com.example.application.crud.CrudService;
 import com.example.application.user.UserRequest;
 import com.example.application.user.UserResponse;

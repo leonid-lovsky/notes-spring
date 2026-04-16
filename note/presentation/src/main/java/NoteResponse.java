@@ -1,12 +1,10 @@
-package com.example.application.user;
-
 import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
 
-public record UserResponse(
+public record NoteResponse(
     @NotNull UUID id,
-    @NotNull String username
+    @NotNull String content
 ) {
 
 }
