@@ -1,4 +1,4 @@
-package com.example.application.note.jpa;
+package com.example;
 
 import com.example.application.crud.jpa.EntityMapper;
 import com.example.application.note.NoteRequest;

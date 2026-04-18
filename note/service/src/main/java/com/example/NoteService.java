@@ -1,8 +1,9 @@
-package com.example.application.note.jpa;
+package com.example;
 
 import com.example.application.crud.CrudService;
 import com.example.application.note.NoteRequest;
 import com.example.application.note.NoteResponse;
+import com.example.application.note.jpa.NoteMapper;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;

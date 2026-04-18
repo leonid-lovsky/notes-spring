@@ -1,4 +1,4 @@
-package com.example.application.user.jpa;
+package com.example;
 
 import com.example.application.crud.jpa.EntityMapper;
 import com.example.application.user.UserRequest;

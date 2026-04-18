@@ -1,8 +1,9 @@
-package com.example.application.user.jpa;
+package com.example;
 
 import com.example.application.crud.CrudService;
 import com.example.application.user.UserRequest;
 import com.example.application.user.UserResponse;
+import com.example.application.user.jpa.UserMapper;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
