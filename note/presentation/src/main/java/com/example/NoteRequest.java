@@ -1,6 +1,8 @@
+package com.example;
+
 import jakarta.validation.constraints.NotNull;
 
-public record NoteRequest(
+record NoteRequest(
     @NotNull String content
 ) {
 
