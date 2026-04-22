@@ -13,7 +13,8 @@ import java.util.UUID;
 @NoArgsConstructor
 class NoteEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.UUID)
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(nullable = false)

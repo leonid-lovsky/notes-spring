@@ -1,8 +1,5 @@
 package com.example;
 
-import com.example.application.crud.CrudService;
-import com.example.application.note.NoteRequest;
-import com.example.application.note.NoteResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
