@@ -16,6 +16,12 @@ class CrudController<CrudRequestBody, CrudResponseBody, CrudId> {
 
     private final CrudService<CrudRequestBody, CrudResponseBody, CrudId> service;
 
+    @PostMapping
+    ResponseEntity<CrudResponseBody> create(@Valid @RequestBody CrudRequestBody requestBody) {
+        CrudResponseBody responseBody = service.create(requestBody);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseBody);
+    }
+
     @GetMapping
     ResponseEntity<List<CrudResponseBody>> read() {
         List<CrudResponseBody> responseBodyList = service.read();
@@ -26,12 +32,6 @@ class CrudController<CrudRequestBody, CrudResponseBody, CrudId> {
     ResponseEntity<CrudResponseBody> read(@Valid @PathVariable CrudId id) {
         CrudResponseBody responseBody = service.read(id);
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
-    }
-
-    @PostMapping
-    ResponseEntity<CrudResponseBody> create(@Valid @RequestBody CrudRequestBody requestBody) {
-        CrudResponseBody responseBody = service.create(requestBody);
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseBody);
     }
 
     @PutMapping("/{id}")
