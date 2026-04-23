@@ -25,7 +25,7 @@ class UserService implements CrudService<UserRequest, UserResponse, UUID> {
 
     @Override
     @Transactional
-    public UserResponse create(@Valid @NotNull UserRequest request) {
+    UserResponse create(@Valid @NotNull UserRequest request) {
         UserEntity entity = UserMapper.INSTANCE.toEntity(request);
         entity = repository.save(entity);
         return UserMapper.INSTANCE.toResponse(entity);
@@ -33,7 +33,7 @@ class UserService implements CrudService<UserRequest, UserResponse, UUID> {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserResponse> readAll() {
+    List<UserResponse> readAll() {
         return repository.findAll().stream()
             .map(UserMapper.INSTANCE::toResponse)
             .toList();
@@ -41,13 +41,13 @@ class UserService implements CrudService<UserRequest, UserResponse, UUID> {
 
     @Override
     @Transactional(readOnly = true)
-    public UserResponse readById(@NotNull UUID id) {
+    UserResponse readById(@NotNull UUID id) {
         return UserMapper.INSTANCE.toResponse(findById(id));
     }
 
     @Override
     @Transactional
-    public UserResponse updateById(@NotNull UUID id, @Valid @NotNull UserRequest request) {
+    UserResponse updateById(@NotNull UUID id, @Valid @NotNull UserRequest request) {
         UserEntity entity = findById(id);
         UserMapper.INSTANCE.updateEntity(request, entity);
         entity = repository.save(entity);
@@ -56,7 +56,7 @@ class UserService implements CrudService<UserRequest, UserResponse, UUID> {
 
     @Override
     @Transactional
-    public UserResponse replaceById(@NotNull UUID id, @Valid @NotNull UserRequest request) {
+    UserResponse replaceById(@NotNull UUID id, @Valid @NotNull UserRequest request) {
         UserEntity entity = findById(id);
         UserMapper.INSTANCE.replaceEntity(request, entity);
         entity = repository.save(entity);
@@ -65,7 +65,7 @@ class UserService implements CrudService<UserRequest, UserResponse, UUID> {
 
     @Override
     @Transactional
-    public UserResponse deleteById(@NotNull UUID id) {
+    UserResponse deleteById(@NotNull UUID id) {
         UserEntity entity = findById(id);
         repository.delete(entity);
         return UserMapper.INSTANCE.toResponse(entity);

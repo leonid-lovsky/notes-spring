@@ -7,3 +7,5 @@ include 'note:persistence'
 include 'user:presentation'
 include 'user:service'
 include 'user:persistence'
+
+include 'crud:service'
