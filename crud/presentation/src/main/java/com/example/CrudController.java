@@ -12,43 +12,43 @@ import java.util.List;
 @RestController
 @Validated
 @RequiredArgsConstructor
-class CrudController<CrudRequestBody, CrudResponseBody, CrudId> {
+class CrudController<CrudRequestModel, CrudResponseModel, CrudIdentity> {
 
-    private final CrudService<CrudRequestBody, CrudResponseBody, CrudId> service;
+    private final CrudService<CrudRequestModel, CrudResponseModel, CrudIdentity> service;
 
     @PostMapping
-    ResponseEntity<CrudResponseBody> create(@Valid @RequestBody CrudRequestBody requestBody) {
-        CrudResponseBody responseBody = service.create(requestBody);
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseBody);
+    ResponseEntity<CrudResponseModel> create(@Valid @RequestBody CrudRequestModel requestModel) {
+        CrudResponseModel responseModel = service.create(requestModel);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseModel);
     }
 
     @GetMapping
-    ResponseEntity<List<CrudResponseBody>> read() {
-        List<CrudResponseBody> responseBodyList = service.read();
-        return ResponseEntity.status(HttpStatus.OK).body(responseBodyList);
+    ResponseEntity<List<CrudResponseModel>> read() {
+        List<CrudResponseModel> responseModelList = service.read();
+        return ResponseEntity.status(HttpStatus.OK).body(responseModelList);
     }
 
-    @GetMapping("/{id}")
-    ResponseEntity<CrudResponseBody> read(@Valid @PathVariable CrudId id) {
-        CrudResponseBody responseBody = service.read(id);
-        return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+    @GetMapping("/{identity}")
+    ResponseEntity<CrudResponseModel> read(@Valid @PathVariable CrudIdentity identity) {
+        CrudResponseModel responseModel = service.read(identity);
+        return ResponseEntity.status(HttpStatus.OK).body(responseModel);
     }
 
-    @PutMapping("/{id}")
-    ResponseEntity<CrudResponseBody> replace(@Valid @PathVariable CrudId id, @Valid @RequestBody CrudRequestBody requestBody) {
-        CrudResponseBody responseBody = service.replace(id, requestBody);
-        return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+    @PutMapping("/{identity}")
+    ResponseEntity<CrudResponseModel> replace(@Valid @PathVariable CrudIdentity identity, @Valid @RequestBody CrudRequestModel requestModel) {
+        CrudResponseModel responseModel = service.replace(identity, requestModel);
+        return ResponseEntity.status(HttpStatus.OK).body(responseModel);
     }
 
-    @PatchMapping("/{id}")
-    ResponseEntity<CrudResponseBody> update(@Valid @PathVariable CrudId id, @Valid @RequestBody CrudRequestBody requestBody) {
-        CrudResponseBody responseBody = service.update(id, requestBody);
-        return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+    @PatchMapping("/{identity}")
+    ResponseEntity<CrudResponseModel> update(@Valid @PathVariable CrudIdentity identity, @Valid @RequestBody CrudRequestModel requestModel) {
+        CrudResponseModel responseModel = service.update(identity, requestModel);
+        return ResponseEntity.status(HttpStatus.OK).body(responseModel);
     }
 
-    @DeleteMapping("/{id}")
-    ResponseEntity<CrudResponseBody> delete(@Valid @PathVariable CrudId id) {
-        CrudResponseBody responseBody = service.delete(id);
-        return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+    @DeleteMapping("/{identity}")
+    ResponseEntity<CrudResponseModel> delete(@Valid @PathVariable CrudIdentity identity) {
+        CrudResponseModel responseModel = service.delete(identity);
+        return ResponseEntity.status(HttpStatus.OK).body(responseModel);
     }
 }
