@@ -8,4 +8,6 @@ include 'user:presentation'
 include 'user:service'
 include 'user:persistence'
 
+include 'crud:presentation'
 include 'crud:service'
+include 'crud:persistence'
