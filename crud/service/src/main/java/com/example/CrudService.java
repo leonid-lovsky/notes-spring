@@ -2,17 +2,17 @@ package com.example;
 
 import java.util.List;
 
-interface CrudService<CrudRequestModel, CrudResponseModel, CrudIdentity> {
+interface CrudService<Request, Response, ID> {
 
-    CrudResponseModel create(CrudRequestModel requestModel);
+    Response create(Request request);
 
-    List<CrudResponseModel> read();
+    List<Response> read();
 
-    CrudResponseModel read(CrudIdentity identity);
+    Response read(ID id);
 
-    CrudResponseModel replace(CrudIdentity identity, CrudRequestModel requestModel);
+    Response replace(ID id, Request request);
 
-    CrudResponseModel update(CrudIdentity identity, CrudRequestModel requestModel);
+    Response update(ID id, Request request);
 
-    CrudResponseModel delete(CrudIdentity identity);
+    Response delete(ID id);
 }
