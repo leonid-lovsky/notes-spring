@@ -19,43 +19,43 @@ class CrudController<Request, Response, ID> {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    ResponseEntity<Response> create(@Valid @RequestBody Request requestModel) {
-        Response responseModel = service.create(requestModel);
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseModel);
+    ResponseEntity<Response> create(@Valid @RequestBody Request request) {
+        Response response = service.create(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     ResponseEntity<List<Response>> read() {
-        List<Response> responseModelList = service.read();
-        return ResponseEntity.status(HttpStatus.OK).body(responseModelList);
+        List<Response> response = service.read();
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     ResponseEntity<Response> read(@Valid @PathVariable ID id) {
-        Response responseModel = service.read(id);
-        return ResponseEntity.status(HttpStatus.OK).body(responseModel);
+        Response response = service.read(id);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    ResponseEntity<Response> update(@Valid @PathVariable ID id, @Valid @RequestBody Request requestModel) {
-        Response responseModel = service.update(id, requestModel);
-        return ResponseEntity.status(HttpStatus.OK).body(responseModel);
+    ResponseEntity<Response> update(@Valid @PathVariable ID id, @Valid @RequestBody Request request) {
+        Response response = service.update(id, request);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    ResponseEntity<Response> replace(@Valid @PathVariable ID id, @Valid @RequestBody Request requestModel) {
-        Response responseModel = service.replace(id, requestModel);
-        return ResponseEntity.status(HttpStatus.OK).body(responseModel);
+    ResponseEntity<Response> replace(@Valid @PathVariable ID id, @Valid @RequestBody Request request) {
+        Response response = service.replace(id, request);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     ResponseEntity<Response> delete(@Valid @PathVariable ID id) {
-        Response responseModel = service.delete(id);
-        return ResponseEntity.status(HttpStatus.OK).body(responseModel);
+        Response response = service.delete(id);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }
