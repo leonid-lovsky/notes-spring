@@ -9,11 +9,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-// TODO: @RestController
-// TODO: @RequestMapping("/path")
 @Validated
 @RequiredArgsConstructor
-class CrudController<Request, Response, ID> {
+abstract class CrudController<Request, Response, ID> {
 
     private final CrudService<Request, Response, ID> service;
 

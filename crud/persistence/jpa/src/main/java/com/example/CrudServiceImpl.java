@@ -10,7 +10,7 @@ import java.util.List;
 // TODO: @Transactional
 @Validated
 @RequiredArgsConstructor
-class CrudServiceImpl<Request, Response, Entity, ID> implements CrudService<Request, Response, ID> {
+abstract class CrudServiceImpl<Request, Response, Entity, ID> implements CrudService<Request, Response, ID> {
 
     private final ListCrudRepository<Entity, ID> repository;
     private final CrudMapper<Request, Response, Entity> mapper;
