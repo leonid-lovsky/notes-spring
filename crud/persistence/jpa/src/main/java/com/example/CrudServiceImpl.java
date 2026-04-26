@@ -2,19 +2,18 @@ package com.example;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.ListCrudRepository;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 
+// TODO: @Service
+// TODO: @Transactional
+@Validated
 @RequiredArgsConstructor
 class CrudServiceImpl<Request, Response, Entity, ID> implements CrudService<Request, Response, ID> {
 
     private final ListCrudRepository<Entity, ID> repository;
     private final CrudMapper<Request, Response, Entity> mapper;
-
-    private Entity getEntity(ID id) {
-        return repository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Not found"));
-    }
 
     @Override
     public Response create(Request request) {
@@ -58,5 +57,11 @@ class CrudServiceImpl<Request, Response, Entity, ID> implements CrudService<Requ
         Entity entity = getEntity(id);
         repository.delete(entity);
         return mapper.toResponse(entity);
+    }
+
+    // TODO:
+    private Entity getEntity(ID id) {
+        return repository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Not found"));
     }
 }

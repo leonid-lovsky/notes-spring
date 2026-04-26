@@ -9,53 +9,53 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-// @RestController
-// @RequestMapping("/path")
+// TODO: @RestController
+// TODO: @RequestMapping("/path")
 @Validated
 @RequiredArgsConstructor
-class CrudController<CrudRequestModel, CrudResponseModel, CrudIdentity> {
+class CrudController<Request, Response, ID> {
 
-    private final CrudService<CrudRequestModel, CrudResponseModel, CrudIdentity> service;
+    private final CrudService<Request, Response, ID> service;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    ResponseEntity<CrudResponseModel> create(@Valid @RequestBody CrudRequestModel requestModel) {
-        CrudResponseModel responseModel = service.create(requestModel);
+    ResponseEntity<Response> create(@Valid @RequestBody Request requestModel) {
+        Response responseModel = service.create(requestModel);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseModel);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    ResponseEntity<List<CrudResponseModel>> read() {
-        List<CrudResponseModel> responseModelList = service.read();
+    ResponseEntity<List<Response>> read() {
+        List<Response> responseModelList = service.read();
         return ResponseEntity.status(HttpStatus.OK).body(responseModelList);
     }
 
-    @GetMapping("/{identity}")
+    @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    ResponseEntity<CrudResponseModel> read(@Valid @PathVariable CrudIdentity identity) {
-        CrudResponseModel responseModel = service.read(identity);
+    ResponseEntity<Response> read(@Valid @PathVariable ID id) {
+        Response responseModel = service.read(id);
         return ResponseEntity.status(HttpStatus.OK).body(responseModel);
     }
 
-    @PutMapping("/{identity}")
+    @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    ResponseEntity<CrudResponseModel> replace(@Valid @PathVariable CrudIdentity identity, @Valid @RequestBody CrudRequestModel requestModel) {
-        CrudResponseModel responseModel = service.replace(identity, requestModel);
+    ResponseEntity<Response> replace(@Valid @PathVariable ID id, @Valid @RequestBody Request requestModel) {
+        Response responseModel = service.replace(id, requestModel);
         return ResponseEntity.status(HttpStatus.OK).body(responseModel);
     }
 
-    @PatchMapping("/{identity}")
+    @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    ResponseEntity<CrudResponseModel> update(@Valid @PathVariable CrudIdentity identity, @Valid @RequestBody CrudRequestModel requestModel) {
-        CrudResponseModel responseModel = service.update(identity, requestModel);
+    ResponseEntity<Response> update(@Valid @PathVariable ID id, @Valid @RequestBody Request requestModel) {
+        Response responseModel = service.update(id, requestModel);
         return ResponseEntity.status(HttpStatus.OK).body(responseModel);
     }
 
-    @DeleteMapping("/{identity}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    ResponseEntity<CrudResponseModel> delete(@Valid @PathVariable CrudIdentity identity) {
-        CrudResponseModel responseModel = service.delete(identity);
+    ResponseEntity<Response> delete(@Valid @PathVariable ID id) {
+        Response responseModel = service.delete(id);
         return ResponseEntity.status(HttpStatus.OK).body(responseModel);
     }
 }

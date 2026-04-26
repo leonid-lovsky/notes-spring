@@ -1,18 +1,19 @@
 package com.example;
 
-import org.mapstruct.*;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
-interface CrudMapper<Request, Response, Entity>  {
+interface CrudMapper<Request, Response, Entity> {
 
-    @Mapping(target = "id", ignore = true)
+    // TODO: @Mapping(target = "id", ignore = true)
     Entity toEntity(Request request);
 
-    @Mapping(target = "id", ignore = true)
+    // TODO: @Mapping(target = "id", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void update(@MappingTarget Entity entity, Request request);
 
-    @Mapping(target = "id", ignore = true)
+    // TODO: @Mapping(target = "id", ignore = true)
     void replace(@MappingTarget Entity entity, Request request);
 
     Response toResponse(Entity entity);
