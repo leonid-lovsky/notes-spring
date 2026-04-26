@@ -1,13 +1,13 @@
 include 'application'
 
-include 'note:presentation'
+include 'note:presentation:rest'
 include 'note:service'
-include 'note:persistence'
+include 'note:persistence:jpa'
 
-include 'user:presentation'
+include 'user:presentation:rest'
 include 'user:service'
-include 'user:persistence'
+include 'user:persistence:jpa'
 
-include 'crud:presentation'
+include 'crud:presentation:rest'
 include 'crud:service'
-include 'crud:persistence'
+include 'crud:persistence:jpa'
