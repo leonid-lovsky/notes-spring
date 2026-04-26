@@ -38,17 +38,17 @@ class CrudController<Request, Response, ID> {
         return ResponseEntity.status(HttpStatus.OK).body(responseModel);
     }
 
-    @PutMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    ResponseEntity<Response> replace(@Valid @PathVariable ID id, @Valid @RequestBody Request requestModel) {
-        Response responseModel = service.replace(id, requestModel);
-        return ResponseEntity.status(HttpStatus.OK).body(responseModel);
-    }
-
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     ResponseEntity<Response> update(@Valid @PathVariable ID id, @Valid @RequestBody Request requestModel) {
         Response responseModel = service.update(id, requestModel);
+        return ResponseEntity.status(HttpStatus.OK).body(responseModel);
+    }
+
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    ResponseEntity<Response> replace(@Valid @PathVariable ID id, @Valid @RequestBody Request requestModel) {
+        Response responseModel = service.replace(id, requestModel);
         return ResponseEntity.status(HttpStatus.OK).body(responseModel);
     }
 
