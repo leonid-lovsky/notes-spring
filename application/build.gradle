@@ -18,8 +18,21 @@ repositories {
 }
 
 dependencies {
+    implementation project(':note:presentation:rest')
+    implementation project(':note:service')
+    implementation project(':note:persistence:jpa')
+
+    implementation project(':user:presentation:rest')
+    implementation project(':user:service')
+    implementation project(':user:persistence:jpa')
+
+    implementation project(':crud:presentation:rest')
+    implementation project(':crud:service')
+    implementation project(':crud:persistence:jpa')
+
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
