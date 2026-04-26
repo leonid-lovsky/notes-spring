@@ -1,10 +1,11 @@
 package com.example;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
-// TODO: @RestController
+@RestController
 @RequestMapping("/user")
 class UserController extends CrudController<UserRequest, UserResponse, UUID> {
 
