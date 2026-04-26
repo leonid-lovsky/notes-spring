@@ -8,6 +8,6 @@ import org.mapstruct.ReportingPolicy;
     componentModel = MappingConstants.ComponentModel.SPRING,
     unmappedTargetPolicy = ReportingPolicy.IGNORE
 )
-interface NoteMapper<Request, Response> extends CrudMapper<Request, Response, NoteEntity> {
+interface NoteMapper extends CrudMapper<NoteRequest, NoteResponse, NoteEntity> {
 
 }
