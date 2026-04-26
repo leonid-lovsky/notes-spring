@@ -2,12 +2,12 @@ package com.example;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.ListCrudRepository;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 
-// TODO: @Service
-// TODO: @Transactional
+@Transactional
 @Validated
 @RequiredArgsConstructor
 abstract class CrudServiceImpl<Request, Response, Entity, ID> implements CrudService<Request, Response, ID> {

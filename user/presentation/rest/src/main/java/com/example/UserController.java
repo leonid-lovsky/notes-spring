@@ -9,7 +9,7 @@ import java.util.UUID;
 @RequestMapping("/user")
 class UserController extends CrudController<UserRequest, UserResponse, UUID> {
 
-    public UserController(CrudService<UserRequest, UserResponse, UUID> service) {
+    UserController(CrudService<UserRequest, UserResponse, UUID> service) {
         super(service);
     }
 }

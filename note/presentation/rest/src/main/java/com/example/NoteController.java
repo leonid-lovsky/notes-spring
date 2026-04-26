@@ -9,7 +9,7 @@ import java.util.UUID;
 @RequestMapping("/note")
 class NoteController extends CrudController<NoteRequest, NoteResponse, UUID> {
 
-    public NoteController(CrudService<NoteRequest, NoteResponse, UUID> service) {
+    NoteController(CrudService<NoteRequest, NoteResponse, UUID> service) {
         super(service);
     }
 }
