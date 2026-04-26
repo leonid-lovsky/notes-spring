@@ -1,5 +1,6 @@
 package com.example;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,7 +62,7 @@ abstract class CrudServiceImpl<Request, Response, Entity, ID> implements CrudSer
 
     private Entity getEntity(ID id) {
         return repository.findById(id).orElseThrow(() ->
-            new RuntimeException("Not found") // TODO
+            new EntityNotFoundException("Not found") // TODO
         );
     }
 }
