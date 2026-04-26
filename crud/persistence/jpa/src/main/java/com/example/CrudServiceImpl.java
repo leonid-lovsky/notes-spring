@@ -59,9 +59,9 @@ abstract class CrudServiceImpl<Request, Response, Entity, ID> implements CrudSer
         return mapper.toResponse(entity);
     }
 
-    // TODO:
     private Entity getEntity(ID id) {
-        return repository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Not found"));
+        return repository.findById(id).orElseThrow(() ->
+            new RuntimeException("Not found") // TODO
+        );
     }
 }
