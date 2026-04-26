@@ -18,5 +18,5 @@ class UserEntity {
     private UUID id; // TODO
 
     @Column(unique = true, nullable = false)
-    private String content; // TODO
+    private String username; // TODO
 }
