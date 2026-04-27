@@ -1,7 +1,9 @@
 package com.example;
 
+import jakarta.validation.constraints.NotBlank;
+
 record NoteRequest(
-    String content // TODO
+    @NotBlank String content // TODO
 ) {
 
 }

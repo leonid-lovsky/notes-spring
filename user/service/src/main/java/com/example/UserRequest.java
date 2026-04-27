@@ -1,7 +1,9 @@
 package com.example;
 
+import jakarta.validation.constraints.NotBlank;
+
 record UserRequest(
-    String username // TODO
+    @NotBlank String username // TODO
 ) {
 
 }
