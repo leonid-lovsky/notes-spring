@@ -24,6 +24,7 @@ abstract class CrudServiceImpl<Request, Response, Entity, ID> implements CrudSer
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Response> read() {
         return repository.findAll()
             .stream()
@@ -32,6 +33,7 @@ abstract class CrudServiceImpl<Request, Response, Entity, ID> implements CrudSer
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Response read(ID id) {
         Entity entity = getEntity(id);
         return mapper.toResponse(entity);
