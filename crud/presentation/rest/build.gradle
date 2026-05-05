@@ -1,50 +1,14 @@
-import org.springframework.boot.gradle.plugin.SpringBootPlugin
-
 plugins {
-    id 'org.springframework.boot' version '4.0.5' apply false
-    id 'io.spring.dependency-management' version '1.1.7'
     id 'java-library'
 }
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
-}
-
-repositories {
-    mavenCentral()
-}
-
-dependencyManagement {
-    imports {
-        mavenBom SpringBootPlugin.BOM_COORDINATES
-    }
-}
-
-ext {
-    mapstructVersion = "1.6.3"
-    lombokVersion = "1.18.46"
-    lombokMapstructBindingVersion = "0.2.0"
-}
-
 dependencies {
-    implementation project(':crud:service')
+    implementation platform(libs.spring.boot.bom)
 
-    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    implementation project(':crud:contract')
+    implementation libs.spring.boot.starter
+    implementation libs.spring.boot.starter.webmvc
+    implementation libs.spring.boot.starter.validation
 
-    compileOnly "org.projectlombok:lombok:${lombokVersion}"
-
-    implementation 'org.springframework.boot:spring-boot-starter'
-    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-
-    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
-
-    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
-    annotationProcessor "org.projectlombok:lombok-mapstruct-binding:${lombokMapstructBindingVersion}"
-
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation libs.spring.boot.starter.test
 }

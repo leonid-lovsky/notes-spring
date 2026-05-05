@@ -1,13 +1,58 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+
+    repositories {
+        mavenCentral()
+    }
+}
+
+rootProject.name = 'notes-spring'
+
 include 'application'
 
-include 'note:presentation:rest'
-include 'note:service'
-include 'note:persistence:jpa'
-
-include 'user:presentation:rest'
-include 'user:service'
-include 'user:persistence:jpa'
-
+include 'crud:contract'
 include 'crud:presentation:rest'
-include 'crud:service'
 include 'crud:persistence:jpa'
+
+include 'note:contract'
+include 'note:service'
+include 'note:presentation:rest'
+include 'note:persistence:jpa'
+include 'note:runtime:spring'
+include 'note:messaging:kafka'
+include 'note:messaging:outbox'
+include 'note:integration:feign'
+
+include 'user:contract'
+include 'user:service'
+include 'user:presentation:rest'
+include 'user:persistence:jpa'
+include 'user:runtime:spring'
+include 'user:messaging:kafka'
+include 'user:messaging:outbox'
+include 'user:integration:feign'
+
+include 'auth:contract'
+include 'auth:service'
+include 'auth:presentation:rest'
+include 'auth:persistence:jpa'
+include 'auth:runtime:spring'
+include 'auth:messaging:kafka'
+include 'auth:messaging:outbox'
+include 'auth:integration:feign'
+
+include 'user-note:contract'
+include 'user-note:service'
+include 'user-note:presentation:rest'
+include 'user-note:persistence:jpa'
+include 'user-note:runtime:spring'
+include 'user-note:messaging:kafka'
+include 'user-note:messaging:outbox'
+include 'user-note:integration:feign'

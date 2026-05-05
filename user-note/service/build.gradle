@@ -1,0 +1,13 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    api project(':user-note:contract')
+
+    implementation project(':user:contract')
+    implementation project(':note:contract')
+    implementation libs.mapstruct
+
+    annotationProcessor libs.mapstruct.processor
+}

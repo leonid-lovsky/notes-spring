@@ -2,20 +2,9 @@ plugins {
     id 'java-library'
 }
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
-}
-
-repositories {
-    mavenCentral()
-}
-
 dependencies {
-    implementation project(':crud:service')
+    api project(':note:contract')
 
-    implementation 'jakarta.validation:jakarta.validation-api:3.1.1'
-
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation libs.mapstruct
+    annotationProcessor libs.mapstruct.processor
 }
