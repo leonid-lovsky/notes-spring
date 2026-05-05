@@ -1,7 +1,6 @@
 package com.example.note.runtime.spring;
 
 import com.example.note.contract.NoteEventPublisher;
-import com.example.note.messaging.kafka.LoggingNoteKafkaMessagePublisher;
 import com.example.note.messaging.kafka.NoteKafkaMessagePublisher;
 import com.example.note.messaging.kafka.NoteKafkaRelay;
 import com.example.note.contract.NoteService;
@@ -14,7 +13,6 @@ import com.example.note.persistence.jpa.NoteRepository;
 import com.example.note.service.DefaultNoteService;
 import com.example.note.service.NoteServiceMapper;
 import com.example.note.service.NoteServiceMapperImpl;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,12 +33,6 @@ public class NoteSpringConfig {
     @Bean
     NoteEventPublisher noteEventPublisher(NoteOutboxMessageRepository repository) {
         return new NoteOutboxPublisher(repository);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(NoteKafkaMessagePublisher.class)
-    NoteKafkaMessagePublisher noteKafkaMessagePublisher() {
-        return new LoggingNoteKafkaMessagePublisher();
     }
 
     @Bean
