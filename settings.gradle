@@ -1,8 +1,20 @@
-pluginManagement {
-    includeBuild 'build-logic'
-}
+include 'features:gateway:application'
 
-includeBuild 'service/auth'
-includeBuild 'service/note'
-includeBuild 'service/user'
-includeBuild 'service/user-note'
+include 'features:auth:application'
+include 'features:auth:jpa'
+include 'features:auth:webmvc'
+
+include 'features:note:application'
+include 'features:note:jpa'
+include 'features:note:webmvc'
+
+include 'features:user:application'
+include 'features:user:jpa'
+include 'features:user:webmvc'
+
+include 'features:user-note:application'
+include 'features:user-note:jpa'
+include 'features:user-note:webmvc'
+
+include 'features:crud:jpa'
+include 'features:crud:webmvc'

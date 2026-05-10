@@ -1,3 +1,0 @@
-include ':application'
-include ':jpa'
-include ':webmvc'
