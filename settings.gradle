@@ -2,7 +2,7 @@ pluginManagement {
     includeBuild 'build-logic'
 }
 
-include 'features:gateway:application'
+include ':application'
 
 include 'features:auth:application'
 include 'features:auth:jpa'
@@ -20,5 +20,5 @@ include 'features:user-note:application'
 include 'features:user-note:jpa'
 include 'features:user-note:webmvc'
 
-include 'features:crud:jpa'
-include 'features:crud:webmvc'
+include 'shared:crud:jpa'
+include 'shared:crud:webmvc'
