@@ -4,14 +4,12 @@ pluginManagement {
 
 include ':application'
 
-includeBuild 'auth-service'
+includeBuild 'auth'
 
-includeBuild 'crud-service'
+includeBuild 'crud'
 
-includeBuild 'user-service'
+includeBuild 'note'
 
-includeBuild 'note-service'
+includeBuild 'user'
 
-includeBuild 'user-note-service'
-
-includeBuild 'crud-service'
+includeBuild 'user-note'
