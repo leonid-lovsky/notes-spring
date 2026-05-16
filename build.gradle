@@ -1,4 +1,4 @@
-def services() {
+def projects() {
     gradle.includedBuilds.findAll { it.name != 'build-logic' }
 }
 
@@ -7,9 +7,9 @@ tasks.register('clean') {
 }
 
 tasks.register('test') {
-    dependsOn services().collect { it.task(':test') }
+    dependsOn projects().collect { it.task(':test') }
 }
 
 tasks.register('build') {
-    dependsOn services().collect { it.task(':build') }
+    dependsOn projects().collect { it.task(':build') }
 }
