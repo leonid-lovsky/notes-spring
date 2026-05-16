@@ -2,23 +2,21 @@ pluginManagement {
     includeBuild 'build-logic'
 }
 
-include 'application'
+include ':application'
 
-include 'auth-service:application'
-include 'auth-service:jpa'
-include 'auth-service:webmvc'
+includeBuild 'auth-service'
 
-include 'user-service:application'
-include 'user-service:jpa'
-include 'user-service:webmvc'
+include ':user-service:application'
+include ':user-service:jpa'
+include ':user-service:webmvc'
 
-include 'note-service:application'
-include 'note-service:jpa'
-include 'note-service:webmvc'
+include ':note-service:application'
+include ':note-service:jpa'
+include ':note-service:webmvc'
 
-include 'user-note-service:application'
-include 'user-note-service:jpa'
-include 'user-note-service:webmvc'
+include ':user-note-service:application'
+include ':user-note-service:jpa'
+include ':user-note-service:webmvc'
 
-include 'crud-library:jpa'
-include 'crud-library:webmvc'
+include ':crud-service:jpa'
+include ':crud-service:webmvc'
