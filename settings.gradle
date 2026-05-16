@@ -6,16 +6,12 @@ include ':application'
 
 includeBuild 'auth-service'
 
-include ':user-service:application'
-include ':user-service:jpa'
-include ':user-service:web'
+includeBuild 'crud-service'
 
-include ':note-service:application'
-include ':note-service:jpa'
-include ':note-service:web'
+includeBuild 'user-service'
 
-include ':user-note-service:application'
-include ':user-note-service:jpa'
-include ':user-note-service:web'
+includeBuild 'note-service'
+
+includeBuild 'user-note-service'
 
 includeBuild 'crud-service'

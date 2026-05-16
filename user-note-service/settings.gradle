@@ -1,0 +1,9 @@
+pluginManagement {
+    includeBuild '../build-logic'
+}
+
+rootProject.name = 'user-note-service'
+
+include ':application'
+include ':jpa'
+include ':web'
