@@ -3,5 +3,5 @@ pluginManagement {
 }
 
 include ':application'
-include ':jpa'
-include ':web'
+include ':data-jpa'
+include ':webmvc'
