@@ -2,8 +2,7 @@ pluginManagement {
     includeBuild '../build-logic'
 }
 
-rootProject.name = 'auth-service'
+rootProject.name = 'crud-service'
 
-include ':application'
 include ':jpa'
 include ':web'
