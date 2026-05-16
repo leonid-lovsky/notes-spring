@@ -1,11 +1,11 @@
 tasks.register('clean') {
-    dependsOn subprojects.collect { ":${it.name}:clean" }
+    dependsOn subprojects.collect { it.tasks.named('clean') }
 }
 
 tasks.register('test') {
-    dependsOn subprojects.collect { ":${it.name}:test" }
+    dependsOn subprojects.collect { it.tasks.named('test') }
 }
 
 tasks.register('build') {
-    dependsOn subprojects.collect { ":${it.name}:build" }
+    dependsOn subprojects.collect { it.tasks.named('build') }
 }
