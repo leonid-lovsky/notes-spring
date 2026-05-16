@@ -3,7 +3,7 @@ def services() {
 }
 
 tasks.register('clean') {
-    dependsOn services().collect { it.task(':clean') }
+    dependsOn gradle.includedBuilds.collect { it.task(':clean') }
 }
 
 tasks.register('test') {
