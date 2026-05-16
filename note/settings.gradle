@@ -2,8 +2,6 @@ pluginManagement {
     includeBuild '../build-logic'
 }
 
-rootProject.name = 'note-service'
-
 include ':application'
 include ':jpa'
 include ':web'
