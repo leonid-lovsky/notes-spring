@@ -1,0 +1,29 @@
+plugins {
+    id 'base'
+}
+
+def includedBuilds = gradle.includedBuilds
+
+tasks.named('clean') {
+    dependsOn includedBuilds.collect { includedBuild ->
+        includedBuild.task(':clean')
+    }
+}
+
+tasks.register('test') {
+    dependsOn includedBuilds.collect { includedBuild ->
+        includedBuild.task(':test')
+    }
+}
+
+tasks.named('check') {
+    dependsOn includedBuilds.collect { includedBuild ->
+        includedBuild.task(':check')
+    }
+}
+
+tasks.named('build') {
+    dependsOn includedBuilds.collect { includedBuild ->
+        includedBuild.task(':build')
+    }
+}
