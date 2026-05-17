@@ -1,0 +1,9 @@
+def builds = gradle.includedBuilds
+
+tasks.register('clean') {
+    dependsOn builds.collect { it.task(':clean') }
+}
+
+tasks.register('build') {
+    dependsOn builds.collect { it.task(':build') }
+}
