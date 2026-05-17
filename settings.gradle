@@ -6,6 +6,8 @@ includeBuild 'application'
 
 includeBuild 'auth'
 
+includeBuild 'build-logic'
+
 includeBuild 'crud'
 
 includeBuild 'note'

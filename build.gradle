@@ -11,7 +11,7 @@ tasks.register('test') {
 }
 
 tasks.register('check') {
-    dependsOn gradle.includedBuilds.collect { it.task(':clean') }
+    dependsOn gradle.includedBuilds.collect { it.task(':check') }
 }
 
 tasks.register('build') {
