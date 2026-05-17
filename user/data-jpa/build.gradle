@@ -1,3 +1,4 @@
 plugins {
     id 'spring-data-jpa-adapter-conventions'
+    id 'spring-h2-database-conventions'
 }
