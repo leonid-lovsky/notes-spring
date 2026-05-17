@@ -1,3 +1,8 @@
 plugins {
-    id 'spring-application-conventions'
+    id 'spring-boot-service-conventions'
+}
+
+dependencies {
+    implementation project(':user-note:webmvc')
+    implementation project(':user-note:data-jpa')
 }

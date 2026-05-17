@@ -1,6 +1,0 @@
-pluginManagement {
-    includeBuild '../build-logic'
-}
-
-include ':data-jpa'
-include ':webmvc'

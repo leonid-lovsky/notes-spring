@@ -1,11 +1,13 @@
-tasks.register('clean') {
-    dependsOn subprojects.collect { it.tasks.named('clean') }
+plugins {
+    id 'groovy-gradle-plugin'
 }
 
-tasks.register('test') {
-    dependsOn subprojects.collect { it.tasks.named('test') }
+repositories {
+    gradlePluginPortal()
+    mavenCentral()
 }
 
-tasks.register('build') {
-    dependsOn subprojects.collect { it.tasks.named('build') }
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-gradle-plugin:4.0.6'
+    implementation 'io.spring.gradle:dependency-management-plugin:1.1.7'
 }

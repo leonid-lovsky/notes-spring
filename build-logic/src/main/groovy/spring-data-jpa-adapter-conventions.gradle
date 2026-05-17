@@ -1,7 +1,6 @@
 plugins {
     id 'java-library'
-    id 'org.springframework.boot' apply false
-    id 'io.spring.dependency-management' apply false
+    id 'io.spring.dependency-management'
 }
 
 java {
@@ -10,18 +9,10 @@ java {
     }
 }
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-}
-
-tasks.named('bootJar') {
-    enabled = false
 }
 
 tasks.named('test') {

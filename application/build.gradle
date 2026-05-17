@@ -1,3 +1,3 @@
 plugins {
-    id 'spring-application-conventions'
+    id 'spring-boot-service-conventions'
 }
