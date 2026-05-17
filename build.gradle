@@ -7,9 +7,13 @@ tasks.register('clean') {
 }
 
 tasks.register('test') {
-    dependsOn projects().collect { it.task(':test') }
+    dependsOn gradle.includedBuilds.collect { it.task(':test') }
+}
+
+tasks.register('check') {
+    dependsOn gradle.includedBuilds.collect { it.task(':clean') }
 }
 
 tasks.register('build') {
-    dependsOn projects().collect { it.task(':build') }
+    dependsOn gradle.includedBuilds.collect { it.task(':build') }
 }
