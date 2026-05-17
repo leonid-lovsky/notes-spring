@@ -2,7 +2,7 @@ pluginManagement {
     includeBuild 'build-logic'
 }
 
-include ':application'
+includeBuild 'application'
 
 includeBuild 'auth'
 
