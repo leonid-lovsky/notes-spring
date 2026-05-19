@@ -1,8 +1,9 @@
 plugins {
     id 'spring-boot-service-conventions'
+    id 'spring-h2-database-conventions'
 }
 
 dependencies {
-    implementation project(':auth:webmvc')
     implementation project(':auth:data-jpa')
+    implementation project(':auth:webmvc')
 }
