@@ -1,32 +1,8 @@
-pluginManagement {
-    includeBuild 'build-logic'
-}
-
-dependencyResolutionManagement {
-    repositories {
-        mavenCentral()
-    }
-}
-
 rootProject.name = 'notes-spring'
 
-include ':application'
-
-include ':auth:application'
-include ':auth:webmvc'
-include ':auth:data-jpa'
-
-include ':note:application'
-include ':note:webmvc'
-include ':note:data-jpa'
-
-include ':user:application'
-include ':user:webmvc'
-include ':user:data-jpa'
-
-include ':user-note:application'
-include ':user-note:webmvc'
-include ':user-note:data-jpa'
-
-include ':crud:webmvc'
-include ':crud:data-jpa'
+includeBuild 'application'
+includeBuild 'auth'
+includeBuild 'note'
+includeBuild 'user'
+includeBuild 'user-note'
+includeBuild 'crud'

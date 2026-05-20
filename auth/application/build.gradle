@@ -4,6 +4,6 @@ plugins {
 }
 
 dependencies {
-    implementation project(':auth:data-jpa')
-    implementation project(':auth:webmvc')
+    implementation project(':data-jpa')
+    implementation project(':webmvc')
 }
