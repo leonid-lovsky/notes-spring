@@ -1,3 +1,5 @@
-plugins {
-    id 'spring-service-conventions'
+['clean', 'test', 'check', 'build'].each { taskName ->
+    tasks.register(taskName) {
+        dependsOn subprojects.collect { ":${it.name}:${taskName}" }
+    }
 }

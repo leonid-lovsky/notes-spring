@@ -1,5 +1,5 @@
 plugins {
-    id 'spring-boot-service-conventions'
+    id 'spring-boot-application-conventions'
     id 'spring-h2-database-conventions'
 }
 
