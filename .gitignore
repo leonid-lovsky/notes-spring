@@ -39,3 +39,6 @@ out/
 
 ### Claude Code ###
 .claude/
+
+### JetBrains AI ###
+.junie/
