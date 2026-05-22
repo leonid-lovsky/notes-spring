@@ -1,15 +1,3 @@
-tasks.register('clean') {
-    dependsOn subprojects.collect { ":${it.name}:clean" }
-}
-
-tasks.register('test') {
-    dependsOn subprojects.collect { ":${it.name}:test" }
-}
-
-tasks.register('check') {
-    dependsOn subprojects.collect { ":${it.name}:check" }
-}
-
-tasks.register('build') {
-    dependsOn subprojects.collect { ":${it.name}:build" }
+plugins {
+    id 'included-build-conventions'
 }
