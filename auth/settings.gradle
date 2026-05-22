@@ -2,12 +2,6 @@ pluginManagement {
     includeBuild '../build-logic'
 }
 
-dependencyResolutionManagement {
-    repositories {
-        mavenCentral()
-    }
-}
-
 rootProject.name = 'auth'
 
 include ':application'
