@@ -1,8 +1,14 @@
 rootProject.name = 'notes-spring'
 
 includeBuild 'application'
+
 includeBuild 'auth'
+
 includeBuild 'note'
 includeBuild 'user'
-includeBuild 'user-note'
+
 includeBuild 'crud'
+
+includeBuild 'user-note'
+
+includeBuild 'build-logic'

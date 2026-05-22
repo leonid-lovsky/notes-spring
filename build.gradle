@@ -1,7 +1,17 @@
 def builds = gradle.includedBuilds
 
-['clean', 'test', 'check', 'build'].each { taskName ->
-    tasks.register(taskName) {
-        dependsOn builds.collect { it.task(":${taskName}") }
-    }
+tasks.register('clean') {
+    dependsOn builds.collect { it.task(':clean') }
+}
+
+tasks.register('test') {
+    dependsOn builds.collect { it.task(':test') }
+}
+
+tasks.register('check') {
+    dependsOn builds.collect { it.task(':check') }
+}
+
+tasks.register('build') {
+    dependsOn builds.collect { it.task(':build') }
 }

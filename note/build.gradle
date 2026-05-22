@@ -1,5 +1,15 @@
-['clean', 'test', 'check', 'build'].each { taskName ->
-    tasks.register(taskName) {
-        dependsOn subprojects.collect { ":${it.name}:${taskName}" }
-    }
+tasks.register('clean') {
+    dependsOn subprojects.collect { ":${it.name}:clean" }
+}
+
+tasks.register('test') {
+    dependsOn subprojects.collect { ":${it.name}:test" }
+}
+
+tasks.register('check') {
+    dependsOn subprojects.collect { ":${it.name}:check" }
+}
+
+tasks.register('build') {
+    dependsOn subprojects.collect { ":${it.name}:build" }
 }
