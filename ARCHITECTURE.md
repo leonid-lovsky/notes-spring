@@ -275,14 +275,13 @@ Build in dependency order within each service: `domain/` → `data-jpa/` → `we
 
 ```
 1. build-logic/    convention plugins
-2. crud/           domain/ · webmvc/ · data-jpa/
-3. user/           domain/ · data-jpa/ · webmvc/ · application/
-4. note/           domain/ · data-jpa/ · webmvc/ · application/
-5. auth/           domain/ · data-jpa/ · webmvc/ · application/
-6. user-note/      domain/ · data-jpa/ · feign/ · webmvc/ · application/
-7. registry/       application/
-8. config/         application/
-9. gateway/        application/
+2. user/           domain/ · data-jpa/ · webmvc/ · application/
+3. note/           domain/ · data-jpa/ · webmvc/ · application/
+4. auth/           application/
+5. user-note/      domain/ · data-jpa/ · feign/ · webmvc/ · application/
+6. registry/       application/
+7. config/         application/
+8. gateway/        application/
 ```
 
 ---
@@ -577,18 +576,16 @@ Browser / mobile app
 ```groovy
 plugins {
     id 'spring-boot-application-conventions'
-    id 'spring-h2-database-conventions'
 }
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-authorization-server'
     implementation 'org.springframework.cloud:spring-cloud-starter-config'
     testImplementation 'org.springframework.boot:spring-boot-starter-security-oauth2-authorization-server-test'
-    implementation project(':domain')
-    implementation project(':webmvc')
-    implementation project(':data-jpa')
 }
 ```
+
+> `auth/` is infrastructure, not a business service — no `domain/`, `webmvc/`, or `data-jpa/` modules. It uses in-memory stores (`InMemoryRegisteredClientRepository`, `InMemoryUserDetailsManager`) and needs no JPA or custom web layer.
 
 `auth/application/src/main/java/.../SecurityConfig.java`:
 
@@ -768,6 +765,8 @@ spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://localhost:8081/oaut
 @Bean
 public SecurityFilterChain resourceServerFilterChain(HttpSecurity http) throws Exception {
     http
+        .csrf(AbstractHttpConfigurer::disable)
+        .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(a -> a
             .requestMatchers("/actuator/health").permitAll()
             .anyRequest().authenticated())
@@ -775,6 +774,8 @@ public SecurityFilterChain resourceServerFilterChain(HttpSecurity http) throws E
     return http.build();
 }
 ```
+
+> **CSRF must be disabled explicitly** for stateless JWT REST APIs — Spring Security does not disable it automatically. Without `.csrf(AbstractHttpConfigurer::disable)`, POST/PUT/DELETE requests return 403 even with a valid Bearer token. `SessionCreationPolicy.STATELESS` prevents unnecessary session creation.
 
 ---
 
@@ -979,18 +980,20 @@ Feign clients implement the port interfaces from `user-note/domain/`:
 ```java
 @FeignClient(name = "user-service", fallback = UserFeignClientFallback.class)
 public interface UserFeignClient extends UserClient {
-    @GetMapping("/users/{subject}")
-    Optional<UserSummary> findBySubject(@PathVariable String subject);
+    @GetMapping("/users/subject/{subject}")
+    Optional<UserSummary> findBySubject(@PathVariable("subject") String subject);
 }
 
 @FeignClient(name = "note-service", fallback = NoteFeignClientFallback.class)
 public interface NoteFeignClient extends NoteClient {
     @GetMapping("/notes/{id}")
-    Optional<NoteSummary> findById(@PathVariable UUID id);
+    Optional<NoteSummary> findById(@PathVariable("id") UUID id);
 }
 ```
 
 Fallbacks return `Optional.empty()` — `user-note/` degrades gracefully if `user/` or `note/` is unreachable.
+
+> **`@PathVariable` names must be explicit** — Spring Cloud OpenFeign uses `SpringMvcContract` which cannot infer parameter names at runtime (unlike Spring MVC which reads debug bytecode). Omitting the name causes `IllegalStateException: PathVariable annotation was empty`. This applies to all Feign interfaces and is also good practice for controller parameters for AOT/GraalVM safety.
 
 `@EnableFeignClients` goes on `UserNoteApplication` with `basePackages = "com.example.usernote.feign"`. Because Gradle `implementation` is non-transitive, `user-note/application/build.gradle` must also declare `spring-cloud-starter-openfeign` directly alongside the `feign/` module dependency.
 
@@ -1151,12 +1154,20 @@ spring.application.name=gateway
 server.port=8080
 spring.config.import=optional:configserver:http://localhost:8888
 eureka.client.service-url.defaultZone=http://localhost:8761/eureka/
-spring.cloud.gateway.discovery.locator.enabled=true
-spring.cloud.gateway.discovery.locator.lower-case-service-id=true
 spring.cloud.gateway.default-filters[0]=TokenRelay
+spring.cloud.gateway.routes[0].id=user
+spring.cloud.gateway.routes[0].uri=lb://user-service
+spring.cloud.gateway.routes[0].predicates[0]=Path=/users/**
+spring.cloud.gateway.routes[1].id=note
+spring.cloud.gateway.routes[1].uri=lb://note-service
+spring.cloud.gateway.routes[1].predicates[0]=Path=/notes/**
+spring.cloud.gateway.routes[2].id=user-note
+spring.cloud.gateway.routes[2].uri=lb://user-note-service
+spring.cloud.gateway.routes[2].predicates[0]=Path=/user-notes/**
 spring.security.oauth2.client.registration.gateway.client-id=gateway
 spring.security.oauth2.client.registration.gateway.client-secret=secret
 spring.security.oauth2.client.registration.gateway.authorization-grant-type=authorization_code
+spring.security.oauth2.client.registration.gateway.redirect-uri=http://localhost:8080/login/oauth2/code/gateway
 spring.security.oauth2.client.registration.gateway.scope=openid,read
 spring.security.oauth2.client.provider.gateway.authorization-uri=http://localhost:8081/oauth2/authorize
 spring.security.oauth2.client.provider.gateway.token-uri=http://localhost:8081/oauth2/token
@@ -1169,6 +1180,8 @@ management.endpoint.health.probes.enabled=true
 management.tracing.sampling.probability=1.0
 otel.exporter.otlp.endpoint=http://localhost:4318
 ```
+
+> **Discovery locator disabled** — `spring.cloud.gateway.discovery.locator.enabled=true` routes to `/{service-id}/**` (e.g. `/user-service/**`), which does not match controller paths (`/users/**`). Explicit routes with `lb://` are required. The `redirect-uri` is required when `authorization_code` grant type is used — Spring Security validates it at context load.
 
 ### Test isolation
 
