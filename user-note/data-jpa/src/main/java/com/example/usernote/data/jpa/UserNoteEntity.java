@@ -6,11 +6,12 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 import java.util.UUID;
 
 @Entity
-@Table(name = "user_notes")
+@Table(name = "user_notes", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "note_id"}))
 class UserNoteEntity {
 
     @Id

@@ -1,5 +1,6 @@
 package com.example.user.data.jpa;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -12,6 +13,7 @@ class UserProfileEntity {
 
     @Id
     UUID id;
+    @Column(unique = true, nullable = false)
     String subject;
     String username;
     String email;
