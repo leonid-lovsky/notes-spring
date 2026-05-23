@@ -12,18 +12,25 @@ Spring Boot 4 · Gradle composite builds · microservices monorepo.
 | Language          | Java                                            |
 | Framework         | Spring Boot 4.0.6                               |
 | Build             | Gradle 9.5.1, composite builds                  |
-| Authorization     | Spring Authorization Server (OAuth2 / OIDC)     |
-| API gateway       | Spring Cloud Gateway                            |
+| Security          | Spring Authorization Server (OAuth2 / OIDC)     |
+| API gateway       | Spring Cloud Gateway (MVC)                      |
 | Service discovery | Spring Cloud Netflix Eureka                     |
 | Configuration     | Spring Cloud Config Server                      |
-| HTTP client       | Spring Cloud OpenFeign + Spring Circuit Breaker |
+| HTTP client       | Spring Cloud OpenFeign + Resilience4j           |
 | Persistence       | Spring Data JPA + H2 (dev)                      |
 | Schema migration  | Liquibase or Flyway                             |
-| Caching           | Redis (Spring Data Redis)                       |
-| Search            | Elasticsearch (Spring Data Elasticsearch)       |
-| Messaging         | RabbitMQ (Spring AMQP) or Apache Kafka          |
+| Caching           | Spring Data Redis                               |
+| Search            | Spring Data Elasticsearch                       |
+| Messaging         | Spring AMQP (RabbitMQ) or Spring Kafka          |
+| Real-time         | Spring WebSocket + STOMP                        |
+| RPC               | gRPC + Protobuf                                 |
 | API docs          | springdoc-openapi                               |
-| Observability     | Prometheus + Grafana · Zipkin · Elastic Stack   |
+| Metrics           | Micrometer + Prometheus + Grafana               |
+| Tracing           | OpenTelemetry + Jaeger / Grafana Tempo          |
+| Logs              | Elastic Stack (ELK)                             |
+| Secrets           | HashiCorp Vault (Spring Cloud Vault)            |
+| Testing           | Testcontainers                                  |
+| Deployment        | Docker · Docker Compose · Kubernetes · Helm     |
 
 > Spring Cloud version must be compatible with Spring Boot 4.0.6.
 > Add the Spring Cloud BOM to `build-logic/build.gradle` before using
@@ -182,8 +189,8 @@ without touching business logic. Each adapter type has its own convention plugin
 
 | Tool      | How to add                                                        |
 |-----------|-------------------------------------------------------------------|
-| Liquibase | add `org.liquibase:liquibase-core` to `spring-data-jpa-adapter-conventions` |
-| Flyway    | add `org.flywaydb:flyway-core` to `spring-data-jpa-adapter-conventions`     |
+| Liquibase | add `org.springframework.boot:spring-boot-starter-liquibase` to `spring-data-jpa-adapter-conventions` |
+| Flyway    | add `org.springframework.boot:spring-boot-starter-flyway` to `spring-data-jpa-adapter-conventions`    |
 
 Place migration files in `src/main/resources/db/changelog/` (Liquibase) or `src/main/resources/db/migration/` (Flyway).
 
@@ -451,8 +458,9 @@ plugins {
     id 'spring-boot-application-conventions'
 }
 dependencies {
-    implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
-    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+    implementation 'org.springframework.cloud:spring-cloud-starter-gateway-server-webmvc'
+    implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-client'
+    implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-resource-server'
 }
 ```
 
@@ -556,7 +564,7 @@ public interface NoteFeignClient extends NoteClient {
 
 ## Load Balancing
 
-Spring Cloud LoadBalancer is included with `spring-cloud-starter-openfeign` and `spring-cloud-starter-gateway`.
+Spring Cloud LoadBalancer is included with `spring-cloud-starter-openfeign` and `spring-cloud-starter-gateway-server-webmvc`.
 It resolves `lb://service-name` URIs and `@FeignClient(name = "service-name")` to live instances from Eureka.
 
 No explicit configuration is required — LoadBalancer activates automatically when a Eureka client is on the classpath.
@@ -567,7 +575,7 @@ Default strategy: **round-robin**. To switch to random:
 spring.cloud.loadbalancer.configurations=random
 ```
 
-Custom strategy: implement `ReactorServiceInstanceLoadBalancer` and register it as a `@Bean`.
+Custom strategy: implement `ServiceInstanceListSupplier` and register it as a `@Bean`.
 
 ---
 
@@ -657,7 +665,7 @@ Browser / mobile app
 ```groovy
 plugins { id 'spring-boot-application-conventions' }
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-authorization-server'
+    implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-authorization-server'
     implementation project(':webmvc')
     implementation project(':data-jpa')
     implementation project(':domain')
@@ -722,18 +730,6 @@ Token endpoints exposed by the Authorization Server:
 
 `gateway/` initiates the OAuth2 authorization code flow on behalf of the browser and forwards the obtained JWT to backend services via the `TokenRelay` filter.
 
-`gateway/application/build.gradle`:
-
-```groovy
-plugins { id 'spring-boot-application-conventions' }
-dependencies {
-    implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
-    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
-}
-```
-
 `gateway/application/application.properties`:
 
 ```properties
@@ -750,11 +746,11 @@ Security config in `gateway/application/`:
 
 ```java
 @Bean
-public SecurityWebFilterChain gatewayFilterChain(ServerHttpSecurity http) throws Exception {
+public SecurityFilterChain gatewayFilterChain(HttpSecurity http) throws Exception {
     http
-        .authorizeExchange(e -> e
-            .pathMatchers("/auth/register", "/auth/login").permitAll()
-            .anyExchange().authenticated())
+        .authorizeHttpRequests(a -> a
+            .requestMatchers("/auth/register", "/auth/login").permitAll()
+            .anyRequest().authenticated())
         .oauth2Login(Customizer.withDefaults())
         .oauth2ResourceServer(r -> r.jwt(Customizer.withDefaults()));
     return http.build();
@@ -769,7 +765,7 @@ Add to each service's `application/build.gradle`:
 
 ```groovy
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-resource-server'
     // ...existing deps
 }
 ```
@@ -944,6 +940,8 @@ repositories {
 
 ### `spring-boot-application-conventions.gradle`
 
+Applied to every `application/` module. Provides Spring Boot, service discovery, observability, and testing out of the box.
+
 ```groovy
 plugins {
     id 'java-library'
@@ -955,6 +953,11 @@ repositories {
 }
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+    implementation 'io.micrometer:micrometer-tracing-bridge-otel'
+    implementation 'io.opentelemetry:opentelemetry-exporter-otlp'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
@@ -1039,7 +1042,7 @@ dependencies {
 | `spring-data-redis-adapter-conventions`  | `spring-boot-starter-data-redis`                                 |
 | `spring-elasticsearch-adapter-conventions` | `spring-boot-starter-data-elasticsearch`                       |
 | `spring-rabbitmq-adapter-conventions`    | `spring-boot-starter-amqp`                                       |
-| `spring-kafka-adapter-conventions`       | `spring-kafka`                                                   |
+| `spring-kafka-adapter-conventions`       | `spring-boot-starter-kafka`                                      |
 | `spring-websocket-adapter-conventions`   | `spring-boot-starter-websocket`                                  |
 | `spring-grpc-adapter-conventions`        | `grpc-spring-boot-starter` + `protobuf-gradle-plugin`            |
 
@@ -1181,14 +1184,7 @@ Every incoming HTTP request, outgoing Feign call, and database query is automati
 ### Docker
 
 Each service is packaged as a Docker image using Spring Boot's built-in Buildpacks support.
-Add to `spring-boot-application-conventions.gradle`:
-
-```groovy
-plugins {
-    // ...existing
-    id 'org.springframework.boot'   // already present — enables bootBuildImage
-}
-```
+`bootBuildImage` is available automatically because `org.springframework.boot` is applied by `spring-boot-application-conventions`.
 
 Build image for a service:
 
@@ -1371,8 +1367,6 @@ class UserRepositoryTest {
 
 ---
 
-## Roadmap
+## Production Platform
 
-| Item | Why                                       |
-|------|-------------------------------------------|
-| AWS  | target platform for production deployment |
+The target runtime platform is AWS. Kubernetes handles container orchestration and service discovery (Eureka disabled). Helm manages parameterized deployments across environments. See [Deployment](#deployment) for full configuration.
