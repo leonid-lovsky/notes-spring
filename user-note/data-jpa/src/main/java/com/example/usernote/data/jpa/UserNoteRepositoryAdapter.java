@@ -23,6 +23,11 @@ class UserNoteRepositoryAdapter implements UserNoteRepository {
     }
 
     @Override
+    public Optional<UserNote> findById(UUID id) {
+        return jpa.findById(id).map(this::toUserNote);
+    }
+
+    @Override
     public List<UserNote> findByUserId(String userId) {
         return jpa.findByUserId(userId).stream().map(this::toUserNote).toList();
     }

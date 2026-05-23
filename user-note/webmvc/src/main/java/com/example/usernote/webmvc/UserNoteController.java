@@ -29,6 +29,14 @@ public class UserNoteController {
         this.noteClient = noteClient;
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<UserNote> findById(@PathVariable UUID id, Principal principal) {
+        return repository.findById(id)
+            .filter(un -> un.userId().equals(principal.getName()) || un.ownerId().equals(principal.getName()))
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
+    }
+
     @GetMapping
     public List<UserNote> sharedWithMe(Principal principal) {
         return repository.findByUserId(principal.getName());

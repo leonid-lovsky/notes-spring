@@ -70,15 +70,8 @@ Key rules:
 ```
 notes-spring/
 ├── build-logic/           convention plugins
-├── crud/                  shared CRUD library — no application/
-│   ├── domain/
-│   ├── webmvc/
-│   └── data-jpa/
-├── auth/                  Spring Authorization Server
-│   ├── domain/
-│   ├── application/
-│   ├── webmvc/
-│   └── data-jpa/
+├── auth/                  Spring Authorization Server — application/ only
+│   └── application/
 ├── user/                  user profiles
 │   ├── domain/
 │   ├── application/
@@ -103,11 +96,9 @@ notes-spring/
     └── application/
 ```
 
-**Business services** (`domain/` + `application/` + adapters): `auth` · `user` · `note` · `user-note`
+**Business services** (`domain/` + `application/` + adapters): `user` · `note` · `user-note`
 
-**Infrastructure services** (single `application/` each): `gateway` · `registry` · `config`
-
-**Shared library** (adapters only, no `application/`): `crud`
+**Infrastructure services** (single `application/` each): `auth` · `gateway` · `registry` · `config`
 
 ---
 
@@ -248,6 +239,7 @@ Controllers use `java.security.Principal` (not `@AuthenticationPrincipal Jwt`) �
 | `note`      | POST   | /notes                                      | create note                    |
 | `note`      | PUT    | /notes/{id}                                 | update note (owner only)       |
 | `note`      | DELETE | /notes/{id}                                 | delete note (owner only)       |
+| `user-note` | GET    | /user-notes/{id}                            | access entry by UUID           |
 | `user-note` | GET    | /user-notes                                 | notes shared with me           |
 | `user-note` | GET    | /user-notes/owned                           | notes I shared to others       |
 | `user-note` | POST   | /user-notes                                 | share note (owner only)        |
@@ -317,7 +309,6 @@ includeBuild 'auth'
 includeBuild 'note'
 includeBuild 'user'
 includeBuild 'user-note'
-includeBuild 'crud'
 includeBuild 'gateway'
 includeBuild 'registry'
 includeBuild 'config'

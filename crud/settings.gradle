@@ -1,9 +1,0 @@
-pluginManagement {
-    includeBuild '../build-logic'
-}
-
-rootProject.name = 'crud'
-
-include ':domain'
-include ':webmvc'
-include ':data-jpa'

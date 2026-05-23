@@ -4,7 +4,4 @@ pluginManagement {
 
 rootProject.name = 'auth'
 
-include ':domain'
 include ':application'
-include ':webmvc'
-include ':data-jpa'
