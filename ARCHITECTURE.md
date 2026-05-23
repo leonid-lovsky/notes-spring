@@ -12,17 +12,18 @@ Spring Boot 4 · Gradle composite builds · microservices monorepo.
 | Language          | Java                                            |
 | Framework         | Spring Boot 4.0.6                               |
 | Build             | Gradle 9.5.1, composite builds                  |
-| Service discovery | Spring Cloud Netflix Eureka                     |
-| API gateway       | Spring Cloud Gateway                            |
-| Configuration     | Spring Cloud Config Server                      |
 | Authorization     | Spring Authorization Server (OAuth2 / OIDC)     |
+| API gateway       | Spring Cloud Gateway                            |
+| Service discovery | Spring Cloud Netflix Eureka                     |
+| Configuration     | Spring Cloud Config Server                      |
 | HTTP client       | Spring Cloud OpenFeign + Spring Circuit Breaker |
 | Persistence       | Spring Data JPA                                 |
 | API docs          | springdoc-openapi (planned)                     |
 | Observability     | Prometheus + Grafana · Zipkin · Elastic Stack   |
 
-> Spring Cloud version: must be compatible with Spring Boot 4.0.6. Add the Spring Cloud BOM
-> to `build-logic/build.gradle` before using gateway, registry, config, or feign.
+> Spring Cloud version must be compatible with Spring Boot 4.0.6.
+> Add the Spring Cloud BOM to `build-logic/build.gradle` before using
+> gateway, registry, config, or feign modules.
 
 ---
 
@@ -51,14 +52,24 @@ Key consequences:
 
 ## Build System
 
-The root project is a Gradle composite build. Each service is an independent included build.
+### `gradle.properties` (root)
 
-**Root `settings.gradle` (current):**
+```properties
+org.gradle.parallel=true
+org.gradle.caching=true
+org.gradle.configureondemand=true
+org.gradle.configuration-cache=true
+org.gradle.configuration-cache.parallel=true
+```
+
+### Root `settings.gradle`
+
 ```groovy
+// current
 rootProject.name = 'notes-spring'
 
 includeBuild 'build-logic'
-includeBuild 'application'   // placeholder — will be replaced by gateway/
+includeBuild 'application'   // placeholder — will become gateway/
 includeBuild 'auth'
 includeBuild 'note'
 includeBuild 'user'
@@ -66,8 +77,8 @@ includeBuild 'user-note'
 includeBuild 'crud'
 ```
 
-**Root `settings.gradle` (target — after infrastructure services are added):**
 ```groovy
+// target — after infrastructure services are added
 rootProject.name = 'notes-spring'
 
 includeBuild 'build-logic'
@@ -81,7 +92,8 @@ includeBuild 'registry'
 includeBuild 'config'
 ```
 
-**Root `build.gradle`** — delegates lifecycle tasks to all included builds:
+### Root `build.gradle`
+
 ```groovy
 def builds = gradle.includedBuilds
 
@@ -91,30 +103,21 @@ tasks.register('check') { dependsOn builds.collect { it.task(':check') } }
 tasks.register('build') { dependsOn builds.collect { it.task(':build') } }
 ```
 
-**Each service `settings.gradle` (current — no `domain/` yet):**
+### Service `settings.gradle` pattern
+
 ```groovy
 pluginManagement {
     includeBuild '../build-logic'
 }
-rootProject.name = 'auth'
+rootProject.name = 'auth'     // change per service
+include ':domain'             // add when domain/ module is created
 include ':application'
 include ':webmvc'
 include ':data-jpa'
 ```
 
-**Each service `settings.gradle` (target — after `domain/` module is added):**
-```groovy
-pluginManagement {
-    includeBuild '../build-logic'
-}
-rootProject.name = 'auth'
-include ':domain'
-include ':application'
-include ':webmvc'
-include ':data-jpa'
-```
+### Service `build.gradle` pattern
 
-**Each service `build.gradle`** — delegates to subprojects:
 ```groovy
 tasks.register('clean') { dependsOn subprojects.collect { ":${it.name}:clean" } }
 tasks.register('test')  { dependsOn subprojects.collect { ":${it.name}:test"  } }
@@ -122,7 +125,8 @@ tasks.register('check') { dependsOn subprojects.collect { ":${it.name}:check" } 
 tasks.register('build') { dependsOn subprojects.collect { ":${it.name}:build" } }
 ```
 
-**`build-logic/build.gradle`:**
+### `build-logic/build.gradle`
+
 ```groovy
 plugins {
     id 'groovy-gradle-plugin'
@@ -134,7 +138,7 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-gradle-plugin:4.0.6'
     implementation 'io.spring.gradle:dependency-management-plugin:1.1.7'
-    // add Spring Cloud plugin dependency when adding gateway / registry / config / feign
+    // add Spring Cloud Gradle plugin here when needed
 }
 ```
 
@@ -142,82 +146,206 @@ dependencies {
 
 Located in `build-logic/src/main/groovy/`.
 
-| Plugin                                | Used in              | Provides                                  | Status   |
-|---------------------------------------|----------------------|-------------------------------------------|----------|
-| `spring-domain-conventions`           | `domain/`            | `java-library` only, no frameworks        | planned  |
-| `spring-boot-application-conventions` | `application/`       | Spring Boot app, test setup               | exists   |
-| `spring-webmvc-adapter-conventions`   | `webmvc/`            | Spring MVC, BOM import, test setup        | exists   |
-| `spring-data-jpa-adapter-conventions` | `data-jpa/`          | Spring Data JPA, BOM import, test setup   | exists   |
-| `spring-h2-database-conventions`      | `application/` (dev) | H2 console + driver (mixin, dev only)     | exists   |
-| `spring-openfeign-adapter-conventions`| `feign/`             | OpenFeign + Circuit Breaker               | planned  |
+#### `spring-boot-application-conventions.gradle` ✓
 
-All existing convention plugins include `repositories { mavenCentral() }` — services have no repository config.
+```groovy
+plugins {
+    id 'java-library'
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
+}
+repositories {
+    mavenCentral()
+}
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+tasks.named('test') {
+    useJUnitPlatform()
+}
+```
+
+#### `spring-webmvc-adapter-conventions.gradle` ✓
+
+```groovy
+plugins {
+    id 'java-library'
+    id 'io.spring.dependency-management'
+}
+dependencyManagement {
+    imports {
+        mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+    }
+}
+repositories {
+    mavenCentral()
+}
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+tasks.named('test') {
+    useJUnitPlatform()
+}
+```
+
+#### `spring-data-jpa-adapter-conventions.gradle` ✓
+
+```groovy
+plugins {
+    id 'java-library'
+    id 'io.spring.dependency-management'
+}
+dependencyManagement {
+    imports {
+        mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+    }
+}
+repositories {
+    mavenCentral()
+}
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+tasks.named('test') {
+    useJUnitPlatform()
+}
+```
+
+#### `spring-h2-database-conventions.gradle` ✓ (mixin — no standalone module)
+
+```groovy
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-h2console'
+    runtimeOnly 'com.h2database:h2'
+}
+```
+
+#### `spring-domain-conventions.gradle` ○ (planned)
+
+```groovy
+plugins {
+    id 'java-library'
+}
+repositories {
+    mavenCentral()
+}
+```
+
+#### `spring-openfeign-adapter-conventions.gradle` ○ (planned)
+
+```groovy
+plugins {
+    id 'java-library'
+    id 'io.spring.dependency-management'
+}
+dependencyManagement {
+    imports {
+        mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+        // add Spring Cloud BOM here
+    }
+}
+repositories {
+    mavenCentral()
+}
+dependencies {
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+tasks.named('test') {
+    useJUnitPlatform()
+}
+```
+
+---
+
+## Implementation Order
+
+```
+1. build-logic/        — convention plugins (done)
+2. crud/               — domain/ · webmvc/ · data-jpa/
+3. user/               — domain/ · data-jpa/ · webmvc/ · application/
+4. note/               — domain/ · data-jpa/ · webmvc/ · application/
+5. auth/               — domain/ · data-jpa/ · webmvc/ · application/
+6. user-note/          — domain/ · data-jpa/ · feign/ · webmvc/ · application/
+7. registry/           — application/ (Eureka Server)
+8. config/             — application/ (Config Server)
+9. gateway/            — application/ (replace placeholder application/)
+```
+
+Within each service, build modules in this order: `domain/` → `data-jpa/` → `webmvc/` → `application/`.
+This follows the dependency graph — each module depends only on what was built before it.
 
 ---
 
 ## Project Structure
 
+### Current (branch `auth`)
+
+```
+notes-spring/
+├── build-logic/           ✓ 4 convention plugins
+├── application/           ✓ placeholder, will become gateway/
+├── auth/                  ✓ application/ · webmvc/ · data-jpa/
+├── note/                  ✓ application/ · webmvc/ · data-jpa/
+├── user/                  ✓ application/ · webmvc/ · data-jpa/
+├── user-note/             ✓ application/ · webmvc/ · data-jpa/
+└── crud/                  ✓ webmvc/ · data-jpa/
+```
+
+Not yet created: `domain/` modules · `feign/` in user-note · `gateway/` · `registry/` · `config/`
+
 ### Target
 
 ```
 notes-spring/
-├── build-logic/           convention plugins (not a service)
+├── build-logic/
 
-├── crud/                  shared CRUD library — not a standalone service
-│   ├── domain/            generic CrudRepository<T, ID>
-│   ├── webmvc/            generic CRUD controllers
-│   └── data-jpa/          generic JPA implementation
-
-├── auth/                  authentication & authorization
-│   ├── domain/            AuthUser { id, username, passwordHash, refreshToken }
-│   ├── application/       Spring Boot + Spring Authorization Server
-│   ├── webmvc/            POST /register  /login  /logout  /refresh-token
+├── crud/
+│   ├── domain/
+│   ├── webmvc/
 │   └── data-jpa/
 
-├── user/                  user profiles
-│   ├── domain/            User { id, username, email }
+├── auth/
+│   ├── domain/
 │   ├── application/
-│   ├── webmvc/            GET /users/{id}
+│   ├── webmvc/
 │   └── data-jpa/
 
-├── note/                  notes content
-│   ├── domain/            Note { id, content }
+├── user/
+│   ├── domain/
 │   ├── application/
-│   ├── webmvc/            GET/POST/PUT/DELETE /notes/{id}
+│   ├── webmvc/
 │   └── data-jpa/
 
-├── user-note/             access control and ownership
-│   ├── domain/            UserNote { id, userId, noteId, role }
-│   │                      Role: CREATOR | OWNER | EDITOR | VIEWER
-│   ├── application/       use cases: access check, ownership transfer
-│   ├── webmvc/            /user-notes
+├── note/
+│   ├── domain/
+│   ├── application/
+│   ├── webmvc/
+│   └── data-jpa/
+
+├── user-note/
+│   ├── domain/
+│   ├── application/
+│   ├── webmvc/
 │   ├── data-jpa/
-│   └── feign/             UserClient, NoteClient → user/, note/
+│   └── feign/
 
-├── gateway/               single entry point
-│   └── application/       Spring Cloud Gateway — routing + auth filter
+├── gateway/
+│   └── application/
 
-├── registry/              service registry
-│   └── application/       Eureka Server
+├── registry/
+│   └── application/
 
-└── config/                centralized configuration
-    └── application/       Spring Cloud Config Server
+└── config/
+    └── application/
 ```
-
-### Current (branch: `auth`)
-
-```
-notes-spring/
-├── build-logic/           ✓ exists
-├── application/           ✓ exists — placeholder, will become gateway/
-├── auth/                  ✓ exists — application/ · webmvc/ · data-jpa/ (no domain/ yet)
-├── note/                  ✓ exists — application/ · webmvc/ · data-jpa/ (no domain/ yet)
-├── user/                  ✓ exists — application/ · webmvc/ · data-jpa/ (no domain/ yet)
-├── user-note/             ✓ exists — application/ · webmvc/ · data-jpa/ (no domain/, no feign/)
-└── crud/                  ✓ exists — webmvc/ · data-jpa/ (no domain/ yet)
-```
-
-Not yet created: `domain/` modules · `feign/` · `gateway/` · `registry/` · `config/`
 
 ---
 
@@ -248,7 +376,43 @@ Every business service has the same internal structure.
 **Rule:** adapters (`webmvc/`, `data-jpa/`, `feign/`) depend **only** on `domain/`.
 Importing from `application/` pulls in `spring-boot-starter` and breaks isolation.
 
-**Module dependencies:**
+### Module `build.gradle` per layer
+
+```groovy
+// domain/build.gradle
+plugins { id 'spring-domain-conventions' }
+```
+
+```groovy
+// webmvc/build.gradle
+plugins { id 'spring-webmvc-adapter-conventions' }
+```
+
+```groovy
+// data-jpa/build.gradle
+plugins { id 'spring-data-jpa-adapter-conventions' }
+```
+
+```groovy
+// feign/build.gradle  (user-note only)
+plugins { id 'spring-openfeign-adapter-conventions' }
+```
+
+```groovy
+// application/build.gradle
+plugins {
+    id 'spring-boot-application-conventions'
+    id 'spring-h2-database-conventions'  // dev only; remove for prod or move to profile
+}
+dependencies {
+    implementation project(':domain')
+    implementation project(':webmvc')
+    implementation project(':data-jpa')
+    // implementation project(':feign')  // user-note only
+}
+```
+
+### Module dependency table
 
 | Module         | Depends on                               |
 |----------------|------------------------------------------|
@@ -258,9 +422,58 @@ Importing from `application/` pulls in `spring-boot-starter` and breaks isolatio
 | `feign/`       | `domain/` *(user-note only)*             |
 | `application/` | `domain/` + all adapters of this service |
 
-**Swapping an adapter:** change one dependency in `application/build.gradle` — `domain/` stays untouched.
+---
 
-**Adding inter-service communication:** define a port interface in `domain/`, implement it in a new adapter module.
+## Domain Models
+
+```
+auth/domain/     AuthUser   { UUID id, String username, String passwordHash, String refreshToken }
+user/domain/     User       { UUID id, String username, String email }
+note/domain/     Note       { UUID id, String content }
+user-note/domain/ UserNote  { UUID id, UUID userId, UUID noteId, UserRole role }
+                 UserRole   CREATOR | OWNER | EDITOR | VIEWER
+crud/domain/     CrudRepository<T, ID>
+```
+
+### Port Interfaces (defined in `domain/`, implemented in adapters)
+
+```
+auth/domain/
+  AuthUserRepository  findByUsername(username) · save(user)
+  TokenStore          save(token) · exists(token) · delete(token)
+
+user/domain/
+  UserRepository      findById(id) · save(user)
+
+note/domain/
+  NoteRepository      findById(id) · save(note) · delete(id)
+
+user-note/domain/
+  UserNoteRepository  findByUserIdAndNoteId(userId, noteId) · save(userNote)
+  UserClient          findById(userId)          → implemented in feign/
+  NoteClient          findById(noteId)          → implemented in feign/
+```
+
+---
+
+## API Contracts
+
+| Service      | Method | Path                          | Description               |
+|--------------|--------|-------------------------------|---------------------------|
+| `auth`       | POST   | /auth/register                | register new user         |
+| `auth`       | POST   | /auth/login                   | obtain tokens             |
+| `auth`       | POST   | /auth/logout                  | revoke refresh token      |
+| `auth`       | POST   | /auth/refresh-token           | rotate refresh token      |
+| `user`       | GET    | /users/{id}                   | get user profile          |
+| `user`       | PUT    | /users/{id}                   | update user profile       |
+| `note`       | GET    | /notes/{id}                   | get note                  |
+| `note`       | POST   | /notes                        | create note               |
+| `note`       | PUT    | /notes/{id}                   | update note               |
+| `note`       | DELETE | /notes/{id}                   | delete note               |
+| `user-note`  | GET    | /user-notes                   | list access entries       |
+| `user-note`  | POST   | /user-notes                   | grant access              |
+| `user-note`  | DELETE | /user-notes/{id}              | revoke access             |
+| `user-note`  | PUT    | /user-notes/{id}/transfer     | transfer ownership        |
 
 ---
 
@@ -282,6 +495,51 @@ Client ─────────▶ │                gateway/               
 
   All services ──▶ registry/   register on startup (Eureka)
   All services ──▶ config/     fetch config on startup
+```
+
+---
+
+## Key Configuration
+
+### Business service (`application.properties`)
+
+```properties
+spring.application.name=auth      # change per service
+server.port=8081                  # unique per service
+spring.datasource.url=jdbc:h2:mem:authdb
+eureka.client.service-url.defaultZone=http://localhost:8761/eureka/
+spring.config.import=configserver:http://localhost:8888
+```
+
+### Suggested ports
+
+| Service    | Port |
+|------------|------|
+| gateway    | 8080 |
+| auth       | 8081 |
+| user       | 8082 |
+| note       | 8083 |
+| user-note  | 8084 |
+| registry   | 8761 |
+| config     | 8888 |
+
+### `registry/application.properties`
+
+```properties
+spring.application.name=registry
+server.port=8761
+eureka.instance.hostname=localhost
+eureka.client.register-with-eureka=false
+eureka.client.fetch-registry=false
+```
+
+### `gateway/application.properties`
+
+```properties
+spring.application.name=gateway
+server.port=8080
+eureka.client.service-url.defaultZone=http://localhost:8761/eureka/
+spring.cloud.gateway.discovery.locator.enabled=true
 ```
 
 ---
