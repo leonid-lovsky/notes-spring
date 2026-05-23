@@ -538,7 +538,6 @@ Follow the same pattern as `spring-webmvc-adapter-conventions.gradle`. Spring Cl
 
 | Plugin                                   | Key dependency                                                   |
 |------------------------------------------|------------------------------------------------------------------|
-| `spring-openfeign-adapter-conventions`   | `spring-cloud-starter-openfeign` + `circuitbreaker-resilience4j` |
 | `spring-rest-client-adapter-conventions` | `spring-boot-starter-web`                                        |
 | `spring-web-client-adapter-conventions`  | `spring-boot-starter-webflux`                                    |
 | `spring-webflux-adapter-conventions`     | `spring-boot-starter-webflux`                                    |
