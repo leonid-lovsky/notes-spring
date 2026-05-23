@@ -214,6 +214,15 @@ A messaging adapter can be both incoming (consumer) and outgoing (producer), imp
 |---------------|--------------------------------|--------------------------------------------|
 | `websocket/`  | Spring WebSocket + STOMP       | `spring-websocket-adapter-conventions`     |
 
+**gRPC** — high-performance RPC between services (alternative to REST for inter-service calls):
+
+| Module    | Role             | Technology                          | Convention plugin                   |
+|-----------|------------------|-------------------------------------|-------------------------------------|
+| `grpc/`   | incoming + outgoing | gRPC-Java + `grpc-spring-boot-starter` | `spring-grpc-adapter-conventions` |
+
+Both server (incoming) and client (outgoing) stubs live in the same `grpc/` module.
+`.proto` files are placed in `src/main/proto/`. The Protobuf Gradle plugin generates Java stubs at build time.
+
 **Outgoing HTTP** — how this service calls other services:
 
 | Module         | Technology             | Style              | Convention plugin                        |
@@ -598,6 +607,7 @@ dependencies {
 | `spring-rabbitmq-adapter-conventions`    | `spring-boot-starter-amqp`                                       |
 | `spring-kafka-adapter-conventions`       | `spring-kafka`                                                   |
 | `spring-websocket-adapter-conventions`   | `spring-boot-starter-websocket`                                  |
+| `spring-grpc-adapter-conventions`        | `grpc-spring-boot-starter` + `protobuf-gradle-plugin`            |
 
 ---
 
