@@ -439,6 +439,203 @@ eureka.client.enabled=false
 
 ---
 
+## API Gateway
+
+`gateway/` is a Spring Cloud Gateway application — the single entry point for all client traffic.
+It routes requests to backend services, applies cross-cutting filters, and enforces authentication.
+
+### `gateway/application/build.gradle`
+
+```groovy
+plugins {
+    id 'spring-boot-application-conventions'
+}
+dependencies {
+    implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+}
+```
+
+### Routing
+
+Routes are defined in `application.properties` (or `application.yml`):
+
+```yaml
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: auth
+          uri: lb://auth          # lb:// means LoadBalancer resolves via Eureka
+          predicates:
+            - Path=/auth/**
+        - id: user
+          uri: lb://user
+          predicates:
+            - Path=/users/**
+        - id: note
+          uri: lb://note
+          predicates:
+            - Path=/notes/**
+        - id: user-note
+          uri: lb://user-note
+          predicates:
+            - Path=/user-notes/**
+```
+
+### Filters
+
+Apply cross-cutting concerns via gateway filters:
+
+```yaml
+spring:
+  cloud:
+    gateway:
+      default-filters:
+        - TokenRelay          # forward OAuth2 token to downstream services
+        - CircuitBreaker=...  # wrap all routes with a circuit breaker
+```
+
+### OAuth2 Resource Server at the gateway
+
+The gateway validates JWT tokens centrally. Backend services trust the gateway and skip re-validation.
+
+```groovy
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+}
+```
+
+---
+
+## OpenFeign
+
+`feign/` in `user-note/` calls `user/` and `note/` services declaratively.
+OpenFeign resolves service names via Eureka + LoadBalancer.
+
+### `spring-openfeign-adapter-conventions.gradle`
+
+```groovy
+plugins {
+    id 'java-library'
+    id 'io.spring.dependency-management'
+}
+dependencyManagement {
+    imports {
+        mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+    }
+}
+repositories { mavenCentral() }
+dependencies {
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+tasks.named('test') { useJUnitPlatform() }
+```
+
+Enable Feign in `user-note/application/`:
+
+```java
+@SpringBootApplication
+@EnableFeignClients(basePackages = "com.example.usernote.feign")
+public class UserNoteApplication {}
+```
+
+### Feign client interfaces (in `user-note/feign/`)
+
+These implement the port interfaces defined in `user-note/domain/`:
+
+```java
+@FeignClient(name = "user")        // "user" is the Eureka service name
+public interface UserFeignClient extends UserClient {
+    @GetMapping("/users/{id}")
+    User findById(@PathVariable UUID id);
+}
+
+@FeignClient(name = "note")
+public interface NoteFeignClient extends NoteClient {
+    @GetMapping("/notes/{id}")
+    Note findById(@PathVariable UUID id);
+}
+```
+
+---
+
+## Load Balancing
+
+Spring Cloud LoadBalancer is included with `spring-cloud-starter-openfeign` and `spring-cloud-starter-gateway`.
+It resolves `lb://service-name` URIs and `@FeignClient(name = "service-name")` to live instances from Eureka.
+
+No explicit configuration is required — LoadBalancer activates automatically when a Eureka client is on the classpath.
+
+Default strategy: **round-robin**. To switch to random:
+
+```properties
+spring.cloud.loadbalancer.configurations=random
+```
+
+Custom strategy: implement `ReactorServiceInstanceLoadBalancer` and register it as a `@Bean`.
+
+---
+
+## Resilience4j
+
+Resilience4j protects inter-service calls with circuit breakers, retries, and rate limiting.
+It integrates with OpenFeign and Spring Cloud Gateway via `spring-cloud-starter-circuitbreaker-resilience4j`.
+
+### Circuit breaker
+
+Wraps a Feign client or a gateway route. Opens after a threshold of failures; half-opens after a wait duration to probe recovery.
+
+`application.properties`:
+
+```properties
+resilience4j.circuitbreaker.instances.user.failure-rate-threshold=50
+resilience4j.circuitbreaker.instances.user.wait-duration-in-open-state=10s
+resilience4j.circuitbreaker.instances.user.sliding-window-size=10
+```
+
+Fallback on a Feign client:
+
+```java
+@FeignClient(name = "user", fallback = UserFeignClientFallback.class)
+public interface UserFeignClient extends UserClient {}
+
+@Component
+class UserFeignClientFallback implements UserFeignClient {
+    public User findById(UUID id) {
+        return User.unknown(id);   // safe default
+    }
+}
+```
+
+### Retry
+
+```properties
+resilience4j.retry.instances.user.max-attempts=3
+resilience4j.retry.instances.user.wait-duration=500ms
+```
+
+### Rate limiter
+
+```properties
+resilience4j.ratelimiter.instances.note.limit-for-period=100
+resilience4j.ratelimiter.instances.note.limit-refresh-period=1s
+resilience4j.ratelimiter.instances.note.timeout-duration=0
+```
+
+### Actuator integration
+
+Resilience4j exposes circuit breaker state via Actuator:
+
+```properties
+management.endpoints.web.exposure.include=health,circuitbreakers,retries
+management.endpoint.health.show-details=always
+```
+
+---
+
 ## Implementation Order
 
 Build modules within each service in this order: `domain/` → `data-jpa/` → `webmvc/` → `application/`.
