@@ -364,6 +364,81 @@ Client ─────────▶ │                gateway/               
 
 ---
 
+## Service Discovery (Eureka)
+
+`registry/` runs a Eureka Server. Every other service is a Eureka client — it registers itself on startup and discovers other services by name, not by hostname or port.
+
+### `registry/application/build.gradle`
+
+```groovy
+plugins {
+    id 'spring-boot-application-conventions'
+}
+dependencies {
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
+}
+```
+
+`registry/application/src/main/java/.../RegistryApplication.java`:
+
+```java
+@SpringBootApplication
+@EnableEurekaServer
+public class RegistryApplication {}
+```
+
+### Eureka client (every business and infrastructure service)
+
+Add to `spring-boot-application-conventions.gradle`:
+
+```groovy
+dependencies {
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+    // ...existing deps
+}
+```
+
+`application.properties` per service:
+
+```properties
+spring.application.name=auth    # Eureka registers the service under this name
+eureka.client.service-url.defaultZone=http://localhost:8761/eureka/
+```
+
+No `@EnableDiscoveryClient` annotation needed — auto-configuration activates the client when the dependency is on the classpath.
+
+### Health check integration
+
+Eureka uses Actuator's `/actuator/health` to mark instances UP or DOWN.
+Requires `spring-boot-starter-actuator` (already in `spring-boot-application-conventions`).
+
+```properties
+eureka.instance.health-check-url-path=/actuator/health
+eureka.instance.status-page-url-path=/actuator/info
+```
+
+### Gateway routing via Eureka
+
+`gateway/` resolves service names from Eureka automatically:
+
+```properties
+spring.cloud.gateway.discovery.locator.enabled=true
+spring.cloud.gateway.discovery.locator.lower-case-service-id=true
+```
+
+A request to `/auth/**` is routed to the `auth` instance registered in Eureka — no static URLs needed.
+
+### Kubernetes alternative
+
+On Kubernetes, Eureka is disabled entirely. K8s `Service` objects handle discovery.
+
+```properties
+# application-k8s.properties
+eureka.client.enabled=false
+```
+
+---
+
 ## Implementation Order
 
 Build modules within each service in this order: `domain/` → `data-jpa/` → `webmvc/` → `application/`.
