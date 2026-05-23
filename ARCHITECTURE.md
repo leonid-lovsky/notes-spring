@@ -1,101 +1,224 @@
 # Architecture
 
-Приложение для заметок с разграничением доступа.
-Spring Boot 4 · Gradle composite builds · микросервисная архитектура.
+A collaborative notes application with role-based access control.
+Spring Boot 4 · Gradle composite builds · microservices monorepo.
 
 ---
 
-## Принципы
+## Tech Stack
 
-Простота и изоляция — главные ценности проекта.
-
-| Принцип                       | Суть                                                        |
-|-------------------------------|-------------------------------------------------------------|
-| DRY                           | каждое знание в одном месте                                 |
-| KISS                          | простое решение лучше умного                                |
-| YAGNI                         | не добавлять то, что не нужно сейчас                        |
-| SLAP                          | один уровень абстракции внутри метода или модуля            |
-| SOLID                         | одна ответственность, зависеть от абстракции, не реализации |
-| GRASP                         | назначение ответственности через устоявшиеся паттерны       |
-| Separation of Concerns        | HTTP, persistence, domain — разные модули                   |
-| Composition over Inheritance  | реализовывать интерфейсы, а не наследовать реализации       |
-| Fail Fast                     | падать сразу, не замалчивать ошибки                         |
-| Single Source of Truth        | каждый факт живёт в одном месте                             |
-| Дзен Пайтона                  | explicit > implicit · simple > complex · readability counts |
-
-На практике:
-- Бизнес-модель живёт только в `domain/` — нигде больше.
-- Адаптеры зависят от `domain/`, но не знают друг о друге.
-- Явное дублирование лучше абстракции, которая не решает проблему полностью.
+| Layer             | Technology                                             |
+|-------------------|--------------------------------------------------------|
+| Language          | Java                                                   |
+| Framework         | Spring Boot 4.0.6                                      |
+| Build             | Gradle 9.5.1, composite builds                         |
+| Service discovery | Spring Cloud Netflix Eureka                            |
+| API gateway       | Spring Cloud Gateway                                   |
+| Configuration     | Spring Cloud Config Server                             |
+| Authorization     | Spring Authorization Server (OAuth2 / OIDC)            |
+| HTTP client       | Spring Cloud OpenFeign + Spring Circuit Breaker        |
+| Persistence       | Spring Data JPA                                        |
+| API docs          | springdoc-openapi (planned)                            |
+| Observability     | Prometheus + Grafana · Zipkin · Elastic Stack          |
 
 ---
 
-## Структура
+## Design Principles
 
-Каждый included build — независимый Gradle проект со своей сборкой.
+| Principle | In practice |
+|---|---|
+| DRY | every piece of knowledge lives in exactly one place |
+| KISS | simple solution over clever one |
+| YAGNI | don't add what isn't needed right now |
+| SLAP | one level of abstraction per method or module |
+| SOLID | single responsibility, depend on abstractions |
+| GRASP | assign responsibilities through established patterns |
+| Separation of Concerns | HTTP, persistence, domain — separate modules |
+| Composition over Inheritance | implement interfaces, don't extend implementations |
+| Fail Fast | fail immediately, never silently swallow errors |
+| Single Source of Truth | `domain/` is the only place for business model |
+| Zen of Python | explicit > implicit, simple > complex, readability counts |
 
-### Бизнес-сервисы
+Key consequences for this project:
+- Business model lives only in `domain/` — nowhere else.
+- Adapters depend only on `domain/` and know nothing about `application/`.
+- Explicit duplication is better than an abstraction that only reduces lines without solving the problem.
 
-| Сервис        | Назначение                | Domain model                                            |
-|---------------|---------------------------|---------------------------------------------------------|
-| `auth/`       | аутентификация (OAuth2)   | `AuthUser { id, username, passwordHash, refreshToken }` |
-| `user/`       | профили пользователей     | `User { id, username, email }`                          |
-| `note/`       | заметки                   | `Note { id, content }`                                  |
-| `user-note/`  | права доступа к заметкам  | `UserNote { id, userId, noteId, role }`                 |
+---
 
-`UserNote.role`: `CREATOR` · `OWNER` · `EDITOR` · `VIEWER`
+## Build System
 
-`auth/` использует Spring Authorization Server. Остальные — Spring Boot + Spring Data JPA + Spring MVC.
+The root project is a Gradle composite build. Each service is an independent included build.
 
-Каждый сервис содержит: `domain/` · `application/` · `webmvc/` · `data-jpa/`  
-`user-note/` дополнительно содержит `feign/` для вызовов в `user/` и `note/`.
+**Root `settings.gradle`:**
+```groovy
+rootProject.name = 'notes-spring'
 
-### Инфраструктурные сервисы
+includeBuild 'build-logic'
+includeBuild 'auth'
+includeBuild 'note'
+includeBuild 'user'
+includeBuild 'user-note'
+includeBuild 'crud'
+includeBuild 'gateway'
+includeBuild 'registry'
+includeBuild 'config'
+```
 
-| Сервис        | Технология                  | Назначение                          |
-|---------------|-----------------------------|-------------------------------------|
-| `gateway/`    | Spring Cloud Gateway        | единая точка входа, маршрутизация   |
-| `registry/`   | Eureka Server               | реестр — сервисы находят друг друга |
-| `config/`     | Spring Cloud Config Server  | централизованная конфигурация       |
+**Root `build.gradle`** — delegates lifecycle tasks to all included builds:
+```groovy
+def builds = gradle.includedBuilds
 
-### Библиотеки
+tasks.register('clean') { dependsOn builds.collect { it.task(':clean') } }
+tasks.register('test')  { dependsOn builds.collect { it.task(':test')  } }
+tasks.register('check') { dependsOn builds.collect { it.task(':check') } }
+tasks.register('build') { dependsOn builds.collect { it.task(':build') } }
+```
 
-| Модуль         | Назначение                                        |
-|----------------|---------------------------------------------------|
-| `crud/`        | переиспользуемая CRUD логика (нет `application/`) |
-| `build-logic/` | Gradle convention plugins для всех сервисов       |
+**Each service `settings.gradle`** (e.g. `auth/settings.gradle`):
+```groovy
+pluginManagement {
+    includeBuild '../build-logic'
+}
+rootProject.name = 'auth'
+include ':domain'
+include ':application'
+include ':webmvc'
+include ':data-jpa'
+```
+
+**Each service `build.gradle`** — delegates to subprojects:
+```groovy
+tasks.register('clean') { dependsOn subprojects.collect { ":${it.name}:clean" } }
+tasks.register('test')  { dependsOn subprojects.collect { ":${it.name}:test"  } }
+tasks.register('check') { dependsOn subprojects.collect { ":${it.name}:check" } }
+tasks.register('build') { dependsOn subprojects.collect { ":${it.name}:build" } }
+```
+
+**`build-logic/build.gradle`:**
+```groovy
+plugins {
+    id 'groovy-gradle-plugin'
+}
+repositories {
+    gradlePluginPortal()
+    mavenCentral()
+}
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-gradle-plugin:4.0.6'
+    implementation 'io.spring.gradle:dependency-management-plugin:1.1.7'
+}
+```
+
+### Convention Plugins
+
+Located in `build-logic/src/main/groovy/`.
+
+| Plugin                               | Used in             | Provides                                    |
+|--------------------------------------|---------------------|---------------------------------------------|
+| `spring-boot-application-conventions`| `application/`      | Spring Boot app, test setup                 |
+| `spring-webmvc-adapter-conventions`  | `webmvc/`           | Spring MVC, BOM import, test setup          |
+| `spring-data-jpa-adapter-conventions`| `data-jpa/`         | Spring Data JPA, BOM import, test setup     |
+| `spring-h2-database-conventions`     | `application/` (dev)| H2 console + driver (mixin, dev only)       |
+| `spring-openfeign-adapter-conventions`| `feign/`           | OpenFeign + Circuit Breaker *(planned)*     |
+
+All convention plugins include `repositories { mavenCentral() }` — services have no repository config.
+
+---
+
+## Project Structure
+
+```
+notes-spring/
+├── build-logic/           convention plugins (not a service)
+
+├── crud/                  shared CRUD library — not a standalone service
+│   ├── domain/            generic CrudRepository<T, ID>
+│   ├── webmvc/            generic CRUD controllers
+│   └── data-jpa/          generic JPA implementation
+
+├── auth/                  authentication & authorization
+│   ├── domain/            AuthUser { id, username, passwordHash, refreshToken }
+│   ├── application/       Spring Boot + Spring Authorization Server
+│   ├── webmvc/            POST /register  /login  /logout  /refresh-token
+│   └── data-jpa/
+
+├── user/                  user profiles
+│   ├── domain/            User { id, username, email }
+│   ├── application/
+│   ├── webmvc/            GET /users/{id}
+│   └── data-jpa/
+
+├── note/                  notes content
+│   ├── domain/            Note { id, content }
+│   ├── application/
+│   ├── webmvc/            GET/POST/PUT/DELETE /notes/{id}
+│   └── data-jpa/
+
+├── user-note/             access control and ownership
+│   ├── domain/            UserNote { id, userId, noteId, role }
+│   │                      Role: CREATOR | OWNER | EDITOR | VIEWER
+│   ├── application/       use cases: access check, ownership transfer
+│   ├── webmvc/            /user-notes
+│   ├── data-jpa/
+│   └── feign/             UserClient, NoteClient → user/, note/
+
+├── gateway/               single entry point
+│   └── application/       Spring Cloud Gateway — routing + auth filter
+
+├── registry/              service registry
+│   └── application/       Eureka Server
+
+└── config/                centralized configuration
+    └── application/       Spring Cloud Config Server
+```
 
 ---
 
 ## Hexagonal Architecture (Ports & Adapters)
 
-Каждый бизнес-сервис устроен одинаково: в центре — бизнес-модель, вокруг — адаптеры.
+Every business service has the same internal structure.
 
 ```
 ┌─────────────────────────────────────────────────────┐
 │                    application/                     │
 │         Spring Boot · use cases · wiring            │
 │                                                     │
-│   ┌──────────┐  ┌───────────┐  ┌────────────────┐   │
-│   │ webmvc/  │  │ data-jpa/ │  │    feign/      │   │
-│   │  HTTP in │  │persistence│  │ (user-note/)   │   │
-│   └────┬─────┘  └─────┬─────┘  └───────┬────────┘   │
+│   ┌──────────┐  ┌───────────┐  ┌────────────────┐  │
+│   │ webmvc/  │  │ data-jpa/ │  │    feign/      │  │
+│   │  HTTP in │  │persistence│  │ (user-note/)   │  │
+│   └────┬─────┘  └─────┬─────┘  └───────┬────────┘  │
 │        └──────────────┼────────────────┘            │
 │                       ↓                             │
 │              ┌─────────────────┐                    │
 │              │    domain/      │                    │
 │              │ entities        │                    │
 │              │ port interfaces │                    │
-│              │ (чистый Java)   │                    │
+│              │ (pure Java)     │                    │
 │              └─────────────────┘                    │
 └─────────────────────────────────────────────────────┘
 ```
 
-**Правило:** адаптеры (`webmvc/`, `data-jpa/`, `feign/`) зависят **только** от `domain/` и не знают про `application/`. Это позволяет заменить любой адаптер без изменения бизнес-логики.
+**Rule:** adapters (`webmvc/`, `data-jpa/`, `feign/`) depend **only** on `domain/`.
+They must not import anything from `application/` — doing so pulls in `spring-boot-starter` and breaks isolation.
+
+**Module dependencies per service:**
+
+| Module         | Depends on                              |
+|----------------|-----------------------------------------|
+| `domain/`      | nothing — pure Java                     |
+| `webmvc/`      | `domain/`                               |
+| `data-jpa/`    | `domain/`                               |
+| `feign/`       | `domain/` *(user-note only)*            |
+| `application/` | `domain/` + all adapters of this service|
+
+**Swapping an adapter:** change one dependency in `application/build.gradle` — `domain/` stays untouched.
+
+**Adding inter-service communication:** define a port interface in `domain/`, implement it in a new adapter module.
 
 ---
 
-## Взаимодействие сервисов
+## Service Interaction
 
 ```
                   ┌──────────────────────────────────────────┐
@@ -105,31 +228,31 @@ Client ─────────▶ │                gateway/               
                        ▼      ▼        ▼                ▼
                       auth/  user/   note/          user-note/
                                                         │
-                                               feign/ вызывает
+                                               feign/ calls
                                                         │
                                                 ┌───────┴───────┐
                                                 ▼               ▼
                                               user/           note/
 
-  Все сервисы ──▶ registry/   регистрируются при старте (Eureka)
-  Все сервисы ──▶ config/     получают конфигурацию при старте
+  All services ──▶ registry/   register on startup (Eureka)
+  All services ──▶ config/     fetch config on startup
 ```
 
 ---
 
-## Мониторинг и наблюдаемость
+## Observability
 
-| Инструмент           | Назначение            |
+| Tool                 | Purpose               |
 |----------------------|-----------------------|
-| Prometheus + Grafana | метрики               |
-| Zipkin               | трассировка запросов  |
-| Elastic Stack (ELK)  | централизованные логи |
+| Prometheus + Grafana | metrics               |
+| Zipkin               | distributed tracing   |
+| Elastic Stack (ELK)  | centralized logs      |
 
 ---
 
-## Планы
+## Roadmap
 
-| Что             | Зачем                                                                      |
+| Item            | Why                                                                        |
 |-----------------|----------------------------------------------------------------------------|
-| **Kubernetes**  | оркестрация контейнеров; Eureka отключается — K8s берёт service discovery  |
-| **AWS**         | целевая платформа для production-развёртывания                             |
+| **Kubernetes**  | container orchestration; Eureka disabled — K8s handles service discovery   |
+| **AWS**         | target platform for production deployment                                  |
