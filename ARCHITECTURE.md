@@ -658,9 +658,30 @@ spring.cloud.gateway.discovery.locator.enabled=true
 
 ## Observability
 
+### Spring Boot Actuator
+
+Add `spring-boot-starter-actuator` to `spring-boot-application-conventions.gradle`. Every service then exposes:
+
+| Endpoint              | Purpose                                     |
+|-----------------------|---------------------------------------------|
+| `/actuator/health`    | liveness / readiness probes (Kubernetes)    |
+| `/actuator/info`      | service metadata                            |
+| `/actuator/metrics`   | application metrics                         |
+| `/actuator/prometheus`| Prometheus-format metrics scrape endpoint   |
+| `/actuator/loggers`   | runtime log-level management                |
+
+Recommended `application.properties`:
+
+```properties
+management.endpoints.web.exposure.include=health,info,metrics,prometheus,loggers
+management.endpoint.health.show-details=always
+```
+
+### Monitoring stack
+
 | Tool                 | Purpose             |
 |----------------------|---------------------|
-| Prometheus + Grafana | metrics             |
+| Prometheus + Grafana | metrics (scrapes `/actuator/prometheus`) |
 | Zipkin               | distributed tracing |
 | Elastic Stack (ELK)  | centralized logs    |
 
