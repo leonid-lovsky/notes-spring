@@ -1,0 +1,7 @@
+plugins {
+    id 'spring-openfeign-adapter-conventions'
+}
+
+dependencies {
+    implementation project(':domain')
+}

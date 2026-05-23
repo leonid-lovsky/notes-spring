@@ -506,7 +506,7 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
@@ -521,6 +521,7 @@ Mixin — applied alongside another plugin, not standalone.
 
 ```groovy
 dependencies {
+    implementation 'org.springframework.boot:spring-boot-h2console'
     runtimeOnly 'com.h2database:h2'
 }
 ```
@@ -1066,6 +1067,8 @@ Trace pipeline: service → OpenTelemetry Collector → Jaeger or Grafana Tempo.
 
 ## Deployment
 
+Target runtime is **AWS** — Kubernetes for orchestration (Eureka disabled in `k8s` profile), Helm for parameterized multi-environment deploys.
+
 ### Docker
 
 `bootBuildImage` is available on every `application/` module — `org.springframework.boot` is applied by `spring-boot-application-conventions`.
@@ -1201,7 +1204,7 @@ Add to the relevant adapter convention plugin:
 ```groovy
 dependencies {
     testImplementation 'org.springframework.boot:spring-boot-testcontainers'
-    testImplementation 'org.testcontainers:postgresql'   // or :kafka, :redis, etc.
+    testImplementation 'org.testcontainers:testcontainers-postgresql'   // or :testcontainers-kafka, :testcontainers-vault, etc.
 }
 ```
 
@@ -1224,8 +1227,3 @@ class UserRepositoryTest {
 }
 ```
 
----
-
-## Production Platform
-
-Target runtime is **AWS**. Kubernetes manages orchestration and service discovery (Eureka disabled). Helm handles parameterized deployments across environments. See [Deployment](#deployment) for full configuration.

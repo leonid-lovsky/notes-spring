@@ -4,6 +4,7 @@ pluginManagement {
 
 rootProject.name = 'note'
 
+include ':domain'
 include ':application'
 include ':webmvc'
 include ':data-jpa'

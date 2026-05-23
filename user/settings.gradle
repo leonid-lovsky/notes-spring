@@ -4,6 +4,7 @@ pluginManagement {
 
 rootProject.name = 'user'
 
+include ':domain'
 include ':application'
 include ':webmvc'
 include ':data-jpa'
