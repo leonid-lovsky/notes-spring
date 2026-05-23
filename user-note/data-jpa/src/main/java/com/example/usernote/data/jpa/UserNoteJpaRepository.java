@@ -10,5 +10,6 @@ interface UserNoteJpaRepository extends JpaRepository<UserNoteEntity, UUID> {
     List<UserNoteEntity> findByUserId(String userId);
     List<UserNoteEntity> findByOwnerId(String ownerId);
     Optional<UserNoteEntity> findByUserIdAndNoteId(String userId, UUID noteId);
+    @org.springframework.transaction.annotation.Transactional
     void deleteByUserIdAndNoteId(String userId, UUID noteId);
 }
