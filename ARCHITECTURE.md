@@ -1000,6 +1000,27 @@ Fallbacks return `Optional.empty()` — `user-note/` degrades gracefully if `use
 
 `@EnableFeignClients` goes on `UserNoteApplication` with `basePackages = "com.example.usernote.feign"`. Because Gradle `implementation` is non-transitive, `user-note/application/build.gradle` must also declare `spring-cloud-starter-openfeign` directly alongside the `feign/` module dependency.
 
+### JWT token propagation
+
+`user/` and `note/` are OAuth2 Resource Servers — they require a valid `Authorization: Bearer <token>` header. Feign clients do not forward this automatically.
+
+`BearerTokenRequestInterceptor` in `user-note/application/` copies the incoming JWT to every outgoing Feign call:
+
+```java
+@Component
+class BearerTokenRequestInterceptor implements RequestInterceptor {
+    @Override
+    public void apply(RequestTemplate template) {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth instanceof JwtAuthenticationToken jwtAuth) {
+            template.header("Authorization", "Bearer " + jwtAuth.getToken().getTokenValue());
+        }
+    }
+}
+```
+
+The interceptor lives in `application/` (not `feign/`) — it wires a security concern (the request-scoped `SecurityContextHolder`) to the outgoing HTTP adapter. `feign/` stays pure: only client interfaces and fallbacks.
+
 ---
 
 ## Resilience4j
@@ -1107,11 +1128,12 @@ Resource Server services (`user/`, `note/`, `user-note/`) add H2, JPA, and JWT c
 ```properties
 spring.datasource.url=jdbc:h2:mem:userdb;DB_CLOSE_DELAY=-1
 spring.jpa.open-in-view=false
+spring.jpa.hibernate.ddl-auto=create-drop
 spring.h2.console.enabled=true
 spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://localhost:8081/oauth2/jwks
 ```
 
-Use a unique in-memory database name per service (`userdb`, `notedb`, `usernotedb`). `DB_CLOSE_DELAY=-1` keeps the database alive for the JVM lifetime. `spring.jpa.open-in-view=false` disables the Open Session In View antipattern.
+Use a unique in-memory database name per service (`userdb`, `notedb`, `usernotedb`). `DB_CLOSE_DELAY=-1` keeps the database alive for the JVM lifetime. `spring.jpa.open-in-view=false` disables the Open Session In View antipattern. `ddl-auto=create-drop` is explicit — Spring Boot defaults to it for embedded databases, but implicit defaults are a production risk when the datasource is changed.
 
 ### `registry/application.properties`
 
