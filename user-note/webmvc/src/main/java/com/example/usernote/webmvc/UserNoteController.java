@@ -1,5 +1,6 @@
 package com.example.usernote.webmvc;
 
+import com.example.usernote.domain.NoteClient;
 import com.example.usernote.domain.UserNote;
 import com.example.usernote.domain.UserNoteRepository;
 import org.springframework.http.ResponseEntity;
@@ -21,9 +22,11 @@ import java.util.UUID;
 public class UserNoteController {
 
     private final UserNoteRepository repository;
+    private final NoteClient noteClient;
 
-    public UserNoteController(UserNoteRepository repository) {
+    public UserNoteController(UserNoteRepository repository, NoteClient noteClient) {
         this.repository = repository;
+        this.noteClient = noteClient;
     }
 
     @GetMapping
@@ -38,6 +41,10 @@ public class UserNoteController {
 
     @PostMapping
     public ResponseEntity<UserNote> share(@RequestBody ShareRequest request, Principal principal) {
+        var note = noteClient.findById(request.noteId());
+        if (note.isEmpty() || !note.get().ownerId().equals(principal.getName())) {
+            return ResponseEntity.notFound().build();
+        }
         var userNote = repository.save(
             UserNote.create(request.userId(), request.noteId(), principal.getName(), request.permission())
         );

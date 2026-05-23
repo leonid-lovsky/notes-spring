@@ -31,6 +31,13 @@ public class UserProfileController {
             .orElseGet(() -> repository.save(UserProfile.create(principal.getName(), principal.getName(), "")));
     }
 
+    @GetMapping("/subject/{subject}")
+    public ResponseEntity<UserProfile> findBySubject(@PathVariable String subject) {
+        return repository.findBySubject(subject)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<UserProfile> findById(@PathVariable UUID id) {
         return repository.findById(id)

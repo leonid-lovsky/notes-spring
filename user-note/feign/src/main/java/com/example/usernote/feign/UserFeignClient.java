@@ -10,7 +10,7 @@ import java.util.Optional;
 @FeignClient(name = "user-service", fallback = UserFeignClientFallback.class)
 public interface UserFeignClient extends UserClient {
 
-    @GetMapping("/users/{subject}")
+    @GetMapping("/users/subject/{subject}")
     @Override
     Optional<UserSummary> findBySubject(@PathVariable String subject);
 }

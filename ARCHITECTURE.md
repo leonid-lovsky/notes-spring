@@ -239,6 +239,7 @@ Controllers use `java.security.Principal` (not `@AuthenticationPrincipal Jwt`) â
 | Service     | Method | Path                                        | Description                    |
 |-------------|--------|---------------------------------------------|--------------------------------|
 | `user`      | GET    | /users/me                                   | my profile (by JWT subject)    |
+| `user`      | GET    | /users/subject/{subject}                    | profile by JWT subject (Feign) |
 | `user`      | GET    | /users/{id}                                 | profile by UUID                |
 | `user`      | POST   | /users                                      | create profile                 |
 | `user`      | PUT    | /users/me                                   | update my profile              |
@@ -249,7 +250,7 @@ Controllers use `java.security.Principal` (not `@AuthenticationPrincipal Jwt`) â
 | `note`      | DELETE | /notes/{id}                                 | delete note (owner only)       |
 | `user-note` | GET    | /user-notes                                 | notes shared with me           |
 | `user-note` | GET    | /user-notes/owned                           | notes I shared to others       |
-| `user-note` | POST   | /user-notes                                 | share a note                   |
+| `user-note` | POST   | /user-notes                                 | share note (owner only)        |
 | `user-note` | DELETE | /user-notes/notes/{noteId}/users/{userId}   | revoke access                  |
 
 ---
