@@ -5,6 +5,19 @@ Built on Spring Boot 4, Gradle composite builds, microservices monorepo.
 
 ---
 
+## How to read this document
+
+This is a **design specification**, not a project status report.
+
+- It describes the intended architecture, conventions, and technology choices for the complete application.
+- The actual implementation may be at any stage — some modules may not exist yet, some choices may have been revised for valid reasons.
+- **If you find a deviation** between this document and the code: decide which is correct, then synchronize both. The document and the code must always agree.
+- **If a deliberate alternative was chosen** (a different adapter, library, or approach) during implementation: update this document to reflect that choice. The document always describes what was actually built, not what was originally planned.
+
+This document is sufficient to reconstruct the project from scratch — by a human or a machine.
+
+---
+
 ## Tech Stack
 
 | Concern           | Technology                                          |
