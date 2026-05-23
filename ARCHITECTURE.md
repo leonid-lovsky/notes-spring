@@ -33,8 +33,9 @@ Built on Spring Boot 4, Gradle composite builds, microservices monorepo.
 | Packaging         | Docker — Spring Boot Buildpacks                     |
 | Orchestration     | Kubernetes + Helm                                   |
 
-> Add the Spring Cloud BOM to `build-logic/build.gradle` before using
-> Gateway, Eureka, Config, or OpenFeign.
+> Spring Cloud BOM (`org.springframework.cloud:spring-cloud-dependencies:2025.1.1`) is imported
+> inside `spring-boot-application-conventions.gradle` via `dependencyManagement`.
+> No changes to `build-logic/build.gradle` are needed.
 
 ---
 
@@ -125,10 +126,10 @@ Every business service has the same internal structure: a pure-Java core (`domai
 │                    application/                     │
 │         Spring Boot · use cases · wiring            │
 │                                                     │
-│   ┌──────────┐  ┌───────────┐  ┌────────────────┐  │
-│   │ webmvc/  │  │ data-jpa/ │  │    feign/      │  │
-│   │  HTTP in │  │persistence│  │ (user-note/)   │  │
-│   └────┬─────┘  └─────┬─────┘  └───────┬────────┘  │
+│   ┌──────────┐  ┌───────────┐  ┌────────────────┐   │
+│   │ webmvc/  │  │ data-jpa/ │  │    feign/      │   │
+│   │  HTTP in │  │persistence│  │ (user-note/)   │   │
+│   └────┬─────┘  └─────┬─────┘  └───────┬────────┘   │
 │        └──────────────┼────────────────┘            │
 │                       ↓                             │
 │              ┌─────────────────┐                    │
@@ -898,6 +899,12 @@ plugins {
     id 'io.spring.dependency-management'
 }
 
+dependencyManagement {
+    imports {
+        mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2025.1.1'
+    }
+}
+
 repositories {
     mavenCentral()
 }
@@ -905,10 +912,9 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-opentelemetry'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
     implementation 'io.micrometer:micrometer-registry-prometheus'
-    implementation 'io.micrometer:micrometer-tracing-bridge-otel'
-    implementation 'io.opentelemetry:opentelemetry-exporter-otlp'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
@@ -938,7 +944,7 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2'
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
@@ -1111,7 +1117,7 @@ Grafana connects to Prometheus as a data source and visualizes dashboards.
 
 ### OpenTelemetry
 
-`micrometer-tracing-bridge-otel` and `opentelemetry-exporter-otlp` are included in `spring-boot-application-conventions`. Every incoming HTTP request, outgoing Feign call, and database query is automatically traced.
+`spring-boot-starter-opentelemetry` is included in `spring-boot-application-conventions`. It provides the OTel SDK, Micrometer tracing bridge, and OTLP exporter — every incoming HTTP request, outgoing Feign call, and database query is automatically traced.
 
 Trace pipeline: service → OpenTelemetry Collector → Jaeger or Grafana Tempo.
 
