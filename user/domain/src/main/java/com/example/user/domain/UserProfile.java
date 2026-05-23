@@ -12,11 +12,7 @@ public record UserProfile(
         return new UserProfile(UUID.randomUUID(), subject, username, email);
     }
 
-    public UserProfile withUsername(String username) {
-        return new UserProfile(id, subject, username, email);
-    }
-
-    public UserProfile withEmail(String email) {
+    public UserProfile update(String username, String email) {
         return new UserProfile(id, subject, username, email);
     }
 }

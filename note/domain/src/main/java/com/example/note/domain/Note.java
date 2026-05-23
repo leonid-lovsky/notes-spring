@@ -14,14 +14,6 @@ public record Note(
         return new Note(UUID.randomUUID(), ownerId, title, content, Instant.now());
     }
 
-    public Note withTitle(String title) {
-        return new Note(id, ownerId, title, content, createdAt);
-    }
-
-    public Note withContent(String content) {
-        return new Note(id, ownerId, title, content, createdAt);
-    }
-
     public Note update(String title, String content) {
         return new Note(id, ownerId, title, content, createdAt);
     }

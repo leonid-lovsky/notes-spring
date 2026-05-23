@@ -1,13 +1,9 @@
 plugins {
     id 'spring-boot-application-conventions'
-    id 'spring-h2-database-conventions'
 }
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-authorization-server'
     implementation 'org.springframework.cloud:spring-cloud-starter-config'
     testImplementation 'org.springframework.boot:spring-boot-starter-security-oauth2-authorization-server-test'
-    implementation project(':domain')
-    implementation project(':data-jpa')
-    implementation project(':webmvc')
 }

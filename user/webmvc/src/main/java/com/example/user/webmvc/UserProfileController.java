@@ -55,7 +55,7 @@ public class UserProfileController {
     public UserProfile update(@RequestBody ProfileRequest request, Principal principal) {
         var existing = repository.findBySubject(principal.getName())
             .orElseGet(() -> UserProfile.create(principal.getName(), request.username(), request.email()));
-        return repository.save(new UserProfile(existing.id(), existing.subject(), request.username(), request.email()));
+        return repository.save(existing.update(request.username(), request.email()));
     }
 
     record ProfileRequest(String username, String email) {}
