@@ -2,6 +2,7 @@ package com.example.user.webmvc;
 
 import com.example.user.domain.UserProfile;
 import com.example.user.domain.UserProfileRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,6 +48,9 @@ public class UserProfileController {
 
     @PostMapping
     public ResponseEntity<UserProfile> create(@RequestBody ProfileRequest request, Principal principal) {
+        if (repository.findBySubject(principal.getName()).isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
         var profile = repository.save(UserProfile.create(principal.getName(), request.username(), request.email()));
         return ResponseEntity.created(URI.create("/users/" + profile.id())).body(profile);
     }

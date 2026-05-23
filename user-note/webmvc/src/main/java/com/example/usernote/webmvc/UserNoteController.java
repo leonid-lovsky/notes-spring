@@ -3,6 +3,7 @@ package com.example.usernote.webmvc;
 import com.example.usernote.domain.NoteClient;
 import com.example.usernote.domain.UserNote;
 import com.example.usernote.domain.UserNoteRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -52,6 +53,9 @@ public class UserNoteController {
         var note = noteClient.findById(request.noteId());
         if (note.isEmpty() || !note.get().ownerId().equals(principal.getName())) {
             return ResponseEntity.notFound().build();
+        }
+        if (repository.findByUserIdAndNoteId(request.userId(), request.noteId()).isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
         var userNote = repository.save(
             UserNote.create(request.userId(), request.noteId(), principal.getName(), request.permission())
