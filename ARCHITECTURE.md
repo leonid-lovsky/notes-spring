@@ -408,6 +408,11 @@ All plugins are `.gradle` files in `build-logic/src/main/groovy/`.
 
 Adapter plugins follow the same pattern: `java-library` + `io.spring.dependency-management` + BOM import + starter dependency.
 
+> **Source of truth for all Spring Boot starters and recommended configuration:**
+> `curl https://start.spring.io`
+> Maven Central search is NOT authoritative — Spring Boot 4 starters may not appear there.
+> Every main starter has a matching `-test` variant (e.g. `spring-boot-starter-data-jpa-test`).
+
 ### `spring-domain-conventions.gradle`
 
 ```groovy
@@ -442,12 +447,13 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-opentelemetry'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
-    implementation 'io.micrometer:micrometer-registry-prometheus'
+    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-actuator-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-opentelemetry-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
@@ -572,13 +578,18 @@ Browser / mobile app
 `auth/application/build.gradle`:
 
 ```groovy
-plugins { id 'spring-boot-application-conventions' }
+plugins {
+    id 'spring-boot-application-conventions'
+    id 'spring-h2-database-conventions'
+}
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-authorization-server'
+    implementation 'org.springframework.cloud:spring-cloud-starter-config'
+    testImplementation 'org.springframework.boot:spring-boot-starter-security-oauth2-authorization-server-test'
+    implementation project(':domain')
     implementation project(':webmvc')
     implementation project(':data-jpa')
-    implementation project(':domain')
 }
 ```
 
@@ -645,9 +656,12 @@ Standard endpoints:
 plugins { id 'spring-boot-application-conventions' }
 
 dependencies {
-    implementation 'org.springframework.cloud:spring-cloud-starter-gateway-server-webmvc'
     implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-client'
     implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-resource-server'
+    implementation 'org.springframework.cloud:spring-cloud-starter-config'
+    implementation 'org.springframework.cloud:spring-cloud-starter-gateway-server-webmvc'
+    testImplementation 'org.springframework.boot:spring-boot-starter-security-oauth2-client-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-security-oauth2-resource-server-test'
 }
 ```
 
@@ -658,10 +672,16 @@ spring.security.oauth2.client.registration.gateway.client-id=gateway
 spring.security.oauth2.client.registration.gateway.client-secret=secret
 spring.security.oauth2.client.registration.gateway.authorization-grant-type=authorization_code
 spring.security.oauth2.client.registration.gateway.scope=openid,read
-spring.security.oauth2.client.provider.gateway.issuer-uri=http://localhost:8081
+spring.security.oauth2.client.provider.gateway.authorization-uri=http://localhost:8081/oauth2/authorize
+spring.security.oauth2.client.provider.gateway.token-uri=http://localhost:8081/oauth2/token
+spring.security.oauth2.client.provider.gateway.jwk-set-uri=http://localhost:8081/oauth2/jwks
+spring.security.oauth2.client.provider.gateway.user-info-uri=http://localhost:8081/userinfo
+spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://localhost:8081/oauth2/jwks
 
 spring.cloud.gateway.default-filters[0]=TokenRelay
 ```
+
+> **Note:** `issuer-uri` triggers eager OIDC discovery at startup — the app will fail if the Auth Server is unreachable. Use explicit provider URIs (`authorization-uri`, `token-uri`, `jwk-set-uri`, `user-info-uri`) which are lazy-resolved at first request. This is also required for test isolation.
 
 `gateway/application/src/main/java/.../GatewaySecurityConfig.java`:
 
@@ -769,6 +789,65 @@ eureka.client.enabled=false
 
 ---
 
+## Centralized Configuration (Config Server)
+
+`config/` serves configuration files to all services at startup. Each service fetches its `application.properties` (and profile-specific overrides) from the Config Server before starting.
+
+### Config Server — `config/`
+
+`config/application/build.gradle`:
+
+```groovy
+plugins { id 'spring-boot-application-conventions' }
+
+dependencies {
+    implementation 'org.springframework.cloud:spring-cloud-config-server'
+}
+```
+
+`config/application/src/main/java/.../ConfigApplication.java`:
+
+```java
+@SpringBootApplication
+@EnableConfigServer
+public class ConfigApplication {}
+```
+
+`config/application/src/main/resources/application.properties`:
+
+```properties
+spring.application.name=config
+server.port=8888
+spring.cloud.config.server.git.uri=file://${user.home}/notes-spring-config
+spring.cloud.config.server.git.default-label=main
+eureka.client.service-url.defaultZone=http://localhost:8761/eureka/
+management.endpoints.web.exposure.include=health,info,metrics,prometheus,loggers
+management.endpoint.health.show-details=always
+management.endpoint.health.probes.enabled=true
+management.tracing.sampling.probability=1.0
+otel.exporter.otlp.endpoint=http://localhost:4318
+```
+
+### Config Client — all business services
+
+`spring-cloud-starter-config` is added to each service's `application/build.gradle`. Each service requires:
+
+```properties
+spring.config.import=optional:configserver:http://localhost:8888
+```
+
+The `optional:` prefix means the service starts normally if the Config Server is unreachable (useful in tests and local development without the full stack).
+
+### Startup order
+
+Config Server depends on Eureka for registration, but services fetch config before Eureka registration. Run services in this order locally:
+
+```
+registry → config → auth → user · note · user-note → gateway
+```
+
+---
+
 ## API Gateway
 
 `gateway/` is the single entry point for all client traffic. It routes requests, enforces authentication, and forwards JWT tokens to backend services. See [Security](#security-oauth2--oidc) for full OAuth2 configuration.
@@ -832,6 +911,7 @@ repositories {
 dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
     implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
@@ -952,29 +1032,23 @@ springdoc.swagger-ui.urls[3].url=/user-note/v3/api-docs
 
 ### Business service `application.properties`
 
+Example for `auth/` (ports 8081–8084 per the port table above):
+
 ```properties
-spring.application.name=auth
+spring.application.name=auth-service
 server.port=8081
-
-# datasource (replace with PostgreSQL in production)
-spring.datasource.url=jdbc:h2:mem:authdb
-
-# service discovery
+spring.config.import=optional:configserver:http://localhost:8888
 eureka.client.service-url.defaultZone=http://localhost:8761/eureka/
-
-# centralized configuration
-spring.config.import=configserver:http://localhost:8888
-
-# actuator
 management.endpoints.web.exposure.include=health,info,metrics,prometheus,loggers
 management.endpoint.health.show-details=always
 management.endpoint.health.probes.enabled=true
-
-# tracing
 management.tracing.sampling.probability=1.0
 otel.exporter.otlp.endpoint=http://localhost:4318
+```
 
-# security
+Resource Server services (`user/`, `note/`, `user-note/`) add JWT validation via JWKS (lazy — no startup dependency on auth):
+
+```properties
 spring.security.oauth2.resourceserver.jwt.issuer-uri=http://localhost:8081
 ```
 
@@ -986,6 +1060,11 @@ server.port=8761
 eureka.instance.hostname=localhost
 eureka.client.register-with-eureka=false
 eureka.client.fetch-registry=false
+management.endpoints.web.exposure.include=health,info,metrics,prometheus,loggers
+management.endpoint.health.show-details=always
+management.endpoint.health.probes.enabled=true
+management.tracing.sampling.probability=1.0
+otel.exporter.otlp.endpoint=http://localhost:4318
 ```
 
 ### `gateway/application.properties`
@@ -993,9 +1072,33 @@ eureka.client.fetch-registry=false
 ```properties
 spring.application.name=gateway
 server.port=8080
+spring.config.import=optional:configserver:http://localhost:8888
 eureka.client.service-url.defaultZone=http://localhost:8761/eureka/
 spring.cloud.gateway.discovery.locator.enabled=true
 spring.cloud.gateway.discovery.locator.lower-case-service-id=true
+spring.cloud.gateway.default-filters[0]=TokenRelay
+spring.security.oauth2.client.registration.gateway.client-id=gateway
+spring.security.oauth2.client.registration.gateway.client-secret=secret
+spring.security.oauth2.client.registration.gateway.authorization-grant-type=authorization_code
+spring.security.oauth2.client.registration.gateway.scope=openid,read
+spring.security.oauth2.client.provider.gateway.authorization-uri=http://localhost:8081/oauth2/authorize
+spring.security.oauth2.client.provider.gateway.token-uri=http://localhost:8081/oauth2/token
+spring.security.oauth2.client.provider.gateway.jwk-set-uri=http://localhost:8081/oauth2/jwks
+spring.security.oauth2.client.provider.gateway.user-info-uri=http://localhost:8081/userinfo
+spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://localhost:8081/oauth2/jwks
+management.endpoints.web.exposure.include=health,info,metrics,prometheus,loggers
+management.endpoint.health.show-details=always
+management.endpoint.health.probes.enabled=true
+management.tracing.sampling.probability=1.0
+otel.exporter.otlp.endpoint=http://localhost:4318
+```
+
+`gateway/src/test/resources/application.properties` (test isolation — excludes OAuth2 auto-config to avoid eager OIDC discovery at test startup):
+
+```properties
+spring.config.import=optional:configserver:
+spring.autoconfigure.exclude[0]=org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration
+spring.autoconfigure.exclude[1]=org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration
 ```
 
 ### `application-k8s.properties` (profile — overrides base config)
