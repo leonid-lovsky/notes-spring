@@ -12,5 +12,5 @@ public interface UserFeignClient extends UserClient {
 
     @GetMapping("/users/subject/{subject}")
     @Override
-    Optional<UserSummary> findBySubject(@PathVariable String subject);
+    Optional<UserSummary> findBySubject(@PathVariable("subject") String subject);
 }

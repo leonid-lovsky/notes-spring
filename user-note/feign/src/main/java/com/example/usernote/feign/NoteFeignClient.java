@@ -13,5 +13,5 @@ public interface NoteFeignClient extends NoteClient {
 
     @GetMapping("/notes/{id}")
     @Override
-    Optional<NoteSummary> findById(@PathVariable UUID id);
+    Optional<NoteSummary> findById(@PathVariable("id") UUID id);
 }
