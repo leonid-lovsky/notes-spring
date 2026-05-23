@@ -677,19 +677,270 @@ management.endpoints.web.exposure.include=health,info,metrics,prometheus,loggers
 management.endpoint.health.show-details=always
 ```
 
+### Prometheus
+
+Prometheus scrapes metrics from every service's `/actuator/prometheus` endpoint.
+Requires Micrometer Prometheus registry — add to `spring-boot-application-conventions.gradle`:
+
+```groovy
+dependencies {
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+    // ...existing deps
+}
+```
+
+`prometheus.yml` scrape config (one entry per service):
+
+```yaml
+scrape_configs:
+  - job_name: auth
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['localhost:8081']
+  - job_name: user
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['localhost:8082']
+```
+
+Grafana connects to Prometheus as a data source and visualizes dashboards.
+
+### OpenTelemetry
+
+OpenTelemetry provides distributed tracing across all services via Micrometer Tracing.
+Add to `spring-boot-application-conventions.gradle`:
+
+```groovy
+dependencies {
+    implementation 'io.micrometer:micrometer-tracing-bridge-otel'
+    implementation 'io.opentelemetry.instrumentation:opentelemetry-spring-boot-starter'
+    // export to OTLP collector (Jaeger / Tempo / Zipkin):
+    implementation 'io.opentelemetry:opentelemetry-exporter-otlp'
+    // ...existing deps
+}
+```
+
+`application.properties` per service:
+
+```properties
+management.tracing.sampling.probability=1.0
+otel.exporter.otlp.endpoint=http://localhost:4318
+```
+
+Trace data flows: service → OpenTelemetry Collector → Jaeger (or Grafana Tempo, or Zipkin).
+Every incoming HTTP request, outgoing Feign call, and database query is automatically traced.
+
 ### Monitoring stack
 
-| Tool                 | Purpose             |
-|----------------------|---------------------|
-| Prometheus + Grafana | metrics (scrapes `/actuator/prometheus`) |
-| Zipkin               | distributed tracing |
-| Elastic Stack (ELK)  | centralized logs    |
+| Tool                 | Purpose                                         |
+|----------------------|-------------------------------------------------|
+| Prometheus           | metrics collection (scrapes `/actuator/prometheus`) |
+| Grafana              | metrics dashboards and alerts                   |
+| OpenTelemetry        | distributed tracing instrumentation             |
+| Jaeger / Grafana Tempo | trace storage and visualization               |
+| Elastic Stack (ELK)  | centralized log aggregation                     |
+
+---
+
+## Deployment
+
+### Docker
+
+Each service is packaged as a Docker image using Spring Boot's built-in Buildpacks support.
+Add to `spring-boot-application-conventions.gradle`:
+
+```groovy
+plugins {
+    // ...existing
+    id 'org.springframework.boot'   // already present — enables bootBuildImage
+}
+```
+
+Build image for a service:
+
+```
+./gradlew :application:bootBuildImage --imageName=notes-spring/auth:latest
+```
+
+### Docker Compose
+
+`docker-compose.yml` at the repository root starts the full stack locally:
+
+```yaml
+services:
+  registry:
+    image: notes-spring/registry:latest
+    ports: ["8761:8761"]
+
+  config:
+    image: notes-spring/config:latest
+    ports: ["8888:8888"]
+    depends_on: [registry]
+
+  auth:
+    image: notes-spring/auth:latest
+    ports: ["8081:8081"]
+    depends_on: [registry, config]
+
+  user:
+    image: notes-spring/user:latest
+    ports: ["8082:8082"]
+    depends_on: [registry, config]
+
+  note:
+    image: notes-spring/note:latest
+    ports: ["8083:8083"]
+    depends_on: [registry, config]
+
+  user-note:
+    image: notes-spring/user-note:latest
+    ports: ["8084:8084"]
+    depends_on: [registry, config, user, note]
+
+  gateway:
+    image: notes-spring/gateway:latest
+    ports: ["8080:8080"]
+    depends_on: [registry, auth, user, note, user-note]
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports: ["9090:9090"]
+
+  grafana:
+    image: grafana/grafana:latest
+    ports: ["3000:3000"]
+```
+
+### Kubernetes
+
+On Kubernetes, Eureka is replaced by native K8s service discovery.
+Each service is deployed as a `Deployment` + `Service`. `ConfigMap` replaces the Config Server.
+
+Disable Eureka in `application.properties` for the K8s profile:
+
+```properties
+eureka.client.enabled=false
+spring.cloud.config.enabled=false
+```
+
+Liveness and readiness probes use Actuator endpoints:
+
+```yaml
+livenessProbe:
+  httpGet:
+    path: /actuator/health/liveness
+    port: 8081
+readinessProbe:
+  httpGet:
+    path: /actuator/health/readiness
+    port: 8081
+```
+
+Enable liveness/readiness in `application.properties`:
+
+```properties
+management.endpoint.health.probes.enabled=true
+```
+
+### Helm
+
+Each service has a `helm/` directory with a Helm chart. A root `Chart.yaml` with subcharts assembles the full stack:
+
+```
+notes-spring/
+├── helm/
+│   ├── Chart.yaml        # umbrella chart
+│   ├── values.yaml       # shared defaults
+│   └── charts/           # per-service subchart tarballs
+│
+├── auth/helm/
+├── user/helm/
+├── note/helm/
+└── user-note/helm/
+```
+
+Deploy to a cluster:
+
+```
+helm upgrade --install notes-spring ./helm --namespace notes-spring --create-namespace
+```
+
+---
+
+## Secrets Management
+
+### HashiCorp Vault
+
+Vault stores secrets (database passwords, API keys, JWT signing keys) and delivers them to services at startup via Spring Cloud Vault.
+
+Add to `spring-boot-application-conventions.gradle`:
+
+```groovy
+dependencies {
+    implementation 'org.springframework.cloud:spring-cloud-starter-vault-config'
+    // ...existing deps
+}
+```
+
+`application.properties` per service:
+
+```properties
+spring.cloud.vault.uri=http://localhost:8200
+spring.cloud.vault.authentication=token
+spring.cloud.vault.token=${VAULT_TOKEN}
+spring.cloud.vault.kv.enabled=true
+spring.cloud.vault.kv.backend=secret
+spring.cloud.vault.kv.default-context=auth   # change per service
+spring.config.import=vault://
+```
+
+Secrets stored at `secret/auth` in Vault are automatically injected as Spring properties.
+In production, replace token authentication with Kubernetes auth or AWS IAM.
+
+---
+
+## Testing
+
+### Testcontainers
+
+Testcontainers starts real infrastructure (database, Redis, Kafka, etc.) inside Docker during tests.
+Use it in `data-jpa/`, `cache/`, `rabbitmq/`, `kafka/` adapter tests to avoid mocking persistence.
+
+Add to the relevant adapter convention plugin (e.g., `spring-data-jpa-adapter-conventions.gradle`):
+
+```groovy
+dependencies {
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+    testImplementation 'org.testcontainers:postgresql'   // or :kafka, :redis, etc.
+    // ...existing deps
+}
+```
+
+Example integration test:
+
+```java
+@SpringBootTest
+@Testcontainers
+class UserRepositoryTest {
+
+    @Container
+    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16");
+
+    @DynamicPropertySource
+    static void props(DynamicPropertyRegistry r) {
+        r.add("spring.datasource.url", postgres::getJdbcUrl);
+        r.add("spring.datasource.username", postgres::getUsername);
+        r.add("spring.datasource.password", postgres::getPassword);
+    }
+}
+```
 
 ---
 
 ## Roadmap
 
-| Item           | Why                                                                      |
-|----------------|--------------------------------------------------------------------------|
-| **Kubernetes** | container orchestration; Eureka disabled — K8s handles service discovery |
-| **AWS**        | target platform for production deployment                                |
+| Item       | Why                                               |
+|------------|---------------------------------------------------|
+| Kubernetes | container orchestration, native service discovery |
+| Helm       | parameterized, reproducible cluster deployments   |
+| AWS        | target platform for production deployment         |
