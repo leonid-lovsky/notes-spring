@@ -197,56 +197,60 @@ Migration files go in `src/main/resources/db/changelog/` (Liquibase) or `src/mai
 
 ## Domain Models
 
+```java
+// user/domain/
+record UserProfile(UUID id, String subject, String username, String email)
+
+// note/domain/
+record Note(UUID id, String ownerId, String title, String content, Instant createdAt)
+
+// user-note/domain/
+record UserNote(UUID id, String userId, UUID noteId, String ownerId, Permission permission)
+enum   Permission { READ, WRITE }
 ```
-auth/domain/      AuthUser   { UUID id, String username, String passwordHash, String refreshToken }
-user/domain/      User       { UUID id, String username, String email }
-note/domain/      Note       { UUID id, String content }
-user-note/domain/ UserNote   { UUID id, UUID userId, UUID noteId, UserRole role }
-                  UserRole   CREATOR | OWNER | EDITOR | VIEWER
-crud/domain/      CrudRepository<T, ID>
-```
+
+`subject` — the JWT `sub` claim (stable user identity from the Authorization Server).
+`ownerId` / `userId` — both are JWT subjects; `ownerId` is the note creator, `userId` is the grantee.
 
 ### Port interfaces
 
 Defined in `domain/`, implemented in adapters:
 
 ```
-auth/domain/
-  AuthUserRepository  findByUsername(username) · save(user)
-  TokenStore          save(token) · exists(token) · delete(token)
-
 user/domain/
-  UserRepository      findById(id) · save(user)
+  UserProfileRepository  save(profile) · findById(id) · findBySubject(subject)
 
 note/domain/
-  NoteRepository      findById(id) · save(note) · delete(id)
+  NoteRepository         save(note) · findById(id) · findByOwnerId(ownerId) · deleteById(id)
 
 user-note/domain/
-  UserNoteRepository  findByUserIdAndNoteId(userId, noteId) · save(userNote)
-  UserClient          findById(userId)  — implemented in feign/ or rest-client/ or web-client/
-  NoteClient          findById(noteId)  — implemented in feign/ or rest-client/ or web-client/
+  UserNoteRepository     save(userNote) · findByUserId(userId) · findByOwnerId(ownerId)
+                         findByUserIdAndNoteId(userId, noteId) · deleteByUserIdAndNoteId(userId, noteId)
+  UserClient             findBySubject(subject)  — implemented in feign/
+  NoteClient             findById(noteId)        — implemented in feign/
 ```
 
 ---
 
 ## API Contracts
 
-| Service     | Method | Path                      | Description          |
-|-------------|--------|---------------------------|----------------------|
-| `auth`      | POST   | /auth/register            | register new user    |
-| `auth`      | POST   | /auth/login               | obtain tokens        |
-| `auth`      | POST   | /auth/logout              | revoke refresh token |
-| `auth`      | POST   | /auth/refresh-token       | rotate refresh token |
-| `user`      | GET    | /users/{id}               | get user profile     |
-| `user`      | PUT    | /users/{id}               | update profile       |
-| `note`      | GET    | /notes/{id}               | get note             |
-| `note`      | POST   | /notes                    | create note          |
-| `note`      | PUT    | /notes/{id}               | update note          |
-| `note`      | DELETE | /notes/{id}               | delete note          |
-| `user-note` | GET    | /user-notes               | list access entries  |
-| `user-note` | POST   | /user-notes               | grant access         |
-| `user-note` | DELETE | /user-notes/{id}          | revoke access        |
-| `user-note` | PUT    | /user-notes/{id}/transfer | transfer ownership   |
+Controllers use `java.security.Principal` (not `@AuthenticationPrincipal Jwt`) — keeps `webmvc/` free of OAuth2 imports. `principal.getName()` returns the JWT `sub` claim via `JwtAuthenticationToken`.
+
+| Service     | Method | Path                                        | Description                    |
+|-------------|--------|---------------------------------------------|--------------------------------|
+| `user`      | GET    | /users/me                                   | my profile (by JWT subject)    |
+| `user`      | GET    | /users/{id}                                 | profile by UUID                |
+| `user`      | POST   | /users                                      | create profile                 |
+| `user`      | PUT    | /users/me                                   | update my profile              |
+| `note`      | GET    | /notes                                      | my notes (by JWT subject)      |
+| `note`      | GET    | /notes/{id}                                 | note by UUID                   |
+| `note`      | POST   | /notes                                      | create note                    |
+| `note`      | PUT    | /notes/{id}                                 | update note (owner only)       |
+| `note`      | DELETE | /notes/{id}                                 | delete note (owner only)       |
+| `user-note` | GET    | /user-notes                                 | notes shared with me           |
+| `user-note` | GET    | /user-notes/owned                           | notes I shared to others       |
+| `user-note` | POST   | /user-notes                                 | share a note                   |
+| `user-note` | DELETE | /user-notes/notes/{noteId}/users/{userId}   | revoke access                  |
 
 ---
 
@@ -592,18 +596,36 @@ dependencies {
 }
 ```
 
-`auth/application/src/main/java/.../AuthorizationServerConfig.java`:
+`auth/application/src/main/java/.../SecurityConfig.java`:
 
 ```java
 @Configuration
-public class AuthorizationServerConfig {
+@EnableWebSecurity
+public class SecurityConfig {
 
     @Bean
     @Order(1)
-    public SecurityFilterChain authorizationServerFilterChain(HttpSecurity http) throws Exception {
-        OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
-        http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
-            .oidc(Customizer.withDefaults());
+    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
+        var authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
+        http
+            .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
+            .with(authorizationServerConfigurer, as -> as.oidc(Customizer.withDefaults()))
+            .authorizeHttpRequests(a -> a.anyRequest().authenticated())
+            .exceptionHandling(e -> e.defaultAuthenticationEntryPointFor(
+                new LoginUrlAuthenticationEntryPoint("/login"),
+                new MediaTypeRequestMatcher(MediaType.TEXT_HTML)))
+            .oauth2ResourceServer(r -> r.jwt(Customizer.withDefaults()));
+        return http.build();
+    }
+
+    @Bean
+    @Order(2)
+    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .authorizeHttpRequests(a -> a
+                .requestMatchers("/actuator/health").permitAll()
+                .anyRequest().authenticated())
+            .formLogin(Customizer.withDefaults());
         return http.build();
     }
 
@@ -612,19 +634,39 @@ public class AuthorizationServerConfig {
         RegisteredClient client = RegisteredClient.withId(UUID.randomUUID().toString())
             .clientId("gateway")
             .clientSecret("{noop}secret")
+            .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
             .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
             .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
             .redirectUri("http://localhost:8080/login/oauth2/code/gateway")
             .scope(OidcScopes.OPENID)
             .scope("read")
+            .clientSettings(ClientSettings.builder().requireAuthorizationConsent(false).build())
             .build();
         return new InMemoryRegisteredClientRepository(client);
     }
 
     @Bean
+    public UserDetailsService userDetailsService() {
+        var user = User.builder().username("user").password("{noop}password").roles("USER").build();
+        var admin = User.builder().username("admin").password("{noop}password").roles("USER", "ADMIN").build();
+        return new InMemoryUserDetailsManager(user, admin);
+    }
+
+    @Bean
     public JWKSource<SecurityContext> jwkSource() {
-        RSAKey rsaKey = Jwks.generateRsa();
+        var generator = KeyPairGenerator.getInstance("RSA");
+        generator.initialize(2048);
+        var keyPair = generator.generateKeyPair();
+        var rsaKey = new RSAKey.Builder((RSAPublicKey) keyPair.getPublic())
+            .privateKey((RSAPrivateKey) keyPair.getPrivate())
+            .keyID(UUID.randomUUID().toString())
+            .build();
         return new ImmutableJWKSet<>(new JWKSet(rsaKey));
+    }
+
+    @Bean
+    public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
+        return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
     }
 
     @Bean
@@ -635,6 +677,10 @@ public class AuthorizationServerConfig {
     }
 }
 ```
+
+> **Spring Security 7.x API change:** `OAuth2AuthorizationServerConfiguration.applyDefaultSecurity()` was removed. Use `securityMatcher(configurer.getEndpointsMatcher())` + `http.with(configurer, ...)` instead. The `securityMatcher` limits the AS filter chain to AS endpoints only — without it, `@Order(1)` shadows the default chain and causes `UnreachableFilterChainException`.
+>
+> `OAuth2AuthorizationServerConfiguration` and `OAuth2AuthorizationServerConfigurer` are in the `spring-security-config` jar (`org.springframework.security.config.annotation.web.configuration` / `.configurers.oauth2.server.authorization`), not the `spring-security-oauth2-authorization-server` jar.
 
 Standard endpoints:
 
@@ -682,18 +728,23 @@ spring.cloud.gateway.default-filters[0]=TokenRelay
 
 > **Note:** `issuer-uri` triggers eager OIDC discovery at startup — the app will fail if the Auth Server is unreachable. Use explicit provider URIs (`authorization-uri`, `token-uri`, `jwk-set-uri`, `user-info-uri`) which are lazy-resolved at first request. This is also required for test isolation.
 
-`gateway/application/src/main/java/.../GatewaySecurityConfig.java`:
+`gateway/application/src/main/java/.../SecurityConfig.java`:
 
 ```java
-@Bean
-public SecurityFilterChain gatewayFilterChain(HttpSecurity http) throws Exception {
-    http
-        .authorizeHttpRequests(a -> a
-            .requestMatchers("/auth/register", "/auth/login").permitAll()
-            .anyRequest().authenticated())
-        .oauth2Login(Customizer.withDefaults())
-        .oauth2ResourceServer(r -> r.jwt(Customizer.withDefaults()));
-    return http.build();
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .authorizeHttpRequests(a -> a
+                .requestMatchers("/actuator/health").permitAll()
+                .anyRequest().authenticated())
+            .oauth2Login(Customizer.withDefaults())
+            .oauth2ResourceServer(r -> r.jwt(Customizer.withDefaults()));
+        return http.build();
+    }
 }
 ```
 
@@ -932,18 +983,22 @@ public class UserNoteApplication {}
 Feign clients implement the port interfaces from `user-note/domain/`:
 
 ```java
-@FeignClient(name = "user", fallback = UserFeignClientFallback.class)
+@FeignClient(name = "user-service", fallback = UserFeignClientFallback.class)
 public interface UserFeignClient extends UserClient {
-    @GetMapping("/users/{id}")
-    User findById(@PathVariable UUID id);
+    @GetMapping("/users/{subject}")
+    Optional<UserSummary> findBySubject(@PathVariable String subject);
 }
 
-@FeignClient(name = "note", fallback = NoteFeignClientFallback.class)
+@FeignClient(name = "note-service", fallback = NoteFeignClientFallback.class)
 public interface NoteFeignClient extends NoteClient {
     @GetMapping("/notes/{id}")
-    Note findById(@PathVariable UUID id);
+    Optional<NoteSummary> findById(@PathVariable UUID id);
 }
 ```
+
+Fallbacks return `Optional.empty()` — `user-note/` degrades gracefully if `user/` or `note/` is unreachable.
+
+`@EnableFeignClients` goes on `UserNoteApplication` with `basePackages = "com.example.usernote.feign"`. Because Gradle `implementation` is non-transitive, `user-note/application/build.gradle` must also declare `spring-cloud-starter-openfeign` directly alongside the `feign/` module dependency.
 
 ---
 
@@ -965,9 +1020,9 @@ Fallback on a Feign client:
 
 ```java
 @Component
-class UserFeignClientFallback implements UserFeignClient {
-    public User findById(UUID id) {
-        return User.unknown(id);
+class UserFeignClientFallback implements UserClient {
+    public Optional<UserSummary> findBySubject(String subject) {
+        return Optional.empty();
     }
 }
 ```
@@ -1033,7 +1088,7 @@ springdoc.swagger-ui.urls[3].url=/user-note/v3/api-docs
 
 ### Business service `application.properties`
 
-Example for `auth/` (ports 8081–8084 per the port table above):
+`auth/application/src/main/resources/application.properties`:
 
 ```properties
 spring.application.name=auth-service
@@ -1047,11 +1102,16 @@ management.tracing.sampling.probability=1.0
 otel.exporter.otlp.endpoint=http://localhost:4318
 ```
 
-Resource Server services (`user/`, `note/`, `user-note/`) add JWT validation via JWKS (lazy — no startup dependency on auth):
+Resource Server services (`user/`, `note/`, `user-note/`) add H2, JPA, and JWT configuration:
 
 ```properties
+spring.datasource.url=jdbc:h2:mem:userdb;DB_CLOSE_DELAY=-1
+spring.jpa.open-in-view=false
+spring.h2.console.enabled=true
 spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://localhost:8081/oauth2/jwks
 ```
+
+Use a unique in-memory database name per service (`userdb`, `notedb`, `usernotedb`). `DB_CLOSE_DELAY=-1` keeps the database alive for the JVM lifetime. `spring.jpa.open-in-view=false` disables the Open Session In View antipattern.
 
 ### `registry/application.properties`
 
@@ -1094,12 +1154,48 @@ management.tracing.sampling.probability=1.0
 otel.exporter.otlp.endpoint=http://localhost:4318
 ```
 
-`gateway/src/test/resources/application.properties` (test isolation — excludes OAuth2 auto-config to avoid eager OIDC discovery at test startup):
+### Test isolation
+
+`auth/application/src/test/resources/application.properties`:
 
 ```properties
 spring.config.import=optional:configserver:
-spring.autoconfigure.exclude[0]=org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration
-spring.autoconfigure.exclude[1]=org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration
+eureka.client.enabled=false
+```
+
+`user/`, `note/`, `user-note/` test properties:
+
+```properties
+spring.config.import=optional:configserver:
+eureka.client.enabled=false
+spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://localhost:9999/oauth2/jwks
+```
+
+`jwk-set-uri` is lazy — no actual call is made at startup. Any dummy URL avoids the missing-property error.
+
+`gateway/application/src/test/resources/application.properties`:
+
+```properties
+spring.config.import=optional:configserver:
+spring.security.oauth2.client.registration.gateway.client-id=gateway
+spring.security.oauth2.client.registration.gateway.client-secret=secret
+spring.security.oauth2.client.registration.gateway.authorization-grant-type=authorization_code
+spring.security.oauth2.client.registration.gateway.redirect-uri=http://localhost:8080/login/oauth2/code/gateway
+spring.security.oauth2.client.registration.gateway.scope=openid,read
+spring.security.oauth2.client.provider.gateway.authorization-uri=http://localhost:9999/oauth2/authorize
+spring.security.oauth2.client.provider.gateway.token-uri=http://localhost:9999/oauth2/token
+spring.security.oauth2.client.provider.gateway.jwk-set-uri=http://localhost:9999/oauth2/jwks
+spring.security.oauth2.client.provider.gateway.user-info-uri=http://localhost:9999/userinfo
+spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://localhost:9999/oauth2/jwks
+eureka.client.enabled=false
+```
+
+Gateway must have a complete OAuth2 client registration including `redirect-uri` — Spring Security validates it at context load. All URIs point to a dummy server that is never contacted.
+
+`user-note/` tests additionally disable the Feign circuit breaker:
+
+```properties
+spring.cloud.openfeign.circuitbreaker.enabled=false
 ```
 
 ### `application-k8s.properties` (profile — overrides base config)
