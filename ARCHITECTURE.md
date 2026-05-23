@@ -496,15 +496,7 @@ spring:
         - CircuitBreaker=...  # wrap all routes with a circuit breaker
 ```
 
-### OAuth2 Resource Server at the gateway
-
-The gateway validates JWT tokens centrally. Backend services trust the gateway and skip re-validation.
-
-```groovy
-dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
-}
-```
+See [Security](#security) for OAuth2 configuration.
 
 ---
 
@@ -633,6 +625,176 @@ Resilience4j exposes circuit breaker state via Actuator:
 management.endpoints.web.exposure.include=health,circuitbreakers,retries
 management.endpoint.health.show-details=always
 ```
+
+---
+
+## Security (OAuth2)
+
+The security model is built on OAuth2 / OIDC. `auth/` is the Authorization Server. `gateway/` is the OAuth2 Client and Resource Server. Backend services (`user/`, `note/`, `user-note/`) are Resource Servers.
+
+### Token flow
+
+```
+Browser / mobile app
+        │  1. Authorization Code request
+        ▼
+    gateway/  ────────────────────▶  auth/
+    (OAuth2 Client)                  (Authorization Server)
+        │  2. JWT access token
+        │
+        │  3. forward request + token (TokenRelay filter)
+        ▼
+    user/ · note/ · user-note/
+    (OAuth2 Resource Servers — validate JWT)
+```
+
+### OAuth2 Authorization Server (`auth/`)
+
+`auth/` issues JWT access tokens, refresh tokens, and OIDC ID tokens using Spring Authorization Server.
+
+`auth/application/build.gradle`:
+
+```groovy
+plugins { id 'spring-boot-application-conventions' }
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-authorization-server'
+    implementation project(':webmvc')
+    implementation project(':data-jpa')
+    implementation project(':domain')
+}
+```
+
+Security config in `auth/application/`:
+
+```java
+@Configuration
+public class AuthorizationServerConfig {
+
+    @Bean
+    @Order(1)
+    public SecurityFilterChain authorizationServerFilterChain(HttpSecurity http) throws Exception {
+        OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
+        http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
+            .oidc(Customizer.withDefaults());
+        return http.build();
+    }
+
+    @Bean
+    public RegisteredClientRepository registeredClientRepository() {
+        RegisteredClient client = RegisteredClient.withId(UUID.randomUUID().toString())
+            .clientId("gateway")
+            .clientSecret("{noop}secret")
+            .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+            .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+            .redirectUri("http://localhost:8080/login/oauth2/code/gateway")
+            .scope(OidcScopes.OPENID)
+            .scope("read")
+            .build();
+        return new InMemoryRegisteredClientRepository(client);
+    }
+
+    @Bean
+    public JWKSource<SecurityContext> jwkSource() {
+        RSAKey rsaKey = Jwks.generateRsa();
+        return new ImmutableJWKSet<>(new JWKSet(rsaKey));
+    }
+
+    @Bean
+    public AuthorizationServerSettings authorizationServerSettings() {
+        return AuthorizationServerSettings.builder()
+            .issuer("http://localhost:8081")
+            .build();
+    }
+}
+```
+
+Token endpoints exposed by the Authorization Server:
+
+| Endpoint                   | Description                    |
+|----------------------------|--------------------------------|
+| `/oauth2/authorize`        | authorization code request     |
+| `/oauth2/token`            | token issuance                 |
+| `/oauth2/revoke`           | token revocation               |
+| `/oauth2/introspect`       | token introspection            |
+| `/.well-known/openid-configuration` | OIDC discovery        |
+
+### OAuth2 Client (`gateway/`)
+
+`gateway/` initiates the OAuth2 authorization code flow on behalf of the browser and forwards the obtained JWT to backend services via the `TokenRelay` filter.
+
+`gateway/application/build.gradle`:
+
+```groovy
+plugins { id 'spring-boot-application-conventions' }
+dependencies {
+    implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+}
+```
+
+`gateway/application/application.properties`:
+
+```properties
+spring.security.oauth2.client.registration.gateway.client-id=gateway
+spring.security.oauth2.client.registration.gateway.client-secret=secret
+spring.security.oauth2.client.registration.gateway.authorization-grant-type=authorization_code
+spring.security.oauth2.client.registration.gateway.scope=openid,read
+spring.security.oauth2.client.provider.gateway.issuer-uri=http://localhost:8081
+
+spring.cloud.gateway.default-filters[0]=TokenRelay
+```
+
+Security config in `gateway/application/`:
+
+```java
+@Bean
+public SecurityWebFilterChain gatewayFilterChain(ServerHttpSecurity http) throws Exception {
+    http
+        .authorizeExchange(e -> e
+            .pathMatchers("/auth/register", "/auth/login").permitAll()
+            .anyExchange().authenticated())
+        .oauth2Login(Customizer.withDefaults())
+        .oauth2ResourceServer(r -> r.jwt(Customizer.withDefaults()));
+    return http.build();
+}
+```
+
+### OAuth2 Resource Server (backend services)
+
+`user/`, `note/`, `user-note/` validate the JWT forwarded by the gateway.
+
+Add to each service's `application/build.gradle`:
+
+```groovy
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    // ...existing deps
+}
+```
+
+`application.properties` per service:
+
+```properties
+spring.security.oauth2.resourceserver.jwt.issuer-uri=http://localhost:8081
+```
+
+Security config per service:
+
+```java
+@Bean
+public SecurityFilterChain resourceServerFilterChain(HttpSecurity http) throws Exception {
+    http
+        .authorizeHttpRequests(a -> a
+            .requestMatchers("/actuator/health").permitAll()
+            .anyRequest().authenticated())
+        .oauth2ResourceServer(r -> r.jwt(Customizer.withDefaults()));
+    return http.build();
+}
+```
+
+The JWT is validated against the public key fetched from `auth/`'s JWKS endpoint (`/.well-known/jwks.json`) — no shared secret needed.
 
 ---
 
@@ -1211,8 +1373,6 @@ class UserRepositoryTest {
 
 ## Roadmap
 
-| Item       | Why                                               |
-|------------|---------------------------------------------------|
-| Kubernetes | container orchestration, native service discovery |
-| Helm       | parameterized, reproducible cluster deployments   |
-| AWS        | target platform for production deployment         |
+| Item | Why                                       |
+|------|-------------------------------------------|
+| AWS  | target platform for production deployment |
