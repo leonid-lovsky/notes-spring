@@ -1,0 +1,58 @@
+package com.example.usernote.webmvc;
+
+import com.example.usernote.domain.UserNote;
+import com.example.usernote.domain.UserNoteRepository;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.net.URI;
+import java.security.Principal;
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/user-notes")
+public class UserNoteController {
+
+    private final UserNoteRepository repository;
+
+    public UserNoteController(UserNoteRepository repository) {
+        this.repository = repository;
+    }
+
+    @GetMapping
+    public List<UserNote> sharedWithMe(Principal principal) {
+        return repository.findByUserId(principal.getName());
+    }
+
+    @GetMapping("/owned")
+    public List<UserNote> sharedByMe(Principal principal) {
+        return repository.findByOwnerId(principal.getName());
+    }
+
+    @PostMapping
+    public ResponseEntity<UserNote> share(@RequestBody ShareRequest request, Principal principal) {
+        var userNote = repository.save(
+            UserNote.create(request.userId(), request.noteId(), principal.getName(), request.permission())
+        );
+        return ResponseEntity.created(URI.create("/user-notes/" + userNote.id())).body(userNote);
+    }
+
+    @DeleteMapping("/notes/{noteId}/users/{userId}")
+    public ResponseEntity<Void> revoke(@PathVariable UUID noteId,
+                                       @PathVariable String userId,
+                                       Principal principal) {
+        repository.findByUserIdAndNoteId(userId, noteId)
+            .filter(un -> un.ownerId().equals(principal.getName()))
+            .ifPresent(un -> repository.deleteByUserIdAndNoteId(userId, noteId));
+        return ResponseEntity.noContent().build();
+    }
+
+    record ShareRequest(String userId, UUID noteId, UserNote.Permission permission) {}
+}

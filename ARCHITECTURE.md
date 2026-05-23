@@ -712,8 +712,10 @@ dependencies {
 `application/src/main/resources/application.properties`:
 
 ```properties
-spring.security.oauth2.resourceserver.jwt.issuer-uri=http://localhost:8081
+spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://localhost:8081/oauth2/jwks
 ```
+
+> **Note:** Use `jwk-set-uri` (lazy key fetch), not `issuer-uri` (triggers eager OIDC discovery at startup — app fails if auth is unreachable, and `@SpringBootTest` context load fails).
 
 `application/src/main/java/.../SecurityConfig.java`:
 
@@ -1048,7 +1050,7 @@ otel.exporter.otlp.endpoint=http://localhost:4318
 Resource Server services (`user/`, `note/`, `user-note/`) add JWT validation via JWKS (lazy — no startup dependency on auth):
 
 ```properties
-spring.security.oauth2.resourceserver.jwt.issuer-uri=http://localhost:8081
+spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://localhost:8081/oauth2/jwks
 ```
 
 ### `registry/application.properties`
