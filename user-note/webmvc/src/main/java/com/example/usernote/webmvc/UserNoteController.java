@@ -30,7 +30,7 @@ public class UserNoteController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserNote> findById(@PathVariable UUID id, Principal principal) {
+    public ResponseEntity<UserNote> findById(@PathVariable("id") UUID id, Principal principal) {
         return repository.findById(id)
             .filter(un -> un.userId().equals(principal.getName()) || un.ownerId().equals(principal.getName()))
             .map(ResponseEntity::ok)
@@ -60,8 +60,8 @@ public class UserNoteController {
     }
 
     @DeleteMapping("/notes/{noteId}/users/{userId}")
-    public ResponseEntity<Void> revoke(@PathVariable UUID noteId,
-                                       @PathVariable String userId,
+    public ResponseEntity<Void> revoke(@PathVariable("noteId") UUID noteId,
+                                       @PathVariable("userId") String userId,
                                        Principal principal) {
         repository.findByUserIdAndNoteId(userId, noteId)
             .filter(un -> un.ownerId().equals(principal.getName()))

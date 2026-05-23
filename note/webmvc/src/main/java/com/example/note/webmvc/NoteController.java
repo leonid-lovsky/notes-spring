@@ -33,7 +33,7 @@ public class NoteController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Note> findById(@PathVariable UUID id) {
+    public ResponseEntity<Note> findById(@PathVariable("id") UUID id) {
         return repository.findById(id)
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
@@ -46,7 +46,7 @@ public class NoteController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Note> update(@PathVariable UUID id,
+    public ResponseEntity<Note> update(@PathVariable("id") UUID id,
                                        @RequestBody NoteRequest request,
                                        Principal principal) {
         return repository.findById(id)
@@ -57,7 +57,7 @@ public class NoteController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable UUID id, Principal principal) {
+    public ResponseEntity<Void> delete(@PathVariable("id") UUID id, Principal principal) {
         boolean found = repository.findById(id)
             .filter(n -> n.ownerId().equals(principal.getName()))
             .isPresent();

@@ -32,14 +32,14 @@ public class UserProfileController {
     }
 
     @GetMapping("/subject/{subject}")
-    public ResponseEntity<UserProfile> findBySubject(@PathVariable String subject) {
+    public ResponseEntity<UserProfile> findBySubject(@PathVariable("subject") String subject) {
         return repository.findBySubject(subject)
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserProfile> findById(@PathVariable UUID id) {
+    public ResponseEntity<UserProfile> findById(@PathVariable("id") UUID id) {
         return repository.findById(id)
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());

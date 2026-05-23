@@ -325,14 +325,14 @@ tasks.register('check') { dependsOn builds.collect { it.task(':check') } }
 tasks.register('build') { dependsOn builds.collect { it.task(':build') } }
 ```
 
-### `settings.gradle` — per service
+### `settings.gradle` — business service (`user`, `note`, `user-note`)
 
 ```groovy
 pluginManagement {
     includeBuild '../build-logic'
 }
 
-rootProject.name = 'auth'   // change per service
+rootProject.name = 'user'   // change per service
 
 include ':domain'
 include ':application'
@@ -340,6 +340,8 @@ include ':webmvc'
 include ':data-jpa'
 // include ':feign'   // user-note only
 ```
+
+Infrastructure services (`auth`, `gateway`, `registry`, `config`) have only `application/` and include only `:application`.
 
 ### `build.gradle` — per service
 
