@@ -57,9 +57,10 @@ public class UserProfileController {
 
     @PutMapping("/me")
     public UserProfile update(@RequestBody ProfileRequest request, Principal principal) {
-        var existing = repository.findBySubject(principal.getName())
+        var profile = repository.findBySubject(principal.getName())
+            .map(existing -> existing.update(request.username(), request.email()))
             .orElseGet(() -> UserProfile.create(principal.getName(), request.username(), request.email()));
-        return repository.save(existing.update(request.username(), request.email()));
+        return repository.save(profile);
     }
 
     record ProfileRequest(String username, String email) {}

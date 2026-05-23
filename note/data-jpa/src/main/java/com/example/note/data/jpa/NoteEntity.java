@@ -14,10 +14,13 @@ class NoteEntity {
 
     @Id
     UUID id;
+    @Column(nullable = false)
     String ownerId;
+    @Column(nullable = false)
     String title;
-    @Column(length = 65535)
+    @Column(length = 65535, nullable = false)
     String content;
+    @Column(nullable = false)
     Instant createdAt;
 
     protected NoteEntity() {}

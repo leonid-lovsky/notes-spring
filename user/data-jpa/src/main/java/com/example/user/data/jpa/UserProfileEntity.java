@@ -15,7 +15,9 @@ class UserProfileEntity {
     UUID id;
     @Column(unique = true, nullable = false)
     String subject;
+    @Column(nullable = false)
     String username;
+    @Column(nullable = false)
     String email;
 
     protected UserProfileEntity() {}
