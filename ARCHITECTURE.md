@@ -1,105 +1,135 @@
 # Architecture
 
-## Структура проекта
+Приложение для заметок с разграничением доступа.
+Spring Boot 4 · Gradle composite builds · микросервисная архитектура.
 
-Multi-service Spring Boot 4 монорепо. Каждый сервис — отдельный Gradle composite build.
+---
 
-```
-notes-spring/
-├── build-logic/         convention plugins
+## Принципы
 
-├── crud/                generic CRUD library (без application/)
-│   ├── domain/
-│   ├── webmvc/
-│   └── data-jpa/
+Простота и изоляция — главные ценности проекта.
 
-├── auth/                Spring Authorization Server
-│   ├── domain/
-│   ├── application/
-│   ├── webmvc/
-│   └── data-jpa/
+| Принцип                       | Суть                                                        |
+|-------------------------------|-------------------------------------------------------------|
+| DRY                           | каждое знание в одном месте                                 |
+| KISS                          | простое решение лучше умного                                |
+| YAGNI                         | не добавлять то, что не нужно сейчас                        |
+| SLAP                          | один уровень абстракции внутри метода или модуля            |
+| SOLID                         | одна ответственность, зависеть от абстракции, не реализации |
+| GRASP                         | назначение ответственности через устоявшиеся паттерны       |
+| Separation of Concerns        | HTTP, persistence, domain — разные модули                   |
+| Composition over Inheritance  | реализовывать интерфейсы, а не наследовать реализации       |
+| Fail Fast                     | падать сразу, не замалчивать ошибки                         |
+| Single Source of Truth        | каждый факт живёт в одном месте                             |
+| Дзен Пайтона                  | explicit > implicit · simple > complex · readability counts |
 
-├── user/
-│   ├── domain/
-│   ├── application/
-│   ├── webmvc/
-│   └── data-jpa/
+На практике:
+- Бизнес-модель живёт только в `domain/` — нигде больше.
+- Адаптеры зависят от `domain/`, но не знают друг о друге.
+- Явное дублирование лучше абстракции, которая не решает проблему полностью.
 
-├── note/
-│   ├── domain/
-│   ├── application/
-│   ├── webmvc/
-│   └── data-jpa/
+---
 
-├── user-note/
-│   ├── domain/
-│   ├── application/
-│   ├── webmvc/
-│   ├── data-jpa/
-│   └── feign/           OpenFeign + Circuit Breaker → user, note
+## Структура
 
-├── gateway/             Spring Cloud Gateway
-│   └── application/
+Каждый included build — независимый Gradle проект со своей сборкой.
 
-├── registry/            Eureka Server (Service Discovery)
-│   └── application/
+### Бизнес-сервисы
 
-└── config/              Spring Cloud Config Server
-    └── application/
-```
+| Сервис        | Назначение                | Domain model                                            |
+|---------------|---------------------------|---------------------------------------------------------|
+| `auth/`       | аутентификация (OAuth2)   | `AuthUser { id, username, passwordHash, refreshToken }` |
+| `user/`       | профили пользователей     | `User { id, username, email }`                          |
+| `note/`       | заметки                   | `Note { id, content }`                                  |
+| `user-note/`  | права доступа к заметкам  | `UserNote { id, userId, noteId, role }`                 |
 
-## Domain models
+`UserNote.role`: `CREATOR` · `OWNER` · `EDITOR` · `VIEWER`
 
-| Сервис      | Entity                                                          |
-|-------------|-----------------------------------------------------------------|
-| `auth`      | `AuthUser { id, username, passwordHash, refreshToken }`        |
-| `user`      | `User { id, username, email }`                                  |
-| `note`      | `Note { id, content }`                                          |
-| `user-note` | `UserNote { id, userId, noteId, role }`                         |
+`auth/` использует Spring Authorization Server. Остальные — Spring Boot + Spring Data JPA + Spring MVC.
 
-`UserNote.role`: `CREATOR` | `OWNER` | `EDITOR` | `VIEWER`
+Каждый сервис содержит: `domain/` · `application/` · `webmvc/` · `data-jpa/`  
+`user-note/` дополнительно содержит `feign/` для вызовов в `user/` и `note/`.
 
-## Hexagonal Architecture
+### Инфраструктурные сервисы
 
-Каждый бизнес-сервис следует ports & adapters:
+| Сервис        | Технология                  | Назначение                          |
+|---------------|-----------------------------|-------------------------------------|
+| `gateway/`    | Spring Cloud Gateway        | единая точка входа, маршрутизация   |
+| `registry/`   | Eureka Server               | реестр — сервисы находят друг друга |
+| `config/`     | Spring Cloud Config Server  | централизованная конфигурация       |
 
-```
-domain/       чистый Java, без фреймворков: entities + port interfaces
-webmvc/       входящий HTTP адаптер        → domain/
-data-jpa/     persistence адаптер          → domain/
-feign/        исходящий HTTP адаптер       → domain/
-application/  Spring Boot, use cases,
-              composition root             → domain/ + все адаптеры
-```
+### Библиотеки
 
-Адаптеры зависят только от `domain/` — ничего не знают про `application/`.
+| Модуль         | Назначение                                        |
+|----------------|---------------------------------------------------|
+| `crud/`        | переиспользуемая CRUD логика (нет `application/`) |
+| `build-logic/` | Gradle convention plugins для всех сервисов       |
 
-## Spring Cloud компоненты
+---
 
-| Компонент               | Тип             | Модуль              |
-|-------------------------|-----------------|---------------------|
-| Spring Cloud Gateway    | сервис          | `gateway/`          |
-| Eureka Server           | сервис          | `registry/`         |
-| Spring Cloud Config     | сервис          | `config/`           |
-| Spring Authorization Server | сервис      | `auth/`             |
-| Spring Cloud OpenFeign  | библиотека      | `*/feign/`          |
-| Spring Circuit Breaker  | библиотека      | `*/feign/`          |
+## Hexagonal Architecture (Ports & Adapters)
 
-## Взаимодействие
+Каждый бизнес-сервис устроен одинаково: в центре — бизнес-модель, вокруг — адаптеры.
 
 ```
-Client → gateway → auth
-                 → user
-                 → note
-                 → user-note → user  (feign)
-                             → note  (feign)
-
-все сервисы → registry  (Eureka)
-все сервисы → config    (Spring Cloud Config)
+┌─────────────────────────────────────────────────────┐
+│                    application/                     │
+│         Spring Boot · use cases · wiring            │
+│                                                     │
+│   ┌──────────┐  ┌───────────┐  ┌────────────────┐   │
+│   │ webmvc/  │  │ data-jpa/ │  │    feign/      │   │
+│   │  HTTP in │  │persistence│  │ (user-note/)   │   │
+│   └────┬─────┘  └─────┬─────┘  └───────┬────────┘   │
+│        └──────────────┼────────────────┘            │
+│                       ↓                             │
+│              ┌─────────────────┐                    │
+│              │    domain/      │                    │
+│              │ entities        │                    │
+│              │ port interfaces │                    │
+│              │ (чистый Java)   │                    │
+│              └─────────────────┘                    │
+└─────────────────────────────────────────────────────┘
 ```
 
-## Внешние инструменты
+**Правило:** адаптеры (`webmvc/`, `data-jpa/`, `feign/`) зависят **только** от `domain/` и не знают про `application/`. Это позволяет заменить любой адаптер без изменения бизнес-логики.
 
-- Prometheus + Grafana — метрики
-- Zipkin — distributed tracing
-- ELK / Loki — централизованные логи
+---
+
+## Взаимодействие сервисов
+
+```
+                  ┌──────────────────────────────────────────┐
+Client ─────────▶ │                gateway/                  │
+                  └────┬──────┬────────┬────────────────┬────┘
+                       │      │        │                │
+                       ▼      ▼        ▼                ▼
+                      auth/  user/   note/          user-note/
+                                                        │
+                                               feign/ вызывает
+                                                        │
+                                                ┌───────┴───────┐
+                                                ▼               ▼
+                                              user/           note/
+
+  Все сервисы ──▶ registry/   регистрируются при старте (Eureka)
+  Все сервисы ──▶ config/     получают конфигурацию при старте
+```
+
+---
+
+## Мониторинг и наблюдаемость
+
+| Инструмент           | Назначение            |
+|----------------------|-----------------------|
+| Prometheus + Grafana | метрики               |
+| Zipkin               | трассировка запросов  |
+| Elastic Stack (ELK)  | централизованные логи |
+
+---
+
+## Планы
+
+| Что             | Зачем                                                                      |
+|-----------------|----------------------------------------------------------------------------|
+| **Kubernetes**  | оркестрация контейнеров; Eureka отключается — K8s берёт service discovery  |
+| **AWS**         | целевая платформа для production-развёртывания                             |
