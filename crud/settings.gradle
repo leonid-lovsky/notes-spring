@@ -4,5 +4,6 @@ pluginManagement {
 
 rootProject.name = 'crud'
 
+include ':domain'
 include ':webmvc'
 include ':data-jpa'

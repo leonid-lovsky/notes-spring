@@ -7,48 +7,37 @@ Built on Spring Boot 4, Gradle composite builds, microservices monorepo.
 
 ## How to read this document
 
-This is a **design specification**, not a project status report.
-
-- It describes the intended architecture, conventions, and technology choices for the complete application.
-- The actual implementation may be at any stage — some modules may not exist yet, some choices may have been revised for valid reasons.
-- **If you find a deviation** between this document and the code: decide which is correct, then synchronize both. The document and the code must always agree.
-- **If a deliberate alternative was chosen** (a different adapter, library, or approach) during implementation: update this document to reflect that choice. The document always describes what was actually built, not what was originally planned.
-
-This document is sufficient to reconstruct the project from scratch — by a human or a machine.
+This is a **design specification** — not a status report. The implementation may be at any stage and may differ from what is described here for valid reasons. When the code and this document disagree, decide which is correct and update both to match.
 
 ---
 
 ## Tech Stack
 
-| Concern           | Technology                                          |
-|-------------------|-----------------------------------------------------|
-| Language          | Java                                                |
-| Framework         | Spring Boot 4.0.6                                   |
-| Build             | Gradle 9.5.1 — composite builds                     |
-| Security          | Spring Authorization Server — OAuth2 / OIDC         |
-| API gateway       | Spring Cloud Gateway MVC                            |
-| Service discovery | Spring Cloud Netflix Eureka                         |
-| Configuration     | Spring Cloud Config Server                          |
-| HTTP client       | Spring Cloud OpenFeign + Resilience4j               |
-| Persistence       | Spring Data JPA                                     |
-| Schema migration  | Liquibase or Flyway                                 |
-| Caching           | Spring Data Redis                                   |
-| Search            | Spring Data Elasticsearch                           |
-| Messaging         | Spring AMQP (RabbitMQ) or Spring Kafka              |
-| Real-time         | Spring WebSocket + STOMP                            |
-| RPC               | gRPC + Protobuf                                     |
-| API docs          | springdoc-openapi                                   |
-| Metrics           | Micrometer + Prometheus + Grafana                   |
-| Tracing           | OpenTelemetry + Jaeger / Grafana Tempo              |
-| Logs              | Elastic Stack (ELK)                                 |
-| Secrets           | HashiCorp Vault — Spring Cloud Vault                |
-| Testing           | Testcontainers                                      |
-| Packaging         | Docker — Spring Boot Buildpacks                     |
-| Orchestration     | Kubernetes + Helm                                   |
-
-> Spring Cloud BOM (`org.springframework.cloud:spring-cloud-dependencies:2025.1.1`) is imported
-> inside `spring-boot-application-conventions.gradle` via `dependencyManagement`.
-> No changes to `build-logic/build.gradle` are needed.
+| Concern           | Technology                                     |
+|-------------------|------------------------------------------------|
+| Language          | Java                                           |
+| Framework         | Spring Boot 4.0.6                              |
+| Build             | Gradle 9.5.1 — composite builds               |
+| Security          | Spring Authorization Server (OAuth2 / OIDC)   |
+| API gateway       | Spring Cloud Gateway MVC                       |
+| Service discovery | Spring Cloud Netflix Eureka                    |
+| Configuration     | Spring Cloud Config Server                     |
+| HTTP client       | Spring Cloud OpenFeign + Resilience4j          |
+| Persistence       | Spring Data JPA                                |
+| Schema migration  | Liquibase or Flyway                            |
+| Caching           | Spring Data Redis                              |
+| Search            | Spring Data Elasticsearch                      |
+| Messaging         | Spring AMQP (RabbitMQ) or Spring Kafka         |
+| Real-time         | Spring WebSocket + STOMP                       |
+| RPC               | gRPC + Protobuf                                |
+| API docs          | springdoc-openapi 3.0.2                        |
+| Metrics           | Micrometer + Prometheus + Grafana              |
+| Tracing           | OpenTelemetry + Jaeger / Grafana Tempo         |
+| Logs              | Elastic Stack (ELK)                            |
+| Secrets           | HashiCorp Vault — Spring Cloud Vault           |
+| Testing           | Testcontainers                                 |
+| Packaging         | Docker — Spring Boot Buildpacks                |
+| Orchestration     | Kubernetes + Helm                              |
 
 ---
 
@@ -68,7 +57,7 @@ This document is sufficient to reconstruct the project from scratch — by a hum
 | Single Source of Truth       | `domain/` is the only home for the business model        |
 | Zen of Python                | explicit > implicit; simple > complex; readability counts |
 
-Rules that follow from these principles:
+Key rules:
 
 - Business model lives in `domain/` only — never in adapters or `application/`.
 - Adapters depend on `domain/` only — never on `application/`.
@@ -80,176 +69,129 @@ Rules that follow from these principles:
 
 ```
 notes-spring/
-├── build-logic/           Gradle convention plugins
-│
-├── crud/                  Shared CRUD library — no application/
+├── build-logic/           convention plugins
+├── crud/                  shared CRUD library — no application/
 │   ├── domain/
 │   ├── webmvc/
 │   └── data-jpa/
-│
 ├── auth/                  Spring Authorization Server
 │   ├── domain/
 │   ├── application/
 │   ├── webmvc/
 │   └── data-jpa/
-│
-├── user/                  User profiles
+├── user/                  user profiles
 │   ├── domain/
 │   ├── application/
 │   ├── webmvc/
 │   └── data-jpa/
-│
-├── note/                  Notes
+├── note/                  notes
 │   ├── domain/
 │   ├── application/
 │   ├── webmvc/
 │   └── data-jpa/
-│
-├── user-note/             Access control — calls user/ and note/ via feign/
+├── user-note/             access control — calls user/ and note/ via feign/
 │   ├── domain/
 │   ├── application/
 │   ├── webmvc/
 │   ├── data-jpa/
 │   └── feign/
-│
-├── gateway/               Spring Cloud Gateway — single entry point
+├── gateway/               single entry point
 │   └── application/
-│
-├── registry/              Eureka Server — service discovery
+├── registry/              Eureka Server
 │   └── application/
-│
-└── config/                Spring Cloud Config Server — centralized configuration
+└── config/                Spring Cloud Config Server
     └── application/
 ```
 
-**Business services** — `domain/` + `application/` + adapters: `auth` · `user` · `note` · `user-note`
+**Business services** (`domain/` + `application/` + adapters): `auth` · `user` · `note` · `user-note`
 
-**Infrastructure services** — single `application/` each: `gateway` · `registry` · `config`
+**Infrastructure services** (single `application/` each): `gateway` · `registry` · `config`
 
-**Shared library** — adapters only, no `application/`: `crud`
+**Shared library** (adapters only, no `application/`): `crud`
 
 ---
 
 ## Hexagonal Architecture (Ports & Adapters)
 
-Every business service has the same internal structure: a pure-Java core (`domain/`) surrounded by swappable adapters. `domain/` defines **what** the service does. Adapters define **how** it is done.
+Every business service has the same internal structure: a pure-Java core (`domain/`) surrounded by swappable adapters.
 
 ```
-┌─────────────────────────────────────────────────────┐
-│                    application/                     │
-│         Spring Boot · use cases · wiring            │
-│                                                     │
-│   ┌──────────┐  ┌───────────┐  ┌────────────────┐   │
-│   │ webmvc/  │  │ data-jpa/ │  │    feign/      │   │
-│   │  HTTP in │  │persistence│  │ (user-note/)   │   │
-│   └────┬─────┘  └─────┬─────┘  └───────┬────────┘   │
-│        └──────────────┼────────────────┘            │
-│                       ↓                             │
-│              ┌─────────────────┐                    │
-│              │    domain/      │                    │
-│              │ entities        │                    │
-│              │ port interfaces │                    │
-│              │ (pure Java)     │                    │
-│              └─────────────────┘                    │
-└─────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────┐
+│                    application/                      │
+│          Spring Boot · use cases · wiring            │
+│                                                      │
+│   ┌──────────┐   ┌───────────┐   ┌────────────────┐  │
+│   │ webmvc/  │   │ data-jpa/ │   │    feign/      │  │
+│   │  HTTP in │   │persistence│   │ (user-note/)   │  │
+│   └────┬─────┘   └─────┬─────┘   └───────┬────────┘  │
+│        └───────────────┼─────────────────┘           │
+│                        ↓                             │
+│               ┌─────────────────┐                    │
+│               │    domain/      │                    │
+│               │ entities        │                    │
+│               │ port interfaces │                    │
+│               │ (pure Java)     │                    │
+│               └─────────────────┘                    │
+└──────────────────────────────────────────────────────┘
 ```
 
-**Dependency rule:** adapters depend on `domain/` only. Importing `application/` pulls `spring-boot-starter` into a library module and breaks isolation.
+**Rule:** `domain/` defines what the service does; adapters define how. Adapters depend on `domain/` only — importing `application/` pulls `spring-boot-starter` into a library module and breaks isolation.
 
 ### Module dependencies
 
-| Module         | Depends on                               |
-|----------------|------------------------------------------|
-| `domain/`      | nothing — pure Java, no frameworks       |
-| `webmvc/`      | `domain/`                                |
-| `data-jpa/`    | `domain/`                                |
-| `feign/`       | `domain/` — user-note only               |
-| `application/` | `domain/` + all adapters of this service |
+| Module         | Depends on                                |
+|----------------|-------------------------------------------|
+| `domain/`      | nothing — pure Java, no frameworks        |
+| `webmvc/`      | `domain/`                                 |
+| `data-jpa/`    | `domain/`                                 |
+| `feign/`       | `domain/` (user-note only)                |
+| `application/` | `domain/` + all adapters of this service  |
 
 ### Adapter catalogue
 
-Each adapter type has a dedicated convention plugin in `build-logic/`.
-To swap an adapter: (1) create the new module, (2) implement the same port interfaces from `domain/`, (3) add the convention plugin, (4) replace the dependency in `application/build.gradle` — `domain/` stays untouched.
+Each adapter has a dedicated convention plugin in `build-logic/`. To swap an adapter: create the new module, implement the same port interfaces from `domain/`, and replace the dependency in `application/build.gradle` — `domain/` is untouched.
 
-**Incoming HTTP**
+| Type          | Module         | Technology                    | Convention plugin                          |
+|---------------|----------------|-------------------------------|--------------------------------------------|
+| HTTP incoming | `webmvc/`      | Spring MVC (sync)             | `spring-webmvc-adapter-conventions`        |
+| HTTP incoming | `webflux/`     | Spring WebFlux (reactive)     | `spring-webflux-adapter-conventions`       |
+| HTTP incoming | `graphql/`     | Spring for GraphQL            | `spring-graphql-adapter-conventions`       |
+| Persistence   | `data-jpa/`    | Spring Data JPA               | `spring-data-jpa-adapter-conventions`      |
+| Persistence   | `r2dbc/`       | Spring Data R2DBC (reactive)  | `spring-data-r2dbc-adapter-conventions`    |
+| Persistence   | `mongo/`       | Spring Data MongoDB           | `spring-data-mongo-adapter-conventions`    |
+| HTTP outgoing | `feign/`       | Spring Cloud OpenFeign        | `spring-openfeign-adapter-conventions`     |
+| HTTP outgoing | `rest-client/` | Spring RestClient             | `spring-rest-client-adapter-conventions`   |
+| HTTP outgoing | `web-client/`  | Spring WebClient (reactive)   | `spring-web-client-adapter-conventions`    |
+| Caching       | `cache/`       | Spring Data Redis             | `spring-data-redis-adapter-conventions`    |
+| Search        | `search/`      | Spring Data Elasticsearch     | `spring-elasticsearch-adapter-conventions` |
+| Messaging     | `rabbitmq/`    | Spring AMQP (RabbitMQ)        | `spring-rabbitmq-adapter-conventions`      |
+| Messaging     | `kafka/`       | Spring Kafka                  | `spring-kafka-adapter-conventions`         |
+| Real-time     | `websocket/`   | Spring WebSocket + STOMP      | `spring-websocket-adapter-conventions`     |
+| RPC           | `grpc/`        | gRPC-Java + Protobuf          | `spring-grpc-adapter-conventions`          |
 
-| Module     | Technology         | Style    | Convention plugin                    |
-|------------|--------------------|----------|--------------------------------------|
-| `webmvc/`  | Spring MVC         | sync     | `spring-webmvc-adapter-conventions`  |
-| `webflux/` | Spring WebFlux     | reactive | `spring-webflux-adapter-conventions` |
-| `graphql/` | Spring for GraphQL | sync/rx  | `spring-graphql-adapter-conventions` |
+**Database driver** — add to the persistence adapter plugin, not a separate module:
 
-**Persistence**
+| Driver     | Artifact                              | Usage                  |
+|------------|---------------------------------------|------------------------|
+| H2         | `spring-h2-database-conventions` mixin | development, in-memory |
+| PostgreSQL | `org.postgresql:postgresql`           | production             |
+| MySQL      | `com.mysql:mysql-connector-j`         | production             |
 
-| Module      | Technology          | Style         | Convention plugin                       |
-|-------------|---------------------|---------------|-----------------------------------------|
-| `data-jpa/` | Spring Data JPA     | sync, SQL     | `spring-data-jpa-adapter-conventions`   |
-| `r2dbc/`    | Spring Data R2DBC   | reactive, SQL | `spring-data-r2dbc-adapter-conventions` |
-| `mongo/`    | Spring Data MongoDB | sync/rx       | `spring-data-mongo-adapter-conventions` |
+**Schema migration** — add to the persistence adapter plugin:
 
-**Database driver** — add inside the persistence adapter convention plugin, not a separate module:
-
-| Driver     | Usage                  | Artifact                          |
-|------------|------------------------|-----------------------------------|
-| H2         | development, in-memory | `spring-h2-database-conventions` mixin |
-| PostgreSQL | production             | `org.postgresql:postgresql`       |
-| MySQL      | production             | `com.mysql:mysql-connector-j`     |
-
-**Schema migration** — add to the persistence adapter convention plugin:
-
-| Tool      | Artifact                                            |
-|-----------|-----------------------------------------------------|
+| Tool      | Artifact                                               |
+|-----------|--------------------------------------------------------|
 | Liquibase | `org.springframework.boot:spring-boot-starter-liquibase` |
 | Flyway    | `org.springframework.boot:spring-boot-starter-flyway`    |
 
-Migration files: `src/main/resources/db/changelog/` (Liquibase) · `src/main/resources/db/migration/` (Flyway).
+Migration files go in `src/main/resources/db/changelog/` (Liquibase) or `src/main/resources/db/migration/` (Flyway).
 
-**Outgoing HTTP**
+**Validation** — not a module; applies across layers via `spring-boot-starter-validation`:
 
-| Module         | Technology             | Style             | Convention plugin                        |
-|----------------|------------------------|-------------------|------------------------------------------|
-| `feign/`       | Spring Cloud OpenFeign | declarative, sync | `spring-openfeign-adapter-conventions`   |
-| `rest-client/` | Spring RestClient      | imperative, sync  | `spring-rest-client-adapter-conventions` |
-| `web-client/`  | Spring WebClient       | reactive          | `spring-web-client-adapter-conventions`  |
+- `webmvc/` — `@Valid` on controller parameters validates the request body
+- `domain/` — `@NotNull`, `@Size`, etc. on entity fields
 
-**Caching**
-
-| Module   | Technology        | Convention plugin                       |
-|----------|-------------------|-----------------------------------------|
-| `cache/` | Spring Data Redis | `spring-data-redis-adapter-conventions` |
-
-**Search**
-
-| Module    | Technology                | Convention plugin                          |
-|-----------|---------------------------|--------------------------------------------|
-| `search/` | Spring Data Elasticsearch | `spring-elasticsearch-adapter-conventions` |
-
-**Messaging** — a messaging adapter is both consumer (incoming) and producer (outgoing):
-
-| Module      | Technology  | Style       | Convention plugin                     |
-|-------------|-------------|-------------|---------------------------------------|
-| `rabbitmq/` | Spring AMQP | push, queue | `spring-rabbitmq-adapter-conventions` |
-| `kafka/`    | Spring Kafka | stream     | `spring-kafka-adapter-conventions`    |
-
-**WebSocket**
-
-| Module       | Technology             | Convention plugin                      |
-|--------------|------------------------|----------------------------------------|
-| `websocket/` | Spring WebSocket+STOMP | `spring-websocket-adapter-conventions` |
-
-**gRPC** — one module handles both server and client stubs; `.proto` files go in `src/main/proto/`:
-
-| Module  | Technology                     | Convention plugin                 |
-|---------|--------------------------------|-----------------------------------|
-| `grpc/` | gRPC-Java + Protobuf           | `spring-grpc-adapter-conventions` |
-
-**Validation** — Bean Validation applies across layers, not a separate module:
-
-| Layer        | How                                                           |
-|--------------|---------------------------------------------------------------|
-| `webmvc/`    | `@Valid` on controller parameters — validates the request body |
-| `domain/`    | `@NotNull`, `@Size`, etc. on entity fields                    |
-| Any adapter  | add `spring-boot-starter-validation` to the convention plugin  |
+**gRPC** — `.proto` files go in `src/main/proto/`; the Protobuf Gradle plugin generates Java stubs at build time.
 
 ---
 
@@ -266,7 +208,7 @@ crud/domain/      CrudRepository<T, ID>
 
 ### Port interfaces
 
-Defined in `domain/`, implemented in adapters.
+Defined in `domain/`, implemented in adapters:
 
 ```
 auth/domain/
@@ -289,22 +231,22 @@ user-note/domain/
 
 ## API Contracts
 
-| Service     | Method | Path                      | Description         |
-|-------------|--------|---------------------------|---------------------|
-| `auth`      | POST   | /auth/register            | register new user   |
-| `auth`      | POST   | /auth/login               | obtain tokens       |
+| Service     | Method | Path                      | Description          |
+|-------------|--------|---------------------------|----------------------|
+| `auth`      | POST   | /auth/register            | register new user    |
+| `auth`      | POST   | /auth/login               | obtain tokens        |
 | `auth`      | POST   | /auth/logout              | revoke refresh token |
 | `auth`      | POST   | /auth/refresh-token       | rotate refresh token |
-| `user`      | GET    | /users/{id}               | get user profile    |
-| `user`      | PUT    | /users/{id}               | update profile      |
-| `note`      | GET    | /notes/{id}               | get note            |
-| `note`      | POST   | /notes                    | create note         |
-| `note`      | PUT    | /notes/{id}               | update note         |
-| `note`      | DELETE | /notes/{id}               | delete note         |
-| `user-note` | GET    | /user-notes               | list access entries |
-| `user-note` | POST   | /user-notes               | grant access        |
-| `user-note` | DELETE | /user-notes/{id}          | revoke access       |
-| `user-note` | PUT    | /user-notes/{id}/transfer | transfer ownership  |
+| `user`      | GET    | /users/{id}               | get user profile     |
+| `user`      | PUT    | /users/{id}               | update profile       |
+| `note`      | GET    | /notes/{id}               | get note             |
+| `note`      | POST   | /notes                    | create note          |
+| `note`      | PUT    | /notes/{id}               | update note          |
+| `note`      | DELETE | /notes/{id}               | delete note          |
+| `user-note` | GET    | /user-notes               | list access entries  |
+| `user-note` | POST   | /user-notes               | grant access         |
+| `user-note` | DELETE | /user-notes/{id}          | revoke access        |
+| `user-note` | PUT    | /user-notes/{id}/transfer | transfer ownership   |
 
 ---
 
@@ -330,428 +272,9 @@ Client ─────────▶ │                gateway/               
 
 ---
 
-## Security (OAuth2 / OIDC)
-
-`auth/` is the Authorization Server. `gateway/` is the OAuth2 Client and Resource Server. Backend services (`user/`, `note/`, `user-note/`) are Resource Servers.
-
-### Token flow
-
-```
-Browser / mobile app
-        │  1. Authorization Code request
-        ▼
-    gateway/  ──────────────────▶  auth/
-    OAuth2 Client                  Authorization Server — issues JWT
-        │
-        │  2. forward request + JWT (TokenRelay filter)
-        ▼
-    user/ · note/ · user-note/
-    OAuth2 Resource Servers — validate JWT via JWKS
-```
-
-### OAuth2 Authorization Server — `auth/`
-
-`auth/application/build.gradle`:
-
-```groovy
-plugins { id 'spring-boot-application-conventions' }
-
-dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-authorization-server'
-    implementation project(':webmvc')
-    implementation project(':data-jpa')
-    implementation project(':domain')
-}
-```
-
-`auth/application/src/main/java/.../AuthorizationServerConfig.java`:
-
-```java
-@Configuration
-public class AuthorizationServerConfig {
-
-    @Bean
-    @Order(1)
-    public SecurityFilterChain authorizationServerFilterChain(HttpSecurity http) throws Exception {
-        OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
-        http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
-            .oidc(Customizer.withDefaults());
-        return http.build();
-    }
-
-    @Bean
-    public RegisteredClientRepository registeredClientRepository() {
-        RegisteredClient client = RegisteredClient.withId(UUID.randomUUID().toString())
-            .clientId("gateway")
-            .clientSecret("{noop}secret")
-            .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-            .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-            .redirectUri("http://localhost:8080/login/oauth2/code/gateway")
-            .scope(OidcScopes.OPENID)
-            .scope("read")
-            .build();
-        return new InMemoryRegisteredClientRepository(client);
-    }
-
-    @Bean
-    public JWKSource<SecurityContext> jwkSource() {
-        RSAKey rsaKey = Jwks.generateRsa();
-        return new ImmutableJWKSet<>(new JWKSet(rsaKey));
-    }
-
-    @Bean
-    public AuthorizationServerSettings authorizationServerSettings() {
-        return AuthorizationServerSettings.builder()
-            .issuer("http://localhost:8081")
-            .build();
-    }
-}
-```
-
-Standard endpoints exposed by Spring Authorization Server:
-
-| Endpoint                            | Description              |
-|-------------------------------------|--------------------------|
-| `/oauth2/authorize`                 | authorization code flow  |
-| `/oauth2/token`                     | token issuance           |
-| `/oauth2/revoke`                    | token revocation         |
-| `/oauth2/introspect`                | token introspection      |
-| `/.well-known/openid-configuration` | OIDC discovery document  |
-| `/.well-known/jwks.json`            | public keys for JWT validation |
-
-### OAuth2 Client — `gateway/`
-
-`gateway/` initiates the authorization code flow for the browser and forwards the JWT to backend services via the `TokenRelay` filter.
-
-`gateway/application/build.gradle`:
-
-```groovy
-plugins { id 'spring-boot-application-conventions' }
-
-dependencies {
-    implementation 'org.springframework.cloud:spring-cloud-starter-gateway-server-webmvc'
-    implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-client'
-    implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-resource-server'
-}
-```
-
-`gateway/application/src/main/resources/application.properties`:
-
-```properties
-spring.security.oauth2.client.registration.gateway.client-id=gateway
-spring.security.oauth2.client.registration.gateway.client-secret=secret
-spring.security.oauth2.client.registration.gateway.authorization-grant-type=authorization_code
-spring.security.oauth2.client.registration.gateway.scope=openid,read
-spring.security.oauth2.client.provider.gateway.issuer-uri=http://localhost:8081
-
-spring.cloud.gateway.default-filters[0]=TokenRelay
-```
-
-`gateway/application/src/main/java/.../GatewaySecurityConfig.java`:
-
-```java
-@Bean
-public SecurityFilterChain gatewayFilterChain(HttpSecurity http) throws Exception {
-    http
-        .authorizeHttpRequests(a -> a
-            .requestMatchers("/auth/register", "/auth/login").permitAll()
-            .anyRequest().authenticated())
-        .oauth2Login(Customizer.withDefaults())
-        .oauth2ResourceServer(r -> r.jwt(Customizer.withDefaults()));
-    return http.build();
-}
-```
-
-### OAuth2 Resource Server — `user/`, `note/`, `user-note/`
-
-Each service validates the JWT forwarded by the gateway using the public key fetched from `auth/`'s JWKS endpoint — no shared secret required.
-
-Add to each service's `application/build.gradle`:
-
-```groovy
-dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-resource-server'
-}
-```
-
-`application/src/main/resources/application.properties`:
-
-```properties
-spring.security.oauth2.resourceserver.jwt.issuer-uri=http://localhost:8081
-```
-
-`application/src/main/java/.../SecurityConfig.java`:
-
-```java
-@Bean
-public SecurityFilterChain resourceServerFilterChain(HttpSecurity http) throws Exception {
-    http
-        .authorizeHttpRequests(a -> a
-            .requestMatchers("/actuator/health").permitAll()
-            .anyRequest().authenticated())
-        .oauth2ResourceServer(r -> r.jwt(Customizer.withDefaults()));
-    return http.build();
-}
-```
-
----
-
-## Service Discovery (Eureka)
-
-`registry/` runs a Eureka Server. Every other service registers itself on startup and resolves other services by name — no hardcoded hostnames or ports.
-
-### Eureka Server — `registry/`
-
-`registry/application/build.gradle`:
-
-```groovy
-plugins { id 'spring-boot-application-conventions' }
-
-dependencies {
-    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
-}
-```
-
-`registry/application/src/main/java/.../RegistryApplication.java`:
-
-```java
-@SpringBootApplication
-@EnableEurekaServer
-public class RegistryApplication {}
-```
-
-`registry/application/src/main/resources/application.properties`:
-
-```properties
-spring.application.name=registry
-server.port=8761
-eureka.instance.hostname=localhost
-eureka.client.register-with-eureka=false
-eureka.client.fetch-registry=false
-```
-
-### Eureka Client — every business and infrastructure service
-
-`spring-cloud-starter-netflix-eureka-client` is included in `spring-boot-application-conventions` — no explicit configuration needed beyond the service name and zone:
-
-```properties
-spring.application.name=auth
-eureka.client.service-url.defaultZone=http://localhost:8761/eureka/
-eureka.instance.health-check-url-path=/actuator/health
-eureka.instance.status-page-url-path=/actuator/info
-```
-
-No `@EnableDiscoveryClient` annotation needed — auto-configuration activates when the dependency is on the classpath.
-
-### Gateway routing via Eureka
-
-```properties
-spring.cloud.gateway.discovery.locator.enabled=true
-spring.cloud.gateway.discovery.locator.lower-case-service-id=true
-```
-
-A request to `/auth/**` is routed to the `auth` instance registered in Eureka — no static URLs.
-
-### Kubernetes alternative
-
-On Kubernetes, Eureka is replaced by native K8s `Service` discovery:
-
-```properties
-# application-k8s.properties
-eureka.client.enabled=false
-```
-
----
-
-## API Gateway
-
-`gateway/` is the single entry point for all client traffic. It authenticates requests, routes them to backend services, and applies cross-cutting filters. See [Security](#security-oauth2--oidc) for OAuth2 configuration.
-
-### Routing
-
-`gateway/application/src/main/resources/application.yml`:
-
-```yaml
-spring:
-  cloud:
-    gateway:
-      routes:
-        - id: auth
-          uri: lb://auth
-          predicates:
-            - Path=/auth/**
-        - id: user
-          uri: lb://user
-          predicates:
-            - Path=/users/**
-        - id: note
-          uri: lb://note
-          predicates:
-            - Path=/notes/**
-        - id: user-note
-          uri: lb://user-note
-          predicates:
-            - Path=/user-notes/**
-      default-filters:
-        - TokenRelay
-```
-
-`lb://service-name` — Spring Cloud LoadBalancer resolves the name to a live instance via Eureka.
-
----
-
-## OpenFeign
-
-`user-note/feign/` calls `user/` and `note/` declaratively. OpenFeign resolves service names via Eureka + LoadBalancer automatically.
-
-### `spring-openfeign-adapter-conventions.gradle`
-
-```groovy
-plugins {
-    id 'java-library'
-    id 'io.spring.dependency-management'
-}
-
-dependencyManagement {
-    imports {
-        mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
-    }
-}
-
-repositories { mavenCentral() }
-
-dependencies {
-    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
-    implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-}
-
-tasks.named('test') { useJUnitPlatform() }
-```
-
-Enable Feign clients in `user-note/application/src/main/java/.../UserNoteApplication.java`:
-
-```java
-@SpringBootApplication
-@EnableFeignClients(basePackages = "com.example.usernote.feign")
-public class UserNoteApplication {}
-```
-
-### Client interfaces — `user-note/feign/`
-
-Feign clients implement the port interfaces declared in `user-note/domain/`:
-
-```java
-@FeignClient(name = "user", fallback = UserFeignClientFallback.class)
-public interface UserFeignClient extends UserClient {
-    @GetMapping("/users/{id}")
-    User findById(@PathVariable UUID id);
-}
-
-@FeignClient(name = "note", fallback = NoteFeignClientFallback.class)
-public interface NoteFeignClient extends NoteClient {
-    @GetMapping("/notes/{id}")
-    Note findById(@PathVariable UUID id);
-}
-```
-
----
-
-## Load Balancing
-
-Spring Cloud LoadBalancer is included transitively with `spring-cloud-starter-openfeign` and `spring-cloud-starter-gateway-server-webmvc`. No explicit configuration is required — it activates automatically when a Eureka client is on the classpath.
-
-Default strategy: **round-robin**.
-
-```properties
-# switch to random
-spring.cloud.loadbalancer.configurations=random
-```
-
-Custom strategy: implement `ServiceInstanceListSupplier` and register it as a `@Bean`.
-
----
-
-## Resilience4j
-
-Resilience4j protects inter-service calls with circuit breakers, retries, and rate limiters. It is included in `spring-openfeign-adapter-conventions` via `spring-cloud-starter-circuitbreaker-resilience4j`.
-
-### Circuit breaker
-
-Opens after a failure threshold is reached; half-opens after the wait duration to probe recovery.
-
-```properties
-resilience4j.circuitbreaker.instances.user.failure-rate-threshold=50
-resilience4j.circuitbreaker.instances.user.wait-duration-in-open-state=10s
-resilience4j.circuitbreaker.instances.user.sliding-window-size=10
-```
-
-Fallback for a Feign client:
-
-```java
-@Component
-class UserFeignClientFallback implements UserFeignClient {
-    public User findById(UUID id) {
-        return User.unknown(id);
-    }
-}
-```
-
-### Retry
-
-```properties
-resilience4j.retry.instances.user.max-attempts=3
-resilience4j.retry.instances.user.wait-duration=500ms
-```
-
-### Rate limiter
-
-```properties
-resilience4j.ratelimiter.instances.note.limit-for-period=100
-resilience4j.ratelimiter.instances.note.limit-refresh-period=1s
-resilience4j.ratelimiter.instances.note.timeout-duration=0
-```
-
-### Actuator endpoints
-
-```properties
-management.endpoints.web.exposure.include=health,circuitbreakers,retries
-management.endpoint.health.show-details=always
-```
-
----
-
-## OpenAPI / Swagger
-
-Each business service exposes its API spec at `/v3/api-docs`. `gateway/` aggregates all specs into a single Swagger UI at `http://localhost:8080/swagger-ui`.
-
-`springdoc-openapi` is included in `spring-webmvc-adapter-conventions` — no per-service configuration needed.
-
-| Path           | Description                        |
-|----------------|------------------------------------|
-| `/v3/api-docs` | OpenAPI JSON spec for this service |
-| `/swagger-ui`  | Swagger UI for this service        |
-
-### Aggregation in `gateway/`
-
-`gateway/application/src/main/resources/application.properties`:
-
-```properties
-springdoc.swagger-ui.urls[0].name=auth
-springdoc.swagger-ui.urls[0].url=/auth/v3/api-docs
-springdoc.swagger-ui.urls[1].name=user
-springdoc.swagger-ui.urls[1].url=/user/v3/api-docs
-springdoc.swagger-ui.urls[2].name=note
-springdoc.swagger-ui.urls[2].url=/note/v3/api-docs
-springdoc.swagger-ui.urls[3].name=user-note
-springdoc.swagger-ui.urls[3].url=/user-note/v3/api-docs
-```
-
----
-
 ## Implementation Order
 
-Build modules in dependency order: `domain/` → `data-jpa/` → `webmvc/` → `application/`.
+Build in dependency order within each service: `domain/` → `data-jpa/` → `webmvc/` → `application/`.
 
 ```
 1. build-logic/    convention plugins
@@ -769,7 +292,7 @@ Build modules in dependency order: `domain/` → `data-jpa/` → `webmvc/` → `
 
 ## Build System
 
-### `gradle.properties` — root
+### Root `gradle.properties`
 
 ```properties
 org.gradle.parallel=true
@@ -779,7 +302,7 @@ org.gradle.configuration-cache=true
 org.gradle.configuration-cache.parallel=true
 ```
 
-### `settings.gradle` — root
+### Root `settings.gradle`
 
 ```groovy
 rootProject.name = 'notes-spring'
@@ -795,7 +318,7 @@ includeBuild 'registry'
 includeBuild 'config'
 ```
 
-### `build.gradle` — root
+### Root `build.gradle`
 
 ```groovy
 def builds = gradle.includedBuilds
@@ -825,12 +348,10 @@ include ':data-jpa'
 ### `build.gradle` — per service
 
 ```groovy
-def projects = subprojects.collect { it.name }
-
-tasks.register('clean') { dependsOn projects.collect { ":${it}:clean" } }
-tasks.register('test')  { dependsOn projects.collect { ":${it}:test"  } }
-tasks.register('check') { dependsOn projects.collect { ":${it}:check" } }
-tasks.register('build') { dependsOn projects.collect { ":${it}:build" } }
+tasks.register('clean') { dependsOn subprojects.collect { ":${it.name}:clean" } }
+tasks.register('test')  { dependsOn subprojects.collect { ":${it.name}:test"  } }
+tasks.register('check') { dependsOn subprojects.collect { ":${it.name}:check" } }
+tasks.register('build') { dependsOn subprojects.collect { ":${it.name}:build" } }
 ```
 
 ### `build.gradle` — per module
@@ -853,7 +374,6 @@ plugins {
     id 'spring-boot-application-conventions'
     id 'spring-h2-database-conventions'   // dev only; replace with PostgreSQL in production
 }
-
 dependencies {
     implementation project(':domain')
     implementation project(':webmvc')    // swap adapter here
@@ -877,7 +397,6 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-gradle-plugin:4.0.6'
     implementation 'io.spring.gradle:dependency-management-plugin:1.1.7'
-    // add Spring Cloud Gradle plugin when using Gateway, Eureka, Config, or OpenFeign
 }
 ```
 
@@ -887,7 +406,7 @@ dependencies {
 
 All plugins are `.gradle` files in `build-logic/src/main/groovy/`.
 
-Adapter plugins share the same structure: `java-library` + `io.spring.dependency-management` + Spring Boot BOM import + starter dependency.
+Adapter plugins follow the same pattern: `java-library` + `io.spring.dependency-management` + BOM import + starter dependency.
 
 ### `spring-domain-conventions.gradle`
 
@@ -903,7 +422,7 @@ repositories {
 
 ### `spring-boot-application-conventions.gradle`
 
-Applied to every `application/` module. Includes Spring Boot, Actuator, Eureka client, Prometheus metrics, and distributed tracing.
+Applied to every `application/` module. Provides Spring Boot, Actuator, Eureka client, Prometheus, and OpenTelemetry out of the box. Imports the Spring Cloud BOM so Spring Cloud starters need no explicit version.
 
 ```groovy
 plugins {
@@ -987,7 +506,7 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
@@ -998,59 +517,425 @@ tasks.named('test') {
 
 ### `spring-h2-database-conventions.gradle`
 
-Mixin plugin — applied alongside another plugin, never standalone.
+Mixin — applied alongside another plugin, not standalone.
 
 ```groovy
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-h2console'
     runtimeOnly 'com.h2database:h2'
 }
 ```
 
 ### Additional adapter plugins
 
-All follow the same structure as `spring-webmvc-adapter-conventions.gradle`.
+Follow the same pattern as `spring-webmvc-adapter-conventions.gradle`. Spring Cloud starters also need the Spring Cloud BOM import.
 
-| Plugin                                   | Key dependency                                                            |
-|------------------------------------------|---------------------------------------------------------------------------|
-| `spring-openfeign-adapter-conventions`   | `spring-cloud-starter-openfeign` + `circuitbreaker-resilience4j`          |
-| `spring-rest-client-adapter-conventions` | `spring-boot-starter-web`                                                 |
-| `spring-web-client-adapter-conventions`  | `spring-boot-starter-webflux`                                             |
-| `spring-webflux-adapter-conventions`     | `spring-boot-starter-webflux`                                             |
-| `spring-graphql-adapter-conventions`     | `spring-boot-starter-graphql`                                             |
-| `spring-data-r2dbc-adapter-conventions`  | `spring-boot-starter-data-r2dbc`                                          |
-| `spring-data-mongo-adapter-conventions`  | `spring-boot-starter-data-mongodb`                                        |
-| `spring-data-redis-adapter-conventions`  | `spring-boot-starter-data-redis`                                          |
-| `spring-elasticsearch-adapter-conventions` | `spring-boot-starter-data-elasticsearch`                                |
-| `spring-rabbitmq-adapter-conventions`    | `spring-boot-starter-amqp`                                                |
-| `spring-kafka-adapter-conventions`       | `spring-boot-starter-kafka`                                               |
-| `spring-websocket-adapter-conventions`   | `spring-boot-starter-websocket`                                           |
-| `spring-grpc-adapter-conventions`        | `grpc-spring-boot-starter` + `protobuf-gradle-plugin`                     |
+| Plugin                                   | Key dependency                                                   |
+|------------------------------------------|------------------------------------------------------------------|
+| `spring-openfeign-adapter-conventions`   | `spring-cloud-starter-openfeign` + `circuitbreaker-resilience4j` |
+| `spring-rest-client-adapter-conventions` | `spring-boot-starter-web`                                        |
+| `spring-web-client-adapter-conventions`  | `spring-boot-starter-webflux`                                    |
+| `spring-webflux-adapter-conventions`     | `spring-boot-starter-webflux`                                    |
+| `spring-graphql-adapter-conventions`     | `spring-boot-starter-graphql`                                    |
+| `spring-data-r2dbc-adapter-conventions`  | `spring-boot-starter-data-r2dbc`                                 |
+| `spring-data-mongo-adapter-conventions`  | `spring-boot-starter-data-mongodb`                               |
+| `spring-data-redis-adapter-conventions`  | `spring-boot-starter-data-redis`                                 |
+| `spring-elasticsearch-adapter-conventions` | `spring-boot-starter-data-elasticsearch`                       |
+| `spring-rabbitmq-adapter-conventions`    | `spring-boot-starter-amqp`                                       |
+| `spring-kafka-adapter-conventions`       | `spring-boot-starter-kafka`                                      |
+| `spring-websocket-adapter-conventions`   | `spring-boot-starter-websocket`                                  |
+| `spring-grpc-adapter-conventions`        | `grpc-spring-boot-starter` + `protobuf-gradle-plugin`            |
+
+---
+
+## Security (OAuth2 / OIDC)
+
+`auth/` is the Authorization Server. `gateway/` is the OAuth2 Client and Resource Server. Backend services (`user/`, `note/`, `user-note/`) are Resource Servers.
+
+### Token flow
+
+```
+Browser / mobile app
+        │  1. Authorization Code request
+        ▼
+    gateway/  ──────────────────▶  auth/
+    OAuth2 Client                  Authorization Server — issues JWT
+        │
+        │  2. forward request + JWT (TokenRelay filter)
+        ▼
+    user/ · note/ · user-note/
+    OAuth2 Resource Servers — validate JWT via JWKS
+```
+
+### Authorization Server — `auth/`
+
+`auth/application/build.gradle`:
+
+```groovy
+plugins { id 'spring-boot-application-conventions' }
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-authorization-server'
+    implementation project(':webmvc')
+    implementation project(':data-jpa')
+    implementation project(':domain')
+}
+```
+
+`auth/application/src/main/java/.../AuthorizationServerConfig.java`:
+
+```java
+@Configuration
+public class AuthorizationServerConfig {
+
+    @Bean
+    @Order(1)
+    public SecurityFilterChain authorizationServerFilterChain(HttpSecurity http) throws Exception {
+        OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
+        http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
+            .oidc(Customizer.withDefaults());
+        return http.build();
+    }
+
+    @Bean
+    public RegisteredClientRepository registeredClientRepository() {
+        RegisteredClient client = RegisteredClient.withId(UUID.randomUUID().toString())
+            .clientId("gateway")
+            .clientSecret("{noop}secret")
+            .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+            .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+            .redirectUri("http://localhost:8080/login/oauth2/code/gateway")
+            .scope(OidcScopes.OPENID)
+            .scope("read")
+            .build();
+        return new InMemoryRegisteredClientRepository(client);
+    }
+
+    @Bean
+    public JWKSource<SecurityContext> jwkSource() {
+        RSAKey rsaKey = Jwks.generateRsa();
+        return new ImmutableJWKSet<>(new JWKSet(rsaKey));
+    }
+
+    @Bean
+    public AuthorizationServerSettings authorizationServerSettings() {
+        return AuthorizationServerSettings.builder()
+            .issuer("http://localhost:8081")
+            .build();
+    }
+}
+```
+
+Standard endpoints:
+
+| Endpoint                            | Description                    |
+|-------------------------------------|--------------------------------|
+| `/oauth2/authorize`                 | authorization code flow        |
+| `/oauth2/token`                     | token issuance                 |
+| `/oauth2/revoke`                    | token revocation               |
+| `/oauth2/introspect`                | token introspection            |
+| `/.well-known/openid-configuration` | OIDC discovery document        |
+| `/.well-known/jwks.json`            | public keys for JWT validation |
+
+### OAuth2 Client — `gateway/`
+
+`gateway/application/build.gradle`:
+
+```groovy
+plugins { id 'spring-boot-application-conventions' }
+
+dependencies {
+    implementation 'org.springframework.cloud:spring-cloud-starter-gateway-server-webmvc'
+    implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-client'
+    implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-resource-server'
+}
+```
+
+`gateway/application/src/main/resources/application.properties`:
+
+```properties
+spring.security.oauth2.client.registration.gateway.client-id=gateway
+spring.security.oauth2.client.registration.gateway.client-secret=secret
+spring.security.oauth2.client.registration.gateway.authorization-grant-type=authorization_code
+spring.security.oauth2.client.registration.gateway.scope=openid,read
+spring.security.oauth2.client.provider.gateway.issuer-uri=http://localhost:8081
+
+spring.cloud.gateway.default-filters[0]=TokenRelay
+```
+
+`gateway/application/src/main/java/.../GatewaySecurityConfig.java`:
+
+```java
+@Bean
+public SecurityFilterChain gatewayFilterChain(HttpSecurity http) throws Exception {
+    http
+        .authorizeHttpRequests(a -> a
+            .requestMatchers("/auth/register", "/auth/login").permitAll()
+            .anyRequest().authenticated())
+        .oauth2Login(Customizer.withDefaults())
+        .oauth2ResourceServer(r -> r.jwt(Customizer.withDefaults()));
+    return http.build();
+}
+```
+
+### Resource Server — `user/`, `note/`, `user-note/`
+
+JWT is validated against `auth/`'s public key via JWKS — no shared secret required.
+
+Add to each service's `application/build.gradle`:
+
+```groovy
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-resource-server'
+}
+```
+
+`application/src/main/resources/application.properties`:
+
+```properties
+spring.security.oauth2.resourceserver.jwt.issuer-uri=http://localhost:8081
+```
+
+`application/src/main/java/.../SecurityConfig.java`:
+
+```java
+@Bean
+public SecurityFilterChain resourceServerFilterChain(HttpSecurity http) throws Exception {
+    http
+        .authorizeHttpRequests(a -> a
+            .requestMatchers("/actuator/health").permitAll()
+            .anyRequest().authenticated())
+        .oauth2ResourceServer(r -> r.jwt(Customizer.withDefaults()));
+    return http.build();
+}
+```
+
+---
+
+## Service Discovery (Eureka)
+
+`registry/` runs a Eureka Server. Every other service registers on startup and resolves other services by name — no hardcoded hostnames or ports.
+
+### Eureka Server — `registry/`
+
+`registry/application/build.gradle`:
+
+```groovy
+plugins { id 'spring-boot-application-conventions' }
+
+dependencies {
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
+}
+```
+
+`registry/application/src/main/java/.../RegistryApplication.java`:
+
+```java
+@SpringBootApplication
+@EnableEurekaServer
+public class RegistryApplication {}
+```
+
+`registry/application/src/main/resources/application.properties`:
+
+```properties
+spring.application.name=registry
+server.port=8761
+eureka.instance.hostname=localhost
+eureka.client.register-with-eureka=false
+eureka.client.fetch-registry=false
+```
+
+### Eureka Client — all other services
+
+`spring-cloud-starter-netflix-eureka-client` is included in `spring-boot-application-conventions`. Each service needs only:
+
+```properties
+spring.application.name=auth
+eureka.client.service-url.defaultZone=http://localhost:8761/eureka/
+eureka.instance.health-check-url-path=/actuator/health
+eureka.instance.status-page-url-path=/actuator/info
+```
+
+No `@EnableDiscoveryClient` annotation — auto-configuration activates when the dependency is on the classpath.
+
+### Kubernetes alternative
+
+On Kubernetes, Eureka is replaced by native K8s `Service` discovery. Add to `application-k8s.properties`:
+
+```properties
+eureka.client.enabled=false
+```
+
+---
+
+## API Gateway
+
+`gateway/` is the single entry point for all client traffic. It routes requests, enforces authentication, and forwards JWT tokens to backend services. See [Security](#security-oauth2--oidc) for full OAuth2 configuration.
+
+### Routing and load balancing
+
+`gateway/application/src/main/resources/application.yml`:
+
+```yaml
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: auth
+          uri: lb://auth
+          predicates:
+            - Path=/auth/**
+        - id: user
+          uri: lb://user
+          predicates:
+            - Path=/users/**
+        - id: note
+          uri: lb://note
+          predicates:
+            - Path=/notes/**
+        - id: user-note
+          uri: lb://user-note
+          predicates:
+            - Path=/user-notes/**
+      default-filters:
+        - TokenRelay
+```
+
+`lb://service-name` — Spring Cloud LoadBalancer resolves the name to a live Eureka instance. Default strategy is round-robin; set `spring.cloud.loadbalancer.configurations=random` to switch to random.
+
+---
+
+## OpenFeign
+
+`user-note/feign/` calls `user/` and `note/` declaratively. OpenFeign resolves service names via Eureka + Spring Cloud LoadBalancer automatically.
+
+### `spring-openfeign-adapter-conventions.gradle`
+
+```groovy
+plugins {
+    id 'java-library'
+    id 'io.spring.dependency-management'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+        mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2025.1.1'
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') { useJUnitPlatform() }
+```
+
+Enable Feign clients in `user-note/application/src/main/java/.../UserNoteApplication.java`:
+
+```java
+@SpringBootApplication
+@EnableFeignClients(basePackages = "com.example.usernote.feign")
+public class UserNoteApplication {}
+```
+
+### Client interfaces — `user-note/feign/`
+
+Feign clients implement the port interfaces from `user-note/domain/`:
+
+```java
+@FeignClient(name = "user", fallback = UserFeignClientFallback.class)
+public interface UserFeignClient extends UserClient {
+    @GetMapping("/users/{id}")
+    User findById(@PathVariable UUID id);
+}
+
+@FeignClient(name = "note", fallback = NoteFeignClientFallback.class)
+public interface NoteFeignClient extends NoteClient {
+    @GetMapping("/notes/{id}")
+    Note findById(@PathVariable UUID id);
+}
+```
+
+---
+
+## Resilience4j
+
+Resilience4j is included in `spring-openfeign-adapter-conventions` via `spring-cloud-starter-circuitbreaker-resilience4j`.
+
+### Circuit breaker
+
+Opens after a failure threshold; half-opens after the wait duration to probe recovery.
+
+```properties
+resilience4j.circuitbreaker.instances.user.failure-rate-threshold=50
+resilience4j.circuitbreaker.instances.user.wait-duration-in-open-state=10s
+resilience4j.circuitbreaker.instances.user.sliding-window-size=10
+```
+
+Fallback on a Feign client:
+
+```java
+@Component
+class UserFeignClientFallback implements UserFeignClient {
+    public User findById(UUID id) {
+        return User.unknown(id);
+    }
+}
+```
+
+### Retry
+
+```properties
+resilience4j.retry.instances.user.max-attempts=3
+resilience4j.retry.instances.user.wait-duration=500ms
+```
+
+### Rate limiter
+
+```properties
+resilience4j.ratelimiter.instances.note.limit-for-period=100
+resilience4j.ratelimiter.instances.note.limit-refresh-period=1s
+resilience4j.ratelimiter.instances.note.timeout-duration=0
+```
+
+---
+
+## OpenAPI / Swagger
+
+`springdoc-openapi` is included in `spring-webmvc-adapter-conventions` — no per-service setup needed.
+
+Each business service exposes:
+
+| Path           | Description                        |
+|----------------|------------------------------------|
+| `/v3/api-docs` | OpenAPI JSON spec for this service |
+| `/swagger-ui`  | Swagger UI for this service        |
+
+`gateway/` aggregates all specs into a single Swagger UI at `http://localhost:8080/swagger-ui`.
+
+`gateway/application/src/main/resources/application.properties`:
+
+```properties
+springdoc.swagger-ui.urls[0].name=auth
+springdoc.swagger-ui.urls[0].url=/auth/v3/api-docs
+springdoc.swagger-ui.urls[1].name=user
+springdoc.swagger-ui.urls[1].url=/user/v3/api-docs
+springdoc.swagger-ui.urls[2].name=note
+springdoc.swagger-ui.urls[2].url=/note/v3/api-docs
+springdoc.swagger-ui.urls[3].name=user-note
+springdoc.swagger-ui.urls[3].url=/user-note/v3/api-docs
+```
 
 ---
 
 ## Key Configuration
-
-### Business service — `application.properties`
-
-```properties
-spring.application.name=auth
-server.port=8081
-
-spring.datasource.url=jdbc:h2:mem:authdb
-
-eureka.client.service-url.defaultZone=http://localhost:8761/eureka/
-spring.config.import=configserver:http://localhost:8888
-
-management.endpoints.web.exposure.include=health,info,metrics,prometheus,loggers
-management.endpoint.health.show-details=always
-management.endpoint.health.probes.enabled=true
-
-management.tracing.sampling.probability=1.0
-otel.exporter.otlp.endpoint=http://localhost:4318
-
-spring.security.oauth2.resourceserver.jwt.issuer-uri=http://localhost:8081
-```
 
 ### Service ports
 
@@ -1063,6 +948,34 @@ spring.security.oauth2.resourceserver.jwt.issuer-uri=http://localhost:8081
 | user-note | 8084 |
 | registry  | 8761 |
 | config    | 8888 |
+
+### Business service `application.properties`
+
+```properties
+spring.application.name=auth
+server.port=8081
+
+# datasource (replace with PostgreSQL in production)
+spring.datasource.url=jdbc:h2:mem:authdb
+
+# service discovery
+eureka.client.service-url.defaultZone=http://localhost:8761/eureka/
+
+# centralized configuration
+spring.config.import=configserver:http://localhost:8888
+
+# actuator
+management.endpoints.web.exposure.include=health,info,metrics,prometheus,loggers
+management.endpoint.health.show-details=always
+management.endpoint.health.probes.enabled=true
+
+# tracing
+management.tracing.sampling.probability=1.0
+otel.exporter.otlp.endpoint=http://localhost:4318
+
+# security
+spring.security.oauth2.resourceserver.jwt.issuer-uri=http://localhost:8081
+```
 
 ### `registry/application.properties`
 
@@ -1084,25 +997,32 @@ spring.cloud.gateway.discovery.locator.enabled=true
 spring.cloud.gateway.discovery.locator.lower-case-service-id=true
 ```
 
+### `application-k8s.properties` (profile — overrides base config)
+
+```properties
+eureka.client.enabled=false
+spring.cloud.config.enabled=false
+```
+
 ---
 
 ## Observability
 
 ### Spring Boot Actuator
 
-Included in `spring-boot-application-conventions`. Exposes the following endpoints on every service:
+Included in `spring-boot-application-conventions`. Endpoints exposed on every service:
 
-| Endpoint               | Purpose                                   |
-|------------------------|-------------------------------------------|
-| `/actuator/health`     | liveness and readiness probes             |
-| `/actuator/info`       | service metadata                          |
-| `/actuator/metrics`    | application metrics                       |
-| `/actuator/prometheus` | Prometheus scrape endpoint                |
-| `/actuator/loggers`    | runtime log-level management              |
+| Endpoint               | Purpose                       |
+|------------------------|-------------------------------|
+| `/actuator/health`     | liveness and readiness probes |
+| `/actuator/info`       | service metadata              |
+| `/actuator/metrics`    | application metrics           |
+| `/actuator/prometheus` | Prometheus scrape endpoint    |
+| `/actuator/loggers`    | runtime log-level management  |
 
 ### Prometheus
 
-Prometheus scrapes `/actuator/prometheus` on every service. `micrometer-registry-prometheus` is included in `spring-boot-application-conventions`.
+`micrometer-registry-prometheus` is included in `spring-boot-application-conventions`. Prometheus scrapes `/actuator/prometheus` on each service.
 
 `prometheus.yml`:
 
@@ -1126,23 +1046,21 @@ scrape_configs:
       - targets: ['localhost:8084']
 ```
 
-Grafana connects to Prometheus as a data source and visualizes dashboards.
-
 ### OpenTelemetry
 
-`spring-boot-starter-opentelemetry` is included in `spring-boot-application-conventions`. It provides the OTel SDK, Micrometer tracing bridge, and OTLP exporter — every incoming HTTP request, outgoing Feign call, and database query is automatically traced.
+`spring-boot-starter-opentelemetry` is included in `spring-boot-application-conventions`. Every HTTP request, Feign call, and database query is traced automatically.
 
 Trace pipeline: service → OpenTelemetry Collector → Jaeger or Grafana Tempo.
 
 ### Monitoring stack
 
-| Tool                     | Purpose                                  |
-|--------------------------|------------------------------------------|
-| Prometheus               | metrics collection                       |
-| Grafana                  | dashboards and alerts                    |
-| OpenTelemetry Collector  | trace aggregation and routing            |
-| Jaeger / Grafana Tempo   | trace storage and visualization          |
-| Elastic Stack (ELK)      | centralized log aggregation              |
+| Tool                    | Purpose                              |
+|-------------------------|--------------------------------------|
+| Prometheus              | metrics collection                   |
+| Grafana                 | dashboards and alerts                |
+| OpenTelemetry Collector | trace aggregation and routing        |
+| Jaeger / Grafana Tempo  | trace storage and visualization      |
+| Elastic Stack (ELK)     | centralized log aggregation          |
 
 ---
 
@@ -1150,9 +1068,7 @@ Trace pipeline: service → OpenTelemetry Collector → Jaeger or Grafana Tempo.
 
 ### Docker
 
-`bootBuildImage` is available on every `application/` module because `org.springframework.boot` is applied by `spring-boot-application-conventions`.
-
-Build an image:
+`bootBuildImage` is available on every `application/` module — `org.springframework.boot` is applied by `spring-boot-application-conventions`.
 
 ```shell
 ./gradlew :auth:application:bootBuildImage --imageName=notes-spring/auth:latest
@@ -1160,7 +1076,7 @@ Build an image:
 
 ### Docker Compose
 
-`docker-compose.yml` at the repository root starts the full stack locally:
+`docker-compose.yml` at the repository root:
 
 ```yaml
 services:
@@ -1209,15 +1125,7 @@ services:
 
 ### Kubernetes
 
-On Kubernetes, Eureka is disabled — K8s `Service` objects handle discovery. `ConfigMap` replaces the Config Server.
-
-`application-k8s.properties`:
-
-```properties
-eureka.client.enabled=false
-spring.cloud.config.enabled=false
-management.endpoint.health.probes.enabled=true
-```
+On Kubernetes, Eureka is replaced by K8s `Service` discovery; `ConfigMap` replaces the Config Server. Activate via the `k8s` Spring profile (`application-k8s.properties`).
 
 Liveness and readiness probes:
 
@@ -1248,8 +1156,6 @@ notes-spring/
 └── user-note/helm/
 ```
 
-Deploy to a cluster:
-
 ```shell
 helm upgrade --install notes-spring ./helm \
   --namespace notes-spring \
@@ -1259,8 +1165,6 @@ helm upgrade --install notes-spring ./helm \
 ---
 
 ## Secrets Management
-
-### HashiCorp Vault
 
 Vault stores secrets (database passwords, JWT signing keys, API credentials) and injects them as Spring properties at startup via Spring Cloud Vault.
 
@@ -1284,15 +1188,13 @@ spring.cloud.vault.kv.default-context=auth   # change per service
 spring.config.import=vault://
 ```
 
-Secrets at `secret/auth` in Vault are injected automatically. In production, replace token authentication with Kubernetes auth or AWS IAM.
+Secrets at `secret/auth` in Vault are injected automatically. In production, replace token auth with Kubernetes auth or AWS IAM.
 
 ---
 
 ## Testing
 
-### Testcontainers
-
-Testcontainers starts real infrastructure (database, Redis, Kafka, etc.) inside Docker during tests. Use it in adapter modules (`data-jpa/`, `cache/`, `rabbitmq/`, `kafka/`) to test against real systems without mocking.
+Testcontainers starts real infrastructure (database, Redis, Kafka, etc.) inside Docker during tests. Use it in adapter modules (`data-jpa/`, `cache/`, `rabbitmq/`, `kafka/`) to avoid mocking persistence.
 
 Add to the relevant adapter convention plugin:
 
@@ -1326,4 +1228,4 @@ class UserRepositoryTest {
 
 ## Production Platform
 
-The target runtime is **AWS**. Kubernetes manages container orchestration and service discovery (Eureka disabled). Helm handles parameterized, reproducible deployments across environments. See [Deployment](#deployment) for full configuration.
+Target runtime is **AWS**. Kubernetes manages orchestration and service discovery (Eureka disabled). Helm handles parameterized deployments across environments. See [Deployment](#deployment) for full configuration.
