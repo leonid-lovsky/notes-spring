@@ -215,7 +215,7 @@ note/domain/
   NoteRepository         save(note) · findById(id) · findByOwnerId(ownerId) · deleteById(id)
 
 user-note/domain/
-  UserNoteRepository     save(userNote) · findByUserId(userId) · findByOwnerId(ownerId)
+  UserNoteRepository     save(userNote) · findById(id) · findByUserId(userId) · findByOwnerId(ownerId)
                          findByUserIdAndNoteId(userId, noteId) · deleteByUserIdAndNoteId(userId, noteId)
   UserClient             findBySubject(subject)  — implemented in feign/
   NoteClient             findById(noteId)        — implemented in feign/
