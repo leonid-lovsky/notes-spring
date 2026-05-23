@@ -58,10 +58,9 @@ public class NoteController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") UUID id, Principal principal) {
-        boolean found = repository.findById(id)
-            .filter(n -> n.ownerId().equals(principal.getName()))
-            .isPresent();
-        if (!found) return ResponseEntity.notFound().build();
+        if (repository.findById(id).filter(n -> n.ownerId().equals(principal.getName())).isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
         repository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
