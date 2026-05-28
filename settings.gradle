@@ -1,10 +1,25 @@
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+}
+
 rootProject.name = 'notes-spring'
 
-includeBuild 'auth'
-includeBuild 'build-logic'
-includeBuild 'config'
-includeBuild 'gateway'
-includeBuild 'note'
-includeBuild 'registry'
-includeBuild 'user'
-includeBuild 'user-note'
+include ':auth:application'
+
+include ':user:application'
+include ':user:webmvc'
+include ':user:data-jpa'
+
+include ':note:application'
+include ':note:webmvc'
+include ':note:data-jpa'
+
+include ':user-note:application'
+include ':user-note:webmvc'
+include ':user-note:data-jpa'
+
+include ':gateway:application'
+include ':registry:application'
+include ':config:application'
