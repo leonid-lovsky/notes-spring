@@ -1,0 +1,11 @@
+subprojects {
+    plugins.withId('java') {
+        java {
+            toolchain {
+                languageVersion = JavaLanguageVersion.of(
+                    rootProject.file('.java-version').text.trim().toInteger()
+                )
+            }
+        }
+    }
+}
