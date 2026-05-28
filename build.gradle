@@ -1,9 +1,11 @@
+import org.springframework.boot.gradle.plugin.SpringBootPlugin
+
 subprojects {
     plugins.withId('java') {
         java {
             toolchain {
                 languageVersion = JavaLanguageVersion.of(
-                    rootProject.file('.java-version').text.trim().toInteger()
+                        rootProject.file('.java-version').text.trim().toInteger()
                 )
             }
         }
@@ -17,7 +19,7 @@ subprojects {
     plugins.withId('io.spring.dependency-management') {
         dependencyManagement {
             imports {
-                mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+                mavenBom SpringBootPlugin.BOM_COORDINATES
             }
         }
     }
