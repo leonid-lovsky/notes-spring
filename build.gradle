@@ -1,17 +1,15 @@
-def builds = gradle.includedBuilds
-
 tasks.register('clean') {
-    dependsOn builds.collect { it.task(':clean') }
+    dependsOn gradle.includedBuilds.collect { it.task(':clean') }
 }
 
 tasks.register('test') {
-    dependsOn builds.collect { it.task(':test') }
+    dependsOn gradle.includedBuilds.collect { it.task(':test') }
 }
 
 tasks.register('check') {
-    dependsOn builds.collect { it.task(':check') }
+    dependsOn gradle.includedBuilds.collect { it.task(':check') }
 }
 
 tasks.register('build') {
-    dependsOn builds.collect { it.task(':build') }
+    dependsOn gradle.includedBuilds.collect { it.task(':build') }
 }

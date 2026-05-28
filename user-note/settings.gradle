@@ -2,10 +2,14 @@ pluginManagement {
     includeBuild '../build-logic'
 }
 
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+}
+
 rootProject.name = 'user-note'
 
-include ':domain'
 include ':application'
 include ':webmvc'
 include ':data-jpa'
-include ':feign'

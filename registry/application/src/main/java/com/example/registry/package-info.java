@@ -1,4 +1,4 @@
 @NullMarked
-package com.example.note.webmvc;
+package com.example.registry;
 
 import org.jspecify.annotations.NullMarked;

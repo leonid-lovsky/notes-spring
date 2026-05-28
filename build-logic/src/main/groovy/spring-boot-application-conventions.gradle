@@ -4,24 +4,9 @@ plugins {
     id 'io.spring.dependency-management'
 }
 
-dependencyManagement {
-    imports {
-        mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2025.1.1'
-    }
-}
-
-repositories {
-    mavenCentral()
-}
-
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation 'org.springframework.boot:spring-boot-starter-opentelemetry'
-    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
-    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+    implementation 'org.springframework.boot:spring-boot-starter'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-actuator-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-opentelemetry-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
