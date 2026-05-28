@@ -14,4 +14,11 @@ subprojects {
             testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
         }
     }
+    plugins.withId('io.spring.dependency-management') {
+        dependencyManagement {
+            imports {
+                mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+            }
+        }
+    }
 }
