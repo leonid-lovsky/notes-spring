@@ -1,7 +1,3 @@
 plugins {
     id 'spring-data-jpa-adapter-conventions'
 }
-
-dependencies {
-
-}

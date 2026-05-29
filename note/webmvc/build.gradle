@@ -1,7 +1,3 @@
 plugins {
     id 'spring-webmvc-adapter-conventions'
 }
-
-dependencies {
-
-}

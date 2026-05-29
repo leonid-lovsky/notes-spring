@@ -1,7 +1,3 @@
 plugins {
     id 'spring-boot-application-conventions'
 }
-
-dependencies {
-
-}
