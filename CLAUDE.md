@@ -137,13 +137,13 @@ note/       → business content
 user-note/  → permissions (userId ↔ noteId ↔ role)
 ```
 
-| Слой            | Модуль                | Ответственность                                                   |
-|-----------------|-----------------------|-------------------------------------------------------------------|
-| Edge            | `gateway/`            | Routing, rate limiting, TLS, security headers — stateless         |
+| Слой            | Модуль                | Ответственность                                                                       |
+|-----------------|-----------------------|---------------------------------------------------------------------------------------|
+| Edge            | `gateway/`            | Routing, rate limiting, TLS, security headers — stateless                             |
 | BFF             | `bff/` · `thymeleaf/` | Presentation Model; OAuth2 login flow, session cookie, UI aggregation, Token Exchange |
-| Auth / IdP      | `auth/`               | JWT issuing, credentials (AuthUser), OIDC endpoints               |
-| Resource Server | `*/webmvc/`           | JWT validation per request — Zero Trust                           |
-| ACL             | `user-note/`          | `UserNote { userId, noteId, role }` — права доступа               |
+| Auth / IdP      | `auth/`               | JWT issuing, credentials (AuthUser), OIDC endpoints                                   |
+| Resource Server | `*/webmvc/`           | JWT validation per request — Zero Trust                                               |
+| ACL             | `user-note/`          | `UserNote { userId, noteId, role }` — права доступа                                   |
 
 **JWT claims:** `sub`, `iss`, `aud`, `exp`, `jti`, `acr`, `amr`, `scope` — только стандартные.
 
@@ -157,7 +157,7 @@ user-note/  → permissions (userId ↔ noteId ↔ role)
 |---------------------|--------------------|-----------------------------|--------------------------|
 | Browser (Thymeleaf) | Authorization Code | Spring Session в thymeleaf/ | thymeleaf/ сам себе BFF  |
 | Browser (React/Vue) | Authorization Code | Spring Session в bff/       | bff/                     |
-| Android / iOS       | Auth Code + PKCE   | Keychain / Keystore          | нет — напрямую к Gateway |
+| Android / iOS       | Auth Code + PKCE   | Keychain / Keystore         | нет — напрямую к Gateway |
 | B2B / CLI           | Client Credentials | не хранит                   | нет — напрямую к Gateway |
 
 Mobile: PKCE обязательно, нет `client_secret`, токен в OS-хранилище. XSS физически невозможен.
