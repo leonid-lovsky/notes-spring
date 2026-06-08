@@ -188,11 +188,40 @@ General access — уровень доступа ко всей заметке:
 - **Межсервисные вызовы** — `@ImportHttpServices` vs OpenFeign; выбрать до `user-note/feign/`
 - **NoteVisibility** — в `note/domain/` или `user-note/domain/`; `note/domain/` создан без неё
 - **`user/` временно хранит `password`** — до `auth/`; identity переедет в `auth/AuthUser`
-- **Реактивные порты** — как совместить reactive-адаптеры с `domain/`; склонение к варианту 1, не финально:
-  - **1 (приоритет):** параллельные порты — `NoteRepository` (sync) + `ReactiveNoteRepository` (Mono/Flux)
-  - 2: `CompletableFuture` в портах — стандартная Java, без Reactor в `domain/`
-  - 3: реактивный сервис с нуля — `user/` проектируется реактивно отдельно
-- **Активация адаптеров** — Spring profiles vs состав Gradle-зависимостей в `application/`
+**1. Reactive/sync impedance — главный архитектурный блокер**
+
+Domain порты синхронны (`Optional<Note> findById(UUID)`). Реактивные адаптеры (`data-r2dbc/`, `data-mongodb-rx/`, `data-redis-rx/`, `data-cassandra-rx/`) возвращают `Mono<T>`. Адаптер вынужден вызывать `.block()` — deadlock в reactive pipeline.
+
+Решение: параллельные порты (`NoteRepository` sync + `ReactiveNoteRepository` Mono/Flux). Но тогда domain/ знает о Reactor, что нарушает «чистость». Это нерешённый архитектурный вопрос.
+
+**2. Autoconfiguration конфликты при множественных data-источниках**
+
+Если в одном `application/` подключены JPA + MongoDB + Cassandra — Spring Boot создаёт несколько конфигураций. Нужны `@Primary` / `@Qualifier`, ручное отключение отдельных autoconfigure классов, явное именование бинов. В Boot 4 модуляризация помогает, но не устраняет проблему полностью.
+
+**3. Стратегия активации адаптеров — не обсуждали**
+
+Как выбрать, какой адаптер активен в runtime? Варианты:
+- **Spring Profiles** (`@Profile("jpa")` vs `@Profile("jdbc")`) — просто, но грубо
+- **Отдельные `application/` модули** (`application-jpa/`, `application-r2dbc/`) — чисто, но дублирование composition root
+- **Feature flags** — избыточно для учебного проекта
+
+Это нужно решить до того, как начнётся реализация `application/` с 20+ адаптерами.
+
+**4. Proliferation convention plugins**
+
+Сейчас есть: `application`, `domain`, `webmvc`, `data-jpa`, `h2-database`. Для полного охвата нужны ещё ~15 плагинов: `webflux`, `graphql`, `grpc`, `data-r2dbc`, `data-mongodb`, `data-cassandra`, `kafka`, `amqp`, `pulsar` и т.д. Каждый — отдельный файл в `buildSrc/`, с правильным BOM и test starters. Поддерживать flat buildSrc без вложенности при таком объёме — дисциплинированная работа.
+
+**5. Тестовая инфраструктура**
+
+Полный стек = много Testcontainers контейнеров: PostgreSQL × N, MongoDB, Redis, Cassandra, Neo4j, Elasticsearch, Kafka, RabbitMQ, Pulsar. Интеграционные тесты станут медленными. Решение: Spring test slices + отдельные `*-test` стартеры для каждого адаптерного модуля, чтобы поднимать только нужный контейнер.
+
+**6. WebFlux + Virtual Threads несовместимость**
+
+Spring Boot 4 продвигает Virtual Threads для WebMVC + blocking IO. Reactive WebFlux и R2DBC — другая threading-модель. Смешивать в одном `application/` нельзя без явного разделения. Вероятно, нужны отдельные `application-webmvc/` (sync + VT) и `application-webflux/` (reactive) для одного и того же сервиса.
+
+> **Приоритет:**
+> 1. Reactive порты — блокирует `data-r2dbc/`, `data-mongodb-rx/`
+> 2. Стратегия активации — блокирует архитектуру `application/`
 
 ### Порядок реализации
 
@@ -244,7 +273,7 @@ General access — уровень доступа ко всей заметке:
 
 **Convention plugins:**
 - ✅ Есть: `application` · `domain` · `webmvc` · `data-jpa` · `h2-database`
-- ❌ Планируется: `resource-server` · `auth-server` · `oauth2-bff` · `openfeign`
+- ❌ Планируется: `resource-server` · `auth-server` · `oauth2-bff` · `openfeign` · `webflux` · `graphql` · `grpc` · `data-r2dbc` · `data-mongodb` · `data-cassandra` · `kafka` · `amqp` · `pulsar` (≈15 плагинов)
 
 **`domain`-plugin** — только `java`; никакого Spring BOM; JSpecify и JUnit с явными версиями
 
@@ -299,3 +328,47 @@ General access — уровень доступа ко всей заметке:
 **`@NullMarked`** (JSpecify) через `package-info.java` в каждом пакете — non-null по умолчанию  
 `org.springframework.lang` — deprecated с Framework 7, не использовать  
 **Enforcement** — IntelliJ 2025.3+ (Java 17); NullAway требует JDK 21.0.8+
+
+**1. Reactive/sync impedance — главный архитектурный блокер**
+
+Domain порты синхронны (`Optional<Note> findById(UUID)`). Реактивные адаптеры (`data-r2dbc/`, `data-mongodb-rx/`, `data-redis-rx/`, `data-cassandra-rx/`) возвращают          
+`Mono<T>`. Адаптер вынужден вызывать `.block()` — deadlock в reactive pipeline.
+
+Решение: параллельные порты (`NoteRepository` sync + `ReactiveNoteRepository` Mono/Flux). Но тогда domain/ знает о Reactor, что нарушает «чистость». Это нерешённый           
+архитектурный вопрос.
+
+**2. Autoconfiguration конфликты при множественных data-источниках**
+
+Если в одном `application/` подключены JPA + MongoDB + Cassandra — Spring Boot создаёт несколько конфигураций. Нужны `@Primary` / `@Qualifier`, ручное отключение отдельных   
+autoconfigure классов, явное именование бинов. В Boot 4 модуляризация помогает, но не устраняет проблему полностью.
+
+**3. Стратегия активации адаптеров — не обсуждали**
+
+Как выбрать, какой адаптер активен в runtime? Варианты:
+- **Spring Profiles** (`@Profile("jpa")` vs `@Profile("jdbc")`) — просто, но грубо
+- **Отдельные `application/` модули** (`application-jpa/`, `application-r2dbc/`) — чисто, но дублирование composition root
+- **Feature flags** — избыточно для учебного проекта
+
+Это нужно решить до того, как начнётся реализация `application/` с 20+ адаптерами.
+
+**4. Proliferation convention plugins**
+
+Сейчас есть: `application`, `domain`, `webmvc`, `data-jpa`, `h2-database`. Для полного охвата нужны ещё ~15 плагинов: `webflux`, `graphql`, `grpc`, `data-r2dbc`,             
+`data-mongodb`, `data-cassandra`, `kafka`, `amqp`, `pulsar` и т.д. Каждый — отдельный файл в `buildSrc/`, с правильным BOM и test starters. Поддерживать flat buildSrc без    
+вложенности при таком объёме — дисциплинированная работа.
+
+**5. Тестовая инфраструктура**
+
+Полный стек = много Testcontainers контейнеров: PostgreSQL × N, MongoDB, Redis, Cassandra, Neo4j, Elasticsearch, Kafka, RabbitMQ, Pulsar. Интеграционные тесты станут         
+медленными. Решение: Spring test slices + отдельные `*-test` стартеры для каждого адаптерного модуля, чтобы поднимать только нужный контейнер.
+
+**6. WebFlux + Virtual Threads несовместимость**
+
+Spring Boot 4 продвигает Virtual Threads для WebMVC + blocking IO. Reactive WebFlux и R2DBC — другая threading-модель. Смешивать в одном `application/` нельзя без явного     
+разделения. Вероятно, нужны отдельные `application-webmvc/` (sync + VT) и `application-webflux/` (reactive) для одного и того же сервиса.
+                                                                                                                                                                                
+---                                                                                                                                                                           
+
+**Приоритет для обсуждения:**
+1. Reactive порты — блокирует `data-r2dbc/`, `data-mongodb-rx/`
+2. Стратегия активации — блокирует архитектуру `application/`       
