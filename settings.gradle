@@ -9,6 +9,7 @@ include ':user:webmvc'
 include ':user:data-jpa'
 
 include ':note:application'
+include ':note:domain'
 include ':note:webmvc'
 include ':note:data-jpa'
 

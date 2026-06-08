@@ -11,9 +11,12 @@
 - Общение — **только русский**; код, идентификаторы, комментарии — **только английский**
 - Никогда не изменять и не создавать файлы без явного «измени X в файле Y»
 - Не трогать `.github/workflows/` без явного запроса
-- Читать memory перед ответом — особо: security design, roadmap, problems
+- Читать CLAUDE.md и memory в начале каждой сессии — особо: security design, roadmap, problems
 - Не предлагать первое попавшееся — взвешивать варианты, проверять соответствие принципам
 - CLAUDE.md в приоритете над памятью; обновлять только по явному запросу
+- Не коммитить без явного запроса — пользователь должен проверить изменения
+- **Перед коммитом:** рефакторинг + улучшение читаемости CLAUDE.md → синхронизация памяти → обновление даты
+- **CLAUDE.md ≤ 200 строк**; при превышении удалять второстепенное (детали реализации в первую очередь)
 
 ---
 
@@ -51,7 +54,7 @@ EXTERNAL      Redis        Spring Session backing (bff/ + thymeleaf/ при ма
               Kafka/MQ     только при событийной регистрации (решение не принято)
 ```
 
-**Ещё не создано:** `bff/` · `thymeleaf/` · `user/domain/` · `note/domain/` · `auth/webmvc/` · `auth/data-jpa/` · `user-note/feign/` · `crud/`
+**Ещё не создано:** `bff/` · `thymeleaf/` · `user/domain/` · `auth/webmvc/` · `auth/data-jpa/` · `user-note/feign/` · `crud/`
 
 ---
 
@@ -128,15 +131,15 @@ feign/        outgoing HTTP adapter (только user-note/) → domain/
 
 - **Регистрация** (lazy / sync / events) — выбрать до реализации `auth/`
 - **Межсервисные вызовы** (`@ImportHttpServices` vs OpenFeign) — выбрать до `user-note/feign/`
-- **NoteVisibility** — `note/domain/` или `user-note/domain/`; выбрать до `note/domain/`
+- **NoteVisibility** — в `note/domain/` или `user-note/domain/`; `note/domain/` создан без неё
 
 ---
 
 ## Порядок реализации
 
 ```
-1. Решить: регистрация — lazy / sync / events       ← ТЕКУЩИЙ БЛОКЕР
-2. domain/ во всех бизнес-сервисах
+1. Решить: регистрация — lazy / sync / events            ← ТЕКУЩИЙ БЛОКЕР
+2. domain/ во всех бизнес-сервисах (✓ note/ ✓ user-note/ · осталось: user/)
 3. auth/ — Authorization Server + AuthUser + OIDC
 4. Resource Server в user/ · note/ · user-note/
 5. bff/ — OAuth2 Client + Spring Session + Token Exchange
@@ -151,6 +154,7 @@ feign/        outgoing HTTP adapter (только user-note/) → domain/
 ## Принципы
 
 - **SoC / SRP** — на всех уровнях: сервисы, модули, классы, методы
+- **Видимость** — `default` (package-private) или минимально необходимая; `public` только для реального публичного API
 - **Twelve-Factor App** — обязателен для каждого сервиса:
   - III — Config в env vars / Config Server
   - VI — Stateless; Spring Session вместо in-memory state
@@ -158,7 +162,6 @@ feign/        outgoing HTTP adapter (только user-note/) → domain/
   - X — Testcontainers, не H2 вместо PostgreSQL в тестах
   - XI — Только stdout
   - XII — Flyway/Liquibase
-- **Видимость** — `default` (package-private) или минимально необходимая; `public` только для реального публичного API
 - **Остальные:** SOLID · KISS · YAGNI · DRY · SSOT · Law of Demeter · Fail Fast · No partial abstractions
 
 ---
@@ -168,6 +171,7 @@ feign/        outgoing HTTP adapter (только user-note/) → domain/
 - Convention plugins — **единственный механизм**; flat (без вложенности)
 - Нет version catalogs; версии плагинов — только в `buildSrc/build.gradle`
 - Порядок блоков: `plugins` → `java` → `repositories` → `dependencyManagement` → `dependencies` → `test`
+- Порядок зависимостей: `domain` → `webmvc` → `data-jpa`
 - **`domain`-plugin** — только `java`; никакого Spring BOM; JSpecify и JUnit с явными версиями
 - ✅ Есть: `domain` · `application` · `webmvc` · `data-jpa` · `h2-database`
 - ❌ Планируется: `resource-server` · `auth-server` · `oauth2-bff` · `openfeign`
