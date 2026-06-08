@@ -171,6 +171,10 @@ Mobile: PKCE обязательно, нет `client_secret`, токен в OS-х
 2. **Sync** — `auth/` вызывает `user/` через RestClient (нарушает направление зависимостей)
 3. **Events** — Kafka/RabbitMQ, архитектурно верно, требует нового backing service
 
+**Межсервисные вызовы в `user-note/feign/`** — выбрать до реализации:
+- Spring Framework 7 встроил `@ImportHttpServices` / `HttpServiceProxyRegistry` (first-party, без Cloud-зависимости)
+- `spring-cloud-starter-openfeign` — проверенная альтернатива, но дополнительная Cloud-зависимость
+
 ---
 
 ## Порядок реализации
@@ -183,7 +187,7 @@ Mobile: PKCE обязательно, нет `client_secret`, токен в OS-х
 5.  bff/ — OAuth2 Client + Spring Session + Token Exchange
 6.  thymeleaf/ — server-rendered BFF
 7.  Banking Phase 2 — MFA, token rotation, audit log
-8.  user-note/feign/ — межсервисные вызовы
+8.  user-note/feign/ — оценить: Spring HTTP Service Client (@ImportHttpServices) или OpenFeign
 9.  crud/ — shared library
 ```
 
@@ -256,7 +260,7 @@ Redis, PostgreSQL, Kafka — production backing services, подключаютс
 - Предпочтительные стандартные решения: `JdbcUserDetailsManager`, Spring Session, Spring Authorization Server built-in endpoints
 - **RestTemplate — deprecated** в Framework 7.0, удалён в 8.0 → использовать `RestClient` (sync) или `WebClient` (reactive)
 - **`@Retryable` / `@ConcurrencyLimit`** — встроены в Spring Framework 7; `@EnableResilientMethods` для активации; внешний Spring Retry не нужен
-- **Jackson 3:** пакет `com.fasterxml.jackson` → `tools.jackson`; `Jackson2ObjectMapperBuilder` удалён → `JsonMapper.Builder`; кастомизация через `JsonMapperBuilderCustomizer`
+- **Jackson 3:** пакет `com.fasterxml.jackson` → `tools.jackson` (кроме jackson-annotations); `Jackson2ObjectMapperBuilder` удалён → `JsonMapper.Builder`; кастомизация через `JsonMapperBuilderCustomizer`
 - **MFA:** `@EnableMultiFactorAuthentication` + `FactorGrantedAuthority` — встроено в Spring Security 7 (применяется в фазе 2)
 - **Обработка ошибок:** `ResponseEntityExceptionHandler` + `@ControllerAdvice` — стандартный механизм в `webmvc/`; `ProblemDetail` (RFC 9457); в Boot активируется через `spring.mvc.problemdetails.enabled=true`
 - **Lombok + JPA:** `@Data` и `@EqualsAndHashCode` **запрещены** на entities — нестабильный hashCode, lazy loading в toString, infinite recursion. Безопасны: `@Getter`, `@Setter`, `@Builder`
