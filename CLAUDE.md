@@ -76,28 +76,25 @@ feign/        outbound HTTP adapter  →  domain/  (только user-note/)
 **Driving (primary)** — вызывают domain: HTTP, GraphQL, gRPC, CLI, Kafka consumer, Batch  
 **Driven (secondary)** — domain вызывает их: JPA, MongoDB, Redis, Kafka producer, Mail, Search
 
-Подход применяется ко **всем бизнес-сервисам** (`user/`, `note/`, `user-note/`, `auth/`) — не к одному.  
-Инфраструктурные сервисы (`gateway/`, `config/`, `registry/`, `bff/`, `thymeleaf/`) имеют фиксированную роль.
+Подход применяется ко **всем бизнес-сервисам** (`user/`, `note/`, `user-note/`, `auth/`).  
+Инфраструктурные (`gateway/`, `config/`, `registry/`, `bff/`, `thymeleaf/`) имеют фиксированную роль.
 
 ### Адаптеры бизнес-сервисов
 
-Все бизнес-сервисы (`user/` · `note/` · `user-note/` · `auth/`) строятся с полным набором адаптеров.  
-Инфраструктурные (`gateway/` · `config/` · `registry/` · `bff/` · `thymeleaf/`) имеют фиксированную роль.
+**Driving:**
 
-**Driving (вызывают domain):**
+| Модуль       | Стартер                                 |
+|--------------|-----------------------------------------|
+| `webmvc/`    | `spring-boot-starter-webmvc`            |
+| `webflux/`   | `spring-boot-starter-webflux`           |
+| `graphql/`   | `spring-boot-starter-graphql`           |
+| `grpc/`      | `spring-grpc-server`                    |
+| `websocket/` | `spring-boot-starter-websocket`         |
+| `rsocket/`   | `spring-boot-starter-rsocket`           |
+| `shell/`     | `spring-shell-starter`                  |
+| `batch/`     | `spring-boot-starter-batch`             |
 
-| Модуль         | Стартер                                 |
-|----------------|-----------------------------------------|
-| `webmvc/`      | `spring-boot-starter-webmvc`            |
-| `webflux/`     | `spring-boot-starter-webflux`           |
-| `graphql/`     | `spring-boot-starter-graphql`           |
-| `grpc/`        | `spring-grpc-server`                    |
-| `websocket/`   | `spring-boot-starter-websocket`         |
-| `rsocket/`     | `spring-boot-starter-rsocket`           |
-| `shell/`       | `spring-shell-starter`                  |
-| `batch/`       | `spring-boot-starter-batch`             |
-
-**Driven (domain вызывает их):**
+**Driven:**
 
 | Модуль               | Стартер                                         |
 |----------------------|-------------------------------------------------|
@@ -118,13 +115,13 @@ feign/        outbound HTTP adapter  →  domain/  (только user-note/)
 | `feign/`             | `spring-cloud-starter-openfeign` (outbound)     |
 | `mail/`              | `spring-boot-starter-mail`                      |
 
-**Messaging (driving-consumer + driven-producer в одном модуле):**
+**Messaging:**
 
-| Модуль     | Стартер                          |
-|------------|----------------------------------|
-| `kafka/`   | `spring-boot-starter-kafka`      |
-| `amqp/`    | `spring-boot-starter-amqp`       |
-| `pulsar/`  | `spring-boot-starter-pulsar`     |
+| Модуль    | Стартер                      |
+|-----------|------------------------------|
+| `kafka/`  | `spring-boot-starter-kafka`  |
+| `amqp/`   | `spring-boot-starter-amqp`   |
+| `pulsar/` | `spring-boot-starter-pulsar` |
 
 ### Принятые решения
 
@@ -154,19 +151,16 @@ feign/        outbound HTTP adapter  →  domain/  (только user-note/)
 
 ### UserNoteRole
 
-- `OWNER` — полный контроль:
-  - редактирование · комментарии · управление доступом · удаление · передача владения
+- `OWNER` — редактирование · комментарии · управление доступом · удаление · передача владения
 - `EDITOR` — редактирование, комментарии, управление доступом (если не ограничено Owner)
 - `COMMENTER` — комментарии и предложения, без правки контента
 - `VIEWER` — только чтение, без комментариев
 
 ### NoteVisibility
 
-General access — уровень доступа ко всей заметке:
-
 - `RESTRICTED` — только люди с явным доступом
-- `ANYONE_WITH_LINK` + роль (`VIEWER` / `COMMENTER` / `EDITOR`) — любой с ссылкой, без входа в аккаунт
-- `PUBLIC` + роль (`VIEWER` / `COMMENTER` / `EDITOR`) — любой может найти через поиск, без входа в аккаунт
+- `ANYONE_WITH_LINK` + роль (`VIEWER` / `COMMENTER` / `EDITOR`) — любой с ссылкой, без входа
+- `PUBLIC` + роль (`VIEWER` / `COMMENTER` / `EDITOR`) — индексируется поиском, без входа
 
 ### Клиенты
 
@@ -185,43 +179,15 @@ General access — уровень доступа ко всей заметке:
 
 ### Нерешённые вопросы
 
-- **Межсервисные вызовы** — `@ImportHttpServices` vs OpenFeign; выбрать до `user-note/feign/`
-- **NoteVisibility** — в `note/domain/` или `user-note/domain/`; `note/domain/` создан без неё
-- **`user/` временно хранит `password`** — до `auth/`; identity переедет в `auth/AuthUser`
-**1. Reactive/sync impedance — главный архитектурный блокер**
-
-Domain порты синхронны (`Optional<Note> findById(UUID)`). Реактивные адаптеры (`data-r2dbc/`, `data-mongodb-rx/`, `data-redis-rx/`, `data-cassandra-rx/`) возвращают `Mono<T>`. Адаптер вынужден вызывать `.block()` — deadlock в reactive pipeline.
-
-Решение: параллельные порты (`NoteRepository` sync + `ReactiveNoteRepository` Mono/Flux). Но тогда domain/ знает о Reactor, что нарушает «чистость». Это нерешённый архитектурный вопрос.
-
-**2. Autoconfiguration конфликты при множественных data-источниках**
-
-Если в одном `application/` подключены JPA + MongoDB + Cassandra — Spring Boot создаёт несколько конфигураций. Нужны `@Primary` / `@Qualifier`, ручное отключение отдельных autoconfigure классов, явное именование бинов. В Boot 4 модуляризация помогает, но не устраняет проблему полностью.
-
-**3. Стратегия активации адаптеров — не обсуждали**
-
-Как выбрать, какой адаптер активен в runtime? Варианты:
-- **Spring Profiles** (`@Profile("jpa")` vs `@Profile("jdbc")`) — просто, но грубо
-- **Отдельные `application/` модули** (`application-jpa/`, `application-r2dbc/`) — чисто, но дублирование composition root
-- **Feature flags** — избыточно для учебного проекта
-
-Это нужно решить до того, как начнётся реализация `application/` с 20+ адаптерами.
-
-**4. Proliferation convention plugins**
-
-Сейчас есть: `application`, `domain`, `webmvc`, `data-jpa`, `h2-database`. Для полного охвата нужны ещё ~15 плагинов: `webflux`, `graphql`, `grpc`, `data-r2dbc`, `data-mongodb`, `data-cassandra`, `kafka`, `amqp`, `pulsar` и т.д. Каждый — отдельный файл в `buildSrc/`, с правильным BOM и test starters. Поддерживать flat buildSrc без вложенности при таком объёме — дисциплинированная работа.
-
-**5. Тестовая инфраструктура**
-
-Полный стек = много Testcontainers контейнеров: PostgreSQL × N, MongoDB, Redis, Cassandra, Neo4j, Elasticsearch, Kafka, RabbitMQ, Pulsar. Интеграционные тесты станут медленными. Решение: Spring test slices + отдельные `*-test` стартеры для каждого адаптерного модуля, чтобы поднимать только нужный контейнер.
-
-**6. WebFlux + Virtual Threads несовместимость**
-
-Spring Boot 4 продвигает Virtual Threads для WebMVC + blocking IO. Reactive WebFlux и R2DBC — другая threading-модель. Смешивать в одном `application/` нельзя без явного разделения. Вероятно, нужны отдельные `application-webmvc/` (sync + VT) и `application-webflux/` (reactive) для одного и того же сервиса.
-
-> **Приоритет:**
-> 1. Reactive порты — блокирует `data-r2dbc/`, `data-mongodb-rx/`
-> 2. Стратегия активации — блокирует архитектуру `application/`
+1. **Reactive/sync impedance** — domain порты синхронны; реактивные адаптеры возвращают `Mono<T>`; `.block()` в reactive pipeline = deadlock. Параллельные порты решают, но тогда domain/ знает о Reactor. ← **блокирует `data-r2dbc/`, `data-mongodb-rx/`**
+2. **Стратегия активации адаптеров** — Spring Profiles vs отдельные `application-jpa/` / `application-r2dbc/` modules vs feature flags. Не решено. ← **блокирует архитектуру `application/`**
+3. **Autoconfiguration при множественных data-источниках** — JPA + MongoDB + Cassandra в одном `application/` требуют `@Primary` / `@Qualifier` и ручного отключения autoconfigure.
+4. **Convention plugins × 15** — `webflux`, `graphql`, `grpc`, `data-r2dbc`, `data-mongodb`, `data-cassandra`, `kafka`, `amqp`, `pulsar` и др. — каждый отдельный файл в `buildSrc/`.
+5. **Тестовая инфраструктура** — Testcontainers × N контейнеров замедлят CI. Решение: Spring test slices + `*-test` стартеры на каждый адаптерный модуль.
+6. **WebFlux + Virtual Threads** — несовместимы; нужны `application-webmvc/` (sync + VT) и `application-webflux/` (reactive) для каждого сервиса.
+7. **Межсервисные вызовы** — `@ImportHttpServices` vs OpenFeign; выбрать до `user-note/feign/`
+8. **NoteVisibility** — в `note/domain/` или `user-note/domain/`; `note/domain/` создан без неё
+9. **`user/` временно хранит `password`** — до `auth/`; identity переедет в `auth/AuthUser`
 
 ### Порядок реализации
 
@@ -289,7 +255,6 @@ Spring Boot 4 продвигает Virtual Threads для WebMVC + blocking IO. 
 - `org.flywaydb:flyway-core` → `spring-boot-starter-flyway` + `org.flywaydb:flyway-database-postgresql`
 - `org.testcontainers:postgresql` → `org.testcontainers:testcontainers-postgresql`
 - `spring-boot-starter-test` (один на все) → индивидуальные `*-test` стартеры на каждый модуль
-
 - Плагин `org.springframework.boot` не применяет `io.spring.dependency-management` автоматически
 - **Jackson 3** — `com.fasterxml.jackson` → `tools.jackson`; `Jackson2ObjectMapperBuilder` → `JsonMapper.Builder`
 - **RestTemplate** deprecated → `RestClient` (sync) или `WebClient` (reactive)
@@ -297,8 +262,7 @@ Spring Boot 4 продвигает Virtual Threads для WebMVC + blocking IO. 
 ### Паттерны
 
 - `start.spring.io` — источник правды для координат (не Maven Central)
-- **Flyway + PostgreSQL** — стартер `spring-boot-starter-flyway` не включает драйвер БД; нужен отдельно:
-  - `runtimeOnly 'org.flywaydb:flyway-database-postgresql'`
+- **Flyway + PostgreSQL** — стартер не включает драйвер БД; нужен `runtimeOnly 'org.flywaydb:flyway-database-postgresql'`
 - **Обработка ошибок** — `ResponseEntityExceptionHandler` + `ProblemDetail` (RFC 9457)
 - **Lombok** — `compileOnly` + `annotationProcessor` (не `implementation`); то же для тестов
 - **Lombok + JPA** — `@Data` / `@EqualsAndHashCode` запрещены на entities; безопасны `@Getter` · `@Setter` · `@Builder`
@@ -307,16 +271,10 @@ Spring Boot 4 продвигает Virtual Threads для WebMVC + blocking IO. 
 
 ## Spring Security
 
-- **SecurityFilterChain** — бин `HttpSecurity`; несколько цепочек с `securityMatcher`
-  - `SecurityContextHolder` хранит `Authentication` текущего потока (ThreadLocal)
-- **Authentication** — носитель состояния аутентификации:
-  - до верификации: `principal` = String (username), `credentials` = password
-  - после верификации: `principal` = `UserDetails`, `credentials` очищается
-  - `authorities` = коллекция `GrantedAuthority`; `authenticated` = флаг результата
-- **AuthenticationManager** → `ProviderManager` → `AuthenticationProvider`
-  - `DaoAuthenticationProvider` — `UserDetailsService.loadUserByUsername()` + `PasswordEncoder`
-- **UserDetails** — `username` · `password` · `authorities` + флаги (`enabled` · `accountNonExpired` · `accountNonLocked`)
-  - в проекте: `AuthUser` (credentials, `auth/`) ≠ `User` (profile, `user/`)
+- **SecurityFilterChain** — бин `HttpSecurity`; несколько цепочек с `securityMatcher`; `SecurityContextHolder` = ThreadLocal
+- **Authentication** — до верификации: `principal` = String, `credentials` = password; после: `principal` = `UserDetails`, `credentials` очищается
+- **AuthenticationManager** → `ProviderManager` → `AuthenticationProvider` → `DaoAuthenticationProvider` → `UserDetailsService` + `PasswordEncoder`
+- **UserDetails** — `username` · `password` · `authorities` + флаги; в проекте: `AuthUser` (`auth/`) ≠ `User` (`user/`)
 - **AuthorizationManager** — allow/deny; `@PreAuthorize` / `@PostAuthorize`
 - **Resource Server** — `JwtDecoder` + `JwtAuthenticationConverter` → `GrantedAuthority`
 - **Auth Server** — `OAuth2AuthorizationServerConfigurer` · `RegisteredClientRepository` · `OAuth2AuthorizationService`
@@ -328,47 +286,3 @@ Spring Boot 4 продвигает Virtual Threads для WebMVC + blocking IO. 
 **`@NullMarked`** (JSpecify) через `package-info.java` в каждом пакете — non-null по умолчанию  
 `org.springframework.lang` — deprecated с Framework 7, не использовать  
 **Enforcement** — IntelliJ 2025.3+ (Java 17); NullAway требует JDK 21.0.8+
-
-**1. Reactive/sync impedance — главный архитектурный блокер**
-
-Domain порты синхронны (`Optional<Note> findById(UUID)`). Реактивные адаптеры (`data-r2dbc/`, `data-mongodb-rx/`, `data-redis-rx/`, `data-cassandra-rx/`) возвращают          
-`Mono<T>`. Адаптер вынужден вызывать `.block()` — deadlock в reactive pipeline.
-
-Решение: параллельные порты (`NoteRepository` sync + `ReactiveNoteRepository` Mono/Flux). Но тогда domain/ знает о Reactor, что нарушает «чистость». Это нерешённый           
-архитектурный вопрос.
-
-**2. Autoconfiguration конфликты при множественных data-источниках**
-
-Если в одном `application/` подключены JPA + MongoDB + Cassandra — Spring Boot создаёт несколько конфигураций. Нужны `@Primary` / `@Qualifier`, ручное отключение отдельных   
-autoconfigure классов, явное именование бинов. В Boot 4 модуляризация помогает, но не устраняет проблему полностью.
-
-**3. Стратегия активации адаптеров — не обсуждали**
-
-Как выбрать, какой адаптер активен в runtime? Варианты:
-- **Spring Profiles** (`@Profile("jpa")` vs `@Profile("jdbc")`) — просто, но грубо
-- **Отдельные `application/` модули** (`application-jpa/`, `application-r2dbc/`) — чисто, но дублирование composition root
-- **Feature flags** — избыточно для учебного проекта
-
-Это нужно решить до того, как начнётся реализация `application/` с 20+ адаптерами.
-
-**4. Proliferation convention plugins**
-
-Сейчас есть: `application`, `domain`, `webmvc`, `data-jpa`, `h2-database`. Для полного охвата нужны ещё ~15 плагинов: `webflux`, `graphql`, `grpc`, `data-r2dbc`,             
-`data-mongodb`, `data-cassandra`, `kafka`, `amqp`, `pulsar` и т.д. Каждый — отдельный файл в `buildSrc/`, с правильным BOM и test starters. Поддерживать flat buildSrc без    
-вложенности при таком объёме — дисциплинированная работа.
-
-**5. Тестовая инфраструктура**
-
-Полный стек = много Testcontainers контейнеров: PostgreSQL × N, MongoDB, Redis, Cassandra, Neo4j, Elasticsearch, Kafka, RabbitMQ, Pulsar. Интеграционные тесты станут         
-медленными. Решение: Spring test slices + отдельные `*-test` стартеры для каждого адаптерного модуля, чтобы поднимать только нужный контейнер.
-
-**6. WebFlux + Virtual Threads несовместимость**
-
-Spring Boot 4 продвигает Virtual Threads для WebMVC + blocking IO. Reactive WebFlux и R2DBC — другая threading-модель. Смешивать в одном `application/` нельзя без явного     
-разделения. Вероятно, нужны отдельные `application-webmvc/` (sync + VT) и `application-webflux/` (reactive) для одного и того же сервиса.
-                                                                                                                                                                                
----                                                                                                                                                                           
-
-**Приоритет для обсуждения:**
-1. Reactive порты — блокирует `data-r2dbc/`, `data-mongodb-rx/`
-2. Стратегия активации — блокирует архитектуру `application/`       
