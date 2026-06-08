@@ -158,6 +158,7 @@ feign/        outgoing HTTP adapter (только user-note/) → domain/
   - X — Testcontainers, не H2 вместо PostgreSQL в тестах
   - XI — Только stdout
   - XII — Flyway/Liquibase
+- **Видимость** — `default` (package-private) или минимально необходимая; `public` только для реального публичного API
 - **Остальные:** SOLID · KISS · YAGNI · DRY · SSOT · Law of Demeter · Fail Fast · No partial abstractions
 
 ---
