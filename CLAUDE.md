@@ -1,7 +1,7 @@
 # CLAUDE.md — notes-spring
 
-> Baseline-контекст: читается автоматически на любом устройстве.
-> Детали, история и справочник — в memory-файлах `~/.claude/projects/…/memory/`.
+> Baseline-контекст для Claude: читается автоматически в начале каждой сессии.
+> Детали, история, справочники — в memory-файлах `~/.claude/projects/…/memory/`.
 > Последнее обновление: 2026-06-09
 
 ---
@@ -11,11 +11,11 @@
 - Общение — **только русский**; код, идентификаторы, комментарии — **только английский**
 - Никогда не изменять и не создавать файлы без явного «измени X в файле Y»
 - Не трогать `.github/workflows/` без явного запроса
+- Не коммитить без явного запроса — пользователь должен проверить изменения
 - Читать CLAUDE.md и memory в начале каждой сессии — особо: security design, roadmap, problems
 - Не предлагать первое попавшееся — взвешивать варианты, проверять соответствие принципам
-- CLAUDE.md в приоритете над памятью; обновлять только по явному запросу
-- Не коммитить без явного запроса — пользователь должен проверить изменения
-- **Перед коммитом:** рефакторинг + улучшение читаемости CLAUDE.md → синхронизация памяти → обновление даты
+- CLAUDE.md в приоритете над памятью; обновлять при каждом изменении проекта или принципов
+- **Перед коммитом:** рефакторинг CLAUDE.md → синхронизация памяти → обновление даты
 - **CLAUDE.md ≤ 300 строк**; при превышении удалять второстепенное (детали реализации в первую очередь)
 
 ---
@@ -32,7 +32,7 @@ Spring Boot 4 monorepo — banking-grade.
 | Spring Cloud                 | 2025.1.1             |
 | Spring Dependency Management | 1.1.7                |
 
-- `buildSrc` + convention plugins (Groovy)
+- `buildSrc` + convention plugins (Groovy DSL)
 - Нет root `build.gradle` · нет `buildSrc/settings.gradle` · нет `libs.versions.toml`
 
 ---
@@ -69,17 +69,15 @@ EXTERNAL      Redis        Spring Session backing (bff/ + thymeleaf/ при ма
 
 ## Порядок реализации
 
-```
-1. Решить: регистрация — lazy / sync / events            ← ТЕКУЩИЙ БЛОКЕР
-2. domain/ во всех бизнес-сервисах (✓ note/ ✓ user-note/ ✓ user/)
-3. auth/ — Authorization Server + AuthUser + OIDC
-4. Resource Server в user/ · note/ · user-note/
-5. bff/ — OAuth2 Client + Spring Session + Token Exchange
-6. thymeleaf/ — server-rendered BFF
+1. Решить: регистрация — lazy / sync / events ← **ТЕКУЩИЙ БЛОКЕР**
+2. `domain/` во всех бизнес-сервисах (✓ `note/` ✓ `user-note/` ✓ `user/`)
+3. `auth/` — Authorization Server + AuthUser + OIDC
+4. Resource Server в `user/` · `note/` · `user-note/`
+5. `bff/` — OAuth2 Client + Spring Session + Token Exchange
+6. `thymeleaf/` — server-rendered BFF
 7. Banking Phase 2 — MFA, token rotation, audit log
-8. user-note/feign/ — Spring HTTP Service Client или OpenFeign
-9. crud/ — shared library
-```
+8. `user-note/feign/` — Spring HTTP Service Client или OpenFeign
+9. `crud/` — shared library
 
 ---
 
@@ -117,13 +115,17 @@ feign/        outbound HTTP adapter  →  domain/  (только user-note/)
 | Resource Server | `*/webmvc/`           | JWT validation per request                        |
 | ACL             | `user-note/`          | `UserNote { userId, noteId, role }`               |
 
-**UserNoteRole:**
+### UserNoteRole
+
 - `OWNER` — полный контроль: редактирование, комментарии, управление доступом, удаление, передача владения
 - `EDITOR` — редактирование, комментарии, управление доступом (если не ограничено Owner)
 - `COMMENTER` — комментарии и предложения, без правки контента
 - `VIEWER` — только чтение, без комментариев
 
-**NoteVisibility** — general access на уровне Note:
+### NoteVisibility
+
+General access — уровень доступа ко всей заметке целиком:
+
 - `RESTRICTED` — только люди с явным доступом
 - `ANYONE_WITH_LINK` + роль (`VIEWER` / `COMMENTER` / `EDITOR`) — любой с ссылкой, без входа в аккаунт
 - `PUBLIC` + роль (`VIEWER` / `COMMENTER` / `EDITOR`) — любой может найти через поиск, без входа в аккаунт
@@ -181,15 +183,20 @@ feign/        outbound HTTP adapter  →  domain/  (только user-note/)
 
 ---
 
-## Spring
+## Spring Boot 4
 
-- `start.spring.io` — источник правды для координат (не Maven Central)
-- `spring-boot-starter-web` → в Boot 4: `spring-boot-starter-webmvc`
-- Плагин `org.springframework.boot` НЕ применяет `io.spring.dependency-management` автоматически
+**Изменения относительно Boot 3:**
+
+- `spring-boot-starter-web` → `spring-boot-starter-webmvc`
+- Плагин `org.springframework.boot` не применяет `io.spring.dependency-management` автоматически
+- **Jackson 3:** пакет `com.fasterxml.jackson` → `tools.jackson`; `Jackson2ObjectMapperBuilder` → `JsonMapper.Builder`
 - **RestTemplate** deprecated → `RestClient` (sync) или `WebClient` (reactive)
-- **Jackson 3:** `com.fasterxml.jackson` → `tools.jackson`; `Jackson2ObjectMapperBuilder` → `JsonMapper.Builder`
+
+**Паттерны:**
+
+- `start.spring.io` — источник правды для координат артефактов (не Maven Central)
 - **Обработка ошибок:** `ResponseEntityExceptionHandler` + `ProblemDetail` (RFC 9457)
-- **Lombok + JPA:** `@Data` / `@EqualsAndHashCode` запрещены на entities
+- **Lombok + JPA:** `@Data` / `@EqualsAndHashCode` запрещены на entities; безопасны `@Getter` · `@Setter` · `@Builder`
 
 ---
 
