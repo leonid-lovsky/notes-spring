@@ -1,3 +1,7 @@
+include ':gateway:application'
+include ':config:application'
+include ':registry:application'
+
 include ':auth:application'
 
 include ':user:application'
@@ -9,9 +13,6 @@ include ':note:webmvc'
 include ':note:data-jpa'
 
 include ':user-note:application'
+include ':user-note:domain'
 include ':user-note:webmvc'
 include ':user-note:data-jpa'
-
-include ':gateway:application'
-include ':registry:application'
-include ':config:application'

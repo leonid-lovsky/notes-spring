@@ -1,3 +1,7 @@
 plugins {
     id 'spring-data-jpa-adapter-conventions'
 }
+
+dependencies {
+    implementation project(':user-note:domain')
+}

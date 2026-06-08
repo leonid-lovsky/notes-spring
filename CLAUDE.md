@@ -5,21 +5,14 @@
 
 ---
 
-## Язык
+## Правила
 
-- Общение — **только русский**
-- Код, идентификаторы, комментарии — **только английский**
-- Профессиональные термины — на английском
-
----
-
-## Правила поведения
-
-- Никогда не изменять и не создавать файлы проекта без явного «измени X в файле Y»
+- Общение — **только русский**; код, идентификаторы, комментарии — **только английский**
+- Никогда не изменять и не создавать файлы без явного «измени X в файле Y»
 - Не трогать `.github/workflows/` без явного запроса
 - Читать memory перед ответом — особо: security design, roadmap, problems
 - Не предлагать первое попавшееся — взвешивать варианты, проверять соответствие принципам
-- CLAUDE.md — живой документ; обновлять только по явному запросу
+- CLAUDE.md в приоритете над памятью; обновлять только по явному запросу
 
 ---
 
@@ -57,7 +50,7 @@ EXTERNAL      Redis        Spring Session backing (bff/ + thymeleaf/ при ма
               Kafka/MQ     только при событийной регистрации (решение не принято)
 ```
 
-**Ещё не создано:** `bff/` · `thymeleaf/` · `*/domain/` · `auth/webmvc/` · `auth/data-jpa/` · `user-note/feign/` · `crud/`
+**Ещё не создано:** `bff/` · `thymeleaf/` · `user/domain/` · `note/domain/` · `auth/webmvc/` · `auth/data-jpa/` · `user-note/feign/` · `crud/`
 
 ---
 
@@ -83,6 +76,8 @@ feign/        outgoing HTTP adapter (только user-note/) → domain/
 
 - `identity ≠ profile ≠ business ≠ permissions`
 - **Zero Trust** — каждый слой проверяет JWT самостоятельно, не доверяя Gateway
+- **JWT claims:** `sub` · `iss` · `aud` · `exp` · `jti` · `acr` · `amr` · `scope` — только стандартные
+- **Banking-grade:** фаза 1 — основа · фаза 2 — MFA + token rotation · фаза 3 — DPoP + mTLS
 
 | Слой            | Модуль                | Ответственность                                   |
 |-----------------|-----------------------|---------------------------------------------------|
@@ -92,8 +87,11 @@ feign/        outgoing HTTP adapter (только user-note/) → domain/
 | Resource Server | `*/webmvc/`           | JWT validation per request                        |
 | ACL             | `user-note/`          | `UserNote { userId, noteId, role }`               |
 
-- **JWT claims:** `sub` · `iss` · `aud` · `exp` · `jti` · `acr` · `amr` · `scope` — только стандартные
-- **Banking-grade:** фаза 1 — основа · фаза 2 — MFA + token rotation · фаза 3 — DPoP + mTLS
+**UserNoteRole** — `OWNER` · `EDITOR` · `COMMENTER` · `VIEWER`
+
+**NoteVisibility** *(нерешённо)* — `{ generalAccess, generalRole }`:
+- `RESTRICTED` — только явные участники из `UserNote`
+- `LINK` + `generalRole` (VIEWER / COMMENTER / EDITOR) — любой с ссылкой
 
 ---
 
@@ -124,6 +122,7 @@ feign/        outgoing HTTP adapter (только user-note/) → domain/
 
 - **Регистрация** (lazy / sync / events) — выбрать до реализации `auth/`
 - **Межсервисные вызовы** (`@ImportHttpServices` vs OpenFeign) — выбрать до `user-note/feign/`
+- **NoteVisibility** — `note/domain/` или `user-note/domain/`; выбрать до `note/domain/`
 
 ---
 
@@ -146,29 +145,26 @@ feign/        outgoing HTTP adapter (только user-note/) → domain/
 ## Принципы
 
 - **SoC / SRP** — на всех уровнях: сервисы, модули, классы, методы
-- **Twelve-Factor App** — обязателен для каждого сервиса
-
-```
-□ III   Config в env vars / Config Server
-□ VI    Stateless; Spring Session вместо in-memory state
-□ IX    server.shutdown=graceful
-□ X     Testcontainers, не H2 вместо PostgreSQL в тестах
-□ XI    Только stdout
-□ XII   Flyway/Liquibase
-```
-
+- **Twelve-Factor App** — обязателен для каждого сервиса:
+  - III — Config в env vars / Config Server
+  - VI — Stateless; Spring Session вместо in-memory state
+  - IX — `server.shutdown=graceful`
+  - X — Testcontainers, не H2 вместо PostgreSQL в тестах
+  - XI — Только stdout
+  - XII — Flyway/Liquibase
 - **Остальные:** SOLID · KISS · YAGNI · DRY · SSOT · Law of Demeter · Fail Fast · No partial abstractions
 
 ---
 
 ## Gradle
 
-- Convention plugins — **единственный механизм**; flat (без вложенности)
-- Inline: нет version catalogs; версии плагинов → только в `buildSrc/build.gradle`
-- Блоки: `plugins` → `java` → `repositories` → `dependencyManagement` → `dependencies` → `test`
+Convention plugins — **единственный механизм**; flat (без вложенности).
 
-Существуют: ✅ `application` · `webmvc` · `data-jpa` · `h2-database`
-Планируются: ❌ `resource-server` · `auth-server` · `oauth2-bff` · `openfeign`
+- Нет version catalogs; версии плагинов — только в `buildSrc/build.gradle`
+- Порядок блоков: `plugins` → `java` → `repositories` → `dependencyManagement` → `dependencies` → `test`
+- **`domain`-plugin** — только `java`; никакого Spring BOM; JSpecify и JUnit с явными версиями
+- ✅ Есть: `domain` · `application` · `webmvc` · `data-jpa` · `h2-database`
+- ❌ Планируется: `resource-server` · `auth-server` · `oauth2-bff` · `openfeign`
 
 ---
 
