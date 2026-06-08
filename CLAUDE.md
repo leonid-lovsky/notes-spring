@@ -173,7 +173,8 @@ General access — уровень доступа ко всей заметке:
 **`buildSrc`** + convention plugins (Groovy DSL) — единственный механизм; flat, без вложенности  
 **Нет:** root `build.gradle` · `buildSrc/settings.gradle` · `libs.versions.toml` · version catalogs  
 **Версии плагинов** — только в `buildSrc/build.gradle`  
-**Порядок блоков** — `plugins` → `java` → `repositories` → `dependencyManagement` → `dependencies` → `test`  
+**Порядок блоков** — `plugins` → `java` → `repositories` → [`ext`] → `dependencies` → `dependencyManagement` → `test`  
+**`ext {}`** — только для версий сторонних BOM (Spring Cloud, Modulith); в buildSrc не нужен — версии хранятся в convention plugins  
 **Порядок зависимостей** — `domain` → `webmvc` → `data-jpa`
 
 **Порядок в `settings.gradle`:**
@@ -193,6 +194,11 @@ General access — уровень доступа ко всей заметке:
 ### Изменения относительно Boot 3
 
 - `spring-boot-starter-web` → `spring-boot-starter-webmvc`
+- `org.springframework.session:spring-session-data-redis` → `spring-boot-starter-session-data-redis`
+- `org.springframework.kafka:spring-kafka` → `spring-boot-starter-kafka`
+- `org.flywaydb:flyway-core` → `spring-boot-starter-flyway` + `org.flywaydb:flyway-database-postgresql`
+- `org.testcontainers:postgresql` → `org.testcontainers:testcontainers-postgresql`
+- `spring-boot-starter-test` (один на все) → индивидуальные `*-test` стартеры на каждый модуль
 - Плагин `org.springframework.boot` не применяет `io.spring.dependency-management` автоматически
 - **Jackson 3** — `com.fasterxml.jackson` → `tools.jackson`; `Jackson2ObjectMapperBuilder` → `JsonMapper.Builder`
 - **RestTemplate** deprecated → `RestClient` (sync) или `WebClient` (reactive)
@@ -200,7 +206,10 @@ General access — уровень доступа ко всей заметке:
 ### Паттерны
 
 - `start.spring.io` — источник правды для координат (не Maven Central)
+- **Flyway + PostgreSQL** — стартер `spring-boot-starter-flyway` не включает драйвер БД; нужен отдельно:
+  - `runtimeOnly 'org.flywaydb:flyway-database-postgresql'`
 - **Обработка ошибок** — `ResponseEntityExceptionHandler` + `ProblemDetail` (RFC 9457)
+- **Lombok** — `compileOnly` + `annotationProcessor` (не `implementation`); то же для тестов
 - **Lombok + JPA** — `@Data` / `@EqualsAndHashCode` запрещены на entities; безопасны `@Getter` · `@Setter` · `@Builder`
 
 ---
