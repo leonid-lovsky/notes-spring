@@ -15,7 +15,7 @@
 - **Подход** — читать память перед ответом; взвешивать варианты, проверять соответствие принципам
 - **CLAUDE.md** — в приоритете над памятью; обновлять при каждом изменении проекта или принципов
 - **Перед коммитом** — рефакторинг CLAUDE.md → синхронизация памяти → обновление даты
-- **≤ 300 строк** — при превышении удалять второстепенное (детали реализации в первую очередь)
+- **≤ 400 строк** — при превышении удалять второстепенное (детали реализации в первую очередь)
 
 ---
 
@@ -70,6 +70,34 @@ feign/        outbound HTTP adapter  →  domain/  (только user-note/)
 **Database per service** — каждый сервис хранит данные в своей БД; cross-service JOIN запрещён  
 **Stateless** — `gateway/` · `config/` · `registry/` · `user/` · `note/` · `user-note/`  
 **Stateful** — `bff/` · `thymeleaf/` → Spring Session; `auth/` → OAuth2Authorization в PostgreSQL
+
+### Типы адаптеров
+
+**Driving (primary)** — вызывают domain: HTTP, GraphQL, gRPC, CLI, Kafka consumer, Batch  
+**Driven (secondary)** — domain вызывает их: JPA, MongoDB, Redis, Kafka producer, Mail, Search
+
+### `note/` — витрина всех адаптеров
+
+`note/` служит полной демонстрацией Hexagonal Architecture — один `domain/`, максимум адаптеров:
+
+```
+driving:  webmvc · webflux · graphql · grpc · shell · batch · kafka (consumer)
+driven:   data-jpa · data-jdbc · data-mongodb · data-redis · elasticsearch · data-r2dbc
+```
+
+`application/` выбирает нужные адаптеры через Spring-профили или состав Gradle-зависимостей.
+
+### Технологии по сервисам
+
+| Сервис       | Driving           | Driven                           |
+|--------------|-------------------|----------------------------------|
+| `gateway/`   | WebFlux           | —                                |
+| `note/`      | все (витрина)     | все (витрина)                    |
+| `user/`      | WebFlux           | R2DBC (PostgreSQL)               |
+| `user-note/` | WebMVC            | JPA (PostgreSQL)                 |
+| `auth/`      | WebMVC            | JPA (PostgreSQL)                 |
+| `bff/`       | WebMVC            | Spring Session (Redis / in-mem)  |
+| `thymeleaf/` | WebMVC            | Spring Session (Redis / in-mem)  |
 
 ### Принятые решения
 
@@ -133,6 +161,11 @@ General access — уровень доступа ко всей заметке:
 - **Межсервисные вызовы** — `@ImportHttpServices` vs OpenFeign; выбрать до `user-note/feign/`
 - **NoteVisibility** — в `note/domain/` или `user-note/domain/`; `note/domain/` создан без неё
 - **`user/` временно хранит `password`** — до `auth/`; identity переедет в `auth/AuthUser`
+- **Реактивные порты** — как совместить reactive-адаптеры с `domain/`; склонение к варианту 1, не финально:
+  - **1 (приоритет):** параллельные порты — `NoteRepository` (sync) + `ReactiveNoteRepository` (Mono/Flux)
+  - 2: `CompletableFuture` в портах — стандартная Java, без Reactor в `domain/`
+  - 3: реактивный сервис с нуля — `user/` проектируется реактивно отдельно
+- **Активация адаптеров** — Spring profiles vs состав Gradle-зависимостей в `application/`
 
 ### Порядок реализации
 
