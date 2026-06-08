@@ -44,7 +44,7 @@ EDGE          gateway/     Spring Cloud Gateway — stateless, routing + rate li
 PRESENTATION  bff/         OAuth2 Client + Spring Session + Token Exchange (SPA)
               thymeleaf/   Thymeleaf + OAuth2 Client — self-contained BFF
 IDENTITY      auth/        Spring Authorization Server — OIDC-compliant, JWT issuer
-BUSINESS      user/        Resource Server  (User: id, username, email, password) ← временно; identity переедет в auth/
+BUSINESS      user/        Resource Server  (User: id, username, email, password)
               note/        Resource Server  (Note: id, content)
               user-note/   Resource Server  (UserNote: userId, noteId, role)
 INFRA         config/      Spring Cloud Config Server
@@ -58,19 +58,44 @@ EXTERNAL      Redis        Spring Session backing (bff/ + thymeleaf/ при ма
 
 ---
 
+## Нерешённые вопросы
+
+- **Регистрация** (lazy / sync / events) — выбрать до реализации `auth/` ← **БЛОКЕР**
+- **Межсервисные вызовы** (`@ImportHttpServices` vs OpenFeign) — выбрать до `user-note/feign/`
+- **NoteVisibility** — в `note/domain/` или `user-note/domain/`; `note/domain/` создан без неё
+- **`user/` временно хранит `password`** — до реализации `auth/`; identity переедет в `auth/AuthUser`
+
+---
+
+## Порядок реализации
+
+```
+1. Решить: регистрация — lazy / sync / events            ← ТЕКУЩИЙ БЛОКЕР
+2. domain/ во всех бизнес-сервисах (✓ note/ ✓ user-note/ ✓ user/)
+3. auth/ — Authorization Server + AuthUser + OIDC
+4. Resource Server в user/ · note/ · user-note/
+5. bff/ — OAuth2 Client + Spring Session + Token Exchange
+6. thymeleaf/ — server-rendered BFF
+7. Banking Phase 2 — MFA, token rotation, audit log
+8. user-note/feign/ — Spring HTTP Service Client или OpenFeign
+9. crud/ — shared library
+```
+
+---
+
 ## Архитектура
 
 Hexagonal Architecture (Ports & Adapters):
 
 ```
 application/  Spring Boot app, composition root
-domain/       entities + port interfaces — чистая Java, без Spring
-webmvc/       incoming HTTP adapter → domain/
-data-jpa/     persistence adapter → domain/
-feign/        outgoing HTTP adapter (только user-note/) → domain/
+domain/       entities + port interfaces — только java plugin, без Spring
+webmvc/       incoming HTTP adapter  →  domain/
+data-jpa/     persistence adapter    →  domain/
+feign/        outbound HTTP adapter  →  domain/  (только user-note/)
 ```
 
-- Адаптеры зависят **только** от `domain/`
+- **Dependency direction** — `application/` → `domain/` ← adapters; адаптеры не зависят друг от друга и не знают `application/`
 - **Stateless:** `gateway/` · `config/` · `registry/` · `user/` · `note/` · `user-note/`
 - **Stateful:** `bff/` · `thymeleaf/` → Spring Session; `auth/` → OAuth2Authorization в PostgreSQL
 
@@ -117,37 +142,11 @@ feign/        outgoing HTTP adapter (только user-note/) → domain/
 
 ## Принятые решения
 
-- **Gateway ≠ BFF**: `gateway/` — stateless edge; `bff/` и `thymeleaf/` — отдельные stateful-сервисы
-- **BFF — один на UX** (Sam Newman, Phil Calçado): один BFF на тип UX, не общий
-- **Thymeleaf = self-contained BFF**: ведёт OAuth2 login flow самостоятельно
-- **Token Exchange (RFC 8693), не TokenRelay**: BFF → internal JWT с `aud` перед каждым вызовом микросервиса
-- **Zero Trust**: каждый микросервис валидирует JWT — `aud` + `scope` + `sig` + `exp`
-- **Spring Authorization Server — постоянный IdP**: OIDC-совместимый; Keycloak/Auth0 — только после детальной оценки
-- **MVP = правильная архитектура**: структура финальная; меняются только backing services
-
----
-
-## Нерешённые вопросы
-
-- **Регистрация** (lazy / sync / events) — выбрать до реализации `auth/`
-- **Межсервисные вызовы** (`@ImportHttpServices` vs OpenFeign) — выбрать до `user-note/feign/`
-- **NoteVisibility** — в `note/domain/` или `user-note/domain/`; `note/domain/` создан без неё
-
----
-
-## Порядок реализации
-
-```
-1. Решить: регистрация — lazy / sync / events            ← ТЕКУЩИЙ БЛОКЕР
-2. domain/ во всех бизнес-сервисах (✓ note/ ✓ user-note/ ✓ user/)
-3. auth/ — Authorization Server + AuthUser + OIDC
-4. Resource Server в user/ · note/ · user-note/
-5. bff/ — OAuth2 Client + Spring Session + Token Exchange
-6. thymeleaf/ — server-rendered BFF
-7. Banking Phase 2 — MFA, token rotation, audit log
-8. user-note/feign/ — Spring HTTP Service Client или OpenFeign
-9. crud/ — shared library
-```
+- **Gateway ≠ BFF** — `gateway/` stateless edge; `bff/` и `thymeleaf/` — отдельные stateful-сервисы
+- **BFF — один на UX** (Sam Newman, Phil Calçado) — один BFF на тип устройства, не общий
+- **Thymeleaf = self-contained BFF** — ведёт OAuth2 login flow самостоятельно
+- **Token Exchange (RFC 8693), не TokenRelay** — BFF → internal JWT с `aud` перед каждым вызовом микросервиса
+- **Spring Authorization Server — постоянный IdP** — OIDC-совместимый; Keycloak/Auth0 только после детальной оценки
 
 ---
 
