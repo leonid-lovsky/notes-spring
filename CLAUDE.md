@@ -130,6 +130,7 @@ feign/        outbound HTTP adapter  →  domain/  (только user-note/)
 - **Thymeleaf = self-contained BFF** — ведёт OAuth2 login flow самостоятельно, без отдельного `bff/`
 - **Token Exchange (RFC 8693), не TokenRelay** — BFF обменивает access token на internal JWT с `aud` конкретного микросервиса
 - **Spring Authorization Server — постоянный IdP** — OIDC-совместимый; Keycloak/Auth0 только после детальной оценки
+- **OpenFeign для `user-note/feign/`** — `spring-cloud-starter-openfeign`; `@ImportHttpServices` не рассматривается
 
 ---
 
@@ -185,9 +186,8 @@ feign/        outbound HTTP adapter  →  domain/  (только user-note/)
 4. **Convention plugins × 15** — `webflux`, `graphql`, `grpc`, `data-r2dbc`, `data-mongodb`, `data-cassandra`, `kafka`, `amqp`, `pulsar` и др. — каждый отдельный файл в `buildSrc/`.
 5. **Тестовая инфраструктура** — Testcontainers × N контейнеров замедлят CI. Решение: Spring test slices + `*-test` стартеры на каждый адаптерный модуль.
 6. **WebFlux + Virtual Threads** — несовместимы; нужны `application-webmvc/` (sync + VT) и `application-webflux/` (reactive) для каждого сервиса.
-7. **Межсервисные вызовы** — `@ImportHttpServices` vs OpenFeign; выбрать до `user-note/feign/`
-8. **NoteVisibility** — в `note/domain/` или `user-note/domain/`; `note/domain/` создан без неё
-9. **`user/` временно хранит `password`** — до `auth/`; identity переедет в `auth/AuthUser`
+7. **NoteVisibility** — в `note/domain/` или `user-note/domain/`; `note/domain/` создан без неё
+8. **`user/` временно хранит `password`** — до `auth/`; identity переедет в `auth/AuthUser`
 
 ### Порядок реализации
 
@@ -198,7 +198,7 @@ feign/        outbound HTTP adapter  →  domain/  (только user-note/)
 5. `bff/` — OAuth2 Client + Spring Session + Token Exchange
 6. `thymeleaf/` — server-rendered BFF
 7. Banking Phase 2 — MFA, token rotation, audit log
-8. `user-note/feign/` — Spring HTTP Service Client или OpenFeign
+8. `user-note/feign/` — OpenFeign (`spring-cloud-starter-openfeign`)
 9. `crud/` — shared library
 
 ---
@@ -286,3 +286,12 @@ feign/        outbound HTTP adapter  →  domain/  (только user-note/)
 **`@NullMarked`** (JSpecify) через `package-info.java` в каждом пакете — non-null по умолчанию  
 `org.springframework.lang` — deprecated с Framework 7, не использовать  
 **Enforcement** — IntelliJ 2025.3+ (Java 17); NullAway требует JDK 21.0.8+
+
+---
+
+## Стиль кода Java
+
+**Импорты** — `com.example.*` + `org.*` / `jakarta.*` вместе, затем пустая строка, затем `java.*`; wildcard `.*` при 3+ классах из одного пакета  
+**Имена полей** — полные описательные: `noteRepository`, `noteJpaRepository`; не `repository`, `jpa`  
+**Пустое тело** — одна пустая строка внутри `{ }` пустых методов и конструкторов  
+**EOF** — ровно один `\n` в конце файла (Unix EOF)
