@@ -1,15 +1,15 @@
 # CLAUDE.md — notes-spring
 
 > Baseline-контекст: читается автоматически на любом устройстве.
-> Детали решений, история и справочник по Spring API — в memory-файлах `~/.claude/projects/…/memory/`.
+> Детали, история и справочник — в memory-файлах `~/.claude/projects/…/memory/`.
 
 ---
 
 ## Язык
 
-- Общение с пользователем — **только русский**
-- Код, идентификаторы, комментарии в коде — **только английский**
-- Профессиональные термины (Gateway, BFF, Token Exchange, Zero Trust и др.) — на английском
+- Общение — **только русский**
+- Код, идентификаторы, комментарии — **только английский**
+- Профессиональные термины — на английском
 
 ---
 
@@ -23,19 +23,20 @@
 
 ---
 
-## Проект
+## Стек
 
-Spring Boot 4 monorepo — учебный backend с banking-grade уровнем безопасности.
+Spring Boot 4 monorepo — banking-grade.
 
-| Инструмент                  | Версия                                          |
-|-----------------------------|-------------------------------------------------|
-| Java                        | 17 (`.java-version`, без toolchain в conventions) |
-| Gradle                      | 9.5.1                                           |
-| Spring Boot                 | 4.0.6                                           |
-| Spring Cloud                | 2025.1.1                                        |
-| Spring Dependency Management | 1.1.7                                          |
+| Инструмент                   | Версия               |
+|------------------------------|----------------------|
+| Java                         | 17 (`.java-version`) |
+| Gradle                       | 9.5.1                |
+| Spring Boot                  | 4.0.6                |
+| Spring Cloud                 | 2025.1.1             |
+| Spring Dependency Management | 1.1.7                |
 
-Build: `buildSrc/build.gradle` — версии плагинов как `implementation` deps; convention plugins в `buildSrc/src/main/groovy/`. Нет root `build.gradle`, нет `buildSrc/settings.gradle`, нет `libs.versions.toml`.
+- `buildSrc` + convention plugins (Groovy)
+- Нет root `build.gradle` · нет `buildSrc/settings.gradle` · нет `libs.versions.toml`
 
 ---
 
@@ -43,15 +44,15 @@ Build: `buildSrc/build.gradle` — версии плагинов как `impleme
 
 ```
 EDGE          gateway/     Spring Cloud Gateway — stateless, routing + rate limiting
-PRESENTATION  bff/         OAuth2 Client + Spring Session + Token Exchange (для SPA)
-              thymeleaf/   Thymeleaf + OAuth2 Client — self-contained BFF, server-rendered
+PRESENTATION  bff/         OAuth2 Client + Spring Session + Token Exchange (SPA)
+              thymeleaf/   Thymeleaf + OAuth2 Client — self-contained BFF
 IDENTITY      auth/        Spring Authorization Server — OIDC-compliant, JWT issuer
-BUSINESS      user/        Resource Server — профиль  (User: id, username, email)
-              note/        Resource Server — контент  (Note: id, content)
-              user-note/   Resource Server — ACL      (UserNote: userId, noteId, role)
+BUSINESS      user/        Resource Server  (User: id, username, email)
+              note/        Resource Server  (Note: id, content)
+              user-note/   Resource Server  (UserNote: userId, noteId, role)
 INFRA         registry/    Eureka Server
               config/      Spring Cloud Config Server
-EXTERNAL      Redis        Spring Session backing при масштабировании bff/ + thymeleaf/
+EXTERNAL      Redis        Spring Session backing (bff/ + thymeleaf/ при масштабировании)
               PostgreSQL×N по одной на: auth, user, note, user-note
               Kafka/MQ     только при событийной регистрации (решение не принято)
 ```
@@ -62,69 +63,67 @@ EXTERNAL      Redis        Spring Session backing при масштабиров�
 
 ## Архитектура
 
-**Hexagonal Architecture (Ports & Adapters)** — каждый бизнес-сервис:
+**Hexagonal Architecture (Ports & Adapters):**
 
 ```
-domain/       Чистая Java — entities + port interfaces. Без Spring. Ни от чего не зависит.
-application/  Spring Boot app, composition root. Знает все адаптеры.
-webmvc/       Incoming HTTP adapter — depends on domain/
-data-jpa/     Persistence adapter — depends on domain/
-feign/        Outgoing HTTP adapter (только user-note/) — depends on domain/
+domain/       entities + port interfaces — чистая Java, без Spring
+application/  Spring Boot app, composition root
+webmvc/       incoming HTTP adapter → domain/
+data-jpa/     persistence adapter → domain/
+feign/        outgoing HTTP adapter (только user-note/) → domain/
 ```
 
-Адаптеры зависят только от `domain/`. Импорт из `application/` в адаптер — нарушение изоляции.
-
-**Stateless:** `gateway/` · `user/` · `note/` · `user-note/` · `registry/` · `config/`
-
-**Stateful:** `bff/` · `thymeleaf/` → Spring Session; `auth/` → OAuth2Authorization в PostgreSQL (token store, не user session)
+- Адаптеры зависят **только** от `domain/`
+- **Stateless:** `gateway/` · `user/` · `note/` · `user-note/` · `registry/` · `config/`
+- **Stateful:** `bff/` · `thymeleaf/` → Spring Session; `auth/` → OAuth2Authorization в PostgreSQL
 
 ---
 
 ## Безопасность
 
-**Принцип:** `identity ≠ profile ≠ business ≠ permissions`. Zero Trust — каждый слой доверяет только тому, что сам проверил.
+- `identity ≠ profile ≠ business ≠ permissions`
+- **Zero Trust** — каждый слой проверяет JWT самостоятельно, не доверяя Gateway
 
-| Слой            | Модуль                | Ответственность                                     |
-|-----------------|-----------------------|-----------------------------------------------------|
-| Edge            | `gateway/`            | Routing, rate limiting, TLS, security headers       |
-| BFF             | `bff/` · `thymeleaf/` | OAuth2 login flow, session cookie, Token Exchange   |
-| Auth / IdP      | `auth/`               | JWT issuing, credentials (AuthUser), OIDC endpoints |
-| Resource Server | `*/webmvc/`           | JWT validation per request — Zero Trust             |
-| ACL             | `user-note/`          | `UserNote { userId, noteId, role }`                 |
+| Слой            | Модуль                | Ответственность                                   |
+|-----------------|-----------------------|---------------------------------------------------|
+| Edge            | `gateway/`            | Routing, rate limiting, TLS, security headers     |
+| BFF             | `bff/` · `thymeleaf/` | OAuth2 login flow, session cookie, Token Exchange |
+| Auth / IdP      | `auth/`               | JWT issuing, credentials (AuthUser), OIDC         |
+| Resource Server | `*/webmvc/`           | JWT validation per request                        |
+| ACL             | `user-note/`          | `UserNote { userId, noteId, role }`               |
 
-**JWT claims:** `sub` · `iss` · `aud` · `exp` · `jti` · `acr` · `amr` · `scope` — только стандартные.
-
-**Banking-grade:** фаза 1 — основа (с первого дня) · фаза 2 — MFA + token rotation · фаза 3 — DPoP + mTLS.
+- **JWT claims:** `sub` · `iss` · `aud` · `exp` · `jti` · `acr` · `amr` · `scope` — только стандартные
+- **Banking-grade:** фаза 1 — основа · фаза 2 — MFA + token rotation · фаза 3 — DPoP + mTLS
 
 ---
 
 ## Клиенты
 
-| Клиент              | Auth flow          | Токен хранит                | BFF                      |
-|---------------------|--------------------|-----------------------------|--------------------------|
-| Browser (Thymeleaf) | Authorization Code | Spring Session в thymeleaf/ | thymeleaf/ сам себе BFF  |
-| Browser (React/Vue) | Authorization Code | Spring Session в bff/       | bff/                     |
-| Android / iOS       | Auth Code + PKCE   | Keychain / Keystore         | нет                      |
-| B2B / CLI           | Client Credentials | не хранит                   | нет                      |
+| Клиент              | Auth flow          | Токен хранит                | BFF                     |
+|---------------------|--------------------|-----------------------------|-------------------------|
+| Browser (Thymeleaf) | Authorization Code | Spring Session в thymeleaf/ | thymeleaf/ сам себе BFF |
+| Browser (React/Vue) | Authorization Code | Spring Session в bff/       | bff/                    |
+| Android / iOS       | Auth Code + PKCE   | Keychain / Keystore         | нет                     |
+| B2B / CLI           | Client Credentials | не хранит                   | нет                     |
 
 ---
 
 ## Принятые решения
 
 - **Gateway ≠ BFF**: `gateway/` — stateless edge; `bff/` и `thymeleaf/` — отдельные stateful-сервисы
-- **BFF — один на UX** (Sam Newman, Phil Calçado): один BFF на тип пользовательского опыта, не общий для всех
-- **Thymeleaf = self-contained BFF**: ведёт OAuth2 login flow самостоятельно, не требует отдельного `bff/`
-- **Token Exchange (RFC 8693), не TokenRelay**: BFF обменивает public JWT на internal JWT с `aud` перед каждым вызовом микросервиса
-- **Zero Trust**: каждый микросервис валидирует JWT самостоятельно — `aud` + `scope` + `sig` + `exp`
-- **Spring Authorization Server — постоянный IdP**: OIDC-совместимый по дизайну; Keycloak/Auth0 — только после детальной оценки
-- **MVP = правильная архитектура**: структура финальная с первого дня; меняются только backing services
+- **BFF — один на UX** (Sam Newman, Phil Calçado): один BFF на тип UX, не общий
+- **Thymeleaf = self-contained BFF**: ведёт OAuth2 login flow самостоятельно
+- **Token Exchange (RFC 8693), не TokenRelay**: BFF → internal JWT с `aud` перед каждым вызовом микросервиса
+- **Zero Trust**: каждый микросервис валидирует JWT — `aud` + `scope` + `sig` + `exp`
+- **Spring Authorization Server — постоянный IdP**: OIDC-совместимый; Keycloak/Auth0 — только после детальной оценки
+- **MVP = правильная архитектура**: структура финальная; меняются только backing services
 
 ---
 
 ## Нерешённые вопросы
 
-- **Координация при регистрации** (lazy / sync / events) — выбрать до реализации `auth/`
-- **Межсервисные вызовы** (`@ImportHttpServices` vs OpenFeign) — выбрать до реализации `user-note/feign/`
+- **Регистрация** (lazy / sync / events) — выбрать до реализации `auth/`
+- **Межсервисные вызовы** (`@ImportHttpServices` vs OpenFeign) — выбрать до `user-note/feign/`
 
 ---
 
@@ -133,7 +132,7 @@ feign/        Outgoing HTTP adapter (только user-note/) — depends on dom
 ```
 1. Решить: регистрация — lazy / sync / events       ← ТЕКУЩИЙ БЛОКЕР
 2. domain/ во всех бизнес-сервисах
-3. auth/ — Authorization Server + AuthUser + OIDC endpoints
+3. auth/ — Authorization Server + AuthUser + OIDC
 4. Resource Server в user/ · note/ · user-note/
 5. bff/ — OAuth2 Client + Spring Session + Token Exchange
 6. thymeleaf/ — server-rendered BFF
@@ -146,31 +145,27 @@ feign/        Outgoing HTTP adapter (только user-note/) — depends on dom
 
 ## Принципы
 
-**Tier 1 — SoC и SRP** на всех уровнях: сервисы, модули, классы, методы.
-
-**Twelve-Factor App — обязателен.** Чек-лист для нового сервиса:
+- **SoC / SRP** — на всех уровнях: сервисы, модули, классы, методы
+- **Twelve-Factor App** — обязателен для каждого сервиса
 
 ```
-□ III  Config в Config Server / env vars — не в коде
-□ VI   Stateless: Spring Session вместо in-memory state между запросами
-□ IX   server.shutdown=graceful
-□ X    Testcontainers — не H2 вместо PostgreSQL в тестах
-□ XI   Только stdout, никаких FileAppender
-□ XII  Миграции через Flyway/Liquibase
+□ III   Config в env vars / Config Server
+□ VI    Stateless; Spring Session вместо in-memory state
+□ IX    server.shutdown=graceful
+□ X     Testcontainers, не H2 вместо PostgreSQL в тестах
+□ XI    Только stdout
+□ XII   Flyway/Liquibase
 ```
 
-**Остальные принципы:** SOLID · KISS · YAGNI · DRY · SSOT · Law of Demeter · Fail Fast · No partial abstractions · Convention over Configuration · Composition over Inheritance
+- **Остальные:** SOLID · KISS · YAGNI · DRY · SSOT · Law of Demeter · Fail Fast · No partial abstractions
 
 ---
 
 ## Gradle
 
-- Convention plugins — **единственный механизм** для build-логики
-- Flat структура: conventions НЕ применяют другие conventions
-- Inline всё: нет version catalogs, нет `[versions]`, нет внешних version-файлов
-- Порядок блоков в convention: `plugins` → `java` → `repositories` → `dependencyManagement` → `dependencies` → `tasks.named('test')`
-- FQN для BOM: `org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES`
-- Версии плагинов — только в `buildSrc/build.gradle` как `implementation` deps, никогда в `plugins {}`
+- Convention plugins — **единственный механизм**; flat (без вложенности)
+- Inline: нет version catalogs; версии плагинов → только в `buildSrc/build.gradle`
+- Блоки: `plugins` → `java` → `repositories` → `dependencyManagement` → `dependencies` → `test`
 
 Существуют: ✅ `application` · `webmvc` · `data-jpa` · `h2-database`
 Планируются: ❌ `resource-server` · `auth-server` · `oauth2-bff` · `openfeign`
@@ -179,20 +174,18 @@ feign/        Outgoing HTTP adapter (только user-note/) — depends on dom
 
 ## Spring
 
-- Источник правды для координат: `start.spring.io` — не Maven Central (0 результатов ≠ зависимость не существует)
+- `start.spring.io` — источник правды для координат (не Maven Central)
 - `spring-boot-starter-web` → в Boot 4: `spring-boot-starter-webmvc`
-- Плагин `org.springframework.boot` НЕ применяет `io.spring.dependency-management` автоматически — оба объявлять явно
-- **RestTemplate** — deprecated в Framework 7.0, удалён в 8.0 → `RestClient` (sync) или `WebClient` (reactive)
-- **`@Retryable` / `@ConcurrencyLimit`** — встроены в Framework 7; активация: `@EnableResilientMethods`
-- **Jackson 3:** пакет `com.fasterxml.jackson` → `tools.jackson`; `Jackson2ObjectMapperBuilder` удалён → `JsonMapper.Builder`
-- **MFA:** `@EnableMultiFactorAuthentication` + `FactorGrantedAuthority` — встроено в Security 7 (фаза 2)
-- **Обработка ошибок:** `@ControllerAdvice extends ResponseEntityExceptionHandler` + `ProblemDetail` (RFC 9457); `spring.mvc.problemdetails.enabled=true`
-- **Lombok + JPA:** `@Data` и `@EqualsAndHashCode` запрещены на entities; безопасны: `@Getter`, `@Setter`, `@Builder`
+- Плагин `org.springframework.boot` НЕ применяет `io.spring.dependency-management` автоматически
+- **RestTemplate** deprecated → `RestClient` (sync) или `WebClient` (reactive)
+- **Jackson 3:** `com.fasterxml.jackson` → `tools.jackson`; `Jackson2ObjectMapperBuilder` → `JsonMapper.Builder`
+- **Обработка ошибок:** `ResponseEntityExceptionHandler` + `ProblemDetail` (RFC 9457)
+- **Lombok + JPA:** `@Data` / `@EqualsAndHashCode` запрещены на entities
 
 ---
 
 ## Null Safety
 
-- `@NullMarked` (JSpecify) через `package-info.java` в каждом пакете — non-null по умолчанию в аннотированной области
-- `org.springframework.lang` — **deprecated** с Framework 7, не использовать
-- Enforcement: IDE IntelliJ 2025.3+ (текущий вариант при Java 17); NullAway требует JDK 21.0.8+
+- `@NullMarked` (JSpecify) через `package-info.java` в каждом пакете — non-null по умолчанию
+- `org.springframework.lang` — deprecated с Framework 7, не использовать
+- Enforcement: IntelliJ 2025.3+ (Java 17); NullAway требует JDK 21.0.8+
