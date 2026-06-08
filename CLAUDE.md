@@ -128,12 +128,13 @@ General access — уровень доступа ко всей заметке:
 
 > **БЛОКЕР:** Регистрация — выбрать стратегию (lazy / sync / events) до реализации `auth/`
 
-**Нерешённые вопросы:**
+### Нерешённые вопросы
+
 - **Межсервисные вызовы** — `@ImportHttpServices` vs OpenFeign; выбрать до `user-note/feign/`
 - **NoteVisibility** — в `note/domain/` или `user-note/domain/`; `note/domain/` создан без неё
 - **`user/` временно хранит `password`** — до `auth/`; identity переедет в `auth/AuthUser`
 
-**Порядок реализации:**
+### Порядок реализации
 
 1. Решить: регистрация — lazy / sync / events ← **ТЕКУЩИЙ БЛОКЕР**
 2. `domain/` во всех бизнес-сервисах (✓ `note/` ✓ `user-note/` ✓ `user/`)
@@ -199,6 +200,7 @@ General access — уровень доступа ко всей заметке:
 - `org.flywaydb:flyway-core` → `spring-boot-starter-flyway` + `org.flywaydb:flyway-database-postgresql`
 - `org.testcontainers:postgresql` → `org.testcontainers:testcontainers-postgresql`
 - `spring-boot-starter-test` (один на все) → индивидуальные `*-test` стартеры на каждый модуль
+
 - Плагин `org.springframework.boot` не применяет `io.spring.dependency-management` автоматически
 - **Jackson 3** — `com.fasterxml.jackson` → `tools.jackson`; `Jackson2ObjectMapperBuilder` → `JsonMapper.Builder`
 - **RestTemplate** deprecated → `RestClient` (sync) или `WebClient` (reactive)
@@ -226,7 +228,7 @@ General access — уровень доступа ко всей заметке:
   - `DaoAuthenticationProvider` — `UserDetailsService.loadUserByUsername()` + `PasswordEncoder`
 - **UserDetails** — `username` · `password` · `authorities` + флаги (`enabled` · `accountNonExpired` · `accountNonLocked`)
   - в проекте: `AuthUser` (credentials, `auth/`) ≠ `User` (profile, `user/`)
-- **AuthorizationManager** — allow/deny (Security 6); `@PreAuthorize` / `@PostAuthorize`
+- **AuthorizationManager** — allow/deny; `@PreAuthorize` / `@PostAuthorize`
 - **Resource Server** — `JwtDecoder` + `JwtAuthenticationConverter` → `GrantedAuthority`
 - **Auth Server** — `OAuth2AuthorizationServerConfigurer` · `RegisteredClientRepository` · `OAuth2AuthorizationService`
 
