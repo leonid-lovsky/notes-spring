@@ -254,6 +254,25 @@ Redis, PostgreSQL, Kafka — production backing services, подключаютс
 - Каждый starter имеет `-test` вариант
 - `org.springframework.boot` plugin НЕ применяет автоматически `io.spring.dependency-management` — оба объявлять явно
 - Предпочтительные стандартные решения: `JdbcUserDetailsManager`, Spring Session, Spring Authorization Server built-in endpoints
+- **RestTemplate — deprecated** в Framework 7.0, удалён в 8.0 → использовать `RestClient` (sync) или `WebClient` (reactive)
+- **`@Retryable` / `@ConcurrencyLimit`** — встроены в Spring Framework 7; `@EnableResilientMethods` для активации; внешний Spring Retry не нужен
+- **Jackson 3:** пакет `com.fasterxml.jackson` → `tools.jackson`; `Jackson2ObjectMapperBuilder` удалён → `JsonMapper.Builder`; кастомизация через `JsonMapperBuilderCustomizer`
+- **MFA:** `@EnableMultiFactorAuthentication` + `FactorGrantedAuthority` — встроено в Spring Security 7 (применяется в фазе 2)
+- **Обработка ошибок:** `ResponseEntityExceptionHandler` + `@ControllerAdvice` — стандартный механизм в `webmvc/`; `ProblemDetail` (RFC 9457); в Boot активируется через `spring.mvc.problemdetails.enabled=true`
+- **Lombok + JPA:** `@Data` и `@EqualsAndHashCode` **запрещены** на entities — нестабильный hashCode, lazy loading в toString, infinite recursion. Безопасны: `@Getter`, `@Setter`, `@Builder`
+
+---
+
+## Null Safety
+
+- `org.jspecify.annotations.NullMarked` — используется во всём проекте через `package-info.java` в каждом пакете
+- Spring Framework 7 / Boot 4 весь аннотирован JSpecify — `org.springframework.lang` аннотации **deprecated**, не использовать
+- В `@NullMarked` области все неаннотированные типы — **non-null по умолчанию**
+- `@Nullable` — явно разрешает null; `@NullUnmarked` — отменяет `@NullMarked` для legacy-кода
+- Пакеты не иерархичны: `@NullMarked` на `com.example.foo` **не покрывает** `com.example.foo.bar`
+- **Позиция:** `TYPE_USE` — непосредственно перед типом: `private @Nullable String field`, `public @Nullable String method()`
+- **Массивы:** `@Nullable Object[]` — nullable элементы, non-null массив; `Object @Nullable []` — non-null элементы, nullable ссылка
+- **Enforcement:** IDE (IntelliJ 2025.3+) — предупреждения при разработке; NullAway (compile-time) требует JDK 21.0.8+ — при Java 17 недоступен
 
 ---
 
