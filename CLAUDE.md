@@ -131,6 +131,8 @@ feign/        outbound HTTP adapter  →  domain/  (только user-note/)
 - **Token Exchange (RFC 8693), не TokenRelay** — BFF обменивает access token на internal JWT с `aud` конкретного микросервиса
 - **Spring Authorization Server — постоянный IdP** — OIDC-совместимый; Keycloak/Auth0 только после детальной оценки
 - **OpenFeign для `user-note/feign/`** — `spring-cloud-starter-openfeign`; `@ImportHttpServices` не рассматривается
+- **`@GeneratedValue` не используется** — UUID генерируется в домене (`UUID.randomUUID()`); JPA-entities без `@GeneratedValue`
+- **Контроллеры: `ResponseEntity<T>` везде** — все методы возвращают `ResponseEntity`; статусы явно через `HttpStatus`; `Location` не добавляется
 
 ---
 
@@ -188,6 +190,11 @@ feign/        outbound HTTP adapter  →  domain/  (только user-note/)
 6. **WebFlux + Virtual Threads** — несовместимы; нужны `application-webmvc/` (sync + VT) и `application-webflux/` (reactive) для каждого сервиса.
 7. **NoteVisibility** — в `note/domain/` или `user-note/domain/`; `note/domain/` создан без неё
 8. **`user/` временно хранит `password`** — до `auth/`; identity переедет в `auth/AuthUser`
+9. **Thin controller / use case layer** — контроллер вызывает output port напрямую, минуя input port; UUID генерируется в контроллере; нужен `NoteService` (input port) и его реализация — слоя для неё нет
+10. **Семантика методов репозитория** — `save` vs `persist/merge`; `persist/merge` vs `create/update`; `update` vs `update/replace`; `void delete` vs `T delete`; касается всех бизнес-сервисов
+11. **Bean Validation** — нет `@NotBlank` на `NoteRequest.content`; пустой контент проходит; требует `spring-boot-starter-validation` в `spring-webmvc-adapter-conventions.gradle` и `@Valid` в контроллере
+12. **`findAll()` без пагинации** — возвращает все записи одним запросом; для production нужен `Pageable`; касается всех бизнес-сервисов
+13. **Мутабельный доменный объект** — `Note.setContent()` мутирует объект перед сохранением; иммутабельная альтернатива: `withContent()` возвращает новый `Note`; касается всех сущностей с сеттерами
 
 ### Порядок реализации
 

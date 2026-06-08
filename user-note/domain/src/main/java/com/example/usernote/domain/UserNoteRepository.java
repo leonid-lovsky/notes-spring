@@ -6,6 +6,8 @@ import java.util.UUID;
 
 public interface UserNoteRepository {
 
+    boolean existsByUserIdAndNoteId(UUID userId, UUID noteId);
+
     Optional<UserNote> findByUserIdAndNoteId(UUID userId, UUID noteId);
 
     List<UserNote> findByUserId(UUID userId);

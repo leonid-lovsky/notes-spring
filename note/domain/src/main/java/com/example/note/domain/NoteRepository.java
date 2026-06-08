@@ -6,6 +6,8 @@ import java.util.UUID;
 
 public interface NoteRepository {
 
+    boolean existsById(UUID id);
+
     Optional<Note> findById(UUID id);
 
     List<Note> findAll();

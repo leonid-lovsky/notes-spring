@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,39 +21,43 @@ class NoteController {
     }
 
     @GetMapping
-    List<NoteResponse> findAll() {
-        return noteRepository.findAll().stream()
+    ResponseEntity<List<NoteResponse>> findAll() {
+        List<NoteResponse> notes = noteRepository.findAll().stream()
             .map(NoteResponse::from)
             .toList();
+        return ResponseEntity.status(HttpStatus.OK).body(notes);
     }
 
     @GetMapping("/{id}")
-    NoteResponse findById(@PathVariable UUID id) {
-        return noteRepository.findById(id)
+    ResponseEntity<NoteResponse> findById(@PathVariable UUID id) {
+        NoteResponse response = noteRepository.findById(id)
             .map(NoteResponse::from)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PostMapping
     ResponseEntity<NoteResponse> create(@RequestBody NoteRequest request) {
         Note note = noteRepository.save(new Note(UUID.randomUUID(), request.content()));
         NoteResponse response = NoteResponse.from(note);
-        return ResponseEntity.created(URI.create("/notes/" + response.id())).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PutMapping("/{id}")
-    NoteResponse update(@PathVariable UUID id, @RequestBody NoteRequest request) {
+    ResponseEntity<NoteResponse> update(@PathVariable UUID id, @RequestBody NoteRequest request) {
         Note note = noteRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         note.setContent(request.content());
-        return NoteResponse.from(noteRepository.save(note));
+        NoteResponse response = NoteResponse.from(noteRepository.save(note));
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    void delete(@PathVariable UUID id) {
-        noteRepository.findById(id)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    ResponseEntity<Void> delete(@PathVariable UUID id) {
+        if (!noteRepository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
         noteRepository.deleteById(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

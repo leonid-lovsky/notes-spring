@@ -18,6 +18,11 @@ class NoteRepositoryAdapter implements NoteRepository {
     }
 
     @Override
+    public boolean existsById(UUID id) {
+        return noteJpaRepository.existsById(id);
+    }
+
+    @Override
     public Optional<Note> findById(UUID id) {
         return noteJpaRepository.findById(id).map(NoteRepositoryAdapter::toDomain);
     }
