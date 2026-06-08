@@ -2,6 +2,7 @@
 
 > Baseline-контекст: читается автоматически на любом устройстве.
 > Детали, история и справочник — в memory-файлах `~/.claude/projects/…/memory/`.
+> Последнее обновление: 2026-06-08
 
 ---
 
@@ -56,7 +57,7 @@ EXTERNAL      Redis        Spring Session backing (bff/ + thymeleaf/ при ма
 
 ## Архитектура
 
-**Hexagonal Architecture (Ports & Adapters):**
+Hexagonal Architecture (Ports & Adapters):
 
 ```
 domain/       entities + port interfaces — чистая Java, без Spring
@@ -87,11 +88,16 @@ feign/        outgoing HTTP adapter (только user-note/) → domain/
 | Resource Server | `*/webmvc/`           | JWT validation per request                        |
 | ACL             | `user-note/`          | `UserNote { userId, noteId, role }`               |
 
-**UserNoteRole** — `OWNER` · `EDITOR` · `COMMENTER` · `VIEWER`
+**UserNoteRole:**
+- `OWNER` — полный контроль: редактирование, комментарии, управление доступом, удаление, передача владения
+- `EDITOR` — редактирование, комментарии, управление доступом (если не ограничено Owner)
+- `COMMENTER` — комментарии и предложения, без правки контента
+- `VIEWER` — только чтение, без комментариев
 
-**NoteVisibility** *(нерешённо)* — `{ generalAccess, generalRole }`:
-- `RESTRICTED` — только явные участники из `UserNote`
-- `LINK` + `generalRole` (VIEWER / COMMENTER / EDITOR) — любой с ссылкой
+**NoteVisibility** — general access на уровне Note:
+- `RESTRICTED` — только люди с явным доступом
+- `ANYONE_WITH_LINK` + роль (`VIEWER` / `COMMENTER` / `EDITOR`) — любой с ссылкой, без входа в аккаунт
+- `PUBLIC` + роль (`VIEWER` / `COMMENTER` / `EDITOR`) — любой может найти через поиск, без входа в аккаунт
 
 ---
 
@@ -158,8 +164,7 @@ feign/        outgoing HTTP adapter (только user-note/) → domain/
 
 ## Gradle
 
-Convention plugins — **единственный механизм**; flat (без вложенности).
-
+- Convention plugins — **единственный механизм**; flat (без вложенности)
 - Нет version catalogs; версии плагинов — только в `buildSrc/build.gradle`
 - Порядок блоков: `plugins` → `java` → `repositories` → `dependencyManagement` → `dependencies` → `test`
 - **`domain`-plugin** — только `java`; никакого Spring BOM; JSpecify и JUnit с явными версиями
