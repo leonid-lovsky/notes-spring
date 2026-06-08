@@ -76,28 +76,36 @@ feign/        outbound HTTP adapter  →  domain/  (только user-note/)
 **Driving (primary)** — вызывают domain: HTTP, GraphQL, gRPC, CLI, Kafka consumer, Batch  
 **Driven (secondary)** — domain вызывает их: JPA, MongoDB, Redis, Kafka producer, Mail, Search
 
-### `note/` — витрина всех адаптеров
+Подход применяется ко **всем бизнес-сервисам** (`user/`, `note/`, `user-note/`, `auth/`) — не к одному.  
+Инфраструктурные сервисы (`gateway/`, `config/`, `registry/`, `bff/`, `thymeleaf/`) имеют фиксированную роль.
 
-`note/` служит полной демонстрацией Hexagonal Architecture — один `domain/`, максимум адаптеров:
+### Адаптеры бизнес-сервисов
 
-```
-driving:  webmvc · webflux · graphql · grpc · shell · batch · kafka (consumer)
-driven:   data-jpa · data-jdbc · data-mongodb · data-redis · elasticsearch · data-r2dbc
-```
+**Driving — применимо ко всем бизнес-сервисам:**
 
-`application/` выбирает нужные адаптеры через Spring-профили или состав Gradle-зависимостей.
+| Модуль       | Стартер                               | Применимость        |
+|--------------|---------------------------------------|---------------------|
+| `webmvc/`    | `spring-boot-starter-webmvc`          | все                 |
+| `webflux/`   | `spring-boot-starter-webflux`         | все                 |
+| `graphql/`   | `spring-boot-starter-graphql`         | все                 |
+| `grpc/`      | `spring-grpc-server`                  | все                 |
+| `shell/`     | `spring-shell-starter`                | все                 |
+| `batch/`     | `spring-boot-starter-batch`           | `note/` · `user/`   |
+| `kafka/`     | `spring-boot-starter-kafka` (consumer)| `auth/` → события регистрации |
 
-### Технологии по сервисам
+**Driven — применимо ко всем бизнес-сервисам:**
 
-| Сервис       | Driving           | Driven                           |
-|--------------|-------------------|----------------------------------|
-| `gateway/`   | WebFlux           | —                                |
-| `note/`      | все (витрина)     | все (витрина)                    |
-| `user/`      | WebFlux           | R2DBC (PostgreSQL)               |
-| `user-note/` | WebMVC            | JPA (PostgreSQL)                 |
-| `auth/`      | WebMVC            | JPA (PostgreSQL)                 |
-| `bff/`       | WebMVC            | Spring Session (Redis / in-mem)  |
-| `thymeleaf/` | WebMVC            | Spring Session (Redis / in-mem)  |
+| Модуль          | Стартер                                    | Применимость        |
+|-----------------|--------------------------------------------|---------------------|
+| `data-jpa/`     | `spring-boot-starter-data-jpa`             | все                 |
+| `data-jdbc/`    | `spring-boot-starter-data-jdbc`            | все                 |
+| `data-mongodb/` | `spring-boot-starter-data-mongodb`         | все                 |
+| `data-redis/`   | `spring-boot-starter-data-redis`           | все                 |
+| `data-r2dbc/`   | `spring-boot-starter-data-r2dbc`           | все                 |
+| `elasticsearch/`| `spring-boot-starter-data-elasticsearch`   | `note/` (NoteSearchPort) |
+| `feign/`        | `spring-cloud-starter-openfeign`           | `user-note/` (outbound) |
+| `kafka/`        | `spring-boot-starter-kafka` (producer)     | `auth/` → события   |
+| `mail/`         | `spring-boot-starter-mail`                 | `auth/`             |
 
 ### Принятые решения
 
