@@ -17,12 +17,14 @@
 - CLAUDE.md в приоритете над памятью; обновлять при каждом изменении проекта или принципов
 - **Перед коммитом:** рефакторинг CLAUDE.md → синхронизация памяти → обновление даты
 - **CLAUDE.md ≤ 300 строк**; при превышении удалять второстепенное (детали реализации в первую очередь)
+- **Оформление:** `###` для подразделов; `>` для выделенных заметок; `**term** —` для определений
+  - длинные строки разбивать на подпункты по смыслу; таблицы — для сравнений; code block — для схем
 
 ---
 
 ## Стек
 
-Spring Boot 4 monorepo — banking-grade.
+> Spring Boot 4 monorepo — banking-grade
 
 | Инструмент                   | Версия               |
 |------------------------------|----------------------|
@@ -31,9 +33,6 @@ Spring Boot 4 monorepo — banking-grade.
 | Spring Boot                  | 4.0.6                |
 | Spring Cloud                 | 2025.1.1             |
 | Spring Dependency Management | 1.1.7                |
-
-- `buildSrc` + convention plugins (Groovy DSL)
-- Нет root `build.gradle` · нет `buildSrc/settings.gradle` · нет `libs.versions.toml`
 
 ---
 
@@ -54,13 +53,14 @@ EXTERNAL      Redis        Spring Session backing (bff/ + thymeleaf/ при ма
               Kafka/MQ     только при событийной регистрации (решение не принято)
 ```
 
-**Ещё не создано:** `bff/` · `thymeleaf/` · `auth/webmvc/` · `auth/data-jpa/` · `user-note/feign/` · `crud/`
+> **Ещё не создано:** `bff/` · `thymeleaf/` · `auth/webmvc/` · `auth/data-jpa/` · `user-note/feign/` · `crud/`
 
 ---
 
 ## Нерешённые вопросы
 
-- **Регистрация** (lazy / sync / events) — выбрать до реализации `auth/` ← **БЛОКЕР**
+> **БЛОКЕР:** Регистрация — выбрать стратегию (lazy / sync / events) до реализации `auth/`
+
 - **Межсервисные вызовы** (`@ImportHttpServices` vs OpenFeign) — выбрать до `user-note/feign/`
 - **NoteVisibility** — в `note/domain/` или `user-note/domain/`; `note/domain/` создан без неё
 - **`user/` временно хранит `password`** — до реализации `auth/`; identity переедет в `auth/AuthUser`
@@ -93,8 +93,10 @@ data-jpa/     persistence adapter    →  domain/
 feign/        outbound HTTP adapter  →  domain/  (только user-note/)
 ```
 
-- **Dependency direction** — `application/` → `domain/` ← adapters; адаптеры не зависят друг от друга и не знают `application/`
-- **Database per service** — у каждого сервиса своя БД; нет общих таблиц, нет cross-service JOIN; изоляция данных только через API
+- **Dependency direction** — `application/` → `domain/` ← adapters
+  - адаптеры не зависят друг от друга и не знают `application/`
+- **Database per service** — у каждого сервиса своя БД
+  - нет общих таблиц, нет cross-service JOIN; изоляция данных только через API
 - **Stateless:** `gateway/` · `config/` · `registry/` · `user/` · `note/` · `user-note/`
 - **Stateful:** `bff/` · `thymeleaf/` → Spring Session; `auth/` → OAuth2Authorization в PostgreSQL
 
@@ -102,7 +104,8 @@ feign/        outbound HTTP adapter  →  domain/  (только user-note/)
 
 ## Безопасность
 
-- `identity ≠ profile ≠ business ≠ permissions`
+> `identity ≠ profile ≠ business ≠ permissions`
+
 - **Zero Trust** — каждый слой проверяет JWT самостоятельно, не доверяя Gateway
 - **JWT claims:** `sub` · `iss` · `aud` · `exp` · `jti` · `acr` · `amr` · `scope` — только стандартные
 - **Banking-grade:** фаза 1 — основа · фаза 2 — MFA + token rotation · фаза 3 — DPoP + mTLS
@@ -117,7 +120,8 @@ feign/        outbound HTTP adapter  →  domain/  (только user-note/)
 
 ### UserNoteRole
 
-- `OWNER` — полный контроль: редактирование, комментарии, управление доступом, удаление, передача владения
+- `OWNER` — полный контроль:
+  - редактирование · комментарии · управление доступом · удаление · передача владения
 - `EDITOR` — редактирование, комментарии, управление доступом (если не ограничено Owner)
 - `COMMENTER` — комментарии и предложения, без правки контента
 - `VIEWER` — только чтение, без комментариев
@@ -148,7 +152,8 @@ General access — уровень доступа ко всей заметке ц
 - **Gateway ≠ BFF** — `gateway/` stateless edge; `bff/` и `thymeleaf/` — отдельные stateful-сервисы
 - **BFF — один на UX** (Sam Newman, Phil Calçado) — один BFF на тип устройства, не общий
 - **Thymeleaf = self-contained BFF** — ведёт OAuth2 login flow самостоятельно
-- **Token Exchange (RFC 8693), не TokenRelay** — BFF → internal JWT с `aud` перед каждым вызовом микросервиса
+- **Token Exchange (RFC 8693), не TokenRelay** — BFF обменивает токен на internal JWT с `aud` конкретного микросервиса
+  - TokenRelay передал бы access token пользователя напрямую, нарушив валидацию `aud`
 - **Spring Authorization Server — постоянный IdP** — OIDC-совместимый; Keycloak/Auth0 только после детальной оценки
 
 ---
@@ -170,8 +175,9 @@ General access — уровень доступа ко всей заметке ц
 
 ## Gradle
 
-- Convention plugins — **единственный механизм**; flat (без вложенности)
-- Нет version catalogs; версии плагинов — только в `buildSrc/build.gradle`
+- **`buildSrc`** + convention plugins (Groovy DSL) — единственный механизм расширения; flat, без вложенности
+- Нет: root `build.gradle` · `buildSrc/settings.gradle` · `libs.versions.toml` · version catalogs
+- Версии плагинов — только в `buildSrc/build.gradle`
 - Порядок блоков: `plugins` → `java` → `repositories` → `dependencyManagement` → `dependencies` → `test`
 - Порядок зависимостей в `build.gradle`: `domain` → `webmvc` → `data-jpa`
 - Порядок модулей в `settings.gradle`:
@@ -185,18 +191,20 @@ General access — уровень доступа ко всей заметке ц
 
 ## Spring Boot 4
 
-**Изменения относительно Boot 3:**
+### Изменения относительно Boot 3
 
 - `spring-boot-starter-web` → `spring-boot-starter-webmvc`
 - Плагин `org.springframework.boot` не применяет `io.spring.dependency-management` автоматически
-- **Jackson 3:** пакет `com.fasterxml.jackson` → `tools.jackson`; `Jackson2ObjectMapperBuilder` → `JsonMapper.Builder`
+- **Jackson 3:** пакет `com.fasterxml.jackson` → `tools.jackson`
+  - `Jackson2ObjectMapperBuilder` → `JsonMapper.Builder`
 - **RestTemplate** deprecated → `RestClient` (sync) или `WebClient` (reactive)
 
-**Паттерны:**
+### Паттерны
 
-- `start.spring.io` — источник правды для координат артефактов (не Maven Central)
+- `start.spring.io` — источник правды для координат (не Maven Central)
 - **Обработка ошибок:** `ResponseEntityExceptionHandler` + `ProblemDetail` (RFC 9457)
-- **Lombok + JPA:** `@Data` / `@EqualsAndHashCode` запрещены на entities; безопасны `@Getter` · `@Setter` · `@Builder`
+- **Lombok + JPA:** `@Data` / `@EqualsAndHashCode` запрещены на entities
+  - безопасны: `@Getter` · `@Setter` · `@Builder`
 
 ---
 
