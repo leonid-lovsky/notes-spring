@@ -81,31 +81,50 @@ feign/        outbound HTTP adapter  →  domain/  (только user-note/)
 
 ### Адаптеры бизнес-сервисов
 
-**Driving — применимо ко всем бизнес-сервисам:**
+Все бизнес-сервисы (`user/` · `note/` · `user-note/` · `auth/`) строятся с полным набором адаптеров.  
+Инфраструктурные (`gateway/` · `config/` · `registry/` · `bff/` · `thymeleaf/`) имеют фиксированную роль.
 
-| Модуль       | Стартер                               | Применимость        |
-|--------------|---------------------------------------|---------------------|
-| `webmvc/`    | `spring-boot-starter-webmvc`          | все                 |
-| `webflux/`   | `spring-boot-starter-webflux`         | все                 |
-| `graphql/`   | `spring-boot-starter-graphql`         | все                 |
-| `grpc/`      | `spring-grpc-server`                  | все                 |
-| `shell/`     | `spring-shell-starter`                | все                 |
-| `batch/`     | `spring-boot-starter-batch`           | `note/` · `user/`   |
-| `kafka/`     | `spring-boot-starter-kafka` (consumer)| `auth/` → события регистрации |
+**Driving (вызывают domain):**
 
-**Driven — применимо ко всем бизнес-сервисам:**
+| Модуль         | Стартер                                 |
+|----------------|-----------------------------------------|
+| `webmvc/`      | `spring-boot-starter-webmvc`            |
+| `webflux/`     | `spring-boot-starter-webflux`           |
+| `graphql/`     | `spring-boot-starter-graphql`           |
+| `grpc/`        | `spring-grpc-server`                    |
+| `websocket/`   | `spring-boot-starter-websocket`         |
+| `rsocket/`     | `spring-boot-starter-rsocket`           |
+| `shell/`       | `spring-shell-starter`                  |
+| `batch/`       | `spring-boot-starter-batch`             |
 
-| Модуль          | Стартер                                    | Применимость        |
-|-----------------|--------------------------------------------|---------------------|
-| `data-jpa/`     | `spring-boot-starter-data-jpa`             | все                 |
-| `data-jdbc/`    | `spring-boot-starter-data-jdbc`            | все                 |
-| `data-mongodb/` | `spring-boot-starter-data-mongodb`         | все                 |
-| `data-redis/`   | `spring-boot-starter-data-redis`           | все                 |
-| `data-r2dbc/`   | `spring-boot-starter-data-r2dbc`           | все                 |
-| `elasticsearch/`| `spring-boot-starter-data-elasticsearch`   | `note/` (NoteSearchPort) |
-| `feign/`        | `spring-cloud-starter-openfeign`           | `user-note/` (outbound) |
-| `kafka/`        | `spring-boot-starter-kafka` (producer)     | `auth/` → события   |
-| `mail/`         | `spring-boot-starter-mail`                 | `auth/`             |
+**Driven (domain вызывает их):**
+
+| Модуль               | Стартер                                      |
+|----------------------|----------------------------------------------|
+| `data-jpa/`          | `spring-boot-starter-data-jpa`               |
+| `data-jdbc/`         | `spring-boot-starter-data-jdbc`              |
+| `jooq/`              | `spring-boot-starter-jooq`                   |
+| `data-r2dbc/`        | `spring-boot-starter-data-r2dbc`             |
+| `data-mongodb/`      | `spring-boot-starter-data-mongodb`           |
+| `data-mongodb-rx/`   | `spring-boot-starter-data-mongodb-reactive`  |
+| `data-redis/`        | `spring-boot-starter-data-redis`             |
+| `data-redis-rx/`     | `spring-boot-starter-data-redis-reactive`    |
+| `data-cassandra/`    | `spring-boot-starter-data-cassandra`         |
+| `data-cassandra-rx/` | `spring-boot-starter-data-cassandra-reactive`|
+| `data-neo4j/`        | `spring-boot-starter-data-neo4j`             |
+| `elasticsearch/`     | `spring-boot-starter-data-elasticsearch`     |
+| `cache/`             | `spring-boot-starter-cache` (+ redis/hazelcast)|
+| `http/`              | `spring-boot-starter-restclient` (outbound)  |
+| `feign/`             | `spring-cloud-starter-openfeign` (outbound)  |
+| `mail/`              | `spring-boot-starter-mail`                   |
+
+**Messaging (driving-consumer + driven-producer в одном модуле):**
+
+| Модуль     | Стартер                          |
+|------------|----------------------------------|
+| `kafka/`   | `spring-boot-starter-kafka`      |
+| `amqp/`    | `spring-boot-starter-amqp`       |
+| `pulsar/`  | `spring-boot-starter-pulsar`     |
 
 ### Принятые решения
 
