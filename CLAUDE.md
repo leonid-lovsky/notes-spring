@@ -99,24 +99,24 @@ feign/        outbound HTTP adapter  →  domain/  (только user-note/)
 
 **Driven (domain вызывает их):**
 
-| Модуль               | Стартер                                      |
-|----------------------|----------------------------------------------|
-| `data-jpa/`          | `spring-boot-starter-data-jpa`               |
-| `data-jdbc/`         | `spring-boot-starter-data-jdbc`              |
-| `jooq/`              | `spring-boot-starter-jooq`                   |
-| `data-r2dbc/`        | `spring-boot-starter-data-r2dbc`             |
-| `data-mongodb/`      | `spring-boot-starter-data-mongodb`           |
-| `data-mongodb-rx/`   | `spring-boot-starter-data-mongodb-reactive`  |
-| `data-redis/`        | `spring-boot-starter-data-redis`             |
-| `data-redis-rx/`     | `spring-boot-starter-data-redis-reactive`    |
-| `data-cassandra/`    | `spring-boot-starter-data-cassandra`         |
-| `data-cassandra-rx/` | `spring-boot-starter-data-cassandra-reactive`|
-| `data-neo4j/`        | `spring-boot-starter-data-neo4j`             |
-| `elasticsearch/`     | `spring-boot-starter-data-elasticsearch`     |
-| `cache/`             | `spring-boot-starter-cache` (+ redis/hazelcast)|
-| `http/`              | `spring-boot-starter-restclient` (outbound)  |
-| `feign/`             | `spring-cloud-starter-openfeign` (outbound)  |
-| `mail/`              | `spring-boot-starter-mail`                   |
+| Модуль               | Стартер                                         |
+|----------------------|-------------------------------------------------|
+| `data-jpa/`          | `spring-boot-starter-data-jpa`                  |
+| `data-jdbc/`         | `spring-boot-starter-data-jdbc`                 |
+| `jooq/`              | `spring-boot-starter-jooq`                      |
+| `data-r2dbc/`        | `spring-boot-starter-data-r2dbc`                |
+| `data-mongodb/`      | `spring-boot-starter-data-mongodb`              |
+| `data-mongodb-rx/`   | `spring-boot-starter-data-mongodb-reactive`     |
+| `data-redis/`        | `spring-boot-starter-data-redis`                |
+| `data-redis-rx/`     | `spring-boot-starter-data-redis-reactive`       |
+| `data-cassandra/`    | `spring-boot-starter-data-cassandra`            |
+| `data-cassandra-rx/` | `spring-boot-starter-data-cassandra-reactive`   |
+| `data-neo4j/`        | `spring-boot-starter-data-neo4j`                |
+| `elasticsearch/`     | `spring-boot-starter-data-elasticsearch`        |
+| `cache/`             | `spring-boot-starter-cache` (+ redis/hazelcast) |
+| `http/`              | `spring-boot-starter-restclient` (outbound)     |
+| `feign/`             | `spring-cloud-starter-openfeign` (outbound)     |
+| `mail/`              | `spring-boot-starter-mail`                      |
 
 **Messaging (driving-consumer + driven-producer в одном модуле):**
 
