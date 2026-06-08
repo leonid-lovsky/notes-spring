@@ -2,7 +2,7 @@
 
 > Baseline-контекст: читается автоматически на любом устройстве.
 > Детали, история и справочник — в memory-файлах `~/.claude/projects/…/memory/`.
-> Последнее обновление: 2026-06-08
+> Последнее обновление: 2026-06-09
 
 ---
 
@@ -16,7 +16,7 @@
 - CLAUDE.md в приоритете над памятью; обновлять только по явному запросу
 - Не коммитить без явного запроса — пользователь должен проверить изменения
 - **Перед коммитом:** рефакторинг + улучшение читаемости CLAUDE.md → синхронизация памяти → обновление даты
-- **CLAUDE.md ≤ 200 строк**; при превышении удалять второстепенное (детали реализации в первую очередь)
+- **CLAUDE.md ≤ 300 строк**; при превышении удалять второстепенное (детали реализации в первую очередь)
 
 ---
 
@@ -44,17 +44,17 @@ EDGE          gateway/     Spring Cloud Gateway — stateless, routing + rate li
 PRESENTATION  bff/         OAuth2 Client + Spring Session + Token Exchange (SPA)
               thymeleaf/   Thymeleaf + OAuth2 Client — self-contained BFF
 IDENTITY      auth/        Spring Authorization Server — OIDC-compliant, JWT issuer
-BUSINESS      user/        Resource Server  (User: id, username, email)
+BUSINESS      user/        Resource Server  (User: id, username, email, password) ← временно; identity переедет в auth/
               note/        Resource Server  (Note: id, content)
               user-note/   Resource Server  (UserNote: userId, noteId, role)
-INFRA         registry/    Eureka Server
-              config/      Spring Cloud Config Server
+INFRA         config/      Spring Cloud Config Server
+              registry/    Eureka Server
 EXTERNAL      Redis        Spring Session backing (bff/ + thymeleaf/ при масштабировании)
               PostgreSQL×N по одной на: auth, user, note, user-note
               Kafka/MQ     только при событийной регистрации (решение не принято)
 ```
 
-**Ещё не создано:** `bff/` · `thymeleaf/` · `user/domain/` · `auth/webmvc/` · `auth/data-jpa/` · `user-note/feign/` · `crud/`
+**Ещё не создано:** `bff/` · `thymeleaf/` · `auth/webmvc/` · `auth/data-jpa/` · `user-note/feign/` · `crud/`
 
 ---
 
@@ -63,15 +63,15 @@ EXTERNAL      Redis        Spring Session backing (bff/ + thymeleaf/ при ма
 Hexagonal Architecture (Ports & Adapters):
 
 ```
-domain/       entities + port interfaces — чистая Java, без Spring
 application/  Spring Boot app, composition root
+domain/       entities + port interfaces — чистая Java, без Spring
 webmvc/       incoming HTTP adapter → domain/
 data-jpa/     persistence adapter → domain/
 feign/        outgoing HTTP adapter (только user-note/) → domain/
 ```
 
 - Адаптеры зависят **только** от `domain/`
-- **Stateless:** `gateway/` · `user/` · `note/` · `user-note/` · `registry/` · `config/`
+- **Stateless:** `gateway/` · `config/` · `registry/` · `user/` · `note/` · `user-note/`
 - **Stateful:** `bff/` · `thymeleaf/` → Spring Session; `auth/` → OAuth2Authorization в PostgreSQL
 
 ---
@@ -139,7 +139,7 @@ feign/        outgoing HTTP adapter (только user-note/) → domain/
 
 ```
 1. Решить: регистрация — lazy / sync / events            ← ТЕКУЩИЙ БЛОКЕР
-2. domain/ во всех бизнес-сервисах (✓ note/ ✓ user-note/ · осталось: user/)
+2. domain/ во всех бизнес-сервисах (✓ note/ ✓ user-note/ ✓ user/)
 3. auth/ — Authorization Server + AuthUser + OIDC
 4. Resource Server в user/ · note/ · user-note/
 5. bff/ — OAuth2 Client + Spring Session + Token Exchange
@@ -171,9 +171,10 @@ feign/        outgoing HTTP adapter (только user-note/) → domain/
 - Convention plugins — **единственный механизм**; flat (без вложенности)
 - Нет version catalogs; версии плагинов — только в `buildSrc/build.gradle`
 - Порядок блоков: `plugins` → `java` → `repositories` → `dependencyManagement` → `dependencies` → `test`
-- Порядок зависимостей: `domain` → `webmvc` → `data-jpa`
+- Порядок зависимостей в `build.gradle`: `domain` → `webmvc` → `data-jpa`
+- Порядок модулей в `settings.gradle`: `gateway` → `config` → `registry` → `auth` → `user` → `note` → `user-note`; внутри сервиса: `application` → `domain` → `webmvc` → `data-jpa`
 - **`domain`-plugin** — только `java`; никакого Spring BOM; JSpecify и JUnit с явными версиями
-- ✅ Есть: `domain` · `application` · `webmvc` · `data-jpa` · `h2-database`
+- ✅ Есть: `application` · `domain` · `webmvc` · `data-jpa` · `h2-database`
 - ❌ Планируется: `resource-server` · `auth-server` · `oauth2-bff` · `openfeign`
 
 ---
@@ -187,6 +188,18 @@ feign/        outgoing HTTP adapter (только user-note/) → domain/
 - **Jackson 3:** `com.fasterxml.jackson` → `tools.jackson`; `Jackson2ObjectMapperBuilder` → `JsonMapper.Builder`
 - **Обработка ошибок:** `ResponseEntityExceptionHandler` + `ProblemDetail` (RFC 9457)
 - **Lombok + JPA:** `@Data` / `@EqualsAndHashCode` запрещены на entities
+
+---
+
+## Spring Security
+
+- **SecurityFilterChain** — бин `HttpSecurity`; несколько цепочек с `securityMatcher`; `SecurityContextHolder` — `Authentication` текущего потока
+- **Authentication** — `principal` (String → `UserDetails` после auth) · `credentials` (очищается) · `authorities` · `authenticated`; impl: `UsernamePasswordAuthenticationToken` · `JwtAuthenticationToken` · `OAuth2AuthenticationToken`
+- **AuthenticationManager** → `ProviderManager` → `AuthenticationProvider`; `DaoAuthenticationProvider` — `UserDetailsService.loadUserByUsername()` + `PasswordEncoder`
+- **UserDetails** — `username` · `password` · `authorities` · флаги (`enabled` · `accountNonExpired` · `accountNonLocked`); в проекте: `AuthUser` (credentials, `auth/`) ≠ `User` (profile, `user/`)
+- **AuthorizationManager** — allow/deny (Security 6); `@PreAuthorize` / `@PostAuthorize`
+- **Resource Server:** `JwtDecoder` + `JwtAuthenticationConverter` → `GrantedAuthority`
+- **Auth Server (`auth/`):** `OAuth2AuthorizationServerConfigurer` · `RegisteredClientRepository` · `OAuth2AuthorizationService`
 
 ---
 

@@ -5,6 +5,7 @@ include ':registry:application'
 include ':auth:application'
 
 include ':user:application'
+include ':user:domain'
 include ':user:webmvc'
 include ':user:data-jpa'
 
