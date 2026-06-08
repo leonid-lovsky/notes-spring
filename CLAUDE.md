@@ -1,24 +1,21 @@
 # CLAUDE.md — notes-spring
 
-> Baseline-контекст для Claude: читается автоматически в начале каждой сессии.
-> Детали, история, справочники — в memory-файлах `~/.claude/projects/…/memory/`.
+> Читается автоматически в начале каждой сессии.
+> Детали, история, справочники — в `~/.claude/projects/…/memory/`.
 > Последнее обновление: 2026-06-09
 
 ---
 
 ## Правила
 
-- Общение — **только русский**; код, идентификаторы, комментарии — **только английский**
-- Никогда не изменять и не создавать файлы без явного «измени X в файле Y»
-- Не трогать `.github/workflows/` без явного запроса
-- Не коммитить без явного запроса — пользователь должен проверить изменения
-- Читать CLAUDE.md и memory в начале каждой сессии — особо: security design, roadmap, problems
-- Не предлагать первое попавшееся — взвешивать варианты, проверять соответствие принципам
-- CLAUDE.md в приоритете над памятью; обновлять при каждом изменении проекта или принципов
-- **Перед коммитом:** рефакторинг CLAUDE.md → синхронизация памяти → обновление даты
-- **CLAUDE.md ≤ 300 строк**; при превышении удалять второстепенное (детали реализации в первую очередь)
-- **Оформление:** `###` для подразделов; `>` для выделенных заметок; `**term** —` для определений
-  - длинные строки разбивать на подпункты по смыслу; таблицы — для сравнений; code block — для схем
+- **Язык** — общение на русском; код, идентификаторы, комментарии — на английском
+- **Файлы** — не изменять и не создавать без явного «измени X в файле Y»
+- **Коммиты** — не коммитить и не пушить без явного запроса
+- **CI** — не трогать `.github/workflows/` без явного запроса
+- **Подход** — читать память перед ответом; взвешивать варианты, проверять соответствие принципам
+- **CLAUDE.md** — в приоритете над памятью; обновлять при каждом изменении проекта или принципов
+- **Перед коммитом** — рефакторинг CLAUDE.md → синхронизация памяти → обновление даты
+- **≤ 300 строк** — при превышении удалять второстепенное (детали реализации в первую очередь)
 
 ---
 
@@ -57,48 +54,30 @@ EXTERNAL      Redis        Spring Session backing (bff/ + thymeleaf/ при ма
 
 ---
 
-## Нерешённые вопросы
-
-> **БЛОКЕР:** Регистрация — выбрать стратегию (lazy / sync / events) до реализации `auth/`
-
-- **Межсервисные вызовы** (`@ImportHttpServices` vs OpenFeign) — выбрать до `user-note/feign/`
-- **NoteVisibility** — в `note/domain/` или `user-note/domain/`; `note/domain/` создан без неё
-- **`user/` временно хранит `password`** — до реализации `auth/`; identity переедет в `auth/AuthUser`
-
----
-
-## Порядок реализации
-
-1. Решить: регистрация — lazy / sync / events ← **ТЕКУЩИЙ БЛОКЕР**
-2. `domain/` во всех бизнес-сервисах (✓ `note/` ✓ `user-note/` ✓ `user/`)
-3. `auth/` — Authorization Server + AuthUser + OIDC
-4. Resource Server в `user/` · `note/` · `user-note/`
-5. `bff/` — OAuth2 Client + Spring Session + Token Exchange
-6. `thymeleaf/` — server-rendered BFF
-7. Banking Phase 2 — MFA, token rotation, audit log
-8. `user-note/feign/` — Spring HTTP Service Client или OpenFeign
-9. `crud/` — shared library
-
----
-
 ## Архитектура
 
-Hexagonal Architecture (Ports & Adapters):
+**Hexagonal Architecture (Ports & Adapters)** — структура каждого бизнес-сервиса:
 
 ```
-application/  Spring Boot app, composition root
-domain/       entities + port interfaces — только java plugin, без Spring
+application/  Spring Boot app — composition root
+domain/       entities + port interfaces — чистая Java, без Spring
 webmvc/       incoming HTTP adapter  →  domain/
 data-jpa/     persistence adapter    →  domain/
 feign/        outbound HTTP adapter  →  domain/  (только user-note/)
 ```
 
-- **Dependency direction** — `application/` → `domain/` ← adapters
-  - адаптеры не зависят друг от друга и не знают `application/`
-- **Database per service** — у каждого сервиса своя БД
-  - нет общих таблиц, нет cross-service JOIN; изоляция данных только через API
-- **Stateless:** `gateway/` · `config/` · `registry/` · `user/` · `note/` · `user-note/`
-- **Stateful:** `bff/` · `thymeleaf/` → Spring Session; `auth/` → OAuth2Authorization в PostgreSQL
+**Dependency direction** — `application/` знает всё; адаптеры знают только `domain/`; `domain/` не знает ничего снаружи  
+**Database per service** — каждый сервис хранит данные в своей БД; cross-service JOIN запрещён  
+**Stateless** — `gateway/` · `config/` · `registry/` · `user/` · `note/` · `user-note/`  
+**Stateful** — `bff/` · `thymeleaf/` → Spring Session; `auth/` → OAuth2Authorization в PostgreSQL
+
+### Принятые решения
+
+- **Gateway ≠ BFF** — `gateway/` stateless edge; `bff/` и `thymeleaf/` — отдельные stateful-сервисы
+- **BFF — один на UX** (Sam Newman, Phil Calçado) — один BFF на тип устройства, не общий
+- **Thymeleaf = self-contained BFF** — ведёт OAuth2 login flow самостоятельно, без отдельного `bff/`
+- **Token Exchange (RFC 8693), не TokenRelay** — BFF обменивает access token на internal JWT с `aud` конкретного микросервиса
+- **Spring Authorization Server — постоянный IdP** — OIDC-совместимый; Keycloak/Auth0 только после детальной оценки
 
 ---
 
@@ -106,15 +85,15 @@ feign/        outbound HTTP adapter  →  domain/  (только user-note/)
 
 > `identity ≠ profile ≠ business ≠ permissions`
 
-- **Zero Trust** — каждый слой проверяет JWT самостоятельно, не доверяя Gateway
-- **JWT claims:** `sub` · `iss` · `aud` · `exp` · `jti` · `acr` · `amr` · `scope` — только стандартные
-- **Banking-grade:** фаза 1 — основа · фаза 2 — MFA + token rotation · фаза 3 — DPoP + mTLS
+**Zero Trust** — каждый слой валидирует JWT самостоятельно; Gateway не является точкой доверия  
+**JWT claims** — только стандартные: `sub` · `iss` · `aud` · `exp` · `jti` · `acr` · `amr` · `scope`  
+**Banking-grade** — фаза 1: основа · фаза 2: MFA + token rotation · фаза 3: DPoP + mTLS
 
 | Слой            | Модуль                | Ответственность                                   |
 |-----------------|-----------------------|---------------------------------------------------|
 | Edge            | `gateway/`            | Routing, rate limiting, TLS, security headers     |
 | BFF             | `bff/` · `thymeleaf/` | OAuth2 login flow, session cookie, Token Exchange |
-| Auth / IdP      | `auth/`               | JWT issuing, credentials (AuthUser), OIDC         |
+| IdP             | `auth/`               | JWT issuing, credentials (AuthUser), OIDC         |
 | Resource Server | `*/webmvc/`           | JWT validation per request                        |
 | ACL             | `user-note/`          | `UserNote { userId, noteId, role }`               |
 
@@ -128,15 +107,13 @@ feign/        outbound HTTP adapter  →  domain/  (только user-note/)
 
 ### NoteVisibility
 
-General access — уровень доступа ко всей заметке целиком:
+General access — уровень доступа ко всей заметке:
 
 - `RESTRICTED` — только люди с явным доступом
 - `ANYONE_WITH_LINK` + роль (`VIEWER` / `COMMENTER` / `EDITOR`) — любой с ссылкой, без входа в аккаунт
 - `PUBLIC` + роль (`VIEWER` / `COMMENTER` / `EDITOR`) — любой может найти через поиск, без входа в аккаунт
 
----
-
-## Клиенты
+### Клиенты
 
 | Клиент              | Auth flow          | Токен хранит                | BFF                     |
 |---------------------|--------------------|-----------------------------|-------------------------|
@@ -147,45 +124,67 @@ General access — уровень доступа ко всей заметке ц
 
 ---
 
-## Принятые решения
+## Статус
 
-- **Gateway ≠ BFF** — `gateway/` stateless edge; `bff/` и `thymeleaf/` — отдельные stateful-сервисы
-- **BFF — один на UX** (Sam Newman, Phil Calçado) — один BFF на тип устройства, не общий
-- **Thymeleaf = self-contained BFF** — ведёт OAuth2 login flow самостоятельно
-- **Token Exchange (RFC 8693), не TokenRelay** — BFF обменивает токен на internal JWT с `aud` конкретного микросервиса
-  - TokenRelay передал бы access token пользователя напрямую, нарушив валидацию `aud`
-- **Spring Authorization Server — постоянный IdP** — OIDC-совместимый; Keycloak/Auth0 только после детальной оценки
+> **БЛОКЕР:** Регистрация — выбрать стратегию (lazy / sync / events) до реализации `auth/`
+
+**Нерешённые вопросы:**
+- **Межсервисные вызовы** — `@ImportHttpServices` vs OpenFeign; выбрать до `user-note/feign/`
+- **NoteVisibility** — в `note/domain/` или `user-note/domain/`; `note/domain/` создан без неё
+- **`user/` временно хранит `password`** — до `auth/`; identity переедет в `auth/AuthUser`
+
+**Порядок реализации:**
+
+1. Решить: регистрация — lazy / sync / events ← **ТЕКУЩИЙ БЛОКЕР**
+2. `domain/` во всех бизнес-сервисах (✓ `note/` ✓ `user-note/` ✓ `user/`)
+3. `auth/` — Authorization Server + AuthUser + OIDC
+4. Resource Server в `user/` · `note/` · `user-note/`
+5. `bff/` — OAuth2 Client + Spring Session + Token Exchange
+6. `thymeleaf/` — server-rendered BFF
+7. Banking Phase 2 — MFA, token rotation, audit log
+8. `user-note/feign/` — Spring HTTP Service Client или OpenFeign
+9. `crud/` — shared library
 
 ---
 
 ## Принципы
 
-- **SoC / SRP** — на всех уровнях: сервисы, модули, классы, методы
-- **Видимость** — `default` (package-private) или минимально необходимая; `public` только для реального публичного API
-- **Twelve-Factor App** — обязателен для каждого сервиса:
-  - III — Config в env vars / Config Server
-  - VI — Stateless; Spring Session вместо in-memory state
-  - IX — `server.shutdown=graceful`
-  - X — Testcontainers, не H2 вместо PostgreSQL в тестах
-  - XI — Только stdout
-  - XII — Flyway/Liquibase
-- **Остальные:** SOLID · KISS · YAGNI · DRY · SSOT · Law of Demeter · Fail Fast · No partial abstractions
+**SoC / SRP** — на всех уровнях: сервисы, модули, классы, методы  
+**Видимость** — `default` (package-private) или минимально необходимая; `public` только для реального публичного API  
+**No partial abstractions** — полное устранение или явное дублирование; незавершённые абстракции под запретом
+
+**Twelve-Factor App** — обязателен для каждого сервиса:
+
+| Фактор | Правило                                          |
+|--------|--------------------------------------------------|
+| III    | Config в env vars / Config Server                |
+| VI     | Stateless; Spring Session вместо in-memory state |
+| IX     | `server.shutdown=graceful`                       |
+| X      | Testcontainers, не H2 вместо PostgreSQL в тестах |
+| XI     | Только stdout                                    |
+| XII    | Flyway / Liquibase                               |
+
+**Остальные** — SOLID · KISS · YAGNI · DRY · SSOT · Law of Demeter · Fail Fast
 
 ---
 
 ## Gradle
 
-- **`buildSrc`** + convention plugins (Groovy DSL) — единственный механизм расширения; flat, без вложенности
-- Нет: root `build.gradle` · `buildSrc/settings.gradle` · `libs.versions.toml` · version catalogs
-- Версии плагинов — только в `buildSrc/build.gradle`
-- Порядок блоков: `plugins` → `java` → `repositories` → `dependencyManagement` → `dependencies` → `test`
-- Порядок зависимостей в `build.gradle`: `domain` → `webmvc` → `data-jpa`
-- Порядок модулей в `settings.gradle`:
-  - сервисы: `gateway` → `config` → `registry` → `auth` → `user` → `note` → `user-note`
-  - внутри сервиса: `application` → `domain` → `webmvc` → `data-jpa`
-- **`domain`-plugin** — только `java`; никакого Spring BOM; JSpecify и JUnit с явными версиями
+**`buildSrc`** + convention plugins (Groovy DSL) — единственный механизм; flat, без вложенности  
+**Нет:** root `build.gradle` · `buildSrc/settings.gradle` · `libs.versions.toml` · version catalogs  
+**Версии плагинов** — только в `buildSrc/build.gradle`  
+**Порядок блоков** — `plugins` → `java` → `repositories` → `dependencyManagement` → `dependencies` → `test`  
+**Порядок зависимостей** — `domain` → `webmvc` → `data-jpa`
+
+**Порядок в `settings.gradle`:**
+- сервисы: `gateway` → `config` → `registry` → `auth` → `user` → `note` → `user-note`
+- внутри сервиса: `application` → `domain` → `webmvc` → `data-jpa`
+
+**Convention plugins:**
 - ✅ Есть: `application` · `domain` · `webmvc` · `data-jpa` · `h2-database`
 - ❌ Планируется: `resource-server` · `auth-server` · `oauth2-bff` · `openfeign`
+
+**`domain`-plugin** — только `java`; никакого Spring BOM; JSpecify и JUnit с явными версиями
 
 ---
 
@@ -195,16 +194,14 @@ General access — уровень доступа ко всей заметке ц
 
 - `spring-boot-starter-web` → `spring-boot-starter-webmvc`
 - Плагин `org.springframework.boot` не применяет `io.spring.dependency-management` автоматически
-- **Jackson 3:** пакет `com.fasterxml.jackson` → `tools.jackson`
-  - `Jackson2ObjectMapperBuilder` → `JsonMapper.Builder`
+- **Jackson 3** — `com.fasterxml.jackson` → `tools.jackson`; `Jackson2ObjectMapperBuilder` → `JsonMapper.Builder`
 - **RestTemplate** deprecated → `RestClient` (sync) или `WebClient` (reactive)
 
 ### Паттерны
 
 - `start.spring.io` — источник правды для координат (не Maven Central)
-- **Обработка ошибок:** `ResponseEntityExceptionHandler` + `ProblemDetail` (RFC 9457)
-- **Lombok + JPA:** `@Data` / `@EqualsAndHashCode` запрещены на entities
-  - безопасны: `@Getter` · `@Setter` · `@Builder`
+- **Обработка ошибок** — `ResponseEntityExceptionHandler` + `ProblemDetail` (RFC 9457)
+- **Lombok + JPA** — `@Data` / `@EqualsAndHashCode` запрещены на entities; безопасны `@Getter` · `@Setter` · `@Builder`
 
 ---
 
@@ -213,21 +210,21 @@ General access — уровень доступа ко всей заметке ц
 - **SecurityFilterChain** — бин `HttpSecurity`; несколько цепочек с `securityMatcher`
   - `SecurityContextHolder` хранит `Authentication` текущего потока (ThreadLocal)
 - **Authentication** — носитель состояния аутентификации:
-  - `principal`: String до auth → `UserDetails` после; `credentials`: очищается после верификации
-  - `authorities`: коллекция `GrantedAuthority`; `authenticated`: флаг результата
-  - impl: `UsernamePasswordAuthenticationToken` · `JwtAuthenticationToken` · `OAuth2AuthenticationToken`
+  - до верификации: `principal` = String (username), `credentials` = password
+  - после верификации: `principal` = `UserDetails`, `credentials` очищается
+  - `authorities` = коллекция `GrantedAuthority`; `authenticated` = флаг результата
 - **AuthenticationManager** → `ProviderManager` → `AuthenticationProvider`
   - `DaoAuthenticationProvider` — `UserDetailsService.loadUserByUsername()` + `PasswordEncoder`
-- **UserDetails** — `username` · `password` · `authorities` · флаги (`enabled` · `accountNonExpired` · `accountNonLocked`)
+- **UserDetails** — `username` · `password` · `authorities` + флаги (`enabled` · `accountNonExpired` · `accountNonLocked`)
   - в проекте: `AuthUser` (credentials, `auth/`) ≠ `User` (profile, `user/`)
 - **AuthorizationManager** — allow/deny (Security 6); `@PreAuthorize` / `@PostAuthorize`
-- **Resource Server:** `JwtDecoder` + `JwtAuthenticationConverter` → `GrantedAuthority`
-- **Auth Server (`auth/`):** `OAuth2AuthorizationServerConfigurer` · `RegisteredClientRepository` · `OAuth2AuthorizationService`
+- **Resource Server** — `JwtDecoder` + `JwtAuthenticationConverter` → `GrantedAuthority`
+- **Auth Server** — `OAuth2AuthorizationServerConfigurer` · `RegisteredClientRepository` · `OAuth2AuthorizationService`
 
 ---
 
 ## Null Safety
 
-- `@NullMarked` (JSpecify) через `package-info.java` в каждом пакете — non-null по умолчанию
-- `org.springframework.lang` — deprecated с Framework 7, не использовать
-- Enforcement: IntelliJ 2025.3+ (Java 17); NullAway требует JDK 21.0.8+
+**`@NullMarked`** (JSpecify) через `package-info.java` в каждом пакете — non-null по умолчанию  
+`org.springframework.lang` — deprecated с Framework 7, не использовать  
+**Enforcement** — IntelliJ 2025.3+ (Java 17); NullAway требует JDK 21.0.8+
