@@ -96,6 +96,7 @@ feign/        outbound HTTP adapter  →  domain/  (только user-note/)
 ```
 
 - **Dependency direction** — `application/` → `domain/` ← adapters; адаптеры не зависят друг от друга и не знают `application/`
+- **Database per service** — у каждого сервиса своя БД; нет общих таблиц, нет cross-service JOIN; изоляция данных только через API
 - **Stateless:** `gateway/` · `config/` · `registry/` · `user/` · `note/` · `user-note/`
 - **Stateful:** `bff/` · `thymeleaf/` → Spring Session; `auth/` → OAuth2Authorization в PostgreSQL
 
@@ -171,7 +172,9 @@ feign/        outbound HTTP adapter  →  domain/  (только user-note/)
 - Нет version catalogs; версии плагинов — только в `buildSrc/build.gradle`
 - Порядок блоков: `plugins` → `java` → `repositories` → `dependencyManagement` → `dependencies` → `test`
 - Порядок зависимостей в `build.gradle`: `domain` → `webmvc` → `data-jpa`
-- Порядок модулей в `settings.gradle`: `gateway` → `config` → `registry` → `auth` → `user` → `note` → `user-note`; внутри сервиса: `application` → `domain` → `webmvc` → `data-jpa`
+- Порядок модулей в `settings.gradle`:
+  - сервисы: `gateway` → `config` → `registry` → `auth` → `user` → `note` → `user-note`
+  - внутри сервиса: `application` → `domain` → `webmvc` → `data-jpa`
 - **`domain`-plugin** — только `java`; никакого Spring BOM; JSpecify и JUnit с явными версиями
 - ✅ Есть: `application` · `domain` · `webmvc` · `data-jpa` · `h2-database`
 - ❌ Планируется: `resource-server` · `auth-server` · `oauth2-bff` · `openfeign`
@@ -192,10 +195,16 @@ feign/        outbound HTTP adapter  →  domain/  (только user-note/)
 
 ## Spring Security
 
-- **SecurityFilterChain** — бин `HttpSecurity`; несколько цепочек с `securityMatcher`; `SecurityContextHolder` — `Authentication` текущего потока
-- **Authentication** — `principal` (String → `UserDetails` после auth) · `credentials` (очищается) · `authorities` · `authenticated`; impl: `UsernamePasswordAuthenticationToken` · `JwtAuthenticationToken` · `OAuth2AuthenticationToken`
-- **AuthenticationManager** → `ProviderManager` → `AuthenticationProvider`; `DaoAuthenticationProvider` — `UserDetailsService.loadUserByUsername()` + `PasswordEncoder`
-- **UserDetails** — `username` · `password` · `authorities` · флаги (`enabled` · `accountNonExpired` · `accountNonLocked`); в проекте: `AuthUser` (credentials, `auth/`) ≠ `User` (profile, `user/`)
+- **SecurityFilterChain** — бин `HttpSecurity`; несколько цепочек с `securityMatcher`
+  - `SecurityContextHolder` хранит `Authentication` текущего потока (ThreadLocal)
+- **Authentication** — носитель состояния аутентификации:
+  - `principal`: String до auth → `UserDetails` после; `credentials`: очищается после верификации
+  - `authorities`: коллекция `GrantedAuthority`; `authenticated`: флаг результата
+  - impl: `UsernamePasswordAuthenticationToken` · `JwtAuthenticationToken` · `OAuth2AuthenticationToken`
+- **AuthenticationManager** → `ProviderManager` → `AuthenticationProvider`
+  - `DaoAuthenticationProvider` — `UserDetailsService.loadUserByUsername()` + `PasswordEncoder`
+- **UserDetails** — `username` · `password` · `authorities` · флаги (`enabled` · `accountNonExpired` · `accountNonLocked`)
+  - в проекте: `AuthUser` (credentials, `auth/`) ≠ `User` (profile, `user/`)
 - **AuthorizationManager** — allow/deny (Security 6); `@PreAuthorize` / `@PostAuthorize`
 - **Resource Server:** `JwtDecoder` + `JwtAuthenticationConverter` → `GrantedAuthority`
 - **Auth Server (`auth/`):** `OAuth2AuthorizationServerConfigurer` · `RegisteredClientRepository` · `OAuth2AuthorizationService`
