@@ -1,7 +1,7 @@
 package com.example.note.data.jpa;
 
 import com.example.note.domain.Note;
-import com.example.note.domain.NoteRepository;
+import com.example.note.domain.NoteOutputPort;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -9,42 +9,42 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-class NoteRepositoryAdapter implements NoteRepository {
+class NoteOutputAdapter implements NoteOutputPort {
 
-    private final NoteJpaRepository noteJpaRepository;
+    private final NoteRepository noteRepository;
 
-    NoteRepositoryAdapter(NoteJpaRepository noteJpaRepository) {
-        this.noteJpaRepository = noteJpaRepository;
+    NoteOutputAdapter(NoteRepository noteRepository) {
+        this.noteRepository = noteRepository;
     }
 
     @Override
     public boolean existsById(UUID id) {
-        return noteJpaRepository.existsById(id);
+        return noteRepository.existsById(id);
     }
 
     @Override
     public Optional<Note> findById(UUID id) {
-        return noteJpaRepository.findById(id).map(NoteRepositoryAdapter::toDomain);
+        return noteRepository.findById(id).map(NoteOutputAdapter::toDomain);
     }
 
     @Override
     public List<Note> findAll() {
-        return noteJpaRepository.findAll().stream().map(NoteRepositoryAdapter::toDomain).toList();
+        return noteRepository.findAll().stream().map(NoteOutputAdapter::toDomain).toList();
     }
 
     @Override
     public void add(Note note) {
-        noteJpaRepository.save(toEntity(note));
+        noteRepository.save(toEntity(note));
     }
 
     @Override
     public void replace(Note note) {
-        noteJpaRepository.save(toEntity(note));
+        noteRepository.save(toEntity(note));
     }
 
     @Override
     public void remove(UUID id) {
-        noteJpaRepository.deleteById(id);
+        noteRepository.deleteById(id);
     }
 
     private static Note toDomain(NoteEntity entity) {

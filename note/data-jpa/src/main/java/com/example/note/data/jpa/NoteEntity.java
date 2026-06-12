@@ -30,8 +30,4 @@ class NoteEntity {
     String getContent() {
         return content;
     }
-
-    void setContent(String content) {
-        this.content = content;
-    }
 }

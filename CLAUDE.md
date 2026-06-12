@@ -2,7 +2,7 @@
 
 > Читается автоматически в начале каждой сессии.
 > Детали, история, справочники — в `~/.claude/projects/…/memory/`.
-> Последнее обновление: 2026-06-12 (5)
+> Последнее обновление: 2026-06-12 (7)
 
 ---
 
@@ -73,17 +73,14 @@ EXTERNAL      Redis        Spring Session backing (bff/ + thymeleaf/ при ма
 
 ### Ожидают решения
 
-**Название output port** — не решено; возможные варианты:
-- `NoteRepository` — DDD/Spring Data конвенция; несёт чужой контекст
-- `NoteStore` — нейтрально, без фреймворк-коннотаций (склонение)
-- `NoteCollection` — максимально соответствует семантике; конфликт с `java.util.Collection`
-- `NoteGateway` — явный hexagonal термин; читается неестественно для persistence
-- `NoteDao` · `NotePersistence` · `NoteOutputPort` · `Notes` · `NoteAccess` · `NoteProvider` — и другие
-
 **PATCH / частичное обновление** — нужен ли отдельный метод в output port:
 - Вариант 1 — только в `service/` (input port): сервис строит полный объект → `replace`; output port не меняется
 - Вариант 2 — `void patch(UUID id, NoteFields fields)` в output port; адаптер решает как обновить частично
 - Вариант 3 — не поддерживать PATCH; только PUT (полная замена) на HTTP-уровне
+
+**Название output adapter при нескольких реализациях** ← **отложено: актуально при добавлении второго адаптера**
+- Вариант 1 — `NoteOutputAdapter`: технология понятна из модуля; сейчас реализовано так
+- Вариант 2 — `NoteJpaOutputAdapter` / `NoteR2dbcOutputAdapter`: явно; не столкнутся при двух реализациях
 
 **NoteVisibility** — в `note/domain/` или `user-note/domain/` ← **отложено: требует ясности по ACL-дизайну**
 
@@ -98,7 +95,7 @@ EXTERNAL      Redis        Spring Session backing (bff/ + thymeleaf/ при ма
 
 ### Порядок реализации
 
-1. Название output port + PATCH решение ← **ТЕКУЩИЙ ПРИОРИТЕТ**
+1. PATCH решение ← **ТЕКУЩИЙ ПРИОРИТЕТ**
 2. `service/` + `domain/` input ports во всех бизнес-сервисах
 3. Регистрация — lazy / sync / events
 4. `auth/` — Authorization Server + AuthUser + OIDC
@@ -177,6 +174,8 @@ Upsert (`save`) — только для sync/offline-first; сервер — и�
 - **Domain objects — Java records** — `withXxx()` для изменённой копии; JPA entities — обычные классы
 - **Контроллеры: `ResponseEntity<T>` везде** — статусы явно через `HttpStatus`
 - **`existsById` в output port** — валидный паттерн; не заменять на `findById`
+- **Output port — `*OutputPort`** — `NoteOutputPort` / `UserOutputPort` / `UserNoteOutputPort`; явный hexagonal термин; без фреймворк-коннотаций
+- **Output adapter — `*OutputAdapter`** — `NoteOutputAdapter`; без указания технологии; технология следует из модуля (`data-jpa/`); пересмотреть при добавлении второго адаптера
 
 ---
 
@@ -250,4 +249,4 @@ Upsert (`save`) — только для sync/offline-first; сервер — и�
 
 **`@NullMarked`** (JSpecify) через `package-info.java` — non-null по умолчанию; `org.springframework.lang` deprecated  
 **Импорты** — `com.example.*` + `org.*` / `jakarta.*`, затем `java.*`; wildcard при 3+  
-**Имена полей** — полные: `noteRepository`, не `repository` · **Пустое тело** — одна пустая строка · **EOF** — один `\n`
+**Имена полей** — camelCase от типа: `noteOutputPort`, `noteJpaRepository`; не `repository`, не `port` · **Пустое тело** — одна пустая строка · **EOF** — один `\n`
