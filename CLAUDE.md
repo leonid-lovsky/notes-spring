@@ -63,17 +63,17 @@ EXTERNAL      Redis        Spring Session backing (bff/ + thymeleaf/ при ма
 
 ### Блокеры
 
+**Семантика портов** — дизайн output port интерфейсов; касается всех бизнес-сервисов: ← **ТЕКУЩИЙ ПРИОРИТЕТ; блокирует `service/`**
+- `save` (upsert) vs раздельные `create` / `update`
+- `update` (partial / PATCH) vs `replace` (full / PUT)
+- `void delete` vs `T delete` — возвращать ли удалённый объект
+
 **Регистрация** — не выбрана стратегия координации между `auth/` и `user/`: ← **отложено: сложная и неоднозначная; ни один вариант не очевиден**
 - Lazy: `user/` создаёт профиль при первом запросе; нет email до явного обновления
 - Sync: `auth/` → `user/` через RestClient; нарушает direction of dependencies
 - Events: Kafka/RabbitMQ; архитектурно чисто; требует брокера
 
 ### Ожидают решения
-
-**Семантика портов** — дизайн output port интерфейсов; касается всех бизнес-сервисов: ← **отложено: решать непосредственно перед `service/`**
-- `save` (upsert) vs раздельные `create` / `update`
-- `update` (partial / PATCH) vs `replace` (full / PUT)
-- `void delete` vs `T delete` — возвращать ли удалённый объект
 
 **NoteVisibility** — где хранить: в `note/domain/` или `user-note/domain/`; `note/domain/` создан без неё ← **отложено: требует ясности по ACL-дизайну**
 
@@ -88,16 +88,17 @@ EXTERNAL      Redis        Spring Session backing (bff/ + thymeleaf/ при ма
 
 ### Порядок реализации
 
-1. Регистрация — lazy / sync / events ← **ТЕКУЩИЙ БЛОКЕР**
+1. Семантика портов ← **ТЕКУЩИЙ ПРИОРИТЕТ**
 2. `service/` + `domain/` input ports во всех бизнес-сервисах
-3. `auth/` — Authorization Server + AuthUser + OIDC
-4. Resource Server в `user/` · `note/` · `user-note/`
-5. `bff/` — OAuth2 Client + Spring Session + Token Exchange
-6. `thymeleaf/` — server-rendered BFF
-7. Banking Phase 2 — MFA, token rotation, audit log
-8. `user-note/feign/` — OpenFeign
-9. `crud/` — shared library
-10. Широкий стек — после выбора стратегии активации
+3. Регистрация — lazy / sync / events
+4. `auth/` — Authorization Server + AuthUser + OIDC
+5. Resource Server в `user/` · `note/` · `user-note/`
+6. `bff/` — OAuth2 Client + Spring Session + Token Exchange
+7. `thymeleaf/` — server-rendered BFF
+8. Banking Phase 2 — MFA, token rotation, audit log
+9. `user-note/feign/` — OpenFeign
+10. `crud/` — shared library
+11. Широкий стек — после выбора стратегии активации
 
 ---
 
@@ -191,6 +192,7 @@ WebFlux + Virtual Threads несовместимы → один `application/` �
 - **Domain objects — Java records** — `Note`, `User`, `UserNote` и все будущие domain objects — `record`; `withXxx()` для изменённой копии; JPA entities — обычные классы
 - **Контроллеры: `ResponseEntity<T>` везде** — все методы возвращают `ResponseEntity`; статусы явно через `HttpStatus`; `Location` не добавляется
 - **`existsById` в output port** — валидный паттерн; не заменять на `findById`; для delete-операций эффективнее (`SELECT 1` vs `SELECT *`)
+- **Input port — интерфейс в `domain/`** — `NoteUseCase` / `UserUseCase` / `UserNoteUseCase`; `service/` реализует; `webmvc/` зависит от интерфейса, не от `service/`
 - **`service/` — после семантики портов** — не реализовывать до принятия решения по семантике output port методов
 
 ---
