@@ -47,8 +47,7 @@ class NoteController {
     ResponseEntity<NoteResponse> update(@PathVariable UUID id, @RequestBody NoteRequest request) {
         Note note = noteRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        note.setContent(request.content());
-        NoteResponse response = NoteResponse.from(noteRepository.save(note));
+        NoteResponse response = NoteResponse.from(noteRepository.save(note.withContent(request.content())));
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 

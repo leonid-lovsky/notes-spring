@@ -47,6 +47,6 @@ class NoteRepositoryAdapter implements NoteRepository {
     }
 
     private static NoteEntity toEntity(Note note) {
-        return new NoteEntity(note.getId(), note.getContent());
+        return new NoteEntity(note.id(), note.content());
     }
 }
