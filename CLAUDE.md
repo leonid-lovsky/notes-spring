@@ -13,6 +13,7 @@
 - **Коммиты** — не коммитить и не пушить без явного запроса
 - **CI** — не трогать `.github/workflows/` без явного запроса
 - **Подход** — читать память перед ответом; взвешивать варианты, проверять соответствие принципам
+- **Решение проблем** — формулировать проблему → предлагать варианты с плюсами/минусами + склонение → ждать выбора → обосновать принятое решение
 - **CLAUDE.md** — в приоритете над памятью; обновлять при каждом изменении проекта или принципов
 - **Перед коммитом** — рефакторинг CLAUDE.md → синхронизация памяти → обновление даты
 - **≤ 400 строк** — при превышении удалять второстепенное (детали реализации в первую очередь)
@@ -157,6 +158,7 @@ feign/        driven outbound HTTP adapter  →  domain/  (только user-not
 - **OpenFeign для `user-note/feign/`** — `spring-cloud-starter-openfeign`; `@ImportHttpServices` не рассматривается
 - **`@GeneratedValue` не используется** — UUID генерируется в `service/` (`UUID.randomUUID()`); JPA-entities без `@GeneratedValue`
 - **`service/` модуль** — use case implementations (`@Service`, `@Transactional`); зависит только от `domain/`; `application/` остаётся чистым composition root
+- **Domain objects — Java records** — `Note`, `User`, `UserNote` и все будущие domain objects — `record`; иммутабельность из коробки; `withXxx()` методы для создания изменённой копии; JPA entities (`NoteEntity` и др.) — обычные классы
 - **Контроллеры: `ResponseEntity<T>` везде** — все методы возвращают `ResponseEntity`; статусы явно через `HttpStatus`; `Location` не добавляется
 
 ---
@@ -217,7 +219,6 @@ feign/        driven outbound HTTP adapter  →  domain/  (только user-not
 - контроллер мутирует доменный объект (`note.setContent()`)
 - нет `@Transactional` выше адаптера — 3 запроса при update (SELECT + SELECT в merge + UPDATE)
 - нет `@Version` на entity — lost update при concurrent requests
-- мутабельные доменные объекты (`Note`, `User`, `UserNote`)
 - нет `@NotBlank` на `NoteRequest.content`; нет `@Valid` в контроллере
 - нет `ResponseEntityExceptionHandler` / `@ControllerAdvice`; `findAll()` без `Pageable`
 
