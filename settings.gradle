@@ -6,6 +6,7 @@ include ':auth:application'
 
 include ':user:application'
 include ':user:domain'
+include ':user:service'
 include ':user:webmvc'
 include ':user:data-jpa'
 
@@ -17,5 +18,6 @@ include ':note:data-jpa'
 
 include ':user-note:application'
 include ':user-note:domain'
+include ':user-note:service'
 include ':user-note:webmvc'
 include ':user-note:data-jpa'

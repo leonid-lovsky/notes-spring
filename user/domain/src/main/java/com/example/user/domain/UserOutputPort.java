@@ -1,5 +1,6 @@
 package com.example.user.domain;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -12,6 +13,8 @@ public interface UserOutputPort {
     Optional<User> findByUsername(String username);
 
     Optional<User> findByEmail(String email);
+
+    List<User> findAll();
 
     void add(User user);
 

@@ -55,7 +55,7 @@ EXTERNAL      Redis        Spring Session backing (bff/ + thymeleaf/ при ма
 ```
 
 > **Ещё не создано:** `bff/` · `thymeleaf/` · `auth/webmvc/` · `auth/data-jpa/` · `user-note/feign/` · `crud/`  
-> **Не реализовано:** `user/service` · `user-note/service` · `user/webmvc` · `user/data-jpa` · `user-note/webmvc` · `user-note/data-jpa`
+> **Не реализовано:** `auth/webmvc` · `auth/data-jpa` · `bff/` · `thymeleaf/`
 
 ---
 
