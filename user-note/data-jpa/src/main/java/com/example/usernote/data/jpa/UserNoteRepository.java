@@ -3,10 +3,11 @@ package com.example.usernote.data.jpa;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.UUID;
 
 interface UserNoteRepository extends JpaRepository<UserNoteEntity, UserNoteId> {
 
-    List<UserNoteEntity> findByIdUserId(java.util.UUID userId);
+    List<UserNoteEntity> findByIdUserId(UUID userId);
 
-    List<UserNoteEntity> findByIdNoteId(java.util.UUID noteId);
+    List<UserNoteEntity> findByIdNoteId(UUID noteId);
 }
