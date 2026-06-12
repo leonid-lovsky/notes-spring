@@ -2,7 +2,7 @@
 
 > Читается автоматически в начале каждой сессии.
 > Детали, история, справочники — в `~/.claude/projects/…/memory/`.
-> Последнее обновление: 2026-06-12 (3)
+> Последнее обновление: 2026-06-12 (4)
 
 ---
 
@@ -63,11 +63,6 @@ EXTERNAL      Redis        Spring Session backing (bff/ + thymeleaf/ при ма
 
 ### Блокеры
 
-**Семантика портов** — дизайн output port интерфейсов; касается всех бизнес-сервисов: ← **ТЕКУЩИЙ ПРИОРИТЕТ; блокирует `service/`**
-- `save` (upsert) vs раздельные `create` / `update`
-- `update` (partial / PATCH) vs `replace` (full / PUT)
-- `void delete` vs `T delete` — возвращать ли удалённый объект
-
 **Регистрация** — не выбрана стратегия координации между `auth/` и `user/`: ← **отложено: сложная и неоднозначная; ни один вариант не очевиден**
 - Lazy: `user/` создаёт профиль при первом запросе; нет email до явного обновления
 - Sync: `auth/` → `user/` через RestClient; нарушает direction of dependencies
@@ -75,31 +70,32 @@ EXTERNAL      Redis        Spring Session backing (bff/ + thymeleaf/ при ма
 
 ### Ожидают решения
 
-**Название output port** — `NoteRepository` vs `NoteStore` vs `NoteCollection` vs другое:
+**Название output port** — не решено; возможные варианты:
 - `NoteRepository` — DDD/Spring Data конвенция; несёт чужой контекст
 - `NoteStore` — нейтрально, без фреймворк-коннотаций (склонение)
 - `NoteCollection` — максимально соответствует семантике; конфликт с `java.util.Collection`
-- `NoteGateway` — явный hexagonal термин для outbound port; читается неестественно для persistence
+- `NoteGateway` — явный hexagonal термин; читается неестественно для persistence
+- `NoteDao` · `NotePersistence` · `NoteOutputPort` · `Notes` · `NoteAccess` · `NoteProvider` — и другие
 
-**PATCH / частичное обновление** — нужен ли отдельный метод в output port или только в input port:
-- Вариант 1 — только в `service/` (input port): `updateNote(UUID, fields)` → сервис строит полный объект → `replace`; output port не меняется
-- Вариант 2 — отдельный `patch` в output port: `void patch(UUID id, NoteFields fields)`; адаптер сам решает как обновить частично (MapStruct и т.д.)
-- Вариант 3 — не поддерживать PATCH вовсе; только PUT (полная замена) на HTTP-уровне
+**PATCH / частичное обновление** — нужен ли отдельный метод в output port:
+- Вариант 1 — только в `service/` (input port): сервис строит полный объект → `replace`; output port не меняется
+- Вариант 2 — `void patch(UUID id, NoteFields fields)` в output port; адаптер решает как обновить частично
+- Вариант 3 — не поддерживать PATCH; только PUT (полная замена) на HTTP-уровне
 
-**NoteVisibility** — где хранить: в `note/domain/` или `user-note/domain/`; `note/domain/` создан без неё ← **отложено: требует ясности по ACL-дизайну**
+**NoteVisibility** — в `note/domain/` или `user-note/domain/` ← **отложено: требует ясности по ACL-дизайну**
 
-**Reactive/sync impedance** — синхронный порт (`Optional<Note> findById(UUID)`) несовместим с реактивными адаптерами (`.block()` = deadlock): ← **отложено: фундаментальное решение, влияет на `domain/`**
-- Вариант 1 — параллельные порты в `domain/` (склонение): `NoteRepository` (sync) + `ReactiveNoteRepository` (Mono/Flux); `domain/` принимает Reactor
-- Вариант 2 — sync `domain/`, обёртка в адаптере: `Mono.fromCallable().subscribeOn(boundedElastic())`; не настоящий reactive
-- Вариант 3 — отдельные реактивные сервисы: `note/` sync, реактивный — новый сервис с нуля; дублирование домена
+**Reactive/sync impedance** — sync порт несовместим с реактивными адаптерами ← **отложено: фундаментально, влияет на `domain/`**
+- Вариант 1 — параллельные порты в `domain/` (склонение): `NoteRepository` + `ReactiveNoteRepository`
+- Вариант 2 — sync `domain/`, обёртка `Mono.fromCallable().subscribeOn(boundedElastic())`
+- Вариант 3 — отдельные реактивные сервисы; дублирование домена
 
-**Стратегия активации адаптеров** — как выбрать активный адаптер в runtime: ← **отложено: зависит от Reactive/sync impedance**
+**Стратегия активации адаптеров** ← **отложено: зависит от Reactive/sync impedance**
 - Spring Profiles (`@Profile("jpa")`) — просто, но грубо
 - Отдельные `application-jpa/` / `application-r2dbc/` модули — чисто, но дублирует composition root
 
 ### Порядок реализации
 
-1. Семантика портов ← **ТЕКУЩИЙ ПРИОРИТЕТ**
+1. Название output port + PATCH решение ← **ТЕКУЩИЙ ПРИОРИТЕТ**
 2. `service/` + `domain/` input ports во всех бизнес-сервисах
 3. Регистрация — lazy / sync / events
 4. `auth/` — Authorization Server + AuthUser + OIDC
@@ -138,93 +134,47 @@ feign/        driven outbound HTTP adapter  →  domain/  (только user-not
 | Модель | Driving | Driven |
 |--------|---------|--------|
 | Sync + Virtual Threads | `webmvc/`, `shell/`, `batch/` | `data-jpa/`, `data-jdbc/`, `jooq/` |
-| Reactive (Project Reactor) | `webflux/`, `rsocket/` | `data-r2dbc/`, `data-mongodb-rx/`, `data-redis-rx/` |
+| Reactive (Project Reactor) | `webflux/`, `rsocket/` | `data-r2dbc/`, `data-mongodb-rx/` |
 | Async messaging | `kafka/` consumer, `amqp/` consumer | `kafka/` producer, `amqp/` producer |
 
-WebFlux + Virtual Threads несовместимы → один `application/` собирает одну модель.
+WebFlux + Virtual Threads несовместимы → один `application/` собирает одну модель.  
+Полные таблицы стартеров адаптеров — в `memory/reference_spring_starters.md`.
 
-### Типы адаптеров
+### Семантика output port
 
-**Driving (primary)** — вызывают domain: HTTP, GraphQL, gRPC, CLI, Kafka consumer, Batch  
-**Driven (secondary)** — domain вызывает их: JPA, MongoDB, Redis, Kafka producer, Mail, Search
+Output port определяется доменом, не адаптером. Говорит на языке домена, не хранилища.
 
-**Driving:**
+**Допустимые пространства:** DDD/Коллекции (`add`, `replace`, `remove`) · CRUD (`create`, `update`, `delete`)  
+**Недопустимы:** JPA (`persist`, `merge`) · SQL (`INSERT`, `UPDATE`) · HTTP (`POST`, `PUT`) · Document store  
+**Выбор:** коллекционная семантика — порт как in-memory коллекция агрегатов (Evans); UUID как ключ
 
-| Модуль       | Стартер                                 |
-|--------------|-----------------------------------------|
-| `webmvc/`    | `spring-boot-starter-webmvc`            |
-| `webflux/`   | `spring-boot-starter-webflux`           |
-| `graphql/`   | `spring-boot-starter-graphql`           |
-| `grpc/`      | `spring-grpc-server`                    |
-| `websocket/` | `spring-boot-starter-websocket`         |
-| `rsocket/`   | `spring-boot-starter-rsocket`           |
-| `shell/`     | `spring-shell-starter`                  |
-| `batch/`     | `spring-boot-starter-batch`             |
+```java
+boolean existsById(UUID id);       // containsKey
+Optional<Note> findById(UUID id);  // get
+List<Note> findAll();              // values
+void add(Note note);               // add to collection
+void replace(Note note);           // replace element (full)
+void remove(UUID id);              // remove from collection
+```
 
-**Driven:**
-
-| Модуль               | Стартер                                         |
-|----------------------|-------------------------------------------------|
-| `data-jpa/`          | `spring-boot-starter-data-jpa`                  |
-| `data-jdbc/`         | `spring-boot-starter-data-jdbc`                 |
-| `jooq/`              | `spring-boot-starter-jooq`                      |
-| `data-r2dbc/`        | `spring-boot-starter-data-r2dbc`                |
-| `data-mongodb/`      | `spring-boot-starter-data-mongodb`              |
-| `data-mongodb-rx/`   | `spring-boot-starter-data-mongodb-reactive`     |
-| `data-redis/`        | `spring-boot-starter-data-redis`                |
-| `data-redis-rx/`     | `spring-boot-starter-data-redis-reactive`       |
-| `data-cassandra/`    | `spring-boot-starter-data-cassandra`            |
-| `data-cassandra-rx/` | `spring-boot-starter-data-cassandra-reactive`   |
-| `data-neo4j/`        | `spring-boot-starter-data-neo4j`                |
-| `elasticsearch/`     | `spring-boot-starter-data-elasticsearch`        |
-| `cache/`             | `spring-boot-starter-cache` (+ redis/hazelcast) |
-| `http/`              | `spring-boot-starter-restclient` (outbound)     |
-| `feign/`             | `spring-cloud-starter-openfeign` (outbound)     |
-| `mail/`              | `spring-boot-starter-mail`                      |
-
-**Messaging:**
-
-| Модуль    | Стартер                      |
-|-----------|------------------------------|
-| `kafka/`  | `spring-boot-starter-kafka`  |
-| `amqp/`   | `spring-boot-starter-amqp`   |
-| `pulsar/` | `spring-boot-starter-pulsar` |
+`void` для мутирующих: UUID генерируется до вызова порта, адаптер ничего не обогащает.  
+`replace` — полная замена; PATCH решается в `webmvc/` + `service/`.  
+Upsert (`save`) — только для sync/offline-first; сервер — источник истины.
 
 ### Принятые решения
 
 - **Gateway ≠ BFF** — `gateway/` stateless edge; `bff/` и `thymeleaf/` — отдельные stateful-сервисы
-- **BFF — один на UX** (Sam Newman, Phil Calçado) — один BFF на тип устройства, не общий
-- **Thymeleaf = self-contained BFF** — ведёт OAuth2 login flow самостоятельно, без отдельного `bff/`
-- **Token Exchange (RFC 8693), не TokenRelay** — BFF обменивает access token на internal JWT с `aud` конкретного микросервиса
-- **Spring Authorization Server — постоянный IdP** — OIDC-совместимый; Keycloak/Auth0 только после детальной оценки
-- **OpenFeign для `user-note/feign/`** — `spring-cloud-starter-openfeign`; `@ImportHttpServices` не рассматривается
-- **`@GeneratedValue` не используется** — UUID генерируется в `service/` (`UUID.randomUUID()`); JPA-entities без `@GeneratedValue`
-- **`service/` модуль** — use case implementations (`@Service`, `@Transactional`); зависит только от `domain/`; `application/` остаётся чистым composition root
-- **Domain objects — Java records** — `Note`, `User`, `UserNote` и все будущие domain objects — `record`; `withXxx()` для изменённой копии; JPA entities — обычные классы
-- **Контроллеры: `ResponseEntity<T>` везде** — все методы возвращают `ResponseEntity`; статусы явно через `HttpStatus`; `Location` не добавляется
-- **`existsById` в output port** — валидный паттерн; не заменять на `findById`; для delete-операций эффективнее (`SELECT 1` vs `SELECT *`)
-- **Input port — интерфейс в `domain/`** — `NoteUseCase` / `UserUseCase` / `UserNoteUseCase`; `service/` реализует; `webmvc/` зависит от интерфейса, не от `service/`
-- **`service/` — после семантики портов** — не реализовывать до принятия решения по семантике output port методов
-- **Output port — коллекционная семантика** — порт моделируется как коллекция с UUID-ключом; методы: `add`, `replace`, `remove`, `findById`, `findAll`, `existsById`; `void` для мутирующих операций
-- **Upsert (`save`) не используется** — upsert предназначен для sync/offline-first (мобильные); сервер — источник истины, контекст всегда известен
-- **PATCH на уровне output port не нужен** — частичное обновление — забота `webmvc/` и `service/`; output port принимает только полный объект через `replace`
-
-### Семантика output port — методология
-
-Output port определяется доменом, не адаптером. Порт говорит на языке домена, не хранилища.
-
-**Семантические пространства** (от доменных к инфраструктурным):
-
-| Пространство | Примеры | Для output port |
-|---|---|---|
-| DDD / Коллекции | `add`, `remove`, `replace`, `contains` | ✅ |
-| CRUD | `create`, `update`, `delete`, `findById` | ✅ |
-| HTTP | `POST`, `PUT`, `PATCH` | ❌ driving-сторона |
-| JPA | `persist`, `merge`, `remove` | ❌ инфраструктура |
-| SQL | `INSERT`, `UPDATE`, `UPSERT` | ❌ инфраструктура |
-| Document store | `insertOne`, `replaceOne` | ❌ инфраструктура |
-
-**Правило:** output port = CRUD или DDD/Коллекции. Всё остальное нарушает hexagonal.
+- **BFF — один на UX** — один BFF на тип устройства, не общий
+- **Token Exchange (RFC 8693)** — BFF обменивает access token на internal JWT с `aud` микросервиса
+- **Spring Authorization Server — постоянный IdP** — Keycloak/Auth0 только после детальной оценки
+- **OpenFeign для `user-note/feign/`** — `spring-cloud-starter-openfeign`
+- **`@GeneratedValue` не используется** — UUID генерируется в `service/`
+- **`service/` модуль** — use case implementations; зависит только от `domain/`
+- **Domain objects — Java records** — `withXxx()` для изменённой копии; JPA entities — обычные классы
+- **Контроллеры: `ResponseEntity<T>` везде** — статусы явно через `HttpStatus`
+- **`existsById` в output port** — валидный паттерн; не заменять на `findById`
+- **Input port — интерфейс в `domain/`** — `NoteUseCase` / `UserUseCase` / `UserNoteUseCase`; `webmvc/` зависит от интерфейса
+- **`service/` — после решения оставшихся вопросов семантики** (название порта, PATCH)
 
 ---
 
@@ -232,60 +182,30 @@ Output port определяется доменом, не адаптером. П
 
 > `identity ≠ profile ≠ business ≠ permissions`
 
-**Zero Trust** — каждый слой валидирует JWT самостоятельно; Gateway не является точкой доверия  
+**Zero Trust** — каждый слой валидирует JWT самостоятельно  
 **JWT claims** — только стандартные: `sub` · `iss` · `aud` · `exp` · `jti` · `acr` · `amr` · `scope`  
 **Banking-grade** — фаза 1: основа · фаза 2: MFA + token rotation · фаза 3: DPoP + mTLS
 
-| Слой            | Модуль                | Ответственность                                   |
-|-----------------|-----------------------|---------------------------------------------------|
-| Edge            | `gateway/`            | Routing, rate limiting, TLS, security headers     |
-| BFF             | `bff/` · `thymeleaf/` | OAuth2 login flow, session cookie, Token Exchange |
-| IdP             | `auth/`               | JWT issuing, credentials (AuthUser), OIDC         |
-| Resource Server | `*/webmvc/`           | JWT validation per request                        |
-| ACL             | `user-note/`          | `UserNote { userId, noteId, role }`               |
+| Слой | Модуль | Ответственность |
+|---|---|---|
+| Edge | `gateway/` | Routing, rate limiting, TLS |
+| BFF | `bff/` · `thymeleaf/` | OAuth2 login flow, session, Token Exchange |
+| IdP | `auth/` | JWT issuing, credentials, OIDC |
+| Resource Server | `*/webmvc/` | JWT validation per request |
+| ACL | `user-note/` | `UserNote { userId, noteId, role }` |
 
-### UserNoteRole
-
-- `OWNER` — редактирование · комментарии · управление доступом · удаление · передача владения
-- `EDITOR` — редактирование, комментарии, управление доступом (если не ограничено Owner)
-- `COMMENTER` — комментарии и предложения, без правки контента _(опционально, не MVP)_
-- `VIEWER` — только чтение, без комментариев
-
-### NoteVisibility
-
-- `RESTRICTED` — только люди с явным доступом
-- `ANYONE_WITH_LINK` + роль (`VIEWER` / `COMMENTER` / `EDITOR`) — любой с ссылкой, без входа
-- `PUBLIC` + роль (`VIEWER` / `COMMENTER` / `EDITOR`) — индексируется поиском, без входа
-
-### Клиенты
-
-| Клиент              | Auth flow          | Токен хранит                | BFF                     |
-|---------------------|--------------------|-----------------------------|-------------------------|
-| Browser (Thymeleaf) | Authorization Code | Spring Session в thymeleaf/ | thymeleaf/ сам себе BFF |
-| Browser (React/Vue) | Authorization Code | Spring Session в bff/       | bff/                    |
-| Android / iOS       | Auth Code + PKCE   | Keychain / Keystore         | нет                     |
-| B2B / CLI           | Client Credentials | не хранит                   | нет                     |
+**UserNoteRole:** `OWNER` · `EDITOR` · `COMMENTER` _(не MVP)_ · `VIEWER`  
+**NoteVisibility:** `RESTRICTED` · `ANYONE_WITH_LINK` + role · `PUBLIC` + role  
+**Клиенты:** Browser/Thymeleaf (AuthCode+Session) · Browser/SPA (AuthCode+BFF) · Mobile (PKCE) · B2B (ClientCredentials)
 
 ---
 
 ## Принципы
 
-**Hexagonal Architecture** — главный архитектурный принцип проекта; все решения проверяются на соответствие; варианты, нарушающие этот принцип, отмечаются явно  
-**SoC / SRP** — на всех уровнях: сервисы, модули, классы, методы  
-**Видимость** — `default` (package-private) или минимально необходимая; `public` только для реального публичного API  
-**No partial abstractions** — полное устранение или явное дублирование; незавершённые абстракции под запретом
-
-**Twelve-Factor App** — обязателен для каждого сервиса:
-
-| Фактор | Правило                                          |
-|--------|--------------------------------------------------|
-| III    | Config в env vars / Config Server                |
-| VI     | Stateless; Spring Session вместо in-memory state |
-| IX     | `server.shutdown=graceful`                       |
-| X      | Testcontainers, не H2 вместо PostgreSQL в тестах |
-| XI     | Только stdout                                    |
-| XII    | Flyway / Liquibase                               |
-
+**Hexagonal Architecture** — главный принцип; все решения проверяются на соответствие  
+**SoC / SRP** — на всех уровнях; **Видимость** — `default` или минимально необходимая  
+**No partial abstractions** — полное устранение или явное дублирование  
+**Twelve-Factor:** III Config · VI Stateless · IX Graceful shutdown · X Testcontainers · XI stdout · XII Flyway  
 **Остальные** — SOLID · KISS · DRY · SSOT · Law of Demeter · Fail Fast
 
 ---
@@ -293,71 +213,35 @@ Output port определяется доменом, не адаптером. П
 ## Gradle
 
 **`buildSrc`** + convention plugins (Groovy DSL) — единственный механизм; flat, без вложенности  
-**Нет:** root `build.gradle` · `buildSrc/settings.gradle` · `libs.versions.toml` · version catalogs  
-**Версии плагинов** — только в `buildSrc/build.gradle`  
-**Порядок блоков** — `plugins` → `java` → `repositories` → [`ext`] → `dependencies` → `dependencyManagement` → `test`  
-**`ext {}`** — только для версий сторонних BOM (Spring Cloud, Modulith); в buildSrc не нужен  
-**Порядок зависимостей** — `domain` → `service` → `webmvc` → `data-jpa`
-
-**Порядок в `settings.gradle`:**
-- сервисы: `gateway` → `config` → `registry` → `auth` → `user` → `note` → `user-note`
-- внутри сервиса: `application` → `domain` → `service` → `webmvc` → `data-jpa`
-
-**Convention plugins:**
-- ✅ Есть: `application` · `domain` · `webmvc` · `data-jpa` · `h2-database`
-- ❌ Планируется: `service` · `resource-server` · `auth-server` · `oauth2-bff` · `openfeign` · `webflux` · `graphql` · `grpc` · `data-r2dbc` · `data-mongodb` · `data-cassandra` · `kafka` · `amqp` · `pulsar` (≈16 плагинов)
-
-**`domain`-plugin** — только `java`; никакого Spring BOM; JSpecify и JUnit с явными версиями
+**Нет:** root `build.gradle` · `buildSrc/settings.gradle` · `libs.versions.toml`  
+**Порядок блоков:** `plugins` → `java` → `repositories` → [`ext`] → `dependencies` → `dependencyManagement` → `test`  
+**Порядок зависимостей:** `domain` → `service` → `webmvc` → `data-jpa`  
+**`settings.gradle`:** `gateway` → `config` → `registry` → `auth` → `user` → `note` → `user-note`; внутри: `application` → `domain` → `service` → `webmvc` → `data-jpa`  
+**Convention plugins:** ✅ `application` · `domain` · `webmvc` · `data-jpa` · `h2-database` | ❌ планируется ≈16 плагинов  
+**`domain`-plugin** — только `java`; без Spring BOM; JSpecify и JUnit с явными версиями
 
 ---
 
 ## Spring Boot 4
 
-### Изменения относительно Boot 3
-
-- `spring-boot-starter-web` → `spring-boot-starter-webmvc`
-- `org.springframework.session:spring-session-data-redis` → `spring-boot-starter-session-data-redis`
-- `org.springframework.kafka:spring-kafka` → `spring-boot-starter-kafka`
-- `org.flywaydb:flyway-core` → `spring-boot-starter-flyway` + `org.flywaydb:flyway-database-postgresql`
-- `org.testcontainers:postgresql` → `org.testcontainers:testcontainers-postgresql`
-- `spring-boot-starter-test` (один на все) → индивидуальные `*-test` стартеры на каждый модуль
-- Плагин `org.springframework.boot` не применяет `io.spring.dependency-management` автоматически
-- **Jackson 3** — `com.fasterxml.jackson` → `tools.jackson`; `Jackson2ObjectMapperBuilder` → `JsonMapper.Builder`
-- **RestTemplate** deprecated → `RestClient` (sync) или `WebClient` (reactive)
-
-### Паттерны
-
-- `start.spring.io` — источник правды для координат (не Maven Central)
-- **Flyway + PostgreSQL** — стартер не включает драйвер БД; нужен `runtimeOnly 'org.flywaydb:flyway-database-postgresql'`
-- **Обработка ошибок** — `ResponseEntityExceptionHandler` + `ProblemDetail` (RFC 9457)
-- **Lombok** — `compileOnly` + `annotationProcessor` (не `implementation`); то же для тестов
-- **Lombok + JPA** — `@Data` / `@EqualsAndHashCode` запрещены на entities; безопасны `@Getter` · `@Setter` · `@Builder`
+**Ключевые изменения:** `starter-web` → `starter-webmvc` · `starter-test` → индивидуальные `*-test` · Jackson 3 (`tools.jackson`) · RestTemplate deprecated → `RestClient` · `dependency-management` не применяется автоматически  
+**Flyway + PostgreSQL** — нужен `runtimeOnly 'org.flywaydb:flyway-database-postgresql'`  
+**Обработка ошибок** — `ResponseEntityExceptionHandler` + `ProblemDetail` (RFC 9457)  
+**Lombok** — `compileOnly` + `annotationProcessor`; `@Data`/`@EqualsAndHashCode` запрещены на entities
 
 ---
 
 ## Spring Security
 
-- **SecurityFilterChain** — бин `HttpSecurity`; несколько цепочек с `securityMatcher`; `SecurityContextHolder` = ThreadLocal
-- **Authentication** — до верификации: `principal` = String, `credentials` = password; после: `principal` = `UserDetails`, `credentials` очищается
-- **AuthenticationManager** → `ProviderManager` → `AuthenticationProvider` → `DaoAuthenticationProvider` → `UserDetailsService` + `PasswordEncoder`
-- **UserDetails** — `username` · `password` · `authorities` + флаги; в проекте: `AuthUser` (`auth/`) ≠ `User` (`user/`)
-- **AuthorizationManager** — allow/deny; `@PreAuthorize` / `@PostAuthorize`
-- **Resource Server** — `JwtDecoder` + `JwtAuthenticationConverter` → `GrantedAuthority`
-- **Auth Server** — `OAuth2AuthorizationServerConfigurer` · `RegisteredClientRepository` · `OAuth2AuthorizationService`
+**Цепочка:** `SecurityFilterChain` → `AuthenticationManager` → `ProviderManager` → `DaoAuthenticationProvider` → `UserDetailsService` + `PasswordEncoder`  
+**Resource Server** — `JwtDecoder` + `JwtAuthenticationConverter` → `GrantedAuthority`  
+**Auth Server** — `OAuth2AuthorizationServerConfigurer` · `RegisteredClientRepository`  
+**В проекте:** `AuthUser` (`auth/`) ≠ `User` (`user/`)
 
 ---
 
-## Null Safety
+## Null Safety и стиль
 
-**`@NullMarked`** (JSpecify) через `package-info.java` в каждом пакете — non-null по умолчанию  
-`org.springframework.lang` — deprecated с Framework 7, не использовать  
-**Enforcement** — IntelliJ 2025.3+ (Java 17); NullAway требует JDK 21.0.8+
-
----
-
-## Стиль кода Java
-
-**Импорты** — `com.example.*` + `org.*` / `jakarta.*` вместе, затем пустая строка, затем `java.*`; wildcard `.*` при 3+ классах из одного пакета  
-**Имена полей** — полные описательные: `noteRepository`, `noteJpaRepository`; не `repository`, `jpa`  
-**Пустое тело** — одна пустая строка внутри `{ }` пустых методов и конструкторов  
-**EOF** — ровно один `\n` в конце файла (Unix EOF)
+**`@NullMarked`** (JSpecify) через `package-info.java` — non-null по умолчанию; `org.springframework.lang` deprecated  
+**Импорты** — `com.example.*` + `org.*` / `jakarta.*`, затем `java.*`; wildcard при 3+  
+**Имена полей** — полные: `noteRepository`, не `repository` · **Пустое тело** — одна пустая строка · **EOF** — один `\n`
