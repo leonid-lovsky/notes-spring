@@ -38,17 +38,18 @@ class NoteController {
 
     @PostMapping
     ResponseEntity<NoteResponse> create(@RequestBody NoteRequest request) {
-        Note note = noteRepository.save(new Note(UUID.randomUUID(), request.content()));
-        NoteResponse response = NoteResponse.from(note);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        Note note = new Note(UUID.randomUUID(), request.content());
+        noteRepository.add(note);
+        return ResponseEntity.status(HttpStatus.CREATED).body(NoteResponse.from(note));
     }
 
     @PutMapping("/{id}")
     ResponseEntity<NoteResponse> update(@PathVariable UUID id, @RequestBody NoteRequest request) {
         Note note = noteRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        NoteResponse response = NoteResponse.from(noteRepository.save(note.withContent(request.content())));
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        Note updated = note.withContent(request.content());
+        noteRepository.replace(updated);
+        return ResponseEntity.status(HttpStatus.OK).body(NoteResponse.from(updated));
     }
 
     @DeleteMapping("/{id}")
@@ -56,7 +57,7 @@ class NoteController {
         if (!noteRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        noteRepository.deleteById(id);
+        noteRepository.remove(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

@@ -14,7 +14,9 @@ public interface UserNoteRepository {
 
     List<UserNote> findByNoteId(UUID noteId);
 
-    UserNote save(UserNote userNote);
+    void add(UserNote userNote);
 
-    void deleteByUserIdAndNoteId(UUID userId, UUID noteId);
+    void replace(UserNote userNote);
+
+    void remove(UUID userId, UUID noteId);
 }

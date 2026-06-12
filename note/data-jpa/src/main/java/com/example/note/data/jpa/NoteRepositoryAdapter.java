@@ -33,12 +33,17 @@ class NoteRepositoryAdapter implements NoteRepository {
     }
 
     @Override
-    public Note save(Note note) {
-        return toDomain(noteJpaRepository.save(toEntity(note)));
+    public void add(Note note) {
+        noteJpaRepository.save(toEntity(note));
     }
 
     @Override
-    public void deleteById(UUID id) {
+    public void replace(Note note) {
+        noteJpaRepository.save(toEntity(note));
+    }
+
+    @Override
+    public void remove(UUID id) {
         noteJpaRepository.deleteById(id);
     }
 

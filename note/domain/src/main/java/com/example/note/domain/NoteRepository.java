@@ -12,7 +12,9 @@ public interface NoteRepository {
 
     List<Note> findAll();
 
-    Note save(Note note);
+    void add(Note note);
 
-    void deleteById(UUID id);
+    void replace(Note note);
+
+    void remove(UUID id);
 }
