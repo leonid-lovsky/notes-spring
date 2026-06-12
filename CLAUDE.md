@@ -2,7 +2,7 @@
 
 > Читается автоматически в начале каждой сессии.
 > Детали, история, справочники — в `~/.claude/projects/…/memory/`.
-> Последнее обновление: 2026-06-12 (4)
+> Последнее обновление: 2026-06-12 (5)
 
 ---
 
@@ -13,8 +13,11 @@
 - **Коммиты** — не коммитить и не пушить без явного запроса
 - **CI** — не трогать `.github/workflows/` без явного запроса
 - **Подход** — читать память перед ответом; взвешивать варианты, проверять соответствие принципам
-- **Решение проблем** — сначала: актуальна ли проблема? кто выигрывает? не упускаем ли что-то? не является ли текущее решение правильным? — затем: варианты с плюсами/минусами + склонение → ждать выбора → обосновать; не предлагать реализационные задачи пока открыты архитектурные вопросы
-- **CLAUDE.md** — в приоритете над памятью; обновлять при каждом изменении проекта или принципов; всё, что пользователь просит запомнить — отражать здесь
+- **Решение проблем** — сначала: актуальна ли проблема? кто выигрывает? не упускаем ли что-то? не является ли текущее решение правильным?  
+  затем: варианты с плюсами/минусами + склонение → ждать выбора → обосновать  
+  не предлагать реализационные задачи пока открыты архитектурные вопросы
+- **CLAUDE.md** — в приоритете над памятью; обновлять при каждом изменении проекта или принципов  
+  всё, что пользователь просит запомнить — отражать здесь
 - **Перед коммитом** — рефакторинг CLAUDE.md → синхронизация памяти → обновление даты
 - **≤ 400 строк** — при превышении удалять второстепенное (детали реализации в первую очередь)
 
@@ -131,11 +134,11 @@ feign/        driven outbound HTTP adapter  →  domain/  (только user-not
 
 Цель — один `domain/` работает с адаптерами принципиально разных execution-моделей:
 
-| Модель | Driving | Driven |
-|--------|---------|--------|
-| Sync + Virtual Threads | `webmvc/`, `shell/`, `batch/` | `data-jpa/`, `data-jdbc/`, `jooq/` |
-| Reactive (Project Reactor) | `webflux/`, `rsocket/` | `data-r2dbc/`, `data-mongodb-rx/` |
-| Async messaging | `kafka/` consumer, `amqp/` consumer | `kafka/` producer, `amqp/` producer |
+| Модель                    | Driving                               | Driven                                    |
+|---------------------------|---------------------------------------|-------------------------------------------|
+| Sync + Virtual Threads    | `webmvc/`, `shell/`, `batch/`         | `data-jpa/`, `data-jdbc/`, `jooq/`        |
+| Reactive (Project Reactor)| `webflux/`, `rsocket/`                | `data-r2dbc/`, `data-mongodb-rx/`         |
+| Async messaging           | `kafka/` consumer, `amqp/` consumer   | `kafka/` producer, `amqp/` producer       |
 
 WebFlux + Virtual Threads несовместимы → один `application/` собирает одну модель.  
 Полные таблицы стартеров адаптеров — в `memory/reference_spring_starters.md`.
@@ -169,12 +172,11 @@ Upsert (`save`) — только для sync/offline-first; сервер — и�
 - **Spring Authorization Server — постоянный IdP** — Keycloak/Auth0 только после детальной оценки
 - **OpenFeign для `user-note/feign/`** — `spring-cloud-starter-openfeign`
 - **`@GeneratedValue` не используется** — UUID генерируется в `service/`
-- **`service/` модуль** — use case implementations; зависит только от `domain/`
+- **`service/` модуль** — use case implementations; зависит только от `domain/`; не реализовывать до закрытия названия порта и PATCH
+- **Input port — интерфейс в `domain/`** — `NoteUseCase` / `UserUseCase` / `UserNoteUseCase`; `webmvc/` зависит от интерфейса, не от `service/`
 - **Domain objects — Java records** — `withXxx()` для изменённой копии; JPA entities — обычные классы
 - **Контроллеры: `ResponseEntity<T>` везде** — статусы явно через `HttpStatus`
 - **`existsById` в output port** — валидный паттерн; не заменять на `findById`
-- **Input port — интерфейс в `domain/`** — `NoteUseCase` / `UserUseCase` / `UserNoteUseCase`; `webmvc/` зависит от интерфейса
-- **`service/` — после решения оставшихся вопросов семантики** (название порта, PATCH)
 
 ---
 
@@ -186,13 +188,13 @@ Upsert (`save`) — только для sync/offline-first; сервер — и�
 **JWT claims** — только стандартные: `sub` · `iss` · `aud` · `exp` · `jti` · `acr` · `amr` · `scope`  
 **Banking-grade** — фаза 1: основа · фаза 2: MFA + token rotation · фаза 3: DPoP + mTLS
 
-| Слой | Модуль | Ответственность |
-|---|---|---|
-| Edge | `gateway/` | Routing, rate limiting, TLS |
-| BFF | `bff/` · `thymeleaf/` | OAuth2 login flow, session, Token Exchange |
-| IdP | `auth/` | JWT issuing, credentials, OIDC |
-| Resource Server | `*/webmvc/` | JWT validation per request |
-| ACL | `user-note/` | `UserNote { userId, noteId, role }` |
+| Слой            | Модуль                | Ответственность                              |
+|-----------------|-----------------------|----------------------------------------------|
+| Edge            | `gateway/`            | Routing, rate limiting, TLS                  |
+| BFF             | `bff/` · `thymeleaf/` | OAuth2 login flow, session, Token Exchange   |
+| IdP             | `auth/`               | JWT issuing, credentials, OIDC               |
+| Resource Server | `*/webmvc/`           | JWT validation per request                   |
+| ACL             | `user-note/`          | `UserNote { userId, noteId, role }`          |
 
 **UserNoteRole:** `OWNER` · `EDITOR` · `COMMENTER` _(не MVP)_ · `VIEWER`  
 **NoteVisibility:** `RESTRICTED` · `ANYONE_WITH_LINK` + role · `PUBLIC` + role  
@@ -224,7 +226,11 @@ Upsert (`save`) — только для sync/offline-first; сервер — и�
 
 ## Spring Boot 4
 
-**Ключевые изменения:** `starter-web` → `starter-webmvc` · `starter-test` → индивидуальные `*-test` · Jackson 3 (`tools.jackson`) · RestTemplate deprecated → `RestClient` · `dependency-management` не применяется автоматически  
+**Ключевые изменения:**
+- `starter-web` → `starter-webmvc` · `starter-test` → индивидуальные `*-test`
+- Jackson 3: `com.fasterxml.jackson` → `tools.jackson`
+- RestTemplate deprecated → `RestClient`; `dependency-management` не применяется автоматически
+
 **Flyway + PostgreSQL** — нужен `runtimeOnly 'org.flywaydb:flyway-database-postgresql'`  
 **Обработка ошибок** — `ResponseEntityExceptionHandler` + `ProblemDetail` (RFC 9457)  
 **Lombok** — `compileOnly` + `annotationProcessor`; `@Data`/`@EqualsAndHashCode` запрещены на entities
