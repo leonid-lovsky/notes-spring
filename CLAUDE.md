@@ -2,7 +2,7 @@
 
 > Читается автоматически в начале каждой сессии.
 > Детали, история, справочники — в `~/.claude/projects/…/memory/`.
-> Последнее обновление: 2026-06-09
+> Последнее обновление: 2026-06-12
 
 ---
 
@@ -60,16 +60,42 @@ EXTERNAL      Redis        Spring Session backing (bff/ + thymeleaf/ при ма
 
 ```
 application/  Spring Boot app — composition root
-domain/       entities + port interfaces — чистая Java, без Spring
-webmvc/       incoming HTTP adapter  →  domain/
-data-jpa/     persistence adapter    →  domain/
-feign/        outbound HTTP adapter  →  domain/  (только user-note/)
+domain/       entities + port interfaces (input + output) — чистая Java, без Spring
+service/      use case implementations (@Service, @Transactional) — зависит только от domain/
+webmvc/       driving HTTP adapter  →  domain/
+data-jpa/     driven persistence adapter  →  domain/
+feign/        driven outbound HTTP adapter  →  domain/  (только user-note/)
 ```
 
 **Dependency direction** — `application/` знает всё; адаптеры знают только `domain/`; `domain/` не знает ничего снаружи  
 **Database per service** — каждый сервис хранит данные в своей БД; cross-service JOIN запрещён  
 **Stateless** — `gateway/` · `config/` · `registry/` · `user/` · `note/` · `user-note/`  
 **Stateful** — `bff/` · `thymeleaf/` → Spring Session; `auth/` → OAuth2Authorization в PostgreSQL
+
+### Целевая модель портов
+
+Цель проекта — один `domain/` работает с адаптерами принципиально разных execution-моделей:
+
+| Модель | Driving | Driven |
+|--------|---------|--------|
+| Sync / blocking + Virtual Threads | `webmvc/`, `shell/`, `batch/` | `data-jpa/`, `data-jdbc/`, `jooq/` |
+| Reactive (Project Reactor) | `webflux/`, `rsocket/` | `data-r2dbc/`, `data-mongodb-rx/`, `data-redis-rx/` |
+| Async messaging | `kafka/` consumer, `amqp/` consumer | `kafka/` producer, `amqp/` producer |
+
+**Проблема:** синхронный порт (`Optional<Note> findById(UUID)`) несовместим с реактивными адаптерами — `.block()` в Reactor pipeline = deadlock.
+
+**Варианты решения — не выбрано:**
+
+- **Вариант 1 — параллельные порты в `domain/`** (склонение):
+  `NoteRepository` (sync) + `ReactiveNoteRepository` (Mono/Flux); `domain/` принимает зависимость от Reactor
+
+- **Вариант 2 — sync `domain/`, обёртка в адаптере**:
+  `Mono.fromCallable().subscribeOn(boundedElastic())` в `webflux/`; не настоящий reactive, блокирует поток
+
+- **Вариант 3 — отдельные реактивные сервисы**:
+  `note/` остаётся sync; реактивный вариант — отдельный сервис с нуля; дублирование домена
+
+**Нерешено:** стратегия активации — Spring Profiles vs отдельные `application-*` модули ← **блокирует расширение стека**
 
 ### Типы адаптеров
 
@@ -78,8 +104,6 @@ feign/        outbound HTTP adapter  →  domain/  (только user-note/)
 
 Подход применяется ко **всем бизнес-сервисам** (`user/`, `note/`, `user-note/`, `auth/`).  
 Инфраструктурные (`gateway/`, `config/`, `registry/`, `bff/`, `thymeleaf/`) имеют фиксированную роль.
-
-### Адаптеры бизнес-сервисов
 
 **Driving:**
 
@@ -131,7 +155,8 @@ feign/        outbound HTTP adapter  →  domain/  (только user-note/)
 - **Token Exchange (RFC 8693), не TokenRelay** — BFF обменивает access token на internal JWT с `aud` конкретного микросервиса
 - **Spring Authorization Server — постоянный IdP** — OIDC-совместимый; Keycloak/Auth0 только после детальной оценки
 - **OpenFeign для `user-note/feign/`** — `spring-cloud-starter-openfeign`; `@ImportHttpServices` не рассматривается
-- **`@GeneratedValue` не используется** — UUID генерируется в домене (`UUID.randomUUID()`); JPA-entities без `@GeneratedValue`
+- **`@GeneratedValue` не используется** — UUID генерируется в `service/` (`UUID.randomUUID()`); JPA-entities без `@GeneratedValue`
+- **`service/` модуль** — use case implementations (`@Service`, `@Transactional`); зависит только от `domain/`; `application/` остаётся чистым composition root
 - **Контроллеры: `ResponseEntity<T>` везде** — все методы возвращают `ResponseEntity`; статусы явно через `HttpStatus`; `Location` не добавляется
 
 ---
@@ -180,33 +205,53 @@ feign/        outbound HTTP adapter  →  domain/  (только user-note/)
 
 > **БЛОКЕР:** Регистрация — выбрать стратегию (lazy / sync / events) до реализации `auth/`
 
-### Нерешённые вопросы
+### Архитектурные проблемы ← приоритет
 
-1. **Reactive/sync impedance** — domain порты синхронны; реактивные адаптеры возвращают `Mono<T>`; `.block()` в reactive pipeline = deadlock. Параллельные порты решают, но тогда domain/ знает о Reactor. ← **блокирует `data-r2dbc/`, `data-mongodb-rx/`**
-2. **Стратегия активации адаптеров** — Spring Profiles vs отдельные `application-jpa/` / `application-r2dbc/` modules vs feature flags. Не решено. ← **блокирует архитектуру `application/`**
-3. **Autoconfiguration при множественных data-источниках** — JPA + MongoDB + Cassandra в одном `application/` требуют `@Primary` / `@Qualifier` и ручного отключения autoconfigure.
-4. **Convention plugins × 15** — `webflux`, `graphql`, `grpc`, `data-r2dbc`, `data-mongodb`, `data-cassandra`, `kafka`, `amqp`, `pulsar` и др. — каждый отдельный файл в `buildSrc/`.
-5. **Тестовая инфраструктура** — Testcontainers × N контейнеров замедлят CI. Решение: Spring test slices + `*-test` стартеры на каждый адаптерный модуль.
-6. **WebFlux + Virtual Threads** — несовместимы; нужны `application-webmvc/` (sync + VT) и `application-webflux/` (reactive) для каждого сервиса.
-7. **NoteVisibility** — в `note/domain/` или `user-note/domain/`; `note/domain/` создан без неё
-8. **`user/` временно хранит `password`** — до `auth/`; identity переедет в `auth/AuthUser`
-9. **Thin controller / use case layer** — контроллер вызывает output port напрямую, минуя input port; UUID генерируется в контроллере; нужен `NoteService` (input port) и его реализация — слоя для неё нет
-10. **Семантика методов репозитория** — `save` vs `persist/merge`; `persist/merge` vs `create/update`; `update` vs `update/replace`; `void delete` vs `T delete`; касается всех бизнес-сервисов
-11. **Bean Validation** — нет `@NotBlank` на `NoteRequest.content`; пустой контент проходит; требует `spring-boot-starter-validation` в `spring-webmvc-adapter-conventions.gradle` и `@Valid` в контроллере
-12. **`findAll()` без пагинации** — возвращает все записи одним запросом; для production нужен `Pageable`; касается всех бизнес-сервисов
-13. **Мутабельный доменный объект** — `Note.setContent()` мутирует объект перед сохранением; иммутабельная альтернатива: `withContent()` возвращает новый `Note`; касается всех сущностей с сеттерами
+Решение этих проблем — необходимое условие для расширения стека адаптеров.
+
+#### Отсутствующий сервисный слой ← приоритет
+
+Нет `NoteUseCase` (input port) в `domain/` и `NoteUseCaseImpl` в `application/`. Вытекающие проблемы (касаются всех бизнес-сервисов):
+
+- контроллер вызывает output port (`NoteRepository`) напрямую; UUID генерируется в контроллере
+- контроллер мутирует доменный объект (`note.setContent()`)
+- нет `@Transactional` выше адаптера — 3 запроса при update (SELECT + SELECT в merge + UPDATE)
+- нет `@Version` на entity — lost update при concurrent requests
+- мутабельные доменные объекты (`Note`, `User`, `UserNote`)
+- нет `@NotBlank` на `NoteRequest.content`; нет `@Valid` в контроллере
+- нет `ResponseEntityExceptionHandler` / `@ControllerAdvice`; `findAll()` без `Pageable`
+
+#### Прочие архитектурные
+
+- **NoteVisibility** — в `note/domain/` или `user-note/domain/`; `note/domain/` создан без неё
+- **`user/` временно хранит `password`** — до `auth/`; identity переедет в `auth/AuthUser`
+- **Нет Flyway миграций** — нет `.sql` файлов; сервис не запустится на PostgreSQL; Twelve-Factor XII
+- **Пустые адаптерные модули** — `user/webmvc`, `user-note/webmvc`, `user/data-jpa`, `user-note/data-jpa` — только `package-info.java`; нарушение "No partial abstractions"
+- **Семантика репозитория** — `save` vs `persist/merge`; `create/update` vs `update/replace`; `void delete` vs `T delete`
+
+### Широкий стек и реализация
+
+> Разблокируется после решения архитектурных проблем и выбора стратегии активации адаптеров
+
+1. **Reactive/sync impedance** — направление выбрано (параллельные порты); реализация ← **блокирует `data-r2dbc/`, `data-mongodb-rx/`**
+2. **Стратегия активации адаптеров** — Spring Profiles vs `application-jpa/` / `application-r2dbc/` modules ← **блокирует архитектуру `application/`**
+3. **Autoconfiguration при множественных data-источниках** — JPA + MongoDB + Cassandra в одном `application/` требуют `@Primary` / `@Qualifier`
+4. **Convention plugins × 15** — `webflux`, `graphql`, `grpc`, `data-r2dbc`, `data-mongodb`, `data-cassandra`, `kafka`, `amqp`, `pulsar` и др.
+5. **Тестовая инфраструктура** — Testcontainers × N; Spring test slices + `*-test` стартеры на каждый адаптерный модуль
+6. **WebFlux + Virtual Threads** — несовместимы; нужны `application-webmvc/` (sync + VT) и `application-webflux/` (reactive)
 
 ### Порядок реализации
 
 1. Решить: регистрация — lazy / sync / events ← **ТЕКУЩИЙ БЛОКЕР**
-2. `domain/` во всех бизнес-сервисах (✓ `note/` ✓ `user-note/` ✓ `user/`)
+2. **Архитектурные проблемы** — сервисный слой; Flyway; пустые модули
 3. `auth/` — Authorization Server + AuthUser + OIDC
 4. Resource Server в `user/` · `note/` · `user-note/`
 5. `bff/` — OAuth2 Client + Spring Session + Token Exchange
 6. `thymeleaf/` — server-rendered BFF
 7. Banking Phase 2 — MFA, token rotation, audit log
-8. `user-note/feign/` — OpenFeign (`spring-cloud-starter-openfeign`)
+8. `user-note/feign/` — OpenFeign
 9. `crud/` — shared library
+10. Широкий стек — после выбора стратегии активации адаптеров
 
 ---
 
@@ -238,15 +283,15 @@ feign/        outbound HTTP adapter  →  domain/  (только user-note/)
 **Версии плагинов** — только в `buildSrc/build.gradle`  
 **Порядок блоков** — `plugins` → `java` → `repositories` → [`ext`] → `dependencies` → `dependencyManagement` → `test`  
 **`ext {}`** — только для версий сторонних BOM (Spring Cloud, Modulith); в buildSrc не нужен — версии хранятся в convention plugins  
-**Порядок зависимостей** — `domain` → `webmvc` → `data-jpa`
+**Порядок зависимостей** — `domain` → `service` → `webmvc` → `data-jpa`
 
 **Порядок в `settings.gradle`:**
 - сервисы: `gateway` → `config` → `registry` → `auth` → `user` → `note` → `user-note`
-- внутри сервиса: `application` → `domain` → `webmvc` → `data-jpa`
+- внутри сервиса: `application` → `domain` → `service` → `webmvc` → `data-jpa`
 
 **Convention plugins:**
 - ✅ Есть: `application` · `domain` · `webmvc` · `data-jpa` · `h2-database`
-- ❌ Планируется: `resource-server` · `auth-server` · `oauth2-bff` · `openfeign` · `webflux` · `graphql` · `grpc` · `data-r2dbc` · `data-mongodb` · `data-cassandra` · `kafka` · `amqp` · `pulsar` (≈15 плагинов)
+- ❌ Планируется: `service` · `resource-server` · `auth-server` · `oauth2-bff` · `openfeign` · `webflux` · `graphql` · `grpc` · `data-r2dbc` · `data-mongodb` · `data-cassandra` · `kafka` · `amqp` · `pulsar` (≈16 плагинов)
 
 **`domain`-plugin** — только `java`; никакого Spring BOM; JSpecify и JUnit с явными версиями
 
