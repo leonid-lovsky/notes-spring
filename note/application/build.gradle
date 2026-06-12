@@ -5,6 +5,7 @@ plugins {
 
 dependencies {
     implementation project(':note:domain')
+    implementation project(':note:service')
     implementation project(':note:webmvc')
     implementation project(':note:data-jpa')
 }

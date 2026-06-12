@@ -2,7 +2,7 @@
 
 > Читается автоматически в начале каждой сессии.
 > Детали, история, справочники — в `~/.claude/projects/…/memory/`.
-> Последнее обновление: 2026-06-12 (7)
+> Последнее обновление: 2026-06-12 (8)
 
 ---
 
@@ -55,7 +55,7 @@ EXTERNAL      Redis        Spring Session backing (bff/ + thymeleaf/ при ма
 ```
 
 > **Ещё не создано:** `bff/` · `thymeleaf/` · `auth/webmvc/` · `auth/data-jpa/` · `user-note/feign/` · `crud/`  
-> **Не реализовано:** `service/` во всех бизнес-сервисах · `user/webmvc` · `user/data-jpa` · `user-note/webmvc` · `user-note/data-jpa`
+> **Не реализовано:** `user/service` · `user-note/service` · `user/webmvc` · `user/data-jpa` · `user-note/webmvc` · `user-note/data-jpa`
 
 ---
 
@@ -71,12 +71,25 @@ EXTERNAL      Redis        Spring Session backing (bff/ + thymeleaf/ при ма
 - Sync: `auth/` → `user/` через RestClient; нарушает direction of dependencies
 - Events: Kafka/RabbitMQ; архитектурно чисто; требует брокера
 
-### Ожидают решения
+### После первичной реализации сервисного слоя
+
+**Mapping** — стратегия маппинга между слоями:
+- Где маппить: в каждом слое отдельно или централизованно
+- Value objects: использовать ли отдельные DTO/VO на каждом слое
+- Инструмент: ручной маппинг / MapStruct / другое
 
 **PATCH / частичное обновление** — нужен ли отдельный метод в output port:
-- Вариант 1 — только в `service/` (input port): сервис строит полный объект → `replace`; output port не меняется
+- Вариант 1 — только в `service/`: сервис строит полный объект → `replace`; output port не меняется
 - Вариант 2 — `void patch(UUID id, NoteFields fields)` в output port; адаптер решает как обновить частично
 - Вариант 3 — не поддерживать PATCH; только PUT (полная замена) на HTTP-уровне
+- Смежный вопрос: соотношение `update` и `replace` в семантике
+
+**Возврат из service/** — что возвращают методы use case:
+- Доменный объект (`Note`) — service/ не знает о DTO
+- `void` для мутирующих — контроллер строит ответ из переданных данных
+- Смежный вопрос: CQS / CQRS — разделение команд и запросов на уровне input port
+
+### Ожидают решения
 
 **Название output adapter при нескольких реализациях** ← **отложено: актуально при добавлении второго адаптера**
 - Вариант 1 — `NoteOutputAdapter`: технология понятна из модуля; сейчас реализовано так
@@ -95,8 +108,8 @@ EXTERNAL      Redis        Spring Session backing (bff/ + thymeleaf/ при ма
 
 ### Порядок реализации
 
-1. PATCH решение ← **ТЕКУЩИЙ ПРИОРИТЕТ**
-2. `service/` + `domain/` input ports во всех бизнес-сервисах
+1. `service/` + `domain/` input ports во всех бизнес-сервисах ← **ТЕКУЩИЙ ПРИОРИТЕТ**
+2. Mapping · PATCH · возврат из service/ · CQS/CQRS — после первичной реализации
 3. Регистрация — lazy / sync / events
 4. `auth/` — Authorization Server + AuthUser + OIDC
 5. Resource Server в `user/` · `note/` · `user-note/`
@@ -169,7 +182,7 @@ Upsert (`save`) — только для sync/offline-first; сервер — и�
 - **Spring Authorization Server — постоянный IdP** — Keycloak/Auth0 только после детальной оценки
 - **OpenFeign для `user-note/feign/`** — `spring-cloud-starter-openfeign`
 - **`@GeneratedValue` не используется** — UUID генерируется в `service/`
-- **`service/` модуль** — use case implementations; зависит только от `domain/`; не реализовывать до закрытия названия порта и PATCH
+- **`service/` модуль** — use case implementations; зависит только от `domain/`
 - **Input port — интерфейс в `domain/`** — `NoteUseCase` / `UserUseCase` / `UserNoteUseCase`; `webmvc/` зависит от интерфейса, не от `service/`
 - **Domain objects — Java records** — `withXxx()` для изменённой копии; JPA entities — обычные классы
 - **Контроллеры: `ResponseEntity<T>` везде** — статусы явно через `HttpStatus`

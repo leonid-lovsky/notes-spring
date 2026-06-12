@@ -11,6 +11,7 @@ include ':user:data-jpa'
 
 include ':note:application'
 include ':note:domain'
+include ':note:service'
 include ':note:webmvc'
 include ':note:data-jpa'
 
