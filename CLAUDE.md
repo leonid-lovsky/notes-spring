@@ -2,7 +2,7 @@
 
 > Читается автоматически в начале каждой сессии.
 > Детали, история, справочники — в `~/.claude/projects/…/memory/`.
-> Последнее обновление: 2026-06-18 (9)
+> Последнее обновление: 2026-06-18 (10)
 
 ---
 
@@ -31,28 +31,29 @@
 НЕ СОЗДАНО  bff/ · thymeleaf/ · auth/webmvc/ · auth/data-jpa/ · user-note/feign/ · crud/
 ```
 
-### Прямо сейчас (по возрастанию сложности)
+### Чистка перед `auth/`
 
-1. `UserNoteService.update()` — лишний read; заменить на `existsByUserIdAndNoteId` (1 строка)
-2. `@ControllerAdvice` + `ProblemDetail` (RFC 9457) — убрать дублирующий `@ExceptionHandler` из каждого контроллера
-3. Доменные исключения — заменить `NoSuchElementException` как сигнал 404
+1. Убрать `password` из `User` — `AuthUser ≠ User` уже принято; `user/` — профиль, не IdP
+2. Доменные исключения — заменить `NoSuchElementException` как сигнал 404
+3. `@ControllerAdvice` + `ProblemDetail` (RFC 9457) — убрать дублирующий `@ExceptionHandler`
+4. `UserNoteService.update()` → `existsByUserIdAndNoteId` — лишний read
 
-### Требует решения перед `auth/`
+### `auth/` ← **ТЕКУЩИЙ ПРИОРИТЕТ**
 
-1. **`password` в `user/`** — `User` содержит пароль, но `user/` — Resource Server, не IdP
-   - Вариант 1 — убрать из `User`; пароль хранит только `auth/` в `AuthUser`
-   - Вариант 2 — оставить; `auth/` делегирует проверку в `user/` через `UserDetailsService`
-2. **`auth/`** — Authorization Server + AuthUser + OIDC ← **ТЕКУЩИЙ ПРИОРИТЕТ**
+1. `auth/domain/` — `AuthUser` record + `AuthUserUseCase` + `AuthUserOutputPort`
+2. `auth/data-jpa/` — JPA adapter + Flyway schema
+3. Spring Authorization Server — OIDC endpoint + JWT issuer
 
-### Далее (последовательно)
+### После `auth/`
 
-1. Resource Server в `user/` · `note/` · `user-note/`; убрать `userId` из `UserNoteRequest` (берётся из JWT)
-2. `bff/` — OAuth2 Client + Spring Session + Token Exchange
-3. `thymeleaf/` — server-rendered BFF
-4. Banking Phase 2 — MFA, token rotation, audit log
-5. `user-note/feign/` — OpenFeign
-6. `crud/` — shared library
-7. Широкий стек — после выбора стратегии активации
+1. Resource Server в одном бизнес-сервисе — smoke test: auth/ выдаёт токен, сервис принимает
+2. Resource Server во всех бизнес-сервисах; убрать `userId` из `UserNoteRequest` (берётся из JWT `sub`)
+3. `bff/` — OAuth2 Client + Spring Session + Token Exchange
+4. `thymeleaf/` — server-rendered BFF
+5. Banking Phase 2 — MFA, token rotation, audit log
+6. `user-note/feign/` — OpenFeign
+7. `crud/` — shared library
+8. Широкий стек — после выбора стратегии активации
 
 ---
 
@@ -77,7 +78,7 @@ EDGE          gateway/     Spring Cloud Gateway — stateless, routing + rate li
 PRESENTATION  bff/         OAuth2 Client + Spring Session + Token Exchange (SPA)
               thymeleaf/   Thymeleaf + OAuth2 Client — self-contained BFF
 IDENTITY      auth/        Spring Authorization Server — OIDC-compliant, JWT issuer
-BUSINESS      user/        Resource Server  (User: id, username, email, password*)
+BUSINESS      user/        Resource Server  (User: id, username, email)
               note/        Resource Server  (Note: id, content)
               user-note/   Resource Server  (UserNote: userId, noteId, role)
 INFRA         config/      Spring Cloud Config Server
@@ -87,7 +88,6 @@ EXTERNAL      Redis        Spring Session backing (bff/ + thymeleaf/ при ма
               Kafka/MQ     только при событийной регистрации (решение не принято)
 ```
 
-> `*` — `password` в `User` временный; решение открыто (см. Задачи п.4)
 
 ---
 
@@ -95,20 +95,14 @@ EXTERNAL      Redis        Spring Session backing (bff/ + thymeleaf/ при ма
 
 Откладываются при взаимозависимости или преждевременности.
 
-### Блокеры
+### После Resource Server
 
-**Регистрация** — стратегия координации `auth/` ↔ `user/` ← **отложено**
-- Lazy: `user/` создаёт профиль при первом запросе; нет email до явного обновления
-- Sync: `auth/` → `user/` через RestClient; нарушает direction of dependencies
-- Events: Kafka/RabbitMQ; архитектурно чисто; требует брокера
-
-### Дизайн HTTP-слоя (после Resource Server)
-
+- **Регистрация** — координация `auth/` ↔ `user/`: Lazy / Sync / Events (не блокирует `auth/` MVP)
 - **Mapping** — где маппить между слоями; ручной / MapStruct; отдельные DTO/VO на каждом слое
 - **PATCH** — только в `service/` (полный объект → `replace`) / в output port / не поддерживать
 - **Возврат из service/** — доменный объект / `void` для мутирующих; CQS / CQRS на уровне input port
 
-### Отложено
+### Отложено (фундаментальное)
 
 - **NoteVisibility** — в `note/domain/` или `user-note/domain/` (требует ясности по ACL)
 - **Reactive/sync impedance** — параллельные порты в `domain/` / sync обёртка / отдельные сервисы
