@@ -14,8 +14,8 @@ dependencyManagement {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter'
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.12.2'
+    implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-resource-server'
+    testImplementation 'org.springframework.boot:spring-boot-starter-security-oauth2-resource-server-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 

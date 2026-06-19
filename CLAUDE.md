@@ -1,7 +1,7 @@
 # CLAUDE.md — notes-spring
 
 > Единственный источник истины для этого проекта. Читается автоматически в начале каждой сессии.  
-> Последнее обновление: 2026-06-19T11:53Z
+> Последнее обновление: 2026-06-19T20:48Z
 
 ---
 
@@ -147,7 +147,7 @@ EXTERNAL      Redis        Spring Session backing (bff/ + thymeleaf/ при ма
 
 ## Архитектура
 
-**Hexagonal Architecture (Ports & Adapters)** — главный принцип; все решения проверяются на соответствие:
+**Hexagonal Architecture (Ports & Adapters)** — структура модулей:
 
 ```
 application/  Spring Boot app — composition root; знает все модули
@@ -269,13 +269,15 @@ void remove(UUID id);              // remove
 **Порядок блоков:** `plugins` → `java` → `repositories` → [`ext`] → `dependencies` → `dependencyManagement` → `test`  
 **Порядок зависимостей:** `domain` → `service` → `webmvc` → `data-jpa`  
 **`settings.gradle`:** `gateway` → `config` → `registry` → `auth` → `user` → `note` → `user-note`; внутри: `application` → `domain` → `service` → `webmvc` → `data-jpa`  
-**Convention plugins:** ✅ `application` · `domain` · `webmvc` · `data-jpa` · `h2-database` | ❌ планируется ≈16  
-**`domain`-plugin** — только `java`; без Spring BOM; JSpecify и JUnit с явными версиями
+**Convention plugins:** ✅ `application` · `domain` · `webmvc` · `data-jpa` · `h2-database` · `oauth2-resource-server` | ❌ планируется ≈16  
+**`domain`** — только `java`; без Spring BOM; JSpecify и JUnit с явными версиями  
+**`oauth2-resource-server`** — транспортно-независимая JWT-валидация; применим к `webmvc/`, `webflux/`, `graphql/` — не переименовывать в `webmvc-oauth2-*`
 
 ### Spring Boot 4
 
 - `starter-web` → `starter-webmvc`
 - `starter-test` — JUnit/Mockito/AssertJ; слайсы (`@WebMvcTest`, `@DataJpaTest` и др.) выведены в отдельные `*-test` стартеры (в Boot 3 входили в `starter-test`)
+- OAuth2 стартеры: `oauth2-*` (Boot 3) → `security-oauth2-*` (Boot 4); `docs.spring.io/spring-security` ссылается на Boot 3 имена — не доверять
 - Jackson 3: `com.fasterxml.jackson` → `tools.jackson`
 - RestTemplate deprecated → `RestClient`
 - Flyway + PostgreSQL: нужен `runtimeOnly 'org.flywaydb:flyway-database-postgresql'`
