@@ -1,8 +1,7 @@
 # CLAUDE.md — notes-spring
 
-> Читается автоматически в начале каждой сессии.
-> Детали, история, справочники — в `~/.claude/projects/…/memory/`.
-> Последнее обновление: 2026-06-18 (10)
+> Единственный источник истины для этого проекта. Читается автоматически в начале каждой сессии.  
+> Последнее обновление: 2026-06-19T11:23Z
 
 ---
 
@@ -12,14 +11,13 @@
 - **Файлы** — не изменять и не создавать без явного «измени X в файле Y»
 - **Коммиты** — не коммитить и не пушить без явного запроса
 - **CI** — не трогать `.github/workflows/` без явного запроса
-- **Подход** — читать память перед ответом; называть текущий приоритет, не отложенное
+- **Приоритет** — всегда называть текущую задачу (раздел Задачи); отложенное не предлагать
 - **Решение проблем** — сначала: актуальна ли проблема? кто выигрывает? не упускаем ли что-то?  
   затем: варианты с плюсами/минусами + склонение → ждать выбора → обосновать  
-  не предлагать реализационные задачи пока открыты архитектурные вопросы
-- **CLAUDE.md** — в приоритете над памятью; обновлять при каждом изменении проекта или принципов  
+  не предлагать реализационные задачи, пока открыты архитектурные вопросы
+- **Этот файл** — приоритет над всем; обновлять при изменении проекта или принципов;  
   всё, что пользователь просит запомнить — отражать здесь
-- **Перед коммитом** — рефакторинг CLAUDE.md → синхронизация памяти → обновление даты
-- **≤ 400 строк** — при превышении удалять второстепенное (детали реализации в первую очередь)
+- **Перед коммитом** — обновить дату: `date -u +"%Y-%m-%dT%H:%MZ"`
 
 ---
 
@@ -53,7 +51,35 @@
 5. Banking Phase 2 — MFA, token rotation, audit log
 6. `user-note/feign/` — OpenFeign
 7. `crud/` — shared library
-8. Широкий стек — после выбора стратегии активации
+8. Широкий стек — после выбора стратегии активации; цель: показать, что домен не зависит от протокола и хранилища
+
+---
+
+## Открытые решения
+
+> Откладываются при взаимозависимости или преждевременности. Не реализовывать без явного решения.
+
+### После Resource Server
+
+- **Регистрация** — координация `auth/` ↔ `user/`; решить до реализации:
+  - **Lazy** — `user/` создаёт профиль при первом запросе; нет email при регистрации; нет coupling
+  - **Sync** — `auth/` → `user/` через RestClient; нарушает direction of dependencies (infra → business)
+  - **Events** — Kafka/RabbitMQ; единственный вариант без нарушения SoC/SRP; требует брокера
+- **Mapping** — где маппить между слоями; ручной / MapStruct; отдельные DTO/VO на каждом слое
+- **PATCH** — только в `service/` (полный объект → `replace`) / в output port / не поддерживать
+- **Возврат из service/** — доменный объект / `void` для мутирующих; CQS / CQRS на уровне input port
+
+### Отложено (фундаментальное)
+
+- **NoteVisibility** — в `note/domain/` или `user-note/domain/` (требует ясности по ACL)
+- **Reactive/sync impedance** — `Optional<T>` несовместим с реактивными адаптерами (`.block()` = deadlock):
+  - **Параллельные порты** _(склонение)_ — `NoteRepository` + `ReactiveNoteRepository` в `domain/`
+  - **Sync обёртка** — `Mono.fromCallable().subscribeOn(boundedElastic())` — не настоящий reactive
+  - **Отдельные реактивные сервисы** — дублирование домена
+- **Стратегия активации адаптеров**:
+  - `@Profile("jpa")` — просто, грубо
+  - Отдельные `application-jpa/` · `application-r2dbc/` — чисто; дублирует composition root
+- **Название output adapter при нескольких реализациях** — `NoteOutputAdapter` / `NoteJpaOutputAdapter`
 
 ---
 
@@ -61,13 +87,16 @@
 
 > Spring Boot 4 monorepo — banking-grade
 
-| Инструмент                   | Версия               |
-|------------------------------|----------------------|
-| Java                         | 17 (`.java-version`) |
-| Gradle                       | 9.5.1                |
-| Spring Boot                  | 4.0.6                |
-| Spring Cloud                 | 2025.1.1             |
-| Spring Dependency Management | 1.1.7                |
+| Инструмент                   | Версия   |
+|------------------------------|----------|
+| Java                         | 17       |
+| Gradle                       | 9.6.0    |
+| Spring Boot                  | 4.1.0    |
+| Spring Cloud                 | 2025.1.2 |
+| Spring Dependency Management | 1.1.7    |
+
+> **Проект сейчас:** Boot 4.0.6 · Cloud 2025.1.1 · Gradle 9.5.1 —  
+> обновить `buildSrc/build.gradle` и `gradle/wrapper/gradle-wrapper.properties`.
 
 ---
 
@@ -84,30 +113,12 @@ BUSINESS      user/        Resource Server  (User: id, username, email)
 INFRA         config/      Spring Cloud Config Server
               registry/    Eureka Server
 EXTERNAL      Redis        Spring Session backing (bff/ + thymeleaf/ при масштабировании)
-              PostgreSQL×N по одной на: auth, user, note, user-note
+              PostgreSQL×N по одной БД на: auth, user, note, user-note
               Kafka/MQ     только при событийной регистрации (решение не принято)
 ```
 
-
----
-
-## Открытые решения
-
-Откладываются при взаимозависимости или преждевременности.
-
-### После Resource Server
-
-- **Регистрация** — координация `auth/` ↔ `user/`: Lazy / Sync / Events (не блокирует `auth/` MVP)
-- **Mapping** — где маппить между слоями; ручной / MapStruct; отдельные DTO/VO на каждом слое
-- **PATCH** — только в `service/` (полный объект → `replace`) / в output port / не поддерживать
-- **Возврат из service/** — доменный объект / `void` для мутирующих; CQS / CQRS на уровне input port
-
-### Отложено (фундаментальное)
-
-- **NoteVisibility** — в `note/domain/` или `user-note/domain/` (требует ясности по ACL)
-- **Reactive/sync impedance** — параллельные порты в `domain/` / sync обёртка / отдельные сервисы
-- **Стратегия активации адаптеров** — Spring Profiles / отдельные `application-jpa/`, `application-r2dbc/`
-- **Название output adapter при нескольких реализациях** — `NoteOutputAdapter` / `NoteJpaOutputAdapter`
+> **MVP** — та же архитектура; H2 вместо PostgreSQL, `MapSessionRepository` вместо Redis.  
+> Backing services подключаются при реальной потребности, не как архитектурный шаг.
 
 ---
 
@@ -172,11 +183,11 @@ void remove(UUID id);              // remove
 
 ## Безопасность
 
-> `identity ≠ profile ≠ business ≠ permissions`
+> `identity ≠ profile ≠ business ≠ permissions` — смешивание нарушает SoC и усложняет смену IdP
 
 **Zero Trust** — каждый слой валидирует JWT самостоятельно  
 **JWT claims** — только стандартные: `sub` · `iss` · `aud` · `exp` · `jti` · `acr` · `amr` · `scope`  
-**Banking-grade** — фаза 1: основа · фаза 2: MFA + token rotation · фаза 3: DPoP + mTLS
+**Браузер не видит JWT** — только HttpOnly session cookie в `bff/` · `thymeleaf/` (защита от XSS)
 
 | Слой            | Модуль                | Ответственность                              |
 |-----------------|-----------------------|----------------------------------------------|
@@ -187,8 +198,39 @@ void remove(UUID id);              // remove
 | ACL             | `user-note/`          | `UserNote { userId, noteId, role }`          |
 
 **UserNoteRole:** `OWNER` · `EDITOR` · `COMMENTER` _(не MVP)_ · `VIEWER`  
-**NoteVisibility:** `RESTRICTED` · `ANYONE_WITH_LINK` + role · `PUBLIC` + role  
-**Клиенты:** Browser/Thymeleaf (AuthCode+Session) · Browser/SPA (AuthCode+BFF) · Mobile (PKCE) · B2B (ClientCredentials)
+**NoteVisibility:** `RESTRICTED` · `ANYONE_WITH_LINK` + role · `PUBLIC` + role
+
+### Клиенты
+
+| Клиент               | Grant Type          | Хранит токен         | BFF          |
+|----------------------|---------------------|----------------------|--------------|
+| Browser / Thymeleaf  | Authorization Code  | Серверная сессия     | Сам себе BFF |
+| Browser / SPA        | Authorization Code  | Серверная сессия BFF | `bff/`       |
+| Mobile (Android/iOS) | AuthCode + PKCE     | Keychain / Keystore  | Нет          |
+| B2B / CLI            | Client Credentials  | Не хранит            | Нет          |
+
+### Аутентификация
+
+**Все методы → единый JWT** с `acr` (1 = single factor, 2 = MFA) и `amr` (pwd / google / passkey / totp)  
+**Social Login** — `auth/` сам OAuth2 Client к Google/GitHub; их токен никогда не покидает `auth/`  
+**MFA** — `@EnableMultiFactorAuthentication` (Spring Security 7) + `FactorGrantedAuthority`  
+**Step-up auth** — `/oauth2/authorize?acr_values=2` → MFA challenge → новый токен с `acr=2`
+
+### Токены
+
+**Flow:** User → `auth/` → access_token → BFF Token Exchange (RFC 8693) → internal JWT (`aud`=сервис) → Microservice  
+**access_token** 15 мин · **refresh_token** 30–90 дней; хранится в сессии BFF или Keychain/Keystore; в микросервисы не отправляется  
+**Rotation** — каждый refresh → новый refresh_token; повторное использование старого → revoke вся семья → re-login  
+**JTI Blocklist** — Redis `SET jti:{jti} "revoked" EX ttl`; ~0.5 ms на запрос; logout < 1 с (banking-grade)  
+**Back-channel logout** — `auth/` → POST `bff/logout/connect/back-channel`; при горизонтальном масштабировании BFF требует Redis Session
+
+### Banking-grade фазы
+
+| Фаза         | Содержание                                                                                  |
+|--------------|---------------------------------------------------------------------------------------------|
+| 1 — основа   | PKCE · `aud`/`scope`/`jti` claims · refresh rotation · rate limiting · TLS 1.3 · stateless |
+| 2 — MFA      | TOTP/Passkey · Social Login · JTI Blocklist · Step-up auth · device tracking · audit log   |
+| 3 — максимум | DPoP · mTLS · Certificate pinning · App attestation                                        |
 
 ---
 
@@ -221,17 +263,139 @@ void remove(UUID id);              // remove
 - RestTemplate deprecated → `RestClient`
 - Flyway + PostgreSQL: нужен `runtimeOnly 'org.flywaydb:flyway-database-postgresql'`
 - Обработка ошибок: `ResponseEntityExceptionHandler` + `ProblemDetail` (RFC 9457)
-- Lombok: `compileOnly` + `annotationProcessor`; `@Data`/`@EqualsAndHashCode` запрещены на entities
+- Lombok: `compileOnly` + `annotationProcessor`; `@Data`/`@EqualsAndHashCode` запрещены на entities — нарушают Hibernate lifecycle; `equals()`/`hashCode()` по ID вручную: `hashCode() { return getClass().hashCode(); }`
 
 ### Spring Security
 
 **Цепочка:** `SecurityFilterChain` → `AuthenticationManager` → `ProviderManager` → `DaoAuthenticationProvider` → `UserDetailsService` + `PasswordEncoder`  
-**Resource Server** — `JwtDecoder` + `JwtAuthenticationConverter` → `GrantedAuthority`  
-**Auth Server** — `OAuth2AuthorizationServerConfigurer` · `RegisteredClientRepository`
+**Resource Server** — `JwtDecoder` + `JwtAuthenticationConverter` → `GrantedAuthority`; минимум: property `spring.security.oauth2.resourceserver.jwt.issuer-uri`  
+**Auth Server** — `OAuth2AuthorizationServerConfigurer` · `RegisteredClientRepository`; 4 обязательных бина: `SecurityFilterChain` × 2, `UserDetailsService`, `JWKSource`
+
+Стартеры — см. раздел **Верифицированные координаты** ниже.
 
 ### Null Safety и стиль
 
-**`@NullMarked`** (JSpecify) через `package-info.java` — non-null по умолчанию; `org.springframework.lang` deprecated  
+**`@NullMarked`** (JSpecify) через `package-info.java` — non-null по умолчанию; не иерархично: каждый пакет требует своего `package-info.java`; `org.springframework.lang` deprecated  
+**`@Nullable`** — `@Target(TYPE_USE)`: `private @Nullable String field`; массивы: `Object @Nullable []` (nullable ссылка), `@Nullable Object[]` (nullable элементы)  
+**Spring Cloud 2026.0** — ещё не null-safe (registry/, config/, gateway/); при нужде: `@NullUnmarked`  
 **Импорты** — `com.example.*` + `org.*` / `jakarta.*`, затем `java.*`; wildcard при 3+  
 **Имена полей** — camelCase от типа: `noteOutputPort`, `noteJpaRepository`; не `repository`, не `port`  
+**Промежуточная переменная** — перед `return` всегда извлекать результат (`response`, `notes`); не inline в `.body()`  
 **Пустое тело** — одна пустая строка · **EOF** — один `\n`
+
+---
+
+## Верифицированные координаты (Boot 4.x / Cloud 2025.1.x)
+
+> Источник правды — `start.spring.io`. Maven Central не является авторитетом для Boot 4 стартеров.
+
+### Spring Boot 4 — `implementation` (`org.springframework.boot`)
+
+```
+spring-boot-h2console
+spring-boot-starter-actuator
+spring-boot-starter-amqp
+spring-boot-starter-batch
+spring-boot-starter-batch-jdbc
+spring-boot-starter-cache
+spring-boot-starter-data-jdbc
+spring-boot-starter-data-jpa
+spring-boot-starter-data-mongodb
+spring-boot-starter-data-mongodb-reactive
+spring-boot-starter-data-r2dbc
+spring-boot-starter-data-redis
+spring-boot-starter-data-redis-reactive
+spring-boot-starter-data-rest
+spring-boot-starter-elasticsearch
+spring-boot-starter-flyway
+spring-boot-starter-graphql
+spring-boot-starter-hateoas
+spring-boot-starter-integration
+spring-boot-starter-jdbc
+spring-boot-starter-kafka
+spring-boot-starter-liquibase
+spring-boot-starter-mail
+spring-boot-starter-opentelemetry
+spring-boot-starter-pulsar
+spring-boot-starter-quartz
+spring-boot-starter-r2dbc
+spring-boot-starter-restclient
+spring-boot-starter-rsocket
+spring-boot-starter-security
+spring-boot-starter-security-oauth2-authorization-server
+spring-boot-starter-security-oauth2-client
+spring-boot-starter-security-oauth2-resource-server
+spring-boot-starter-session-data-redis
+spring-boot-starter-session-jdbc
+spring-boot-starter-thymeleaf
+spring-boot-starter-validation
+spring-boot-starter-webclient
+spring-boot-starter-webflux
+spring-boot-starter-webmvc
+spring-boot-starter-websocket
+```
+
+### Spring Boot 4 — `testImplementation`
+
+```
+spring-boot-starter-data-jpa-test
+spring-boot-starter-security-test
+spring-boot-starter-security-oauth2-authorization-server-test
+spring-boot-starter-security-oauth2-client-test
+spring-boot-starter-security-oauth2-resource-server-test
+spring-boot-starter-webmvc-test
+spring-boot-testcontainers
+```
+
+### Spring Cloud 2025.1.x — `org.springframework.cloud`
+
+```
+spring-cloud-config-server
+spring-cloud-starter-config
+spring-cloud-starter-gateway-server-webmvc
+spring-cloud-starter-gateway-server-webflux
+spring-cloud-starter-loadbalancer
+spring-cloud-starter-netflix-eureka-client
+spring-cloud-starter-netflix-eureka-server
+spring-cloud-starter-openfeign
+spring-cloud-stream
+spring-cloud-stream-binder-kafka
+spring-cloud-stream-binder-rabbit
+```
+
+### `runtimeOnly`
+
+```
+# Database drivers
+org.postgresql:postgresql
+org.postgresql:r2dbc-postgresql
+com.h2database:h2
+
+# Flyway — ОБЯЗАТЕЛЬНО при использовании spring-boot-starter-flyway с PostgreSQL
+org.flywaydb:flyway-database-postgresql
+org.flywaydb:flyway-mysql
+```
+
+### Testcontainers — `testImplementation` (версия управляется Spring Boot BOM)
+
+```
+org.testcontainers:testcontainers-junit-jupiter
+org.testcontainers:postgresql
+org.testcontainers:kafka
+org.testcontainers:mongodb
+# Redis: нет официального TC модуля → GenericContainer("redis:latest")
+```
+
+### `developmentOnly`
+
+```
+org.springframework.boot:spring-boot-devtools
+org.springframework.boot:spring-boot-docker-compose
+```
+
+### Прочее
+
+```
+org.thymeleaf.extras:thymeleaf-extras-springsecurity6   ← имя "6", даже с Security 7
+org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2 ← явная версия (third-party)
+```
