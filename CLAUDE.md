@@ -1,7 +1,7 @@
 # CLAUDE.md — notes-spring
 
 > Единственный источник истины для этого проекта. Читается автоматически в начале каждой сессии.  
-> Последнее обновление: 2026-06-19T11:23Z
+> Последнее обновление: 2026-06-19T11:32Z
 
 ---
 
@@ -258,7 +258,8 @@ void remove(UUID id);              // remove
 
 ### Spring Boot 4
 
-- `starter-web` → `starter-webmvc` · `starter-test` → индивидуальные `*-test`
+- `starter-web` → `starter-webmvc`
+- `starter-test` — JUnit/Mockito/AssertJ; слайсы (`@WebMvcTest`, `@DataJpaTest` и др.) выведены в отдельные `*-test` стартеры (в Boot 3 входили в `starter-test`)
 - Jackson 3: `com.fasterxml.jackson` → `tools.jackson`
 - RestTemplate deprecated → `RestClient`
 - Flyway + PostgreSQL: нужен `runtimeOnly 'org.flywaydb:flyway-database-postgresql'`
@@ -338,6 +339,7 @@ spring-boot-starter-websocket
 ### Spring Boot 4 — `testImplementation`
 
 ```
+spring-boot-starter-test
 spring-boot-starter-data-jpa-test
 spring-boot-starter-security-test
 spring-boot-starter-security-oauth2-authorization-server-test
@@ -384,6 +386,12 @@ org.testcontainers:postgresql
 org.testcontainers:kafka
 org.testcontainers:mongodb
 # Redis: нет официального TC модуля → GenericContainer("redis:latest")
+```
+
+### `testRuntimeOnly`
+
+```
+org.junit.platform:junit-platform-launcher
 ```
 
 ### `developmentOnly`
