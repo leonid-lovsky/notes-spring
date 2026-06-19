@@ -1,7 +1,7 @@
 # CLAUDE.md — notes-spring
 
 > Единственный источник истины для этого проекта. Читается автоматически в начале каждой сессии.  
-> Последнее обновление: 2026-06-19T11:36Z
+> Последнее обновление: 2026-06-19T11:39Z
 
 ---
 
@@ -95,8 +95,7 @@
 | Spring Cloud                 | 2025.1.2 |
 | Spring Dependency Management | 1.1.7    |
 
-> **Проект сейчас:** Boot 4.0.6 · Cloud 2025.1.1 · Gradle 9.5.1 —  
-> обновить `buildSrc/build.gradle` и `gradle/wrapper/gradle-wrapper.properties`.
+> **Проект сейчас:** Boot 4.0.6 · Cloud 2025.1.1 · Gradle 9.5.1 — обновить `buildSrc/build.gradle` и `gradle/wrapper/gradle-wrapper.properties`.
 
 ---
 
@@ -142,11 +141,11 @@ feign/        driven outbound   →  domain/  (только user-note/)
 
 ### Целевая модель портов
 
-| Модель                     | Driving                                      | Driven                                        |
-|----------------------------|----------------------------------------------|-----------------------------------------------|
+| Модель                     | Driving                                            | Driven                                                |
+|----------------------------|----------------------------------------------------|-------------------------------------------------------|
 | Sync + Virtual Threads     | `webmvc/`, `grpc/`, `graphql/`, `shell/`, `batch/` | `data-jpa/`, `data-jdbc/`, `jooq/`, `feign/`, `grpc/` |
-| Reactive (Project Reactor) | `webflux/`, `rsocket/`, `websocket/`         | `data-r2dbc/`, `data-mongodb-rx/`             |
-| Async messaging            | `kafka/` consumer, `amqp/` consumer          | `kafka/` producer, `amqp/` producer           |
+| Reactive (Project Reactor) | `webflux/`, `rsocket/`, `websocket/`               | `data-r2dbc/`, `data-mongodb-rx/`                     |
+| Async messaging            | `kafka/` consumer, `amqp/` consumer                | `kafka/` producer, `amqp/` producer                   |
 
 WebFlux + Virtual Threads несовместимы → один `application/` собирает одну модель.
 
@@ -325,6 +324,8 @@ spring-boot-starter-rsocket
 spring-boot-starter-security
 spring-boot-starter-security-oauth2-authorization-server
 spring-boot-starter-security-oauth2-client
+spring-boot-starter-grpc-client
+spring-boot-starter-grpc-server
 spring-boot-starter-security-oauth2-resource-server
 spring-boot-starter-session-data-redis
 spring-boot-starter-session-jdbc
@@ -341,6 +342,8 @@ spring-boot-starter-websocket
 ```
 spring-boot-starter-test
 spring-boot-starter-data-jpa-test
+spring-boot-starter-grpc-client-test
+spring-boot-starter-grpc-server-test
 spring-boot-starter-security-test
 spring-boot-starter-security-oauth2-authorization-server-test
 spring-boot-starter-security-oauth2-client-test
@@ -406,5 +409,10 @@ org.springframework.boot:spring-boot-docker-compose
 ```
 org.thymeleaf.extras:thymeleaf-extras-springsecurity6   ← имя "6", даже с Security 7
 org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2 ← явная версия (third-party)
-net.devh:grpc-spring-boot-starter                       ← gRPC server+client (third-party, проверить совместимость с Boot 4)
+```
+
+### Gradle plugins (в `buildSrc/build.gradle` или `plugins {}`)
+
+```
+com.google.protobuf version 0.9.6   ← обязателен для gRPC (кодогенерация из .proto)
 ```
