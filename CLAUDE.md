@@ -1,7 +1,7 @@
 # CLAUDE.md — notes-spring
 
 > Единственный источник истины для этого проекта. Читается автоматически в начале каждой сессии.  
-> Последнее обновление: 2026-06-19T11:48Z
+> Последнее обновление: 2026-06-19T11:53Z
 
 ---
 
@@ -56,14 +56,15 @@
 
 ### После `auth/`
 
-1. Resource Server в одном бизнес-сервисе — smoke test: auth/ выдаёт токен, сервис принимает
-2. Resource Server во всех бизнес-сервисах; убрать `userId` из `UserNoteRequest` (берётся из JWT `sub`)
+1. Resource Server в одном сервисе — smoke test: auth/ выдаёт токен, сервис принимает
+2. Resource Server во всех сервисах; убрать `userId` из `UserNoteRequest` (берётся из JWT `sub`)
 3. `bff/` — OAuth2 Client + Spring Session + Token Exchange
 4. `thymeleaf/` — server-rendered BFF
 5. Banking Phase 2 — MFA, token rotation, audit log
 6. `user-note/feign/` — OpenFeign
 7. `crud/` — shared library
-8. Широкий стек — после выбора стратегии активации; цель: показать, что домен не зависит от протокола и хранилища (один use case: WebMVC + gRPC + GraphQL)
+8. Широкий стек — один use case через WebMVC + gRPC + GraphQL;  
+   цель: доказать, что домен не зависит от протокола и хранилища
 
 ---
 
@@ -134,6 +135,16 @@ EXTERNAL      Redis        Spring Session backing (bff/ + thymeleaf/ при ма
 
 ---
 
+## Принципы
+
+- **Hexagonal Architecture** — главный принцип; все решения проверяются на соответствие
+- **SoC / SRP** — на всех уровнях; **видимость** — `default` или минимально необходимая
+- **No partial abstractions** — полное устранение или явное дублирование
+- **Twelve-Factor:** III Config · VI Stateless · IX Graceful shutdown · X Testcontainers · XI stdout · XII Flyway
+- **Остальные** — SOLID · KISS · DRY · SSOT · Law of Demeter · Fail Fast
+
+---
+
 ## Архитектура
 
 **Hexagonal Architecture (Ports & Adapters)** — главный принцип; все решения проверяются на соответствие:
@@ -142,11 +153,11 @@ EXTERNAL      Redis        Spring Session backing (bff/ + thymeleaf/ при ма
 application/  Spring Boot app — composition root; знает все модули
 domain/       entities + port interfaces (input + output) — чистая Java, без Spring
 service/      use case implementations (@Service, @Transactional) — зависит только от domain/
-webmvc/       driving adapter (HTTP/REST)            →  domain/
-grpc/         driving adapter (gRPC/Protobuf)        →  domain/
-graphql/      driving adapter (GraphQL)              →  domain/
-data-jpa/     driven adapter  (JPA/SQL)              →  domain/
-feign/        driven adapter  (HTTP client)          →  domain/  (только user-note/)
+webmvc/       driving adapter (HTTP/REST)      →  domain/
+grpc/         driving adapter (gRPC/Protobuf)  →  domain/
+graphql/      driving adapter (GraphQL)        →  domain/
+data-jpa/     driven adapter  (JPA/SQL)        →  domain/
+feign/        driven adapter  (HTTP client)    →  domain/  (только user-note/)
 ```
 
 **Dependency direction** — `application/` знает всё; адаптеры знают только `domain/`; `domain/` — ничего снаружи  
@@ -249,16 +260,6 @@ void remove(UUID id);              // remove
 
 ---
 
-## Принципы
-
-- **Hexagonal Architecture** — главный принцип; все решения проверяются на соответствие
-- **SoC / SRP** — на всех уровнях; **видимость** — `default` или минимально необходимая
-- **No partial abstractions** — полное устранение или явное дублирование
-- **Twelve-Factor:** III Config · VI Stateless · IX Graceful shutdown · X Testcontainers · XI stdout · XII Flyway
-- **Остальные** — SOLID · KISS · DRY · SSOT · Law of Demeter · Fail Fast
-
----
-
 ## Техническая база
 
 ### Gradle
@@ -279,7 +280,9 @@ void remove(UUID id);              // remove
 - RestTemplate deprecated → `RestClient`
 - Flyway + PostgreSQL: нужен `runtimeOnly 'org.flywaydb:flyway-database-postgresql'`
 - Обработка ошибок: `ResponseEntityExceptionHandler` + `ProblemDetail` (RFC 9457)
-- Lombok: `compileOnly` + `annotationProcessor`; `@Data`/`@EqualsAndHashCode` запрещены на entities — нарушают Hibernate lifecycle; `equals()`/`hashCode()` по ID вручную: `hashCode() { return getClass().hashCode(); }`
+- Lombok: `compileOnly` + `annotationProcessor`;  
+  `@Data` / `@EqualsAndHashCode` запрещены на entities — нарушают Hibernate lifecycle;  
+  `equals()` / `hashCode()` по ID вручную: `hashCode() { return getClass().hashCode(); }`
 
 ### Spring Security
 
@@ -305,7 +308,9 @@ void remove(UUID id);              // remove
 
 > Источник правды — `start.spring.io`. Maven Central не является авторитетом для Boot 4 стартеров.
 
-### Spring Boot 4 — `implementation` (`org.springframework.boot`)
+### `implementation`
+
+**`org.springframework.boot`**
 
 ```
 spring-boot-h2console
@@ -353,22 +358,7 @@ spring-boot-starter-webmvc
 spring-boot-starter-websocket
 ```
 
-### Spring Boot 4 — `testImplementation`
-
-```
-spring-boot-starter-test
-spring-boot-starter-data-jpa-test
-spring-boot-starter-grpc-client-test
-spring-boot-starter-grpc-server-test
-spring-boot-starter-security-test
-spring-boot-starter-security-oauth2-authorization-server-test
-spring-boot-starter-security-oauth2-client-test
-spring-boot-starter-security-oauth2-resource-server-test
-spring-boot-starter-webmvc-test
-spring-boot-testcontainers
-```
-
-### Spring Cloud 2025.1.x — `org.springframework.cloud`
+**`org.springframework.cloud`** (2025.1.x)
 
 ```
 spring-cloud-config-server
@@ -397,7 +387,31 @@ org.flywaydb:flyway-database-postgresql
 org.flywaydb:flyway-mysql
 ```
 
-### Testcontainers — `testImplementation` (версия управляется Spring Boot BOM)
+### `developmentOnly`
+
+```
+org.springframework.boot:spring-boot-devtools
+org.springframework.boot:spring-boot-docker-compose
+```
+
+### `testImplementation`
+
+**`org.springframework.boot`**
+
+```
+spring-boot-starter-test
+spring-boot-starter-data-jpa-test
+spring-boot-starter-grpc-client-test
+spring-boot-starter-grpc-server-test
+spring-boot-starter-security-test
+spring-boot-starter-security-oauth2-authorization-server-test
+spring-boot-starter-security-oauth2-client-test
+spring-boot-starter-security-oauth2-resource-server-test
+spring-boot-starter-webmvc-test
+spring-boot-testcontainers
+```
+
+**Testcontainers** (версия управляется Spring Boot BOM)
 
 ```
 org.testcontainers:testcontainers-junit-jupiter
@@ -413,22 +427,13 @@ org.testcontainers:mongodb
 org.junit.platform:junit-platform-launcher
 ```
 
-### `developmentOnly`
-
-```
-org.springframework.boot:spring-boot-devtools
-org.springframework.boot:spring-boot-docker-compose
-```
-
 ### Прочее
 
 ```
+# Maven (third-party, явная версия)
 org.thymeleaf.extras:thymeleaf-extras-springsecurity6   ← имя "6", даже с Security 7
-org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2 ← явная версия (third-party)
-```
+org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2
 
-### Gradle plugins (в `buildSrc/build.gradle` или `plugins {}`)
-
-```
+# Gradle plugins
 com.google.protobuf version 0.9.6   ← обязателен для gRPC (кодогенерация из .proto)
 ```
