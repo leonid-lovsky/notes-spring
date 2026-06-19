@@ -1,7 +1,7 @@
 # CLAUDE.md — notes-spring
 
 > Единственный источник истины для этого проекта. Читается автоматически в начале каждой сессии.  
-> Последнее обновление: 2026-06-19T11:32Z
+> Последнее обновление: 2026-06-19T11:36Z
 
 ---
 
@@ -51,7 +51,7 @@
 5. Banking Phase 2 — MFA, token rotation, audit log
 6. `user-note/feign/` — OpenFeign
 7. `crud/` — shared library
-8. Широкий стек — после выбора стратегии активации; цель: показать, что домен не зависит от протокола и хранилища
+8. Широкий стек — после выбора стратегии активации; цель: показать, что домен не зависит от протокола и хранилища (один use case: WebMVC + gRPC + GraphQL)
 
 ---
 
@@ -142,11 +142,11 @@ feign/        driven outbound   →  domain/  (только user-note/)
 
 ### Целевая модель портов
 
-| Модель                     | Driving                               | Driven                                 |
-|----------------------------|---------------------------------------|----------------------------------------|
-| Sync + Virtual Threads     | `webmvc/`, `shell/`, `batch/`         | `data-jpa/`, `data-jdbc/`, `jooq/`     |
-| Reactive (Project Reactor) | `webflux/`, `rsocket/`                | `data-r2dbc/`, `data-mongodb-rx/`      |
-| Async messaging            | `kafka/` consumer, `amqp/` consumer   | `kafka/` producer, `amqp/` producer    |
+| Модель                     | Driving                                      | Driven                                        |
+|----------------------------|----------------------------------------------|-----------------------------------------------|
+| Sync + Virtual Threads     | `webmvc/`, `grpc/`, `graphql/`, `shell/`, `batch/` | `data-jpa/`, `data-jdbc/`, `jooq/`, `feign/`, `grpc/` |
+| Reactive (Project Reactor) | `webflux/`, `rsocket/`, `websocket/`         | `data-r2dbc/`, `data-mongodb-rx/`             |
+| Async messaging            | `kafka/` consumer, `amqp/` consumer          | `kafka/` producer, `amqp/` producer           |
 
 WebFlux + Virtual Threads несовместимы → один `application/` собирает одну модель.
 
@@ -406,4 +406,5 @@ org.springframework.boot:spring-boot-docker-compose
 ```
 org.thymeleaf.extras:thymeleaf-extras-springsecurity6   ← имя "6", даже с Security 7
 org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2 ← явная версия (third-party)
+net.devh:grpc-spring-boot-starter                       ← gRPC server+client (third-party, проверить совместимость с Boot 4)
 ```
