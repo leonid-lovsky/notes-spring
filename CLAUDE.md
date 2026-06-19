@@ -1,7 +1,7 @@
 # CLAUDE.md — notes-spring
 
 > Единственный источник истины для этого проекта. Читается автоматически в начале каждой сессии.  
-> Последнее обновление: 2026-06-19T11:39Z
+> Последнее обновление: 2026-06-19T11:42Z
 
 ---
 
@@ -95,7 +95,8 @@
 | Spring Cloud                 | 2025.1.2 |
 | Spring Dependency Management | 1.1.7    |
 
-> **Проект сейчас:** Boot 4.0.6 · Cloud 2025.1.1 · Gradle 9.5.1 — обновить `buildSrc/build.gradle` и `gradle/wrapper/gradle-wrapper.properties`.
+> **Проект сейчас:** Boot 4.0.6 · Cloud 2025.1.1 · Gradle 9.5.1 —  
+> обновить `buildSrc/build.gradle` и `gradle/wrapper/gradle-wrapper.properties`.
 
 ---
 
@@ -129,9 +130,11 @@ EXTERNAL      Redis        Spring Session backing (bff/ + thymeleaf/ при ма
 application/  Spring Boot app — composition root; знает все модули
 domain/       entities + port interfaces (input + output) — чистая Java, без Spring
 service/      use case implementations (@Service, @Transactional) — зависит только от domain/
-webmvc/       driving adapter   →  domain/
-data-jpa/     driven adapter    →  domain/
-feign/        driven outbound   →  domain/  (только user-note/)
+webmvc/       driving adapter (HTTP/REST)            →  domain/
+grpc/         driving adapter (gRPC/Protobuf)        →  domain/
+graphql/      driving adapter (GraphQL)              →  domain/
+data-jpa/     driven adapter  (JPA/SQL)              →  domain/
+feign/        driven adapter  (HTTP client)          →  domain/  (только user-note/)
 ```
 
 **Dependency direction** — `application/` знает всё; адаптеры знают только `domain/`; `domain/` — ничего снаружи  
@@ -177,6 +180,7 @@ void remove(UUID id);              // remove
 - **`*OutputPort`** / **`*OutputAdapter`** — без фреймворк-/технологических коннотаций
 - **`ResponseEntity<T>` везде** — статусы явно через `HttpStatus`
 - **`AuthUser` (`auth/`) ≠ `User` (`user/`)**
+- **Wire format в адаптере** — `.proto` в `grpc/`, `.graphqls` в `graphql/`; Protobuf/GraphQL типы не проникают в `domain/`
 
 ---
 
@@ -309,6 +313,8 @@ spring-boot-starter-data-rest
 spring-boot-starter-elasticsearch
 spring-boot-starter-flyway
 spring-boot-starter-graphql
+spring-boot-starter-grpc-client
+spring-boot-starter-grpc-server
 spring-boot-starter-hateoas
 spring-boot-starter-integration
 spring-boot-starter-jdbc
@@ -324,8 +330,6 @@ spring-boot-starter-rsocket
 spring-boot-starter-security
 spring-boot-starter-security-oauth2-authorization-server
 spring-boot-starter-security-oauth2-client
-spring-boot-starter-grpc-client
-spring-boot-starter-grpc-server
 spring-boot-starter-security-oauth2-resource-server
 spring-boot-starter-session-data-redis
 spring-boot-starter-session-jdbc
