@@ -1,7 +1,7 @@
 package com.example.user.service;
 
 import com.example.user.domain.User;
-import com.example.user.domain.UserOutputPort;
+import com.example.user.domain.UserRepository;
 import com.example.user.domain.UserUseCase;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,60 +14,60 @@ import java.util.UUID;
 @Transactional
 class UserService implements UserUseCase {
 
-    private final UserOutputPort userOutputPort;
+    private final UserRepository userRepository;
 
-    UserService(UserOutputPort userOutputPort) {
-        this.userOutputPort = userOutputPort;
+    UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Override
     public User create(String username, String email, String password) {
         User user = new User(UUID.randomUUID(), username, email, password);
-        userOutputPort.add(user);
+        userRepository.add(user);
         return user;
     }
 
     @Override
     @Transactional(readOnly = true)
     public User findById(UUID id) {
-        return userOutputPort.findById(id)
+        return userRepository.findById(id)
             .orElseThrow(() -> new NoSuchElementException(id.toString()));
     }
 
     @Override
     @Transactional(readOnly = true)
     public User findByUsername(String username) {
-        return userOutputPort.findByUsername(username)
+        return userRepository.findByUsername(username)
             .orElseThrow(() -> new NoSuchElementException(username));
     }
 
     @Override
     @Transactional(readOnly = true)
     public User findByEmail(String email) {
-        return userOutputPort.findByEmail(email)
+        return userRepository.findByEmail(email)
             .orElseThrow(() -> new NoSuchElementException(email));
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<User> findAll() {
-        return userOutputPort.findAll();
+        return userRepository.findAll();
     }
 
     @Override
     public User update(UUID id, String username, String email, String password) {
-        User user = userOutputPort.findById(id)
+        User user = userRepository.findById(id)
             .orElseThrow(() -> new NoSuchElementException(id.toString()));
         User updated = new User(user.id(), username, email, password);
-        userOutputPort.replace(updated);
+        userRepository.replace(updated);
         return updated;
     }
 
     @Override
     public void delete(UUID id) {
-        if (!userOutputPort.existsById(id)) {
+        if (!userRepository.existsById(id)) {
             throw new NoSuchElementException(id.toString());
         }
-        userOutputPort.remove(id);
+        userRepository.remove(id);
     }
 }

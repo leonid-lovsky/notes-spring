@@ -1,7 +1,7 @@
 package com.example.user.data.jpa;
 
 import com.example.user.domain.User;
-import com.example.user.domain.UserOutputPort;
+import com.example.user.domain.UserRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -9,52 +9,52 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-class UserOutputAdapter implements UserOutputPort {
+class UserOutputAdapter implements UserRepository {
 
-    private final UserRepository userRepository;
+    private final UserJpaRepository userJpaRepository;
 
-    UserOutputAdapter(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    UserOutputAdapter(UserJpaRepository userJpaRepository) {
+        this.userJpaRepository = userJpaRepository;
     }
 
     @Override
     public boolean existsById(UUID id) {
-        return userRepository.existsById(id);
+        return userJpaRepository.existsById(id);
     }
 
     @Override
     public Optional<User> findById(UUID id) {
-        return userRepository.findById(id).map(UserOutputAdapter::toDomain);
+        return userJpaRepository.findById(id).map(UserOutputAdapter::toDomain);
     }
 
     @Override
     public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(username).map(UserOutputAdapter::toDomain);
+        return userJpaRepository.findByUsername(username).map(UserOutputAdapter::toDomain);
     }
 
     @Override
     public Optional<User> findByEmail(String email) {
-        return userRepository.findByEmail(email).map(UserOutputAdapter::toDomain);
+        return userJpaRepository.findByEmail(email).map(UserOutputAdapter::toDomain);
     }
 
     @Override
     public List<User> findAll() {
-        return userRepository.findAll().stream().map(UserOutputAdapter::toDomain).toList();
+        return userJpaRepository.findAll().stream().map(UserOutputAdapter::toDomain).toList();
     }
 
     @Override
     public void add(User user) {
-        userRepository.save(toEntity(user));
+        userJpaRepository.save(toEntity(user));
     }
 
     @Override
     public void replace(User user) {
-        userRepository.save(toEntity(user));
+        userJpaRepository.save(toEntity(user));
     }
 
     @Override
     public void remove(UUID id) {
-        userRepository.deleteById(id);
+        userJpaRepository.deleteById(id);
     }
 
     private static User toDomain(UserEntity entity) {

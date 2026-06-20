@@ -1,7 +1,8 @@
 # CLAUDE.md — notes-spring
 
-> Единственный источник истины для этого проекта. Читается автоматически в начале каждой сессии.  
-> Последнее обновление: 2026-06-20T11:53Z
+> Живой документ проекта. Читается автоматически в начале каждой сессии.
+> Может содержать неточности и несоответствия — всегда подлежит уточнению и улучшению.
+> Последнее обновление: 2026-06-21T00:00Z
 
 ---
 
@@ -18,11 +19,10 @@
 
 - **Язык** — общение на русском; код, идентификаторы, комментарии — на английском
 - **Приоритет** — называть текущую задачу (раздел Задачи); отложенное не предлагать
-- **Решение проблем** — сначала: актуальна ли проблема? кто выигрывает? не упускаем ли что-то?  
-  затем: варианты с плюсами/минусами + склонение → ждать выбора → обосновать;  
+- **Решение проблем** — сначала: актуальна ли проблема? кто выигрывает? не упускаем ли что-то?
+  затем: варианты с плюсами/минусами + склонение → ждать выбора → обосновать;
   не предлагать реализационные задачи, пока открыты архитектурные вопросы
-- **Этот файл** — приоритет над всем; обновлять при изменении проекта или принципов;  
-  всё, что пользователь просит запомнить — отражать здесь
+- **Этот файл** — обновлять при изменении проекта или принципов; всё, что пользователь просит запомнить — отражать здесь
 
 ### Ограничения
 
@@ -50,10 +50,10 @@
 
 ### `auth/` ← **ТЕКУЩИЙ ПРИОРИТЕТ**
 
-> Скелет `auth/application/` уже создан (`AuthApplication.java`, пустой тест, пустой `application.properties`).  
+> Скелет `auth/application/` уже создан (`AuthApplication.java`, пустой тест, пустой `application.properties`).
 > Модули `domain/`, `data-jpa/` и сам Authorization Server — не созданы.
 
-1. `auth/domain/` — `AuthUser` record + `AuthUserUseCase` + `AuthUserOutputPort`
+1. `auth/domain/` — `AuthUser` record + `AuthUserUseCase` + `AuthUserRepository`
 2. `auth/data-jpa/` — JPA adapter + Flyway schema
 3. Spring Authorization Server — OIDC endpoint + JWT issuer
 
@@ -66,8 +66,7 @@
 5. Banking Phase 2 — MFA, token rotation, audit log
 6. `user-note/feign/` — OpenFeign
 7. `crud/` — shared library
-8. Широкий стек — один use case через WebMVC + gRPC + GraphQL;  
-   цель: доказать, что домен не зависит от протокола и хранилища
+8. Широкий стек — один use case через WebMVC + gRPC + GraphQL; цель: доказать, что домен не зависит от протокола и хранилища
 
 ---
 
@@ -117,8 +116,7 @@
 
 ## Принципы
 
-> Применяются с первого дня — не "когда проект вырастет". Код, архитектура, тесты, деплой  
-> проектируются так, чтобы менять backing service (H2 → PostgreSQL, local → AWS) без правок в `domain/` и `service/`.
+> Применяются с первого дня. Код, архитектура, тесты, деплой проектируются так, чтобы менять backing service (H2 → PostgreSQL, local → AWS) без правок в `domain/` и `service/`.
 
 - **Hexagonal Architecture** — главный принцип; все решения проверяются на соответствие
 - **SoC / SRP** — на всех уровнях; **видимость** — `default` или минимально необходимая
@@ -134,7 +132,7 @@
 
 ```
 application/  Spring Boot app — composition root; знает все модули
-domain/       entities + port interfaces (input + output) — чистая Java, без Spring
+domain/       entities + port interfaces (UseCase + Repository) — чистая Java, без Spring
 service/      use case implementations (@Service, @Transactional) — зависит только от domain/
 webmvc/       driving adapter (HTTP/REST)      →  domain/
 grpc/         driving adapter (gRPC/Protobuf)  →  domain/
@@ -143,38 +141,28 @@ data-jpa/     driven adapter  (JPA/SQL)        →  domain/
 feign/        driven adapter  (HTTP client)    →  domain/  (только user-note/)
 ```
 
-**Dependency direction** — `application/` знает всё; адаптеры знают только `domain/`; `domain/` — ничего снаружи  
-**Database per service** — cross-service JOIN запрещён  
-**Stateless** — `gateway/` · `config/` · `registry/` · `user/` · `note/` · `user-note/`  
+**Dependency direction** — `application/` знает всё; адаптеры знают только `domain/`; `domain/` — ничего снаружи
+**Database per service** — cross-service JOIN запрещён
+**Stateless** — `gateway/` · `config/` · `registry/` · `user/` · `note/` · `user-note/`
 **Stateful** — `bff/` · `thymeleaf/` → Spring Session; `auth/` → OAuth2Authorization в PostgreSQL
 
 ### Тестирование (пирамида)
 
 Каждый модуль тестируется изолированно — Spring context поднимается только там, где он нужен:
 
-| Модуль       | Тест-слой                  | Что проверяет                                   |
-|--------------|----------------------------|-------------------------------------------------|
-| `domain/`    | JUnit (чистая Java)        | Доменная логика без Spring context              |
-| `service/`   | Spring context + Mockito   | Use case; output port мокируется               |
-| `webmvc/`    | `@WebMvcTest` (MockMvc)    | HTTP binding, статусы, сериализация             |
+| Модуль       | Тест-слой                  | Что проверяет                                      |
+|--------------|----------------------------|----------------------------------------------------|
+| `domain/`    | JUnit (чистая Java)        | Доменная логика без Spring context                 |
+| `service/`   | Spring context + Mockito   | Use case; Repository мокируется                   |
+| `webmvc/`    | `@WebMvcTest` (MockMvc)    | HTTP binding, статусы, сериализация                |
 | `data-jpa/`  | `@DataJpaTest` + TC        | SQL, маппинг; Testcontainers = реальный PostgreSQL |
-| `application/` | `@SpringBootTest` + TC   | Полный smoke test; все слои вместе              |
+| `application/` | `@SpringBootTest` + TC   | Полный smoke test; все слои вместе                 |
 
-**ArchUnit** — архитектурные тесты в CI; автоматически проверяет, что `domain/` не импортирует из адаптеров.
+**ArchUnit** — архитектурные тесты в CI; проверяет, что `domain/` не импортирует из адаптеров.
 
-### Целевая модель портов
+### Семантика репозиториев
 
-| Модель                     | Driving                                            | Driven                                                |
-|----------------------------|----------------------------------------------------|-------------------------------------------------------|
-| Sync + Virtual Threads     | `webmvc/`, `grpc/`, `graphql/`, `shell/`, `batch/` | `data-jpa/`, `data-jdbc/`, `jooq/`, `feign/`, `grpc/` |
-| Reactive (Project Reactor) | `webflux/`, `rsocket/`, `websocket/`               | `data-r2dbc/`, `data-mongodb-rx/`                     |
-| Async messaging            | `kafka/` consumer, `amqp/` consumer                | `kafka/` producer, `amqp/` producer                   |
-
-WebFlux + Virtual Threads несовместимы → один `application/` собирает одну модель.
-
-### Семантика output port
-
-Output port говорит на языке домена, не хранилища. Коллекционная семантика (Evans):
+`*Repository` (domain port) говорит на языке домена, не хранилища. Коллекционная семантика (Evans):
 
 ```java
 boolean existsById(UUID id);       // containsKey
@@ -185,7 +173,7 @@ void replace(Note note);           // replace (full)
 void remove(UUID id);              // remove
 ```
 
-`void` для мутирующих — UUID генерируется в `service/` до вызова порта.  
+`void` для мутирующих — UUID генерируется в `service/` до вызова порта.
 `replace` — полная замена; PATCH решается в `webmvc/` + `service/`.
 
 ### Принятые решения
@@ -196,8 +184,8 @@ void remove(UUID id);              // remove
 - **OpenFeign** — `spring-cloud-starter-openfeign` для `user-note/feign/`
 - **Input port — интерфейс в `domain/`** — `webmvc/` зависит от интерфейса, не от `service/`
 - **Domain objects — Java records** — `withXxx()` для изменённой копии; JPA entities — обычные классы
-- **`existsById` в output port** — валидный паттерн; не заменять на `findById`
-- **`*OutputPort`** / **`*OutputAdapter`** — без фреймворк-/технологических коннотаций
+- **`existsById` в Repository** — валидный паттерн; не заменять на `findById`
+- **Именование портов** — `*UseCase` (input port) · `*Repository` (output port, domain package) · `*JpaRepository` (Spring Data, data-jpa package) · `*OutputAdapter` (driven adapter)
 - **`ResponseEntity<T>` везде** — статусы явно через `HttpStatus`
 - **`AuthUser` (`auth/`) ≠ `User` (`user/`)**
 - **Wire format в адаптере** — `.proto` в `grpc/`, `.graphqls` в `graphql/`; Protobuf/GraphQL типы не проникают в `domain/`
@@ -221,7 +209,7 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
               Kafka/MQ     только при событийной регистрации (решение не принято)
 ```
 
-> **MVP** — та же архитектура и код; H2 вместо PostgreSQL, `MapSessionRepository` вместо Redis.  
+> **MVP** — та же архитектура и код; H2 вместо PostgreSQL, `MapSessionRepository` вместо Redis.
 > Backing services подключаются при реальной потребности, не как архитектурный шаг.
 
 ---
@@ -230,8 +218,8 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 
 > `identity ≠ profile ≠ business ≠ permissions` — смешивание нарушает SoC и усложняет смену IdP
 
-**Zero Trust** — каждый слой валидирует JWT самостоятельно  
-**JWT claims** — только стандартные: `sub` · `iss` · `aud` · `exp` · `jti` · `acr` · `amr` · `scope`  
+**Zero Trust** — каждый слой валидирует JWT самостоятельно
+**JWT claims** — только стандартные: `sub` · `iss` · `aud` · `exp` · `jti` · `acr` · `amr` · `scope`
 **Браузер не видит JWT** — только HttpOnly session cookie в `bff/` · `thymeleaf/` (защита от XSS)
 
 | Слой            | Модуль                | Ответственность                              |
@@ -242,7 +230,7 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 | Resource Server | `*/webmvc/`           | JWT validation per request                   |
 | ACL             | `user-note/`          | `UserNote { userId, noteId, role }`          |
 
-**UserNoteRole:** `OWNER` · `EDITOR` · `COMMENTER` _(не MVP)_ · `VIEWER`  
+**UserNoteRole:** `OWNER` · `EDITOR` · `COMMENTER` _(не MVP)_ · `VIEWER`
 **NoteVisibility:** `RESTRICTED` · `ANYONE_WITH_LINK` + role · `PUBLIC` + role
 
 ### Клиенты
@@ -256,17 +244,17 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 
 ### Аутентификация
 
-**Все методы → единый JWT** с `acr` (1 = single factor, 2 = MFA) и `amr` (pwd / google / passkey / totp)  
-**Social Login** — `auth/` сам OAuth2 Client к Google/GitHub; их токен никогда не покидает `auth/`  
-**MFA** — `@EnableMultiFactorAuthentication` (Spring Security 7) + `FactorGrantedAuthority`  
+**Все методы → единый JWT** с `acr` (1 = single factor, 2 = MFA) и `amr` (pwd / google / passkey / totp)
+**Social Login** — `auth/` сам OAuth2 Client к Google/GitHub; их токен никогда не покидает `auth/`
+**MFA** — `@EnableMultiFactorAuthentication` (Spring Security 7) + `FactorGrantedAuthority`
 **Step-up auth** — `/oauth2/authorize?acr_values=2` → MFA challenge → новый токен с `acr=2`
 
 ### Токены
 
-**Flow:** User → `auth/` → access_token → BFF Token Exchange (RFC 8693) → internal JWT (`aud`=сервис) → Microservice  
-**access_token** 15 мин · **refresh_token** 30–90 дней; хранится в сессии BFF или Keychain/Keystore; в микросервисы не отправляется  
-**Rotation** — каждый refresh → новый refresh_token; повторное использование старого → revoke вся семья → re-login  
-**JTI Blocklist** — Redis `SET jti:{jti} "revoked" EX ttl`; ~0.5 ms на запрос; logout < 1 с (banking-grade)  
+**Flow:** User → `auth/` → access_token → BFF Token Exchange (RFC 8693) → internal JWT (`aud`=сервис) → Microservice
+**access_token** 15 мин · **refresh_token** 30–90 дней; хранится в сессии BFF или Keychain/Keystore; в микросервисы не отправляется
+**Rotation** — каждый refresh → новый refresh_token; повторное использование старого → revoke вся семья → re-login
+**JTI Blocklist** — Redis `SET jti:{jti} "revoked" EX ttl`; ~0.5 ms на запрос; logout < 1 с (banking-grade)
 **Back-channel logout** — `auth/` → POST `bff/logout/connect/back-channel`; при горизонтальном масштабировании BFF требует Redis Session
 
 ### Banking-grade фазы
@@ -283,11 +271,11 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 
 ### Gradle
 
-**`buildSrc`** + convention plugins (Kotlin DSL) — единственный механизм; flat, без вложенности  
-**Файлы:** `buildSrc/build.gradle.kts` (версии плагинов — в `val`-константах); convention plugins — `src/main/kotlin/*.gradle.kts`; субпроекты — `build.gradle` (Groovy, только `id '...'`)  
-**Нет:** root `build.gradle` · `buildSrc/settings.gradle` · `libs.versions.toml`  
-**Порядок блоков:** `plugins` → `repositories` → `dependencyManagement` → `dependencies` → `test`  
-**Порядок зависимостей:** `domain` → `service` → `webmvc` → `data-jpa`  
+**`buildSrc`** + convention plugins (Kotlin DSL) — единственный механизм; flat, без вложенности
+**Файлы:** `buildSrc/build.gradle.kts` (версии плагинов — в `val`-константах); convention plugins — `src/main/kotlin/*.gradle.kts`; субпроекты — `build.gradle` (Groovy, только `id '...'`)
+**Нет:** root `build.gradle` · `buildSrc/settings.gradle` · `libs.versions.toml`
+**Порядок блоков:** `plugins` → `repositories` → `dependencyManagement` → `dependencies` → `test`
+**Порядок зависимостей:** `domain` → `service` → `webmvc` → `data-jpa`
 **`settings.gradle`:** `gateway` → `config` → `registry` → `auth` → `user` → `note` → `user-note`; внутри: `application` → `domain` → `service` → `webmvc` → `data-jpa`
 
 **Convention plugins (8 / ≈16):**
@@ -318,63 +306,57 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 - RestTemplate deprecated → `RestClient`
 - Flyway + PostgreSQL: нужен `runtimeOnly("org.flywaydb:flyway-database-postgresql")`
 - Обработка ошибок: `ResponseEntityExceptionHandler` + `ProblemDetail` (RFC 9457)
-- Lombok: `compileOnly` + `annotationProcessor`;  
-  `@Data` / `@EqualsAndHashCode` запрещены на entities — нарушают Hibernate lifecycle;  
+- Lombok: `compileOnly` + `annotationProcessor`;
+  `@Data` / `@EqualsAndHashCode` запрещены на entities — нарушают Hibernate lifecycle;
   `equals()` / `hashCode()` по ID вручную: `hashCode() { return getClass().hashCode(); }`
 
 ### Spring Security
 
-**Цепочка:** `SecurityFilterChain` → `AuthenticationManager` → `ProviderManager` → `DaoAuthenticationProvider` → `UserDetailsService` + `PasswordEncoder`  
-**Resource Server** — `JwtDecoder` + `JwtAuthenticationConverter` → `GrantedAuthority`; минимум: property `spring.security.oauth2.resourceserver.jwt.issuer-uri`  
+**Цепочка:** `SecurityFilterChain` → `AuthenticationManager` → `ProviderManager` → `DaoAuthenticationProvider` → `UserDetailsService` + `PasswordEncoder`
+**Resource Server** — `JwtDecoder` + `JwtAuthenticationConverter` → `GrantedAuthority`; минимум: property `spring.security.oauth2.resourceserver.jwt.issuer-uri`
 **Auth Server** — `OAuth2AuthorizationServerConfigurer` · `RegisteredClientRepository`; 4 обязательных бина: `SecurityFilterChain` × 2, `UserDetailsService`, `JWKSource`
 
 Стартеры — см. раздел **Верифицированные координаты** ниже.
 
 ### Null Safety и стиль
 
-**`@NullMarked`** (JSpecify) через `package-info.java` — non-null по умолчанию; не иерархично: каждый пакет требует своего `package-info.java`; `org.springframework.lang` deprecated  
-**`@Nullable`** — `@Target(TYPE_USE)`: `private @Nullable String field`; массивы: `Object @Nullable []` (nullable ссылка), `@Nullable Object[]` (nullable элементы)  
-**Spring Cloud (2025.1.x)** — ещё не null-safe в `registry/`, `config/`, `gateway/`; при нужде: `@NullUnmarked`  
-**Импорты** — `com.example.*` + `org.*` / `jakarta.*`, затем `java.*`; wildcard при 3+  
-**Имена полей** — camelCase от типа: `noteOutputPort`, `noteJpaRepository`; не `repository`, не `port`  
-**Промежуточная переменная** — перед `return` всегда извлекать результат (`response`, `notes`); не inline в `.body()`  
+**`@NullMarked`** (JSpecify) через `package-info.java` — non-null по умолчанию; не иерархично: каждый пакет требует своего `package-info.java`; `org.springframework.lang` deprecated
+**`@Nullable`** — `@Target(TYPE_USE)`: `private @Nullable String field`; массивы: `Object @Nullable []` (nullable ссылка), `@Nullable Object[]` (nullable элементы)
+**Spring Cloud (2025.1.x)** — ещё не null-safe в `registry/`, `config/`, `gateway/`; при нужде: `@NullUnmarked`
+**Импорты** — `com.example.*` + `org.*` / `jakarta.*`, затем `java.*`; wildcard при 3+
+**Имена полей** — camelCase от типа: `noteUseCase`, `noteRepository`, `noteJpaRepository`; не `repository`, не `useCase`
+**Промежуточная переменная** — перед `return` всегда извлекать результат (`response`, `notes`); не inline в `.body()`
 **Пустое тело** — одна пустая строка · **EOF** — один `\n`
 
 ### Качество, тестируемость и наблюдаемость
 
-**SonarQube** — один Gradle plugin (`org.sonarqube`) для двух режимов:  
-  · **Server** (self-hosted) — `sonar.host.url=http://localhost:9000`  
-  · **Cloud** (sonarcloud.io) — `sonar.host.url=https://sonarcloud.io` + `sonar.organization=<org>`  
-  convention plugin в `buildSrc`; применять ко всем `application/` модулям; artifact: `org.sonarsource.scanner.gradle:sonarqube-gradle-plugin`; версию брать с Maven Central  
-**JaCoCo** — встроен в Gradle (plugin id: `jacoco`), версия не нужна; источник покрытия для SonarQube  
-**ArchUnit** — архитектурные тесты в CI; `testImplementation("com.tngtech.archunit:archunit-junit5:<version>")`; версию брать с Maven Central; проверяет что `domain/` не импортирует из `webmvc/` или `data-jpa/`  
-**Actuator** — только в `application/` (не в адаптерах, `domain/`, `service/`); `management.server.port` — отдельный порт, не через `gateway/`; в Resource Server — отдельный `SecurityFilterChain` для `/actuator/**`  
-**OWASP Dependency-Check** — сканирование CVE в зависимостях; Gradle plugin id: `org.owasp.dependencycheck`; artifact: `org.owasp:dependency-check-gradle`; версию брать с Maven Central  
+**SonarQube** — один Gradle plugin (`org.sonarqube`) для двух режимов:
+  · **Server** (self-hosted) — `sonar.host.url=http://localhost:9000`
+  · **Cloud** (sonarcloud.io) — `sonar.host.url=https://sonarcloud.io` + `sonar.organization=<org>`
+  convention plugin в `buildSrc`; применять ко всем `application/` модулям; artifact: `org.sonarsource.scanner.gradle:sonarqube-gradle-plugin`; версию брать с Maven Central
+**JaCoCo** — встроен в Gradle (plugin id: `jacoco`), версия не нужна; источник покрытия для SonarQube
+**ArchUnit** — архитектурные тесты в CI; `testImplementation("com.tngtech.archunit:archunit-junit5:<version>")`; версию брать с Maven Central; проверяет что `domain/` не импортирует из `webmvc/` или `data-jpa/`
+**Actuator** — только в `application/` (не в адаптерах, `domain/`, `service/`); `management.server.port` — отдельный порт, не через `gateway/`; в Resource Server — отдельный `SecurityFilterChain` для `/actuator/**`
+**OWASP Dependency-Check** — сканирование CVE в зависимостях; Gradle plugin id: `org.owasp.dependencycheck`; artifact: `org.owasp:dependency-check-gradle`; версию брать с Maven Central
 **Renovate** — автоматические PR при выходе новых версий; конфигурируется через `renovate.json`; работает как GitHub App
 
 ### CI/CD
 
-| Инструмент     | Размещение  | Плюсы                                                 | Минусы                        |
-|----------------|-------------|-------------------------------------------------------|-------------------------------|
-| GitHub Actions | Cloud/self  | Нативно для GitHub; marketplace; бесплатно для public | Vendor lock-in GitHub         |
-| GitLab CI      | Cloud/self  | Встроенный registry + security scanning; DevSecOps    | Требует GitLab-хостинг        |
-| Jenkins        | Self-hosted | Максимальная гибкость; любой VCS                      | Высокий overhead обслуживания |
-
-**Текущий выбор** — GitHub Actions (`.github/workflows/`); не трогать без явного запроса  
-**SonarQube** интегрируется во все три через тот же Gradle plugin (`./gradlew sonar`)
+**GitHub Actions** (`.github/workflows/`) — текущий выбор; не трогать без явного запроса.
+**SonarQube** интегрируется через Gradle plugin (`./gradlew sonar`).
 
 ---
 
 ## Развёртывание
 
-> Код не меняется при смене backing service — это гарантирует hexagonal architecture.  
+> Код не меняется при смене backing service — это гарантирует hexagonal architecture.
 > Меняется только конфигурация и convention plugin (`h2-database` → `data-jpa` + PostgreSQL driver).
 
-| Этап        | Инструменты                       | Backing services                          |
-|-------------|-----------------------------------|-------------------------------------------|
-| Local / MVP | JVM + H2 + `MapSessionRepository` | Не нужны                                  |
-| Staging     | Docker + Docker Compose           | PostgreSQL · Redis · Kafka · ELK          |
-| Production  | Docker + ECS Fargate → EKS        | AWS managed services (см. таблицу ниже)  |
+| Этап        | Инструменты                       | Backing services                         |
+|-------------|-----------------------------------|------------------------------------------|
+| Local / MVP | JVM + H2 + `MapSessionRepository` | Не нужны                                 |
+| Staging     | Docker + Docker Compose           | PostgreSQL · Redis · Kafka · ELK         |
+| Production  | Docker + ECS Fargate → EKS        | AWS managed services (см. таблицу ниже) |
 
 **AWS — целевая production-платформа:**
 

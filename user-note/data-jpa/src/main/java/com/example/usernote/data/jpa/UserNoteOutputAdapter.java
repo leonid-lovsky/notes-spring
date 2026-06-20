@@ -1,7 +1,7 @@
 package com.example.usernote.data.jpa;
 
 import com.example.usernote.domain.UserNote;
-import com.example.usernote.domain.UserNoteOutputPort;
+import com.example.usernote.domain.UserNoteRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -9,47 +9,47 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-class UserNoteOutputAdapter implements UserNoteOutputPort {
+class UserNoteOutputAdapter implements UserNoteRepository {
 
-    private final UserNoteRepository userNoteRepository;
+    private final UserNoteJpaRepository userNoteJpaRepository;
 
-    UserNoteOutputAdapter(UserNoteRepository userNoteRepository) {
-        this.userNoteRepository = userNoteRepository;
+    UserNoteOutputAdapter(UserNoteJpaRepository userNoteJpaRepository) {
+        this.userNoteJpaRepository = userNoteJpaRepository;
     }
 
     @Override
     public boolean existsByUserIdAndNoteId(UUID userId, UUID noteId) {
-        return userNoteRepository.existsById(new UserNoteId(userId, noteId));
+        return userNoteJpaRepository.existsById(new UserNoteId(userId, noteId));
     }
 
     @Override
     public Optional<UserNote> findByUserIdAndNoteId(UUID userId, UUID noteId) {
-        return userNoteRepository.findById(new UserNoteId(userId, noteId)).map(UserNoteOutputAdapter::toDomain);
+        return userNoteJpaRepository.findById(new UserNoteId(userId, noteId)).map(UserNoteOutputAdapter::toDomain);
     }
 
     @Override
     public List<UserNote> findByUserId(UUID userId) {
-        return userNoteRepository.findByIdUserId(userId).stream().map(UserNoteOutputAdapter::toDomain).toList();
+        return userNoteJpaRepository.findByIdUserId(userId).stream().map(UserNoteOutputAdapter::toDomain).toList();
     }
 
     @Override
     public List<UserNote> findByNoteId(UUID noteId) {
-        return userNoteRepository.findByIdNoteId(noteId).stream().map(UserNoteOutputAdapter::toDomain).toList();
+        return userNoteJpaRepository.findByIdNoteId(noteId).stream().map(UserNoteOutputAdapter::toDomain).toList();
     }
 
     @Override
     public void add(UserNote userNote) {
-        userNoteRepository.save(toEntity(userNote));
+        userNoteJpaRepository.save(toEntity(userNote));
     }
 
     @Override
     public void replace(UserNote userNote) {
-        userNoteRepository.save(toEntity(userNote));
+        userNoteJpaRepository.save(toEntity(userNote));
     }
 
     @Override
     public void remove(UUID userId, UUID noteId) {
-        userNoteRepository.deleteById(new UserNoteId(userId, noteId));
+        userNoteJpaRepository.deleteById(new UserNoteId(userId, noteId));
     }
 
     private static UserNote toDomain(UserNoteEntity entity) {

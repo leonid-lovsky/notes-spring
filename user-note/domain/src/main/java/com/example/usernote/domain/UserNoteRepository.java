@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface UserNoteOutputPort {
+public interface UserNoteRepository {
 
     boolean existsByUserIdAndNoteId(UUID userId, UUID noteId);
 

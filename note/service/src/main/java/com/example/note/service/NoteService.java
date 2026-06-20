@@ -1,7 +1,7 @@
 package com.example.note.service;
 
 import com.example.note.domain.Note;
-import com.example.note.domain.NoteOutputPort;
+import com.example.note.domain.NoteRepository;
 import com.example.note.domain.NoteUseCase;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,46 +14,46 @@ import java.util.UUID;
 @Transactional
 class NoteService implements NoteUseCase {
 
-    private final NoteOutputPort noteOutputPort;
+    private final NoteRepository noteRepository;
 
-    NoteService(NoteOutputPort noteOutputPort) {
-        this.noteOutputPort = noteOutputPort;
+    NoteService(NoteRepository noteRepository) {
+        this.noteRepository = noteRepository;
     }
 
     @Override
     public Note create(String content) {
         Note note = new Note(UUID.randomUUID(), content);
-        noteOutputPort.add(note);
+        noteRepository.add(note);
         return note;
     }
 
     @Override
     @Transactional(readOnly = true)
     public Note findById(UUID id) {
-        return noteOutputPort.findById(id)
+        return noteRepository.findById(id)
             .orElseThrow(() -> new NoSuchElementException(id.toString()));
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Note> findAll() {
-        return noteOutputPort.findAll();
+        return noteRepository.findAll();
     }
 
     @Override
     public Note update(UUID id, String content) {
-        Note note = noteOutputPort.findById(id)
+        Note note = noteRepository.findById(id)
             .orElseThrow(() -> new NoSuchElementException(id.toString()));
         Note updated = note.withContent(content);
-        noteOutputPort.replace(updated);
+        noteRepository.replace(updated);
         return updated;
     }
 
     @Override
     public void delete(UUID id) {
-        if (!noteOutputPort.existsById(id)) {
+        if (!noteRepository.existsById(id)) {
             throw new NoSuchElementException(id.toString());
         }
-        noteOutputPort.remove(id);
+        noteRepository.remove(id);
     }
 }
