@@ -2,7 +2,7 @@
 
 > Живой документ проекта. Читается автоматически в начале каждой сессии.
 > Может содержать неточности — всегда подлежит уточнению и улучшению.
-> Последнее обновление: 2026-06-20T21:44Z
+> Последнее обновление: 2026-06-20T21:45Z
 
 ---
 
@@ -83,8 +83,8 @@
   - **Sync** — `auth/` → `user/` через RestClient; нарушает direction of dependencies
   - **Events** — Kafka/RabbitMQ; единственный вариант без нарушения SoC/SRP; требует брокера
 - **Mapping** — где маппить между слоями; ручной / MapStruct; отдельные DTO/VO на каждом слое
-- **PATCH** — только в `service/` (полный объект → `replace`) / в output port / не поддерживать
-- **Возврат из service/** — доменный объект / `void` для мутирующих; CQS / CQRS на уровне input port
+- **PATCH** — решение открыто: обрабатывать в `service/` (fetch → modify → replace) или не поддерживать вовсе
+- **Возврат из use case** — доменный объект / `void` для мутирующих; CQS / CQRS на уровне input port
 
 ### Отложено (фундаментальное)
 
@@ -97,7 +97,7 @@
   - `@Profile("jpa")` — просто, грубо
   - Отдельные `application-jpa/` · `application-r2dbc/` — чисто; дублирует composition root
 - **Название output adapter при нескольких реализациях** — `NoteOutputAdapter` / `NoteJpaOutputAdapter`
-- **Нужен ли отдельный `service/`** ← **НАЧАТЬ СЛЕДУЮЩУЮ СЕССИЮ С ЭТОГО** — открытый вопрос, обсуждался детально:
+- **Нужен ли отдельный `service/`** ← **НАЧАТЬ СЛЕДУЮЩУЮ СЕССИЮ С ЭТОГО** — решение не принято; пока существует, но под вопросом. Обсуждалось детально:
   - **Наблюдение:** `*UseCase` и `*Repository` — оба интерфейсы в `domain/`; функционально можно было бы слить или убрать; интерфейсы и слои не должны существовать ради паттерна, только из реальной необходимости
   - **Текущий `UserService`** — тривиален: генерирует UUID, вызывает repository, возвращает результат; нет координации нескольких репозиториев, нет нетривиальных правил
   - **Зачем `service/` сейчас:** единственная реальная причина — тестируемость: `@WebMvcTest` мокирует `*UseCase`, тест сервиса мокирует `*Repository`; без интерфейсов тестовая пирамида рассыпается
@@ -347,15 +347,13 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 
 ### Для опыта
 
-Все перечисленные инструменты и платформы используются последовательно по мере развития проекта:
+Используются последовательно по мере развития проекта:
 
-- **Spring Modulith** — изучается в контексте миграции multi-module → modular monolith; Gradle-модули дают более сильную compile-time boundary enforcement
+- **Spring Modulith** — миграция multi-module → modular monolith; Gradle-модули дают более сильную compile-time enforcement
 - **jMolecules** — аннотирует архитектурные роли явно: `@DrivingAdapter`, `@AggregateRoot`, `@Repository`
 - **Docker · Docker Compose · Kubernetes** — контейнеризация и оркестрация
 - **AWS** (ECS Fargate → EKS, RDS, ElastiCache, MSK, ALB, ACM, Secrets Manager, CloudWatch + X-Ray)
 - **Elastic Stack** — Elasticsearch + Logstash + Kibana
-- **Testcontainers** — реальные backing services в тестах
-- **SonarQube** — IDE → CI → Server → Cloud
 
 ---
 
