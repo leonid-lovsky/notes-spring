@@ -1,7 +1,7 @@
 # CLAUDE.md — notes-spring
 
 > Единственный источник истины для этого проекта. Читается автоматически в начале каждой сессии.  
-> Последнее обновление: 2026-06-19T20:48Z
+> Последнее обновление: 2026-06-20T10:52Z
 
 ---
 
@@ -269,7 +269,7 @@ void remove(UUID id);              // remove
 **Порядок блоков:** `plugins` → `java` → `repositories` → [`ext`] → `dependencies` → `dependencyManagement` → `test`  
 **Порядок зависимостей:** `domain` → `service` → `webmvc` → `data-jpa`  
 **`settings.gradle`:** `gateway` → `config` → `registry` → `auth` → `user` → `note` → `user-note`; внутри: `application` → `domain` → `service` → `webmvc` → `data-jpa`  
-**Convention plugins:** ✅ `application` · `domain` · `webmvc` · `data-jpa` · `h2-database` · `oauth2-resource-server` | ❌ планируется ≈16  
+**Convention plugins:** ✅ `application` · `domain` · `webmvc` · `data-jpa` · `h2-database` · `oauth2-resource-server` · `oauth2-client` | ❌ планируется ≈16  
 **`domain`** — только `java`; без Spring BOM; JSpecify и JUnit с явными версиями  
 **`oauth2-resource-server`** — транспортно-независимая JWT-валидация; применим к `webmvc/`, `webflux/`, `graphql/` — не переименовывать в `webmvc-oauth2-*`
 
