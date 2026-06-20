@@ -1,7 +1,7 @@
 # CLAUDE.md — notes-spring
 
 > Единственный источник истины для этого проекта. Читается автоматически в начале каждой сессии.  
-> Последнее обновление: 2026-06-20T11:15Z
+> Последнее обновление: 2026-06-20T11:33Z
 
 ---
 
@@ -264,13 +264,15 @@ void remove(UUID id);              // remove
 
 ### Gradle
 
-**`buildSrc`** + convention plugins (Groovy DSL) — единственный механизм; flat, без вложенности  
+**`buildSrc`** + convention plugins (Kotlin DSL) — единственный механизм; flat, без вложенности  
+**Файлы:** `buildSrc/build.gradle.kts`; convention plugins — `src/main/kotlin/*.gradle.kts`; субпроекты — `build.gradle` (Groovy, только `id '...'`)  
 **Нет:** root `build.gradle` · `buildSrc/settings.gradle` · `libs.versions.toml`  
-**Порядок блоков:** `plugins` → `java` → `repositories` → [`ext`] → `dependencies` → `dependencyManagement` → `test`  
+**Порядок блоков:** `plugins` → `repositories` → `dependencyManagement` → `dependencies` → `test`  
 **Порядок зависимостей:** `domain` → `service` → `webmvc` → `data-jpa`  
 **`settings.gradle`:** `gateway` → `config` → `registry` → `auth` → `user` → `note` → `user-note`; внутри: `application` → `domain` → `service` → `webmvc` → `data-jpa`  
 **Convention plugins:** ✅ `application` · `domain` · `webmvc` · `data-jpa` · `h2-database` · `oauth2-resource-server` · `oauth2-client` | ❌ планируется ≈16  
 **`domain`** — только `java`; без Spring BOM; JSpecify и JUnit с явными версиями  
+**`service`** — требует явный `implementation("org.springframework:spring-tx")`; `spring-boot-starter` не тянет его транзитивно  
 **`oauth2-resource-server`** — транспортно-независимая JWT-валидация; применим к `webmvc/`, `webflux/`, `graphql/` — не переименовывать в `webmvc-oauth2-*`
 
 ### Spring Boot 4
