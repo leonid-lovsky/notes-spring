@@ -1,7 +1,7 @@
 # CLAUDE.md — notes-spring
 
 > Единственный источник истины для этого проекта. Читается автоматически в начале каждой сессии.  
-> Последнее обновление: 2026-06-20T11:33Z
+> Последнее обновление: 2026-06-20T11:53Z
 
 ---
 
@@ -45,10 +45,13 @@
 
 1. Убрать `password` из `User` — `AuthUser ≠ User` уже принято; `user/` — профиль, не IdP
 2. Доменные исключения — заменить `NoSuchElementException` как сигнал 404
-3. `@ControllerAdvice` + `ProblemDetail` (RFC 9457) — убрать дублирующий `@ExceptionHandler`
+3. `@ControllerAdvice` + `ProblemDetail` (RFC 9457) — убрать локальный `@ExceptionHandler` из каждого контроллера
 4. `UserNoteService.update()` → `existsByUserIdAndNoteId` — лишний read
 
 ### `auth/` ← **ТЕКУЩИЙ ПРИОРИТЕТ**
+
+> Скелет `auth/application/` уже создан (`AuthApplication.java`, пустой тест, пустой `application.properties`).  
+> Модули `domain/`, `data-jpa/` и сам Authorization Server — не созданы.
 
 1. `auth/domain/` — `AuthUser` record + `AuthUserUseCase` + `AuthUserOutputPort`
 2. `auth/data-jpa/` — JPA adapter + Flyway schema
@@ -56,7 +59,7 @@
 
 ### После `auth/`
 
-1. Resource Server в одном сервисе — smoke test: auth/ выдаёт токен, сервис принимает
+1. Resource Server в одном сервисе — smoke test: `auth/` выдаёт токен, сервис принимает
 2. Resource Server во всех сервисах; убрать `userId` из `UserNoteRequest` (берётся из JWT `sub`)
 3. `bff/` — OAuth2 Client + Spring Session + Token Exchange
 4. `thymeleaf/` — server-rendered BFF
@@ -98,44 +101,24 @@
 
 ## Стек
 
-> Spring Boot 4 monorepo — banking-grade
+> Spring Boot 4 monorepo — banking-grade с первого дня
 
-| Инструмент                   | Версия   |
-|------------------------------|----------|
-| Java                         | 17       |
-| Gradle                       | 9.6.0    |
-| Spring Boot                  | 4.1.0    |
-| Spring Cloud                 | 2025.1.2 |
-| Spring Dependency Management | 1.1.7    |
+| Инструмент                   | Целевая версия | Сейчас   |
+|------------------------------|----------------|----------|
+| Java                         | 17             | 17       |
+| Gradle                       | 9.6.0          | 9.5.1    |
+| Spring Boot                  | 4.1.0          | 4.0.6    |
+| Spring Cloud                 | 2025.1.2       | 2025.1.1 |
+| Spring Dependency Management | 1.1.7          | 1.1.7    |
 
-> **Проект сейчас:** Boot 4.0.6 · Cloud 2025.1.1 · Gradle 9.5.1 —  
-> обновить `buildSrc/build.gradle` и `gradle/wrapper/gradle-wrapper.properties`.
-
----
-
-## Сервисы
-
-```
-EDGE          gateway/     Spring Cloud Gateway — stateless, routing + rate limiting
-PRESENTATION  bff/         OAuth2 Client + Spring Session + Token Exchange (SPA)
-              thymeleaf/   Thymeleaf + OAuth2 Client — self-contained BFF
-IDENTITY      auth/        Spring Authorization Server — OIDC-compliant, JWT issuer
-BUSINESS      user/        Resource Server  (User: id, username, email)
-              note/        Resource Server  (Note: id, content)
-              user-note/   Resource Server  (UserNote: userId, noteId, role)
-INFRA         config/      Spring Cloud Config Server
-              registry/    Eureka Server
-EXTERNAL      Redis        Spring Session backing (bff/ + thymeleaf/ при масштабировании)
-              PostgreSQL×N по одной БД на: auth, user, note, user-note
-              Kafka/MQ     только при событийной регистрации (решение не принято)
-```
-
-> **MVP** — та же архитектура; H2 вместо PostgreSQL, `MapSessionRepository` вместо Redis.  
-> Backing services подключаются при реальной потребности, не как архитектурный шаг.
+> Обновить: `buildSrc/build.gradle.kts` (val-константы) + `gradle/wrapper/gradle-wrapper.properties`.
 
 ---
 
 ## Принципы
+
+> Применяются с первого дня — не "когда проект вырастет". Код, архитектура, тесты, деплой  
+> проектируются так, чтобы менять backing service (H2 → PostgreSQL, local → AWS) без правок в `domain/` и `service/`.
 
 - **Hexagonal Architecture** — главный принцип; все решения проверяются на соответствие
 - **SoC / SRP** — на всех уровнях; **видимость** — `default` или минимально необходимая
@@ -164,6 +147,20 @@ feign/        driven adapter  (HTTP client)    →  domain/  (только user-
 **Database per service** — cross-service JOIN запрещён  
 **Stateless** — `gateway/` · `config/` · `registry/` · `user/` · `note/` · `user-note/`  
 **Stateful** — `bff/` · `thymeleaf/` → Spring Session; `auth/` → OAuth2Authorization в PostgreSQL
+
+### Тестирование (пирамида)
+
+Каждый модуль тестируется изолированно — Spring context поднимается только там, где он нужен:
+
+| Модуль       | Тест-слой                  | Что проверяет                                   |
+|--------------|----------------------------|-------------------------------------------------|
+| `domain/`    | JUnit (чистая Java)        | Доменная логика без Spring context              |
+| `service/`   | Spring context + Mockito   | Use case; output port мокируется               |
+| `webmvc/`    | `@WebMvcTest` (MockMvc)    | HTTP binding, статусы, сериализация             |
+| `data-jpa/`  | `@DataJpaTest` + TC        | SQL, маппинг; Testcontainers = реальный PostgreSQL |
+| `application/` | `@SpringBootTest` + TC   | Полный smoke test; все слои вместе              |
+
+**ArchUnit** — архитектурные тесты в CI; автоматически проверяет, что `domain/` не импортирует из адаптеров.
 
 ### Целевая модель портов
 
@@ -204,6 +201,28 @@ void remove(UUID id);              // remove
 - **`ResponseEntity<T>` везде** — статусы явно через `HttpStatus`
 - **`AuthUser` (`auth/`) ≠ `User` (`user/`)**
 - **Wire format в адаптере** — `.proto` в `grpc/`, `.graphqls` в `graphql/`; Protobuf/GraphQL типы не проникают в `domain/`
+
+---
+
+## Сервисы
+
+```
+EDGE          gateway/     Spring Cloud Gateway — stateless, routing + rate limiting
+PRESENTATION  bff/         OAuth2 Client + Spring Session + Token Exchange (SPA)
+              thymeleaf/   Thymeleaf + OAuth2 Client — self-contained BFF
+IDENTITY      auth/        Spring Authorization Server — OIDC-compliant, JWT issuer
+BUSINESS      user/        Resource Server  (User: id, username, email)
+              note/        Resource Server  (Note: id, content)
+              user-note/   Resource Server  (UserNote: userId, noteId, role)
+INFRA         config/      Spring Cloud Config Server
+              registry/    Eureka Server
+EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
+              PostgreSQL×N по одной БД на: auth, user, note, user-note
+              Kafka/MQ     только при событийной регистрации (решение не принято)
+```
+
+> **MVP** — та же архитектура и код; H2 вместо PostgreSQL, `MapSessionRepository` вместо Redis.  
+> Backing services подключаются при реальной потребности, не как архитектурный шаг.
 
 ---
 
@@ -265,15 +284,30 @@ void remove(UUID id);              // remove
 ### Gradle
 
 **`buildSrc`** + convention plugins (Kotlin DSL) — единственный механизм; flat, без вложенности  
-**Файлы:** `buildSrc/build.gradle.kts`; convention plugins — `src/main/kotlin/*.gradle.kts`; субпроекты — `build.gradle` (Groovy, только `id '...'`)  
+**Файлы:** `buildSrc/build.gradle.kts` (версии плагинов — в `val`-константах); convention plugins — `src/main/kotlin/*.gradle.kts`; субпроекты — `build.gradle` (Groovy, только `id '...'`)  
 **Нет:** root `build.gradle` · `buildSrc/settings.gradle` · `libs.versions.toml`  
 **Порядок блоков:** `plugins` → `repositories` → `dependencyManagement` → `dependencies` → `test`  
 **Порядок зависимостей:** `domain` → `service` → `webmvc` → `data-jpa`  
-**`settings.gradle`:** `gateway` → `config` → `registry` → `auth` → `user` → `note` → `user-note`; внутри: `application` → `domain` → `service` → `webmvc` → `data-jpa`  
-**Convention plugins:** ✅ `application` · `domain` · `webmvc` · `data-jpa` · `h2-database` · `oauth2-resource-server` · `oauth2-client` | ❌ планируется ≈16  
-**`domain`** — только `java`; без Spring BOM; JSpecify и JUnit с явными версиями  
-**`service`** — требует явный `implementation("org.springframework:spring-tx")`; `spring-boot-starter` не тянет его транзитивно  
-**`oauth2-resource-server`** — транспортно-независимая JWT-валидация; применим к `webmvc/`, `webflux/`, `graphql/` — не переименовывать в `webmvc-oauth2-*`
+**`settings.gradle`:** `gateway` → `config` → `registry` → `auth` → `user` → `note` → `user-note`; внутри: `application` → `domain` → `service` → `webmvc` → `data-jpa`
+
+**Convention plugins (8 / ≈16):**
+
+| Plugin ID                                   | Назначение                        |
+|---------------------------------------------|-----------------------------------|
+| `spring-boot-application-conventions`       | `application/` — Boot app         |
+| `java-domain-conventions`                   | `domain/` — чистая Java, без BOM  |
+| `spring-service-conventions`                | `service/` — BOM + spring-tx      |
+| `spring-webmvc-adapter-conventions`         | `webmvc/` — driving adapter       |
+| `spring-data-jpa-adapter-conventions`       | `data-jpa/` — driven adapter      |
+| `spring-h2-database-conventions`            | add-on: H2 + h2console            |
+| `spring-oauth2-resource-server-conventions` | add-on: JWT-валидация             |
+| `spring-oauth2-client-conventions`          | add-on: OAuth2 Client             |
+
+**Примечания:**
+- **`domain`** — только `java`; без Spring BOM; JSpecify и JUnit с явными версиями
+- **`service`** — требует явный `implementation("org.springframework:spring-tx")`; `spring-boot-starter` не тянет его транзитивно
+- **`oauth2-resource-server`** — транспортно-независимая JWT-валидация; применим к `webmvc/`, `webflux/`, `graphql/` — не переименовывать в `webmvc-oauth2-*`
+- **`h2-database`** — add-on поверх `data-jpa`; не содержит `repositories {}`; применять совместно
 
 ### Spring Boot 4
 
@@ -282,7 +316,7 @@ void remove(UUID id);              // remove
 - OAuth2 стартеры: `oauth2-*` (Boot 3) → `security-oauth2-*` (Boot 4); `docs.spring.io/spring-security` ссылается на Boot 3 имена — не доверять
 - Jackson 3: `com.fasterxml.jackson` → `tools.jackson`
 - RestTemplate deprecated → `RestClient`
-- Flyway + PostgreSQL: нужен `runtimeOnly 'org.flywaydb:flyway-database-postgresql'`
+- Flyway + PostgreSQL: нужен `runtimeOnly("org.flywaydb:flyway-database-postgresql")`
 - Обработка ошибок: `ResponseEntityExceptionHandler` + `ProblemDetail` (RFC 9457)
 - Lombok: `compileOnly` + `annotationProcessor`;  
   `@Data` / `@EqualsAndHashCode` запрещены на entities — нарушают Hibernate lifecycle;  
@@ -300,11 +334,61 @@ void remove(UUID id);              // remove
 
 **`@NullMarked`** (JSpecify) через `package-info.java` — non-null по умолчанию; не иерархично: каждый пакет требует своего `package-info.java`; `org.springframework.lang` deprecated  
 **`@Nullable`** — `@Target(TYPE_USE)`: `private @Nullable String field`; массивы: `Object @Nullable []` (nullable ссылка), `@Nullable Object[]` (nullable элементы)  
-**Spring Cloud 2026.0** — ещё не null-safe (registry/, config/, gateway/); при нужде: `@NullUnmarked`  
+**Spring Cloud (2025.1.x)** — ещё не null-safe в `registry/`, `config/`, `gateway/`; при нужде: `@NullUnmarked`  
 **Импорты** — `com.example.*` + `org.*` / `jakarta.*`, затем `java.*`; wildcard при 3+  
 **Имена полей** — camelCase от типа: `noteOutputPort`, `noteJpaRepository`; не `repository`, не `port`  
 **Промежуточная переменная** — перед `return` всегда извлекать результат (`response`, `notes`); не inline в `.body()`  
 **Пустое тело** — одна пустая строка · **EOF** — один `\n`
+
+### Качество, тестируемость и наблюдаемость
+
+**SonarQube** — один Gradle plugin (`org.sonarqube`) для двух режимов:  
+  · **Server** (self-hosted) — `sonar.host.url=http://localhost:9000`  
+  · **Cloud** (sonarcloud.io) — `sonar.host.url=https://sonarcloud.io` + `sonar.organization=<org>`  
+  convention plugin в `buildSrc`; применять ко всем `application/` модулям; artifact: `org.sonarsource.scanner.gradle:sonarqube-gradle-plugin`; версию брать с Maven Central  
+**JaCoCo** — встроен в Gradle (plugin id: `jacoco`), версия не нужна; источник покрытия для SonarQube  
+**ArchUnit** — архитектурные тесты в CI; `testImplementation("com.tngtech.archunit:archunit-junit5:<version>")`; версию брать с Maven Central; проверяет что `domain/` не импортирует из `webmvc/` или `data-jpa/`  
+**Actuator** — только в `application/` (не в адаптерах, `domain/`, `service/`); `management.server.port` — отдельный порт, не через `gateway/`; в Resource Server — отдельный `SecurityFilterChain` для `/actuator/**`  
+**OWASP Dependency-Check** — сканирование CVE в зависимостях; Gradle plugin id: `org.owasp.dependencycheck`; artifact: `org.owasp:dependency-check-gradle`; версию брать с Maven Central  
+**Renovate** — автоматические PR при выходе новых версий; конфигурируется через `renovate.json`; работает как GitHub App
+
+### CI/CD
+
+| Инструмент     | Размещение  | Плюсы                                                 | Минусы                        |
+|----------------|-------------|-------------------------------------------------------|-------------------------------|
+| GitHub Actions | Cloud/self  | Нативно для GitHub; marketplace; бесплатно для public | Vendor lock-in GitHub         |
+| GitLab CI      | Cloud/self  | Встроенный registry + security scanning; DevSecOps    | Требует GitLab-хостинг        |
+| Jenkins        | Self-hosted | Максимальная гибкость; любой VCS                      | Высокий overhead обслуживания |
+
+**Текущий выбор** — GitHub Actions (`.github/workflows/`); не трогать без явного запроса  
+**SonarQube** интегрируется во все три через тот же Gradle plugin (`./gradlew sonar`)
+
+---
+
+## Развёртывание
+
+> Код не меняется при смене backing service — это гарантирует hexagonal architecture.  
+> Меняется только конфигурация и convention plugin (`h2-database` → `data-jpa` + PostgreSQL driver).
+
+| Этап        | Инструменты                       | Backing services                          |
+|-------------|-----------------------------------|-------------------------------------------|
+| Local / MVP | JVM + H2 + `MapSessionRepository` | Не нужны                                  |
+| Staging     | Docker + Docker Compose           | PostgreSQL · Redis · Kafka · ELK          |
+| Production  | Docker + ECS Fargate → EKS        | AWS managed services (см. таблицу ниже)  |
+
+**AWS — целевая production-платформа:**
+
+| AWS-сервис         | Роль в проекте                                            |
+|--------------------|-----------------------------------------------------------|
+| ECS Fargate / EKS  | Контейнерная оркестрация; EKS + HPA при росте нагрузки   |
+| RDS PostgreSQL     | По одной БД на: auth, user, note, user-note               |
+| ElastiCache Redis  | JTI Blocklist · Spring Session (bff/ + thymeleaf/)        |
+| MSK (Kafka)        | Событийная регистрация auth/ ↔ user/ (решение не принято) |
+| ALB                | L7 балансировка перед gateway/                            |
+| ACM                | TLS-сертификаты                                           |
+| Secrets Manager    | DB credentials, OAuth2 client secrets                     |
+| CloudWatch + X-Ray | Логи (stdout → CloudWatch), трейсинг (OpenTelemetry)      |
+| ELK Stack          | Elasticsearch + Logstash + Kibana — поиск и аналитика логов |
 
 ---
 
@@ -437,7 +521,13 @@ org.junit.platform:junit-platform-launcher
 # Maven (third-party, явная версия)
 org.thymeleaf.extras:thymeleaf-extras-springsecurity6   ← имя "6", даже с Security 7
 org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2
+com.tngtech.archunit:archunit-junit5:<version>           ← версию брать с Maven Central
 
-# Gradle plugins
-com.google.protobuf version 0.9.6   ← обязателен для gRPC (кодогенерация из .proto)
+# Gradle plugins (third-party, явная версия)
+com.google.protobuf version 0.9.6         ← обязателен для gRPC (кодогенерация из .proto)
+org.sonarqube version <version>           ← artifact: org.sonarsource.scanner.gradle:sonarqube-gradle-plugin
+org.owasp.dependencycheck version <version>  ← artifact: org.owasp:dependency-check-gradle
+
+# Gradle plugins (встроенные, версия не нужна)
+jacoco                                    ← покрытие тестов; источник данных для SonarQube
 ```
