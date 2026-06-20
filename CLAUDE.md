@@ -1,8 +1,8 @@
 # CLAUDE.md — notes-spring
 
 > Живой документ проекта. Читается автоматически в начале каждой сессии.
-> Может содержать неточности и несоответствия — всегда подлежит уточнению и улучшению.
-> Последнее обновление: 2026-06-20T21:29Z
+> Может содержать неточности — всегда подлежит уточнению и улучшению.
+> Последнее обновление: 2026-06-20T21:36Z
 
 ---
 
@@ -12,7 +12,7 @@
 
 1. Прочитать этот файл свежим взглядом
 2. Рассмотреть адаптеры / архитектурные вопросы / вопросы реализации
-3. Обновить и улучшить при наличии изменений
+3. Обновить: актуализировать, убрать избыточность, улучшить формулировки, провести рефакторинг
 4. Сделать коммит и пуш _(постоянная авторизация — явный запрос не нужен)_
 
 ### Поведение
@@ -22,7 +22,7 @@
 - **Решение проблем** — сначала: актуальна ли проблема? кто выигрывает? не упускаем ли что-то?
   затем: варианты с плюсами/минусами + склонение → ждать выбора → обосновать;
   не предлагать реализационные задачи, пока открыты архитектурные вопросы
-- **Этот файл** — обновлять при изменении проекта или принципов; всё, что пользователь просит запомнить — отражать здесь; постоянно актуализировать, убирать избыточность и многословность, улучшать формулировки, проводить реструктуризацию и рефакторинг
+- **Этот файл** — обновлять при изменении проекта или принципов; всё, что пользователь просит запомнить — отражать здесь
 
 ### Ограничения
 
@@ -78,7 +78,7 @@
 
 - **Регистрация** — координация `auth/` ↔ `user/`; решить до реализации:
   - **Lazy** — `user/` создаёт профиль при первом запросе; нет email при регистрации; нет coupling
-  - **Sync** — `auth/` → `user/` через RestClient; нарушает direction of dependencies (infra → business)
+  - **Sync** — `auth/` → `user/` через RestClient; нарушает direction of dependencies
   - **Events** — Kafka/RabbitMQ; единственный вариант без нарушения SoC/SRP; требует брокера
 - **Mapping** — где маппить между слоями; ручной / MapStruct; отдельные DTO/VO на каждом слое
 - **PATCH** — только в `service/` (полный объект → `replace`) / в output port / не поддерживать
@@ -128,7 +128,7 @@
 
 ## Архитектура
 
-**Hexagonal Architecture (Ports & Adapters)** — структура модулей:
+Структура модулей:
 
 ```
 application/  Spring Boot app — composition root; знает все модули
@@ -148,21 +148,19 @@ feign/        driven adapter  (HTTP client)    →  domain/  (только user-
 
 ### Тестирование (пирамида)
 
-Каждый модуль тестируется изолированно — Spring context поднимается только там, где он нужен:
-
-| Модуль       | Тест-слой                  | Что проверяет                                      |
-|--------------|----------------------------|----------------------------------------------------|
-| `domain/`    | JUnit (чистая Java)        | Доменная логика без Spring context                 |
-| `service/`   | Spring context + Mockito   | Use case; Repository мокируется                   |
-| `webmvc/`    | `@WebMvcTest` (MockMvc)    | HTTP binding, статусы, сериализация                |
-| `data-jpa/`  | `@DataJpaTest` + TC        | SQL, маппинг; Testcontainers = реальный PostgreSQL |
+| Модуль         | Тест-слой                | Что проверяет                                      |
+|----------------|--------------------------|----------------------------------------------------|
+| `domain/`      | JUnit (чистая Java)      | Доменная логика без Spring context                 |
+| `service/`     | Spring context + Mockito | Use case; Repository мокируется                   |
+| `webmvc/`      | `@WebMvcTest` (MockMvc)  | HTTP binding, статусы, сериализация                |
+| `data-jpa/`    | `@DataJpaTest` + TC      | SQL, маппинг; Testcontainers = реальный PostgreSQL |
 | `application/` | `@SpringBootTest` + TC   | Полный smoke test; все слои вместе                 |
 
 **ArchUnit** — архитектурные тесты в CI; проверяет, что `domain/` не импортирует из адаптеров.
 
 ### Семантика репозиториев
 
-`*Repository` (domain port) говорит на языке домена, не хранилища. Коллекционная семантика (Evans):
+`*Repository` в `domain/` говорит на языке домена. Коллекционная семантика (Evans):
 
 ```java
 boolean existsById(UUID id);       // containsKey
@@ -173,8 +171,7 @@ void replace(Note note);           // replace (full)
 void remove(UUID id);              // remove
 ```
 
-`void` для мутирующих — UUID генерируется в `service/` до вызова порта.
-`replace` — полная замена; PATCH решается в `webmvc/` + `service/`.
+UUID генерируется в `service/` до вызова порта. `replace` — полная замена; PATCH решается в `webmvc/` + `service/`.
 
 ### Принятые решения
 
@@ -185,12 +182,10 @@ void remove(UUID id);              // remove
 - **Input port — интерфейс в `domain/`** — `webmvc/` зависит от интерфейса, не от `service/`
 - **Domain objects — Java records** — `withXxx()` для изменённой копии; JPA entities — обычные классы
 - **`existsById` в Repository** — валидный паттерн; не заменять на `findById`
-- **Именование портов** — `*UseCase` (input port) · `*Repository` (output port, domain package) · `*JpaRepository` (Spring Data, data-jpa package) · `*OutputAdapter` (driven adapter)
+- **Именование** — `*UseCase` (input port) · `*Repository` (output port, `domain/`) · `*JpaRepository` (Spring Data, `data-jpa/`) · `*OutputAdapter` (driven adapter)
 - **`ResponseEntity<T>` везде** — статусы явно через `HttpStatus`
 - **`AuthUser` (`auth/`) ≠ `User` (`user/`)**
 - **Wire format в адаптере** — `.proto` в `grpc/`, `.graphqls` в `graphql/`; Protobuf/GraphQL типы не проникают в `domain/`
-- **Spring Modulith — для опыта (миграция)**: Gradle-модули дают compile-time boundary enforcement — сильнее чем Modulith. Применяется в фазе изучения миграции multi-module → modular monolith.
-- **jMolecules — для опыта**: аннотирует архитектурные роли (`@DrivingAdapter`, `@AggregateRoot`, `@Repository`) явно в коде. Требует зависимости в `domain/`; применяется для практики.
 
 ---
 
@@ -224,25 +219,25 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 **JWT claims** — только стандартные: `sub` · `iss` · `aud` · `exp` · `jti` · `acr` · `amr` · `scope`
 **Браузер не видит JWT** — только HttpOnly session cookie в `bff/` · `thymeleaf/` (защита от XSS)
 
-| Слой            | Модуль                | Ответственность                              |
-|-----------------|-----------------------|----------------------------------------------|
-| Edge            | `gateway/`            | Routing, rate limiting, TLS                  |
-| BFF             | `bff/` · `thymeleaf/` | OAuth2 login flow, session, Token Exchange   |
-| IdP             | `auth/`               | JWT issuing, credentials, OIDC               |
-| Resource Server | `*/webmvc/`           | JWT validation per request                   |
-| ACL             | `user-note/`          | `UserNote { userId, noteId, role }`          |
+| Слой            | Модуль                | Ответственность                            |
+|-----------------|-----------------------|--------------------------------------------|
+| Edge            | `gateway/`            | Routing, rate limiting, TLS                |
+| BFF             | `bff/` · `thymeleaf/` | OAuth2 login flow, session, Token Exchange |
+| IdP             | `auth/`               | JWT issuing, credentials, OIDC             |
+| Resource Server | `*/webmvc/`           | JWT validation per request                 |
+| ACL             | `user-note/`          | `UserNote { userId, noteId, role }`        |
 
 **UserNoteRole:** `OWNER` · `EDITOR` · `COMMENTER` _(не MVP)_ · `VIEWER`
 **NoteVisibility:** `RESTRICTED` · `ANYONE_WITH_LINK` + role · `PUBLIC` + role
 
 ### Клиенты
 
-| Клиент               | Grant Type          | Хранит токен         | BFF          |
-|----------------------|---------------------|----------------------|--------------|
-| Browser / Thymeleaf  | Authorization Code  | Серверная сессия     | Сам себе BFF |
-| Browser / SPA        | Authorization Code  | Серверная сессия BFF | `bff/`       |
-| Mobile (Android/iOS) | AuthCode + PKCE     | Keychain / Keystore  | Нет          |
-| B2B / CLI            | Client Credentials  | Не хранит            | Нет          |
+| Клиент               | Grant Type         | Хранит токен         | BFF          |
+|----------------------|--------------------|----------------------|--------------|
+| Browser / Thymeleaf  | Authorization Code | Серверная сессия     | Сам себе BFF |
+| Browser / SPA        | Authorization Code | Серверная сессия BFF | `bff/`       |
+| Mobile (Android/iOS) | AuthCode + PKCE    | Keychain / Keystore  | Нет          |
+| B2B / CLI            | Client Credentials | Не хранит            | Нет          |
 
 ### Аутентификация
 
@@ -255,8 +250,8 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 
 **Flow:** User → `auth/` → access_token → BFF Token Exchange (RFC 8693) → internal JWT (`aud`=сервис) → Microservice
 **access_token** 15 мин · **refresh_token** 30–90 дней; хранится в сессии BFF или Keychain/Keystore; в микросервисы не отправляется
-**Rotation** — каждый refresh → новый refresh_token; повторное использование старого → revoke вся семья → re-login
-**JTI Blocklist** — Redis `SET jti:{jti} "revoked" EX ttl`; ~0.5 ms на запрос; logout < 1 с (banking-grade)
+**Rotation** — каждый refresh → новый refresh_token; повторное использование → revoke вся семья → re-login
+**JTI Blocklist** — Redis `SET jti:{jti} "revoked" EX ttl`; ~0.5 ms на запрос; logout < 1 с
 **Back-channel logout** — `auth/` → POST `bff/logout/connect/back-channel`; при горизонтальном масштабировании BFF требует Redis Session
 
 ### Banking-grade фазы
@@ -280,20 +275,19 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 **Порядок зависимостей:** `domain` → `service` → `webmvc` → `data-jpa`
 **`settings.gradle`:** `gateway` → `config` → `registry` → `auth` → `user` → `note` → `user-note`; внутри: `application` → `domain` → `service` → `webmvc` → `data-jpa`
 
-**Convention plugins (8 / ≈16):**
+**Convention plugins:**
 
-| Plugin ID                                   | Назначение                        |
-|---------------------------------------------|-----------------------------------|
-| `spring-boot-application-conventions`       | `application/` — Boot app         |
-| `java-domain-conventions`                   | `domain/` — чистая Java, без BOM  |
-| `spring-service-conventions`                | `service/` — BOM + spring-tx      |
-| `spring-webmvc-adapter-conventions`         | `webmvc/` — driving adapter       |
-| `spring-data-jpa-adapter-conventions`       | `data-jpa/` — driven adapter      |
-| `spring-h2-database-conventions`            | add-on: H2 + h2console            |
-| `spring-oauth2-resource-server-conventions` | add-on: JWT-валидация             |
-| `spring-oauth2-client-conventions`          | add-on: OAuth2 Client             |
+| Plugin ID                                   | Назначение                       |
+|---------------------------------------------|----------------------------------|
+| `spring-boot-application-conventions`       | `application/` — Boot app        |
+| `java-domain-conventions`                   | `domain/` — чистая Java, без BOM |
+| `spring-service-conventions`                | `service/` — BOM + spring-tx     |
+| `spring-webmvc-adapter-conventions`         | `webmvc/` — driving adapter      |
+| `spring-data-jpa-adapter-conventions`       | `data-jpa/` — driven adapter     |
+| `spring-h2-database-conventions`            | add-on: H2 + h2console           |
+| `spring-oauth2-resource-server-conventions` | add-on: JWT-валидация            |
+| `spring-oauth2-client-conventions`          | add-on: OAuth2 Client            |
 
-**Примечания:**
 - **`domain`** — только `java`; без Spring BOM; JSpecify и JUnit с явными версиями
 - **`service`** — требует явный `implementation("org.springframework:spring-tx")`; `spring-boot-starter` не тянет его транзитивно
 - **`oauth2-resource-server`** — транспортно-независимая JWT-валидация; применим к `webmvc/`, `webflux/`, `graphql/` — не переименовывать в `webmvc-oauth2-*`
@@ -318,59 +312,53 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 **Resource Server** — `JwtDecoder` + `JwtAuthenticationConverter` → `GrantedAuthority`; минимум: property `spring.security.oauth2.resourceserver.jwt.issuer-uri`
 **Auth Server** — `OAuth2AuthorizationServerConfigurer` · `RegisteredClientRepository`; 4 обязательных бина: `SecurityFilterChain` × 2, `UserDetailsService`, `JWKSource`
 
-Стартеры — см. раздел **Верифицированные координаты** ниже.
-
 ### Null Safety и стиль
 
-**`@NullMarked`** (JSpecify) через `package-info.java` — non-null по умолчанию; не иерархично: каждый пакет требует своего `package-info.java`. Выбран вместо `org.springframework.lang` (deprecated) и JSR-305/`javax.annotation` (заброшен) — единственная активно развиваемая null-safety спецификация для Java.
+**JSpecify** (`@NullMarked` через `package-info.java`) — non-null по умолчанию; каждый пакет требует своего `package-info.java`. Выбран вместо `org.springframework.lang` (deprecated) и JSR-305 (заброшен).
 **`@Nullable`** — `@Target(TYPE_USE)`: `private @Nullable String field`; массивы: `Object @Nullable []` (nullable ссылка), `@Nullable Object[]` (nullable элементы)
 **Spring Cloud (2025.1.x)** — ещё не null-safe в `registry/`, `config/`, `gateway/`; при нужде: `@NullUnmarked`
 **Импорты** — `com.example.*` + `org.*` / `jakarta.*`, затем `java.*`; wildcard при 3+
-**Имена полей** — camelCase от типа: `noteUseCase`, `noteRepository`, `noteJpaRepository`; не `repository`, не `useCase`
-**Промежуточная переменная** — перед `return` всегда извлекать результат (`response`, `notes`); не inline в `.body()`
+**Имена полей** — camelCase от типа: `noteUseCase`, `noteRepository`, `noteJpaRepository`
+**Промежуточная переменная** — перед `return` всегда извлекать результат; не inline в `.body()`
 **Пустое тело** — одна пустая строка · **EOF** — один `\n`
 
-### Качество, тестируемость и наблюдаемость
+### Качество и наблюдаемость
 
-**SonarQube** — используется через IDE (плагин), CI pipeline, standalone server или SonarCloud; не интегрируется в проект как Gradle-зависимость. Для опыта последовательно: IDE → CI → Server → Cloud.
-**JaCoCo** — встроен в Gradle (plugin id: `jacoco`), версия не нужна; источник покрытия для SonarQube. Для опыта.
-**ArchUnit** — архитектурные тесты в CI; `testImplementation("com.tngtech.archunit:archunit-junit5:<version>")`; версию брать с Maven Central; проверяет что `domain/` не импортирует из `webmvc/` или `data-jpa/`
-**Actuator** — только в `application/` (не в адаптерах, `domain/`, `service/`): там нет Spring Boot контекста. `management.server.port` — отдельный порт, не через `gateway/`; в Resource Server — отдельный `SecurityFilterChain` для `/actuator/**`. Для опыта.
-**OWASP Dependency-Check** — сканирование CVE в зависимостях; Gradle plugin id: `org.owasp.dependencycheck`; artifact: `org.owasp:dependency-check-gradle`; версию брать с Maven Central
-**Renovate** — автоматические PR при выходе новых версий; конфигурируется через `renovate.json`; работает как GitHub App
+**ArchUnit** — `testImplementation("com.tngtech.archunit:archunit-junit5:<version>")`; версию брать с Maven Central; проверяет, что `domain/` не импортирует из адаптеров
+**JaCoCo** — встроен в Gradle (`jacoco`), версия не нужна; источник покрытия для SonarQube
+**SonarQube** — используется внешне: IDE-плагин, CI pipeline, standalone server, SonarCloud; не добавляется как Gradle-зависимость в проект
+**Actuator** — только в `application/`; `management.server.port` — отдельный порт; в Resource Server — отдельный `SecurityFilterChain` для `/actuator/**`
+**OWASP Dependency-Check** — `org.owasp.dependencycheck`; artifact: `org.owasp:dependency-check-gradle`; версию брать с Maven Central
+**Renovate** — автоматические PR на обновление зависимостей; конфигурируется через `renovate.json`
 
 ### CI/CD
 
-Все три платформы используются последовательно для опыта: **GitHub Actions** → **GitLab CI** → **Jenkins**.
+Платформы используются последовательно: **GitHub Actions** → **GitLab CI** → **Jenkins**.
 Текущий: **GitHub Actions** (`.github/workflows/`) — не трогать без явного запроса.
+
+### Для опыта
+
+Все перечисленные инструменты и платформы используются последовательно по мере развития проекта:
+
+- **Spring Modulith** — изучается в контексте миграции multi-module → modular monolith; Gradle-модули дают более сильную compile-time boundary enforcement
+- **jMolecules** — аннотирует архитектурные роли явно: `@DrivingAdapter`, `@AggregateRoot`, `@Repository`
+- **Docker · Docker Compose · Kubernetes** — контейнеризация и оркестрация
+- **AWS** (ECS Fargate → EKS, RDS, ElastiCache, MSK, ALB, ACM, Secrets Manager, CloudWatch + X-Ray)
+- **Elastic Stack** — Elasticsearch + Logstash + Kibana
+- **Testcontainers** — реальные backing services в тестах
+- **SonarQube** — IDE → CI → Server → Cloud
 
 ---
 
 ## Развёртывание
 
-> Код не меняется при смене backing service — это гарантирует hexagonal architecture.
-> Меняется только конфигурация и convention plugin (`h2-database` → `data-jpa` + PostgreSQL driver).
-> Все инструменты (Docker, Docker Compose, Kubernetes, AWS, Elastic Stack, Testcontainers и др.) используются последовательно для опыта — не только как архитектурная необходимость.
+> Код не меняется при смене backing service. Меняется только конфигурация и convention plugin (`h2-database` → `data-jpa` + PostgreSQL driver).
 
-| Этап        | Инструменты                       | Backing services                         |
-|-------------|-----------------------------------|------------------------------------------|
-| Local / MVP | JVM + H2 + `MapSessionRepository` | Не нужны                                 |
-| Staging     | Docker + Docker Compose           | PostgreSQL · Redis · Kafka · ELK         |
-| Production  | Docker + ECS Fargate → EKS        | AWS managed services (см. таблицу ниже) |
-
-**AWS — целевая production-платформа:**
-
-| AWS-сервис         | Роль в проекте                                            |
-|--------------------|-----------------------------------------------------------|
-| ECS Fargate / EKS  | Контейнерная оркестрация; EKS + HPA при росте нагрузки   |
-| RDS PostgreSQL     | По одной БД на: auth, user, note, user-note               |
-| ElastiCache Redis  | JTI Blocklist · Spring Session (bff/ + thymeleaf/)        |
-| MSK (Kafka)        | Событийная регистрация auth/ ↔ user/ (решение не принято) |
-| ALB                | L7 балансировка перед gateway/                            |
-| ACM                | TLS-сертификаты                                           |
-| Secrets Manager    | DB credentials, OAuth2 client secrets                     |
-| CloudWatch + X-Ray | Логи (stdout → CloudWatch), трейсинг (OpenTelemetry)      |
-| ELK Stack          | Elasticsearch + Logstash + Kibana — поиск и аналитика логов |
+| Этап        | Инструменты                       | Backing services                        |
+|-------------|-----------------------------------|-----------------------------------------|
+| Local / MVP | JVM + H2 + `MapSessionRepository` | Не нужны                                |
+| Staging     | Docker + Docker Compose           | PostgreSQL · Redis · Kafka · ELK        |
+| Production  | Docker + ECS Fargate → EKS        | AWS managed services                    |
 
 ---
 
@@ -447,13 +435,10 @@ spring-cloud-stream-binder-rabbit
 ### `runtimeOnly`
 
 ```
-# Database drivers
 org.postgresql:postgresql
 org.postgresql:r2dbc-postgresql
 com.h2database:h2
-
-# Flyway — ОБЯЗАТЕЛЬНО при использовании spring-boot-starter-flyway с PostgreSQL
-org.flywaydb:flyway-database-postgresql
+org.flywaydb:flyway-database-postgresql   ← обязателен с spring-boot-starter-flyway + PostgreSQL
 org.flywaydb:flyway-mysql
 ```
 
@@ -506,10 +491,9 @@ org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2
 com.tngtech.archunit:archunit-junit5:<version>           ← версию брать с Maven Central
 
 # Gradle plugins (third-party, явная версия)
-com.google.protobuf version 0.9.6         ← обязателен для gRPC (кодогенерация из .proto)
-org.sonarqube version <version>           ← artifact: org.sonarsource.scanner.gradle:sonarqube-gradle-plugin
+com.google.protobuf version 0.9.6            ← обязателен для gRPC (кодогенерация из .proto)
 org.owasp.dependencycheck version <version>  ← artifact: org.owasp:dependency-check-gradle
 
 # Gradle plugins (встроенные, версия не нужна)
-jacoco                                    ← покрытие тестов; источник данных для SonarQube
+jacoco
 ```
