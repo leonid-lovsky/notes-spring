@@ -2,7 +2,7 @@
 
 > Живой документ проекта. Читается автоматически в начале каждой сессии.
 > Может содержать неточности и несоответствия — всегда подлежит уточнению и улучшению.
-> Последнее обновление: 2026-06-21T00:00Z
+> Последнее обновление: 2026-06-20T21:29Z
 
 ---
 
@@ -22,7 +22,7 @@
 - **Решение проблем** — сначала: актуальна ли проблема? кто выигрывает? не упускаем ли что-то?
   затем: варианты с плюсами/минусами + склонение → ждать выбора → обосновать;
   не предлагать реализационные задачи, пока открыты архитектурные вопросы
-- **Этот файл** — обновлять при изменении проекта или принципов; всё, что пользователь просит запомнить — отражать здесь
+- **Этот файл** — обновлять при изменении проекта или принципов; всё, что пользователь просит запомнить — отражать здесь; постоянно актуализировать, убирать избыточность и многословность, улучшать формулировки, проводить реструктуризацию и рефакторинг
 
 ### Ограничения
 
@@ -189,6 +189,8 @@ void remove(UUID id);              // remove
 - **`ResponseEntity<T>` везде** — статусы явно через `HttpStatus`
 - **`AuthUser` (`auth/`) ≠ `User` (`user/`)**
 - **Wire format в адаптере** — `.proto` в `grpc/`, `.graphqls` в `graphql/`; Protobuf/GraphQL типы не проникают в `domain/`
+- **Spring Modulith — для опыта (миграция)**: Gradle-модули дают compile-time boundary enforcement — сильнее чем Modulith. Применяется в фазе изучения миграции multi-module → modular monolith.
+- **jMolecules — для опыта**: аннотирует архитектурные роли (`@DrivingAdapter`, `@AggregateRoot`, `@Repository`) явно в коде. Требует зависимости в `domain/`; применяется для практики.
 
 ---
 
@@ -320,7 +322,7 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 
 ### Null Safety и стиль
 
-**`@NullMarked`** (JSpecify) через `package-info.java` — non-null по умолчанию; не иерархично: каждый пакет требует своего `package-info.java`; `org.springframework.lang` deprecated
+**`@NullMarked`** (JSpecify) через `package-info.java` — non-null по умолчанию; не иерархично: каждый пакет требует своего `package-info.java`. Выбран вместо `org.springframework.lang` (deprecated) и JSR-305/`javax.annotation` (заброшен) — единственная активно развиваемая null-safety спецификация для Java.
 **`@Nullable`** — `@Target(TYPE_USE)`: `private @Nullable String field`; массивы: `Object @Nullable []` (nullable ссылка), `@Nullable Object[]` (nullable элементы)
 **Spring Cloud (2025.1.x)** — ещё не null-safe в `registry/`, `config/`, `gateway/`; при нужде: `@NullUnmarked`
 **Импорты** — `com.example.*` + `org.*` / `jakarta.*`, затем `java.*`; wildcard при 3+
@@ -330,20 +332,17 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 
 ### Качество, тестируемость и наблюдаемость
 
-**SonarQube** — один Gradle plugin (`org.sonarqube`) для двух режимов:
-  · **Server** (self-hosted) — `sonar.host.url=http://localhost:9000`
-  · **Cloud** (sonarcloud.io) — `sonar.host.url=https://sonarcloud.io` + `sonar.organization=<org>`
-  convention plugin в `buildSrc`; применять ко всем `application/` модулям; artifact: `org.sonarsource.scanner.gradle:sonarqube-gradle-plugin`; версию брать с Maven Central
-**JaCoCo** — встроен в Gradle (plugin id: `jacoco`), версия не нужна; источник покрытия для SonarQube
+**SonarQube** — используется через IDE (плагин), CI pipeline, standalone server или SonarCloud; не интегрируется в проект как Gradle-зависимость. Для опыта последовательно: IDE → CI → Server → Cloud.
+**JaCoCo** — встроен в Gradle (plugin id: `jacoco`), версия не нужна; источник покрытия для SonarQube. Для опыта.
 **ArchUnit** — архитектурные тесты в CI; `testImplementation("com.tngtech.archunit:archunit-junit5:<version>")`; версию брать с Maven Central; проверяет что `domain/` не импортирует из `webmvc/` или `data-jpa/`
-**Actuator** — только в `application/` (не в адаптерах, `domain/`, `service/`); `management.server.port` — отдельный порт, не через `gateway/`; в Resource Server — отдельный `SecurityFilterChain` для `/actuator/**`
+**Actuator** — только в `application/` (не в адаптерах, `domain/`, `service/`): там нет Spring Boot контекста. `management.server.port` — отдельный порт, не через `gateway/`; в Resource Server — отдельный `SecurityFilterChain` для `/actuator/**`. Для опыта.
 **OWASP Dependency-Check** — сканирование CVE в зависимостях; Gradle plugin id: `org.owasp.dependencycheck`; artifact: `org.owasp:dependency-check-gradle`; версию брать с Maven Central
 **Renovate** — автоматические PR при выходе новых версий; конфигурируется через `renovate.json`; работает как GitHub App
 
 ### CI/CD
 
-**GitHub Actions** (`.github/workflows/`) — текущий выбор; не трогать без явного запроса.
-**SonarQube** интегрируется через Gradle plugin (`./gradlew sonar`).
+Все три платформы используются последовательно для опыта: **GitHub Actions** → **GitLab CI** → **Jenkins**.
+Текущий: **GitHub Actions** (`.github/workflows/`) — не трогать без явного запроса.
 
 ---
 
@@ -351,6 +350,7 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 
 > Код не меняется при смене backing service — это гарантирует hexagonal architecture.
 > Меняется только конфигурация и convention plugin (`h2-database` → `data-jpa` + PostgreSQL driver).
+> Все инструменты (Docker, Docker Compose, Kubernetes, AWS, Elastic Stack, Testcontainers и др.) используются последовательно для опыта — не только как архитектурная необходимость.
 
 | Этап        | Инструменты                       | Backing services                         |
 |-------------|-----------------------------------|------------------------------------------|
