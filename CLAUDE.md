@@ -2,7 +2,7 @@
 
 > Живой документ проекта. Читается автоматически в начале каждой сессии.
 > Может содержать неточности — всегда подлежит уточнению и улучшению.
-> Последнее обновление: 2026-06-22T11:38Z
+> Последнее обновление: 2026-06-22T11:45Z
 
 ---
 
@@ -38,7 +38,7 @@
 ```
 ГОТОВО      user/ · note/ · user-note/  — domain · service · webmvc · data-jpa
 ТЕКУЩИЙ     auth/  — Spring Authorization Server + AuthUser + OIDC
-НЕ СОЗДАНО  bff/ · thymeleaf/ · auth/webmvc/ · auth/data-jpa/ · user-note/feign/ · crud/
+НЕ СОЗДАНО  bff/ · thymeleaf/ · auth/webmvc/ · auth/data-jpa/ · sharing/ · crud/
 ```
 
 ### Чистка перед `auth/`
@@ -61,10 +61,12 @@
 
 1. Resource Server в одном сервисе — smoke test: `auth/` выдаёт токен, сервис принимает
 2. Resource Server во всех сервисах; убрать `userId` из `UserNoteRequest` (берётся из JWT `sub`)
-3. Google Docs ACL — после решения трёх открытых вопросов:
-   - `NoteVisibility` → добавить к `Note` в `note/domain/` + `note/data-jpa/`
-   - `user-note/service/` → `effectiveRole`, `share` (с проверкой прав), `transferOwnership` (атомарно)
-   - `user-note/feign/` → Feign-клиент к `note/` для получения visibility
+3. `sharing/` — Google Docs ACL сервис (после закрытия трёх открытых вопросов о домене):
+   - `sharing/domain/` — `NoteAccess`, `NotePublication`, use cases: `effectiveRole`, `share`, `transferOwnership`, `publish`
+   - `sharing/service/` — бизнес-логика; координирует `NoteAccess` + `NotePublication` + вызовы к `user-note/` и `note/`
+   - `sharing/webmvc/` — REST API
+   - `sharing/data-jpa/` — хранение `NoteAccess` и `NotePublication`
+   - `sharing/feign/` — клиенты к `note/` и `user-note/`
 4. `bff/` — OAuth2 Client + Spring Session + Token Exchange
 5. `thymeleaf/` — server-rendered BFF
 6. Banking Phase 2 — MFA, token rotation, audit log
@@ -226,8 +228,8 @@ UUID генерируется в `service/` до вызова порта. `repla
 - **`ResponseEntity<T>` везде** — статусы явно через `HttpStatus`
 - **`AuthUser` (`auth/`) ≠ `User` (`user/`)**
 - **Wire format в адаптере** — `.proto` в `grpc/`, `.graphqls` в `graphql/`; Protobuf/GraphQL типы не проникают в `domain/`
-- **`service/` оправдан и остаётся** — UUID генерируется в `service/` (решение уровня приложения, не БД); `@Transactional` принадлежит use case, не адаптеру; перенос в `data-jpa/` дал бы двойную роль (output port + input port); подтверждено сценариями `share()` и `transferOwnership()` в `user-note/`
-- **`user/` · `note/` · `user-note/` — чистый CRUD** — каждый сервис знает только свои данные; `note/` не знает о visibility, ACL, шаринге; бизнес-задачи реализуются отдельно и не смешиваются с CRUD; решение принято через все четыре критерия: Hexagonal · Clean Architecture · SOLID · SoC
+- **`service/` оправдан и остаётся** — UUID генерируется в `service/` (решение уровня приложения, не БД); `@Transactional` принадлежит use case, не адаптеру; перенос в `data-jpa/` дал бы двойную роль (output port + input port); подтверждено сценариями `share()` и `transferOwnership()` в `sharing/`
+- **`user/` · `note/` · `user-note/` — чистые REST CRUD сервисы** — каждый сервис знает только свои данные и предоставляет стандартный REST CRUD API; `note/` не знает о visibility, ACL, шаринге; бизнес-задачи реализуются в `sharing/` и не смешиваются с CRUD; решение принято через все четыре критерия: Hexagonal · Clean Architecture · SOLID · SoC
 - **`sharing/` — отдельный гексагональный сервис** — реализует всю бизнес-логику Google Docs ACL; вызывает `user-note/` и `note/` через output ports (Feign); CRUD сервисы не знают о `sharing/` вообще
 - **Enforcement — BFF + сетевая изоляция** — BFF вызывает `sharing/effectiveRole` перед вызовом `note/`; Token Exchange остаётся в `auth/` + `bff/`; `note/` — чистый Resource Server (валидирует JWT, не знает об ACL); сетевая изоляция: структурная гарантия, что CRUD сервисы недоступны в обход BFF
 - **`NoteVisibility` — НЕ в `note/domain/`** — `note/` не знает о своей видимости; принадлежит `sharing/` или отдельной сущности в его домене
@@ -254,14 +256,14 @@ EDGE          gateway/     Spring Cloud Gateway — stateless, routing + rate li
 PRESENTATION  bff/         OAuth2 Client + Spring Session + Token Exchange (SPA)
               thymeleaf/   Thymeleaf + OAuth2 Client — self-contained BFF
 IDENTITY      auth/        Spring Authorization Server — OIDC-compliant, JWT issuer
-BUSINESS      user/        Resource Server  (User: id, username, email) — чистый CRUD
-              note/        Resource Server  (Note: id, content) — чистый CRUD
-              user-note/   Resource Server  (UserNote: userId, noteId, role) — чистый CRUD
+BUSINESS      user/        Resource Server  (User: id, username, email) — чистый REST CRUD
+              note/        Resource Server  (Note: id, content) — чистый REST CRUD
+              user-note/   Resource Server  (UserNote: userId, noteId, role) — чистый REST CRUD
               sharing/     Resource Server  (Google Docs ACL бизнес-логика: effectiveRole, share, transferOwnership, publish)
 INFRA         config/      Spring Cloud Config Server
               registry/    Eureka Server
 EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
-              PostgreSQL×N по одной БД на: auth, user, note, user-note
+              PostgreSQL×N по одной БД на: auth, user, note, user-note, sharing
               Kafka/MQ     только при событийной регистрации (решение не принято)
 ```
 
