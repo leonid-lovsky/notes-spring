@@ -2,7 +2,7 @@
 
 > Живой документ проекта. Читается автоматически в начале каждой сессии.
 > Может содержать неточности — всегда подлежит уточнению и улучшению.
-> Последнее обновление: 2026-06-22T10:45Z
+> Последнее обновление: 2026-06-22T11:20Z
 
 ---
 
@@ -11,7 +11,7 @@
 ### Начало каждой сессии
 
 1. Прочитать этот файл свежим взглядом
-2. **Открытый приоритет:** шесть открытых вопросов по Google Docs ACL модели (раздел Открытые решения → Google Docs ACL) — самый фундаментальный: где живёт бизнес-логика
+2. **Открытый приоритет:** Google Docs ACL (раздел Открытые решения) — фундаментальный вопрос: enforcement (как гарантировать, что `note/` недоступен в обход `sharing/`)
 3. Обновить: актуализировать, убрать избыточность, улучшить формулировки, провести рефакторинг
 4. Сделать коммит и пуш _(постоянная авторизация — явный запрос не нужен)_
 
@@ -79,15 +79,13 @@
 
 ### Google Docs ACL ← **ОТКРЫТЫЙ ПРИОРИТЕТ**
 
-> Модель принята. `user/` · `note/` · `user-note/` — чистый CRUD; бизнес-логика — отдельно.
-> Шесть вопросов требуют ответа до реализации. Самый фундаментальный — №2.
+> Модель принята. `user/` · `note/` · `user-note/` — чистый CRUD; бизнес-логика — в `sharing/`.
+> Критерии всех решений: Hexagonal · Clean Architecture · SOLID · SoC — равнозначны.
 
-- **Где живёт `NoteVisibility` / general access?** — не в `note/`; в `user-note/` или отдельном сервисе?
-- **Где живёт бизнес-логика Google Docs?** ← **ФУНДАМЕНТАЛЬНЫЙ** — если три сервиса — чистый CRUD, то `effectiveRole`, `share`, `transferOwnership`, `publish` живут в отдельном сервисе (`sharing/`?) или в `user-note/` рядом с CRUD, но отдельно?
-- **Publish to web — отдельная сущность?** — своё состояние, `autoRepublish`, два формата (link/embed); где хранится, к чему относится?
-- **Settings — где хранятся?** — `editorsCanShare`, `canDownloadCopyPrint`; атрибуты заметки или ACL?
-- **Один `OWNER` или несколько?** — Google Docs = один; при `transferOwnership`: старый → EDITOR, новый → OWNER (атомарно)
-- **Enforcement — кто проверяет доступ при чтении заметки?** — BFF / gateway / resource server?
+- **Enforcement** ← **ФУНДАМЕНТАЛЬНЫЙ** — как гарантировать, что `note/` недоступен в обход `sharing/`? BFF / gateway / сетевая изоляция?
+- **Publish to web — отдельная сущность?** — своё состояние, `autoRepublish`, два формата (link/embed); где хранится в домене `sharing/`?
+- **Settings — к чему относятся?** — `editorsCanShare`, `canDownloadCopyPrint`; атрибуты какой сущности?
+- **Один `OWNER` или несколько?** — Google Docs = один; `transferOwnership`: атомарно
 
 ### После Resource Server
 
@@ -132,7 +130,8 @@
 
 > Применяются с первого дня. Код, архитектура, тесты, деплой проектируются так, чтобы менять backing service (H2 → PostgreSQL, local → AWS) без правок в `domain/` и `service/`.
 
-- **Hexagonal Architecture** — главный принцип; все решения проверяются на соответствие
+- **Четыре равнозначных критерия** — все архитектурные решения проверяются по всем четырём:
+  **Hexagonal Architecture · Clean Architecture · SOLID · Separation of Concerns**
 - **SoC / SRP** — на всех уровнях; **видимость** — `default` или минимально необходимая
 - **No partial abstractions** — полное устранение или явное дублирование
 - **Twelve-Factor:** III Config · VI Stateless · IX Graceful shutdown · X Testcontainers · XI stdout · XII Flyway
@@ -201,8 +200,9 @@ UUID генерируется в `service/` до вызова порта. `repla
 - **`AuthUser` (`auth/`) ≠ `User` (`user/`)**
 - **Wire format в адаптере** — `.proto` в `grpc/`, `.graphqls` в `graphql/`; Protobuf/GraphQL типы не проникают в `domain/`
 - **`service/` оправдан и остаётся** — UUID генерируется в `service/` (решение уровня приложения, не БД); `@Transactional` принадлежит use case, не адаптеру; перенос в `data-jpa/` дал бы двойную роль (output port + input port); подтверждено сценариями `share()` и `transferOwnership()` в `user-note/`
-- **`user/` · `note/` · `user-note/` — чистый CRUD** — каждый сервис знает только свои данные; `note/` не знает о visibility, ACL, шаринге; бизнес-задачи (Google Docs логика) реализуются отдельно и не смешиваются с CRUD
-- **`NoteVisibility` — НЕ в `note/domain/`** — `note/` не знает о своей видимости; где именно живёт — открытый вопрос
+- **`user/` · `note/` · `user-note/` — чистый CRUD** — каждый сервис знает только свои данные; `note/` не знает о visibility, ACL, шаринге; бизнес-задачи реализуются отдельно и не смешиваются с CRUD; решение принято через все четыре критерия: Hexagonal · Clean Architecture · SOLID · SoC
+- **`sharing/` — отдельный гексагональный сервис** — реализует всю бизнес-логику Google Docs ACL; вызывает `user-note/` и `note/` через output ports (Feign); CRUD сервисы не знают о `sharing/` вообще
+- **`NoteVisibility` — НЕ в `note/domain/`** — `note/` не знает о своей видимости; принадлежит `sharing/` или отдельной сущности в его домене
 - **Google Docs ACL модель** — принята как целевая модель доступа:
   - `UserNote { userId, noteId, role }` — явные права; `UserNoteRole`: `OWNER · EDITOR · COMMENTER · VIEWER`
   - **Share with others:**
@@ -215,6 +215,7 @@ UUID генерируется в `service/` до вызова порта. `repla
   - **`effectiveRole(userId, noteId)`**: явная `UserNote` → иначе general access → deny
   - **`share(callerId, noteId, targetUserId, role)`**: caller = OWNER (или EDITOR при `editorsCanShare`); role ≤ роли caller'а
   - **`transferOwnership(callerId, noteId, newOwnerId)`**: атомарно — старый OWNER → EDITOR, новый → OWNER
+  - Вся логика живёт в `sharing/service/`; `sharing/feign/` вызывает `note/` и `user-note/`
 
 ---
 
@@ -225,9 +226,10 @@ EDGE          gateway/     Spring Cloud Gateway — stateless, routing + rate li
 PRESENTATION  bff/         OAuth2 Client + Spring Session + Token Exchange (SPA)
               thymeleaf/   Thymeleaf + OAuth2 Client — self-contained BFF
 IDENTITY      auth/        Spring Authorization Server — OIDC-compliant, JWT issuer
-BUSINESS      user/        Resource Server  (User: id, username, email)
-              note/        Resource Server  (Note: id, content)
-              user-note/   Resource Server  (ACL: userId, noteId, role; effectiveRole; share; transferOwnership)
+BUSINESS      user/        Resource Server  (User: id, username, email) — чистый CRUD
+              note/        Resource Server  (Note: id, content) — чистый CRUD
+              user-note/   Resource Server  (UserNote: userId, noteId, role) — чистый CRUD
+              sharing/     Resource Server  (Google Docs ACL бизнес-логика: effectiveRole, share, transferOwnership, publish)
 INFRA         config/      Spring Cloud Config Server
               registry/    Eureka Server
 EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
@@ -259,7 +261,7 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 **UserNoteRole:** `OWNER` · `EDITOR` · `COMMENTER` _(не MVP)_ · `VIEWER`
 **General access:** `RESTRICTED` · `ANYONE_WITH_LINK` (viewer / commenter / editor)
 **Publish to web:** link · embed; `autoRepublish` — отдельная концепция, не link sharing
-**ACL resolution:** явная `UserNote` → иначе general access → deny; бизнес-логика — отдельно от CRUD
+**ACL resolution:** явная `UserNote` → иначе general access → deny; логика в `sharing/service/`
 
 ### Клиенты
 
