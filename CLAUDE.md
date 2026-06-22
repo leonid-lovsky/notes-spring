@@ -2,7 +2,7 @@
 
 > Живой документ проекта. Читается автоматически в начале каждой сессии.
 > Может содержать неточности — всегда подлежит уточнению и улучшению.
-> Последнее обновление: 2026-06-20T21:48Z
+> Последнее обновление: 2026-06-22T09:45Z
 
 ---
 
@@ -11,7 +11,7 @@
 ### Начало каждой сессии
 
 1. Прочитать этот файл свежим взглядом
-2. **Открытый приоритет:** вернуться к вопросу «Нужен ли отдельный `service/`» (раздел Отложено) — решение не принято, обсуждение прервано
+2. **Открытый приоритет:** три вопроса по Google Docs ACL модели (раздел Открытые решения → Google Docs ACL) — решение не принято
 3. Обновить: актуализировать, убрать избыточность, улучшить формулировки, провести рефакторинг
 4. Сделать коммит и пуш _(постоянная авторизация — явный запрос не нужен)_
 
@@ -61,10 +61,13 @@
 
 1. Resource Server в одном сервисе — smoke test: `auth/` выдаёт токен, сервис принимает
 2. Resource Server во всех сервисах; убрать `userId` из `UserNoteRequest` (берётся из JWT `sub`)
-3. `bff/` — OAuth2 Client + Spring Session + Token Exchange
-4. `thymeleaf/` — server-rendered BFF
-5. Banking Phase 2 — MFA, token rotation, audit log
-6. `user-note/feign/` — OpenFeign
+3. Google Docs ACL — после решения трёх открытых вопросов:
+   - `NoteVisibility` → добавить к `Note` в `note/domain/` + `note/data-jpa/`
+   - `user-note/service/` → `effectiveRole`, `share` (с проверкой прав), `transferOwnership` (атомарно)
+   - `user-note/feign/` → Feign-клиент к `note/` для получения visibility
+4. `bff/` — OAuth2 Client + Spring Session + Token Exchange
+5. `thymeleaf/` — server-rendered BFF
+6. Banking Phase 2 — MFA, token rotation, audit log
 7. `crud/` — shared library
 8. Широкий стек — один use case через WebMVC + gRPC + GraphQL; цель: доказать, что домен не зависит от протокола и хранилища
 
@@ -73,6 +76,15 @@
 ## Открытые решения
 
 > Откладываются при взаимозависимости или преждевременности. Не реализовывать без явного решения.
+
+### Google Docs ACL ← **ОТКРЫТЫЙ ПРИОРИТЕТ**
+
+> Модель принята: `UserNote` — ACL-таблица; `NoteVisibility` — свойство `Note` в `note/domain/`.
+> Три вопроса требуют ответа до реализации:
+
+- **Кто может шарить?** Только `OWNER` — просто и безопасно. `EDITOR` тоже — нужен флаг `editorsCanShare` на `Note`.
+- **Один `OWNER` или несколько?** Google Docs = один; при `transferOwnership`: старый OWNER → EDITOR, новый → OWNER (атомарно).
+- **Как `note/` отдаёт visibility?** Новый отдельный endpoint или расширить `GET /notes/{id}`?
 
 ### После Resource Server
 
@@ -86,7 +98,6 @@
 
 ### Отложено (фундаментальное)
 
-- **NoteVisibility** — в `note/domain/` или `user-note/domain/` (требует ясности по ACL)
 - **Reactive/sync impedance** — `Optional<T>` несовместим с реактивными адаптерами (`.block()` = deadlock):
   - **Параллельные порты** _(склонение)_ — `NoteRepository` + `ReactiveNoteRepository` в `domain/`
   - **Sync обёртка** — `Mono.fromCallable().subscribeOn(boundedElastic())` — не настоящий reactive
@@ -95,10 +106,6 @@
   - `@Profile("jpa")` — просто, грубо
   - Отдельные `application-jpa/` · `application-r2dbc/` — чисто; дублирует composition root
 - **Название output adapter при нескольких реализациях** — `NoteOutputAdapter` / `NoteJpaOutputAdapter`
-- **Нужен ли отдельный `service/`** ← **НАЧАТЬ СЛЕДУЮЩУЮ СЕССИЮ С ЭТОГО** — решение не принято; пока существует, но под вопросом
-  - `UserService` тривиален: UUID + repository + return; единственная причина слоя — тестируемость (`@WebMvcTest` мокирует `*UseCase`, тест сервиса мокирует `*Repository`)
-  - **Предложение:** реализовать `*UseCase` в `data-jpa/`; `domain/` остаётся чистым, `webmvc/` — от интерфейса; теряется изолированный тест логики — но её пока нет
-  - Оправдан при: координации нескольких репозиториев, нетривиальной логике, доменных событиях
 
 ---
 
@@ -190,6 +197,15 @@ UUID генерируется в `service/` до вызова порта. `repla
 - **`ResponseEntity<T>` везде** — статусы явно через `HttpStatus`
 - **`AuthUser` (`auth/`) ≠ `User` (`user/`)**
 - **Wire format в адаптере** — `.proto` в `grpc/`, `.graphqls` в `graphql/`; Protobuf/GraphQL типы не проникают в `domain/`
+- **`service/` оправдан и остаётся** — UUID генерируется в `service/` (решение уровня приложения, не БД); `@Transactional` принадлежит use case, не адаптеру; перенос в `data-jpa/` дал бы двойную роль (output port + input port); подтверждено сценариями `share()` и `transferOwnership()` в `user-note/`
+- **`NoteVisibility` — в `note/domain/`** — свойство заметки, а не ACL; resolution (visibility → effective role) — в `user-note/service/`
+- **Google Docs ACL модель** — принята как целевая модель доступа:
+  - `UserNote { userId, noteId, role }` — явные права; `UserNoteRole`: `OWNER · EDITOR · COMMENTER · VIEWER`
+  - `NoteVisibility`: `RESTRICTED · LINK_VIEWER · LINK_COMMENTER · LINK_EDITOR · PUBLIC`
+  - `effectiveRole(userId, noteId)`: сначала явная `UserNote` → иначе visibility заметки → deny
+  - `share(callerId, noteId, targetUserId, role)`: проверка, что caller = OWNER (или EDITOR с правом); role ≤ роли caller'а
+  - `transferOwnership(callerId, noteId, newOwnerId)`: атомарно — старый OWNER → EDITOR, новый → OWNER
+  - `user-note/service/` реализует всю логику; `user-note/feign/` вызывает `note/` для получения visibility
 
 ---
 
@@ -202,7 +218,7 @@ PRESENTATION  bff/         OAuth2 Client + Spring Session + Token Exchange (SPA)
 IDENTITY      auth/        Spring Authorization Server — OIDC-compliant, JWT issuer
 BUSINESS      user/        Resource Server  (User: id, username, email)
               note/        Resource Server  (Note: id, content)
-              user-note/   Resource Server  (UserNote: userId, noteId, role)
+              user-note/   Resource Server  (ACL: userId, noteId, role; effectiveRole; share; transferOwnership)
 INFRA         config/      Spring Cloud Config Server
               registry/    Eureka Server
 EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
@@ -232,7 +248,8 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 | ACL             | `user-note/`          | `UserNote { userId, noteId, role }`        |
 
 **UserNoteRole:** `OWNER` · `EDITOR` · `COMMENTER` _(не MVP)_ · `VIEWER`
-**NoteVisibility:** `RESTRICTED` · `ANYONE_WITH_LINK` + role · `PUBLIC` + role
+**NoteVisibility:** `RESTRICTED` · `LINK_VIEWER` · `LINK_COMMENTER` · `LINK_EDITOR` · `PUBLIC`
+**ACL resolution:** явная `UserNote` → иначе visibility → deny; логика в `user-note/service/`
 
 ### Клиенты
 
