@@ -2,7 +2,7 @@
 
 > Живой документ проекта. Читается автоматически в начале каждой сессии.
 > Может содержать неточности — всегда подлежит уточнению и улучшению.
-> Последнее обновление: 2026-06-22T09:45Z
+> Последнее обновление: 2026-06-22T10:45Z
 
 ---
 
@@ -11,7 +11,7 @@
 ### Начало каждой сессии
 
 1. Прочитать этот файл свежим взглядом
-2. **Открытый приоритет:** три вопроса по Google Docs ACL модели (раздел Открытые решения → Google Docs ACL) — решение не принято
+2. **Открытый приоритет:** шесть открытых вопросов по Google Docs ACL модели (раздел Открытые решения → Google Docs ACL) — самый фундаментальный: где живёт бизнес-логика
 3. Обновить: актуализировать, убрать избыточность, улучшить формулировки, провести рефакторинг
 4. Сделать коммит и пуш _(постоянная авторизация — явный запрос не нужен)_
 
@@ -79,12 +79,15 @@
 
 ### Google Docs ACL ← **ОТКРЫТЫЙ ПРИОРИТЕТ**
 
-> Модель принята: `UserNote` — ACL-таблица; `NoteVisibility` — свойство `Note` в `note/domain/`.
-> Три вопроса требуют ответа до реализации:
+> Модель принята. `user/` · `note/` · `user-note/` — чистый CRUD; бизнес-логика — отдельно.
+> Шесть вопросов требуют ответа до реализации. Самый фундаментальный — №2.
 
-- **Кто может шарить?** Только `OWNER` — просто и безопасно. `EDITOR` тоже — нужен флаг `editorsCanShare` на `Note`.
-- **Один `OWNER` или несколько?** Google Docs = один; при `transferOwnership`: старый OWNER → EDITOR, новый → OWNER (атомарно).
-- **Как `note/` отдаёт visibility?** Новый отдельный endpoint или расширить `GET /notes/{id}`?
+- **Где живёт `NoteVisibility` / general access?** — не в `note/`; в `user-note/` или отдельном сервисе?
+- **Где живёт бизнес-логика Google Docs?** ← **ФУНДАМЕНТАЛЬНЫЙ** — если три сервиса — чистый CRUD, то `effectiveRole`, `share`, `transferOwnership`, `publish` живут в отдельном сервисе (`sharing/`?) или в `user-note/` рядом с CRUD, но отдельно?
+- **Publish to web — отдельная сущность?** — своё состояние, `autoRepublish`, два формата (link/embed); где хранится, к чему относится?
+- **Settings — где хранятся?** — `editorsCanShare`, `canDownloadCopyPrint`; атрибуты заметки или ACL?
+- **Один `OWNER` или несколько?** — Google Docs = один; при `transferOwnership`: старый → EDITOR, новый → OWNER (атомарно)
+- **Enforcement — кто проверяет доступ при чтении заметки?** — BFF / gateway / resource server?
 
 ### После Resource Server
 
@@ -198,14 +201,20 @@ UUID генерируется в `service/` до вызова порта. `repla
 - **`AuthUser` (`auth/`) ≠ `User` (`user/`)**
 - **Wire format в адаптере** — `.proto` в `grpc/`, `.graphqls` в `graphql/`; Protobuf/GraphQL типы не проникают в `domain/`
 - **`service/` оправдан и остаётся** — UUID генерируется в `service/` (решение уровня приложения, не БД); `@Transactional` принадлежит use case, не адаптеру; перенос в `data-jpa/` дал бы двойную роль (output port + input port); подтверждено сценариями `share()` и `transferOwnership()` в `user-note/`
-- **`NoteVisibility` — в `note/domain/`** — свойство заметки, а не ACL; resolution (visibility → effective role) — в `user-note/service/`
+- **`user/` · `note/` · `user-note/` — чистый CRUD** — каждый сервис знает только свои данные; `note/` не знает о visibility, ACL, шаринге; бизнес-задачи (Google Docs логика) реализуются отдельно и не смешиваются с CRUD
+- **`NoteVisibility` — НЕ в `note/domain/`** — `note/` не знает о своей видимости; где именно живёт — открытый вопрос
 - **Google Docs ACL модель** — принята как целевая модель доступа:
   - `UserNote { userId, noteId, role }` — явные права; `UserNoteRole`: `OWNER · EDITOR · COMMENTER · VIEWER`
-  - `NoteVisibility`: `RESTRICTED · LINK_VIEWER · LINK_COMMENTER · LINK_EDITOR · PUBLIC`
-  - `effectiveRole(userId, noteId)`: сначала явная `UserNote` → иначе visibility заметки → deny
-  - `share(callerId, noteId, targetUserId, role)`: проверка, что caller = OWNER (или EDITOR с правом); role ≤ роли caller'а
-  - `transferOwnership(callerId, noteId, newOwnerId)`: атомарно — старый OWNER → EDITOR, новый → OWNER
-  - `user-note/service/` реализует всю логику; `user-note/feign/` вызывает `note/` для получения visibility
+  - **Share with others:**
+    - People with access — явные `UserNote` записи
+    - General access: `RESTRICTED` (только явные) · `ANYONE_WITH_LINK` (viewer / commenter / editor)
+    - Settings: `editorsCanShare` (разрешить редакторам менять права и делиться); `canDownloadCopyPrint` (editors / commenters+viewers)
+  - **Publish to web** — отдельная концепция, не link sharing:
+    - Link publish · Embed publish
+    - `autoRepublish` — автоматически переопубликовывать при изменениях
+  - **`effectiveRole(userId, noteId)`**: явная `UserNote` → иначе general access → deny
+  - **`share(callerId, noteId, targetUserId, role)`**: caller = OWNER (или EDITOR при `editorsCanShare`); role ≤ роли caller'а
+  - **`transferOwnership(callerId, noteId, newOwnerId)`**: атомарно — старый OWNER → EDITOR, новый → OWNER
 
 ---
 
@@ -248,8 +257,9 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 | ACL             | `user-note/`          | `UserNote { userId, noteId, role }`        |
 
 **UserNoteRole:** `OWNER` · `EDITOR` · `COMMENTER` _(не MVP)_ · `VIEWER`
-**NoteVisibility:** `RESTRICTED` · `LINK_VIEWER` · `LINK_COMMENTER` · `LINK_EDITOR` · `PUBLIC`
-**ACL resolution:** явная `UserNote` → иначе visibility → deny; логика в `user-note/service/`
+**General access:** `RESTRICTED` · `ANYONE_WITH_LINK` (viewer / commenter / editor)
+**Publish to web:** link · embed; `autoRepublish` — отдельная концепция, не link sharing
+**ACL resolution:** явная `UserNote` → иначе general access → deny; бизнес-логика — отдельно от CRUD
 
 ### Клиенты
 
