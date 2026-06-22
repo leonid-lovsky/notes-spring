@@ -2,7 +2,7 @@
 
 > Живой документ проекта. Читается автоматически в начале каждой сессии.
 > Может содержать неточности — всегда подлежит уточнению и улучшению.
-> Последнее обновление: 2026-06-22T11:45Z
+> Последнее обновление: 2026-06-22T11:47Z
 
 ---
 
@@ -84,9 +84,17 @@
 > Модель принята. `user/` · `note/` · `user-note/` — чистый CRUD; бизнес-логика — в `sharing/`.
 > Enforcement решён. Три нерешённых вопроса о домене `sharing/`:
 
-- **Publish to web — отдельная сущность?** — своё состояние, `autoRepublish`, два формата (link/embed); где хранится в домене `sharing/`?
-- **Settings — к чему относятся?** — `editorsCanShare`, `canDownloadCopyPrint`; атрибуты какой сущности?
-- **Один `OWNER` или несколько?** — Google Docs = один; `transferOwnership`: атомарно
+- **Один `OWNER` или несколько?**
+  Склонение: один — доменный инвариант; два `OWNER` одновременно = невалидное состояние; `transferOwnership` атомарно: старый → `EDITOR`, новый → `OWNER`
+
+- **Settings — к чему относятся?** — `editorsCanShare`, `canDownloadCopyPrint`
+  Склонение: не принадлежат `note/` (чистый CRUD) и не `user-note/` (не per-user атрибут); принадлежат домену `sharing/`:
+  `NoteAccess { noteId, generalAccess, editorsCanShare, canDownloadCopyPrint }`
+  где `generalAccess`: `RESTRICTED · VIEWER · COMMENTER · EDITOR` (роль для «anyone with the link»)
+
+- **Publish to web — отдельная сущность?**
+  Склонение: да; «share with link» и «publish to web» меняются по разным причинам (SRP); отдельная сущность в домене `sharing/`:
+  `NotePublication { noteId, linkPublished, linkAutoRepublish, embedPublished, embedAutoRepublish }`
 
 ### После Resource Server
 
