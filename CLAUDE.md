@@ -3,7 +3,7 @@
 > Живой документ проекта. Читается автоматически в начале каждой сессии.
 > **Всё в этом документе и в коде — временно.** Ничто не является окончательно принятым паттерном.
 > Любое решение подлежит обсуждению, изменению и уточнению — независимо от того, что уже написано.
-> Последнее обновление: 2026-06-23T20:40Z
+> Последнее обновление: 2026-06-23T20:46Z
 
 ---
 
@@ -147,10 +147,11 @@
 - **Стратегия активации адаптеров** — как выбрать реализацию порта при нескольких:
   - **A — `@Profile("jpa")`** _(склонение)_ — просто; убирается когда появится вторая реализация
   - **B — Отдельные `application-jpa/` · `application-r2dbc/`** — чисто на уровне сборки; дублирует composition root
-- **Reactive/sync impedance** — `Optional<T>` несовместим с реактивными адаптерами (`.block()` = deadlock):
-  - **Параллельные порты** _(склонение)_ — `NoteRepository` + `ReactiveNoteRepository` в `domain/`
-  - **Sync обёртка** — `Mono.fromCallable().subscribeOn(boundedElastic())` — не настоящий reactive
-  - **Отдельные реактивные сервисы** — дублирование домена
+- **Reactive/sync impedance** ← **БЛОКИРУЕТ реализацию `data-r2dbc/`, `data-mongodb-reactive/`, `webflux/`**
+  `Optional<T>` / `List<T>` в `*Repository` несовместимы с `Mono<T>` / `Flux<T>` из R2DBC / MongoDB Reactive / WebFlux:
+  - **Параллельные порты** _(склонение)_ — `NoteRepository` + `ReactiveNoteRepository` в `domain/`; реакторные типы входят в `domain/`; два набора сервисов
+  - **Sync обёртка с `.block()`** — адаптер реализует sync-интерфейс, блокируя реактивный поток; риск deadlock в event-loop потоке; не настоящий reactive
+  - **Отдельные реактивные сервисы** — `domain/` + `service/` дублируются для каждого стека; нарушает DRY
 
 ---
 
@@ -293,6 +294,7 @@ Spring Data скрывает это за `repository.save()`, но семант�
 
 ### Принятые решения
 
+- **`gateway/`, `config/`, `registry/` используют выделенные convention plugins** — раньше использовали только `spring-boot-application-conventions` и не включали Cloud-стартеры; Gateway работал как пустой Boot-app без Spring Cloud Gateway в classpath; теперь исправлено
 - **Gateway ≠ BFF** · **BFF — один на UX** (Sam Newman)
 - **Token Exchange (RFC 8693)** — BFF обменивает access token на internal JWT с `aud` микросервиса
 - **Spring Authorization Server — постоянный IdP**; Keycloak/Auth0 только после детальной оценки
@@ -457,8 +459,9 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 - **`oauth2-resource-server`** — транспортно-независимая JWT-валидация; применим к `webmvc/`, `webflux/`, `graphql/` — не переименовывать в `webmvc-oauth2-*`
 - **`h2-database`** — add-on поверх `data-jpa`; не содержит `repositories {}`; применять совместно
 - **`gateway-webflux`** / **`gateway-webmvc`** / **`config-server`** / **`eureka-server`** — включают `org.springframework.boot` plugin (это Boot app, не просто модуль); не комбинировать с `spring-boot-application-conventions`
-- **`restclient`** / **`webclient`** — add-on поверх любого адаптера; для исходящих HTTP-вызовов между сервисами; альтернатива Feign без Spring Cloud
+- **`restclient`** / **`webclient`** — не адаптеры в гексагональном смысле; инструменты внутри других адаптеров (Feign, reactive adapter); именно поэтому в имени нет суффикса `-adapter-`
 - **`circuit-breaker`** — только реактивный вариант (Resilience4j reactor); для sync-стека: `resilience4j-spring-boot3` без Spring Cloud starter
+- **Convention plugin = Gradle-выражение гексагональной архитектуры**: каждый тип адаптера → один plugin; `build.gradle` модуля объявляет только project-зависимости; всё остальное — в plugin; это SRP на уровне сборки
 
 ### Spring Boot 4
 
