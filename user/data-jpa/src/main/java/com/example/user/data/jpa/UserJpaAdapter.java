@@ -9,11 +9,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-class UserOutputAdapter implements UserRepository {
+class UserJpaAdapter implements UserRepository {
 
     private final UserJpaRepository userJpaRepository;
 
-    UserOutputAdapter(UserJpaRepository userJpaRepository) {
+    UserJpaAdapter(UserJpaRepository userJpaRepository) {
         this.userJpaRepository = userJpaRepository;
     }
 
@@ -24,22 +24,22 @@ class UserOutputAdapter implements UserRepository {
 
     @Override
     public Optional<User> findById(UUID id) {
-        return userJpaRepository.findById(id).map(UserOutputAdapter::toDomain);
+        return userJpaRepository.findById(id).map(UserJpaAdapter::toDomain);
     }
 
     @Override
     public Optional<User> findByUsername(String username) {
-        return userJpaRepository.findByUsername(username).map(UserOutputAdapter::toDomain);
+        return userJpaRepository.findByUsername(username).map(UserJpaAdapter::toDomain);
     }
 
     @Override
     public Optional<User> findByEmail(String email) {
-        return userJpaRepository.findByEmail(email).map(UserOutputAdapter::toDomain);
+        return userJpaRepository.findByEmail(email).map(UserJpaAdapter::toDomain);
     }
 
     @Override
     public List<User> findAll() {
-        return userJpaRepository.findAll().stream().map(UserOutputAdapter::toDomain).toList();
+        return userJpaRepository.findAll().stream().map(UserJpaAdapter::toDomain).toList();
     }
 
     @Override

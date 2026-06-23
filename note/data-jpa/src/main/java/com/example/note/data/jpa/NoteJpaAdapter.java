@@ -9,11 +9,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-class NoteOutputAdapter implements NoteRepository {
+class NoteJpaAdapter implements NoteRepository {
 
     private final NoteJpaRepository noteJpaRepository;
 
-    NoteOutputAdapter(NoteJpaRepository noteJpaRepository) {
+    NoteJpaAdapter(NoteJpaRepository noteJpaRepository) {
         this.noteJpaRepository = noteJpaRepository;
     }
 
@@ -24,12 +24,12 @@ class NoteOutputAdapter implements NoteRepository {
 
     @Override
     public Optional<Note> findById(UUID id) {
-        return noteJpaRepository.findById(id).map(NoteOutputAdapter::toDomain);
+        return noteJpaRepository.findById(id).map(NoteJpaAdapter::toDomain);
     }
 
     @Override
     public List<Note> findAll() {
-        return noteJpaRepository.findAll().stream().map(NoteOutputAdapter::toDomain).toList();
+        return noteJpaRepository.findAll().stream().map(NoteJpaAdapter::toDomain).toList();
     }
 
     @Override

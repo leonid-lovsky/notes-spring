@@ -1,0 +1,7 @@
+plugins {
+    id 'spring-data-mongodb-adapter-conventions'
+}
+
+dependencies {
+    implementation project(':user:domain')
+}

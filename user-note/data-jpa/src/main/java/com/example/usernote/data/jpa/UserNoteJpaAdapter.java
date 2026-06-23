@@ -9,11 +9,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-class UserNoteOutputAdapter implements UserNoteRepository {
+class UserNoteJpaAdapter implements UserNoteRepository {
 
     private final UserNoteJpaRepository userNoteJpaRepository;
 
-    UserNoteOutputAdapter(UserNoteJpaRepository userNoteJpaRepository) {
+    UserNoteJpaAdapter(UserNoteJpaRepository userNoteJpaRepository) {
         this.userNoteJpaRepository = userNoteJpaRepository;
     }
 
@@ -24,17 +24,22 @@ class UserNoteOutputAdapter implements UserNoteRepository {
 
     @Override
     public Optional<UserNote> findByUserIdAndNoteId(UUID userId, UUID noteId) {
-        return userNoteJpaRepository.findById(new UserNoteId(userId, noteId)).map(UserNoteOutputAdapter::toDomain);
+        return userNoteJpaRepository.findById(new UserNoteId(userId, noteId))
+                .map(UserNoteJpaAdapter::toDomain);
     }
 
     @Override
     public List<UserNote> findByUserId(UUID userId) {
-        return userNoteJpaRepository.findByIdUserId(userId).stream().map(UserNoteOutputAdapter::toDomain).toList();
+        return userNoteJpaRepository.findByIdUserId(userId).stream()
+                .map(UserNoteJpaAdapter::toDomain)
+                .toList();
     }
 
     @Override
     public List<UserNote> findByNoteId(UUID noteId) {
-        return userNoteJpaRepository.findByIdNoteId(noteId).stream().map(UserNoteOutputAdapter::toDomain).toList();
+        return userNoteJpaRepository.findByIdNoteId(noteId).stream()
+                .map(UserNoteJpaAdapter::toDomain)
+                .toList();
     }
 
     @Override
