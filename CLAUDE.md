@@ -2,7 +2,7 @@
 
 > Живой документ проекта. Читается автоматически в начале каждой сессии.
 > Все решения — временные и подлежат уточнению и изменению по мере необходимости.
-> Последнее обновление: 2026-06-23T18:49Z
+> Последнее обновление: 2026-06-23T19:05Z
 
 ---
 
@@ -27,6 +27,7 @@
 ### Ограничения
 
 - **Файлы** — не изменять и не создавать без явного «измени X в файле Y»
+- **Таблицы** — выравнивать все колонки по ширине (Unicode char count); все строки одной таблицы должны иметь одинаковую длину; IDEA предупреждает о несоответствии
 - **CI** — не трогать `.github/workflows/` без явного запроса
 - **Коммиты** — не коммитить и не пушить без явного запроса _(исключение: начало сессии)_
 - **Перед коммитом** — обновить дату: `date -u +"%Y-%m-%dT%H:%MZ"`
@@ -188,7 +189,7 @@ feign/        driven adapter  (HTTP client)    →  domain/  (только user-
 | Модуль         | Тест-слой                | Что проверяет                                      |
 |----------------|--------------------------|----------------------------------------------------|
 | `domain/`      | JUnit (чистая Java)      | Доменная логика без Spring context                 |
-| `service/`     | Spring context + Mockito | Use case; Repository мокируется                   |
+| `service/`     | Spring context + Mockito | Use case; Repository мокируется                    |
 | `webmvc/`      | `@WebMvcTest` (MockMvc)  | HTTP binding, статусы, сериализация                |
 | `data-jpa/`    | `@DataJpaTest` + TC      | SQL, маппинг; Testcontainers = реальный PostgreSQL |
 | `application/` | `@SpringBootTest` + TC   | Полный smoke test; все слои вместе                 |
@@ -319,9 +320,9 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 
 | Фаза         | Содержание                                                                                  |
 |--------------|---------------------------------------------------------------------------------------------|
-| 1 — основа   | PKCE · `aud`/`scope`/`jti` claims · refresh rotation · rate limiting · TLS 1.3 · stateless |
-| 2 — MFA      | TOTP/Passkey · Social Login · JTI Blocklist · Step-up auth · device tracking · audit log   |
-| 3 — максимум | DPoP · mTLS · Certificate pinning · App attestation                                        |
+| 1 — основа   | PKCE · `aud`/`scope`/`jti` claims · refresh rotation · rate limiting · TLS 1.3 · stateless  |
+| 2 — MFA      | TOTP/Passkey · Social Login · JTI Blocklist · Step-up auth · device tracking · audit log    |
+| 3 — максимум | DPoP · mTLS · Certificate pinning · App attestation                                         |
 
 ---
 
