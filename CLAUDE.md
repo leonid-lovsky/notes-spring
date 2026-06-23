@@ -1,8 +1,8 @@
 # CLAUDE.md — notes-spring
 
 > Живой документ проекта. Читается автоматически в начале каждой сессии.
-> Может содержать неточности — всегда подлежит уточнению и улучшению.
-> Последнее обновление: 2026-06-22T11:47Z
+> Все решения — временные и подлежат уточнению и изменению по мере необходимости.
+> Последнее обновление: 2026-06-23T18:49Z
 
 ---
 
@@ -11,7 +11,7 @@
 ### Начало каждой сессии
 
 1. Прочитать этот файл свежим взглядом
-2. **Открытый приоритет:** Google Docs ACL (раздел Открытые решения) — три нерешённых вопроса о домене `sharing/`
+2. **Текущий приоритет:** `auth/` — все архитектурные вопросы по Google Docs ACL закрыты
 3. Обновить: актуализировать, убрать избыточность, улучшить формулировки, провести рефакторинг
 4. Сделать коммит и пуш _(постоянная авторизация — явный запрос не нужен)_
 
@@ -79,22 +79,9 @@
 
 > Откладываются при взаимозависимости или преждевременности. Не реализовывать без явного решения.
 
-### Google Docs ACL ← **ОТКРЫТЫЙ ПРИОРИТЕТ**
+### Google Docs ACL
 
-> Модель принята. `user/` · `note/` · `user-note/` — чистый CRUD; бизнес-логика — в `sharing/`.
-> Enforcement решён. Три нерешённых вопроса о домене `sharing/`:
-
-- **Один `OWNER` или несколько?**
-  Склонение: один — доменный инвариант; два `OWNER` одновременно = невалидное состояние; `transferOwnership` атомарно: старый → `EDITOR`, новый → `OWNER`
-
-- **Settings — к чему относятся?** — `editorsCanShare`, `canDownloadCopyPrint`
-  Склонение: не принадлежат `note/` (чистый CRUD) и не `user-note/` (не per-user атрибут); принадлежат домену `sharing/`:
-  `NoteAccess { noteId, generalAccess, editorsCanShare, canDownloadCopyPrint }`
-  где `generalAccess`: `RESTRICTED · VIEWER · COMMENTER · EDITOR` (роль для «anyone with the link»)
-
-- **Publish to web — отдельная сущность?**
-  Склонение: да; «share with link» и «publish to web» меняются по разным причинам (SRP); отдельная сущность в домене `sharing/`:
-  `NotePublication { noteId, linkPublished, linkAutoRepublish, embedPublished, embedAutoRepublish }`
+> Все архитектурные вопросы закрыты. Реализация после `auth/`.
 
 ### После Resource Server
 
@@ -254,6 +241,9 @@ UUID генерируется в `service/` до вызова порта. `repla
   - **`share(callerId, noteId, targetUserId, role)`**: caller = OWNER (или EDITOR при `editorsCanShare`); role ≤ роли caller'а
   - **`transferOwnership(callerId, noteId, newOwnerId)`**: атомарно — старый OWNER → EDITOR, новый → OWNER
   - Вся логика живёт в `sharing/service/`; `sharing/feign/` вызывает `note/` и `user-note/`
+- **Один `OWNER` на заметку** — доменный инвариант в `sharing/`; два `OWNER` одновременно = невалидное состояние; `transferOwnership` атомарно: старый OWNER → EDITOR, новый → OWNER
+- **`NoteAccess`** — сущность в `sharing/domain/`: `{ noteId, generalAccess, editorsCanShare, canDownloadCopyPrint }`; `generalAccess`: `RESTRICTED · VIEWER · COMMENTER · EDITOR` (роль для «anyone with the link»)
+- **`NotePublication`** — отдельная сущность в `sharing/domain/`: `{ noteId, linkPublished, linkAutoRepublish, embedPublished, embedAutoRepublish }`; «publish to web» ≠ «share with link» — разные причины меняться (SRP)
 
 ---
 
