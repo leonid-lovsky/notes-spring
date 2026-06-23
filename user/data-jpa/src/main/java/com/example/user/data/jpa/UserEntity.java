@@ -17,18 +17,14 @@ class UserEntity {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
-    private String password;
-
     protected UserEntity() {
 
     }
 
-    UserEntity(UUID id, String username, String email, String password) {
+    UserEntity(UUID id, String username, String email) {
         this.id = id;
         this.username = username;
         this.email = email;
-        this.password = password;
     }
 
     UUID getId() {
@@ -41,9 +37,5 @@ class UserEntity {
 
     String getEmail() {
         return email;
-    }
-
-    String getPassword() {
-        return password;
     }
 }

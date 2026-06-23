@@ -2,6 +2,7 @@ package com.example.user.data.jpa;
 
 import com.example.user.domain.User;
 import com.example.user.domain.UserRepository;
+import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -12,9 +13,11 @@ import java.util.UUID;
 class UserJpaAdapter implements UserRepository {
 
     private final UserJpaRepository userJpaRepository;
+    private final EntityManager em;
 
-    UserJpaAdapter(UserJpaRepository userJpaRepository) {
+    UserJpaAdapter(UserJpaRepository userJpaRepository, EntityManager em) {
         this.userJpaRepository = userJpaRepository;
+        this.em = em;
     }
 
     @Override
@@ -44,7 +47,7 @@ class UserJpaAdapter implements UserRepository {
 
     @Override
     public void add(User user) {
-        userJpaRepository.save(toEntity(user));
+        em.persist(toEntity(user));
     }
 
     @Override
@@ -58,10 +61,10 @@ class UserJpaAdapter implements UserRepository {
     }
 
     private static User toDomain(UserEntity entity) {
-        return new User(entity.getId(), entity.getUsername(), entity.getEmail(), entity.getPassword());
+        return new User(entity.getId(), entity.getUsername(), entity.getEmail());
     }
 
     private static UserEntity toEntity(User user) {
-        return new UserEntity(user.id(), user.username(), user.email(), user.password());
+        return new UserEntity(user.id(), user.username(), user.email());
     }
 }

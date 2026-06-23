@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @RestController
@@ -36,14 +35,14 @@ class UserController {
 
     @PostMapping
     ResponseEntity<UserResponse> create(@RequestBody UserRequest request) {
-        User user = userUseCase.create(request.username(), request.email(), request.password());
+        User user = userUseCase.create(request.username(), request.email());
         UserResponse response = UserResponse.from(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PutMapping("/{id}")
     ResponseEntity<UserResponse> update(@PathVariable UUID id, @RequestBody UserRequest request) {
-        User updated = userUseCase.update(id, request.username(), request.email(), request.password());
+        User updated = userUseCase.update(id, request.username(), request.email());
         UserResponse response = UserResponse.from(updated);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -52,10 +51,5 @@ class UserController {
     ResponseEntity<Void> delete(@PathVariable UUID id) {
         userUseCase.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
-
-    @ExceptionHandler(NoSuchElementException.class)
-    ResponseEntity<Void> handleNotFound() {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 }

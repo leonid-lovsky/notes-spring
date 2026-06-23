@@ -5,7 +5,7 @@ import java.util.UUID;
 
 public interface UserUseCase {
 
-    User create(String username, String email, String password);
+    User create(String username, String email);
 
     User findById(UUID id);
 
@@ -15,7 +15,7 @@ public interface UserUseCase {
 
     List<User> findAll();
 
-    User update(UUID id, String username, String email, String password);
+    User update(UUID id, String username, String email);
 
     void delete(UUID id);
 }

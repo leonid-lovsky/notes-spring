@@ -2,6 +2,7 @@ package com.example.usernote.data.mongodb;
 
 import com.example.usernote.domain.UserNote;
 import com.example.usernote.domain.UserNoteRepository;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -12,9 +13,11 @@ import java.util.UUID;
 class UserNoteMongoAdapter implements UserNoteRepository {
 
     private final UserNoteMongoRepository userNoteMongoRepository;
+    private final MongoTemplate mongoTemplate;
 
-    UserNoteMongoAdapter(UserNoteMongoRepository userNoteMongoRepository) {
+    UserNoteMongoAdapter(UserNoteMongoRepository userNoteMongoRepository, MongoTemplate mongoTemplate) {
         this.userNoteMongoRepository = userNoteMongoRepository;
+        this.mongoTemplate = mongoTemplate;
     }
 
     @Override
@@ -44,12 +47,12 @@ class UserNoteMongoAdapter implements UserNoteRepository {
 
     @Override
     public void add(UserNote userNote) {
-        userNoteMongoRepository.save(toDocument(userNote));
+        mongoTemplate.insert(toDocument(userNote));
     }
 
     @Override
     public void replace(UserNote userNote) {
-        userNoteMongoRepository.save(toDocument(userNote));
+        mongoTemplate.save(toDocument(userNote));
     }
 
     @Override

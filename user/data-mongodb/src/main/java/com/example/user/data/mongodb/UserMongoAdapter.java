@@ -2,6 +2,7 @@ package com.example.user.data.mongodb;
 
 import com.example.user.domain.User;
 import com.example.user.domain.UserRepository;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -12,9 +13,11 @@ import java.util.UUID;
 class UserMongoAdapter implements UserRepository {
 
     private final UserMongoRepository userMongoRepository;
+    private final MongoTemplate mongoTemplate;
 
-    UserMongoAdapter(UserMongoRepository userMongoRepository) {
+    UserMongoAdapter(UserMongoRepository userMongoRepository, MongoTemplate mongoTemplate) {
         this.userMongoRepository = userMongoRepository;
+        this.mongoTemplate = mongoTemplate;
     }
 
     @Override
@@ -44,12 +47,12 @@ class UserMongoAdapter implements UserRepository {
 
     @Override
     public void add(User user) {
-        userMongoRepository.save(toDocument(user));
+        mongoTemplate.insert(toDocument(user));
     }
 
     @Override
     public void replace(User user) {
-        userMongoRepository.save(toDocument(user));
+        mongoTemplate.save(toDocument(user));
     }
 
     @Override
@@ -58,10 +61,10 @@ class UserMongoAdapter implements UserRepository {
     }
 
     private static User toDomain(UserDocument document) {
-        return new User(document.getId(), document.getUsername(), document.getEmail(), document.getPassword());
+        return new User(document.getId(), document.getUsername(), document.getEmail());
     }
 
     private static UserDocument toDocument(User user) {
-        return new UserDocument(user.id(), user.username(), user.email(), user.password());
+        return new UserDocument(user.id(), user.username(), user.email());
     }
 }

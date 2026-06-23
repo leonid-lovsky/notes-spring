@@ -1,6 +1,7 @@
 package com.example.usernote.service;
 
 import com.example.usernote.domain.UserNote;
+import com.example.usernote.domain.UserNoteNotFoundException;
 import com.example.usernote.domain.UserNoteRepository;
 import com.example.usernote.domain.UserNoteRole;
 import com.example.usernote.domain.UserNoteUseCase;
@@ -8,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
@@ -32,7 +32,7 @@ class UserNoteService implements UserNoteUseCase {
     @Transactional(readOnly = true)
     public UserNote findByUserIdAndNoteId(UUID userId, UUID noteId) {
         return userNoteRepository.findByUserIdAndNoteId(userId, noteId)
-            .orElseThrow(() -> new NoSuchElementException(userId + "/" + noteId));
+            .orElseThrow(() -> new UserNoteNotFoundException(userId, noteId));
     }
 
     @Override
@@ -49,8 +49,9 @@ class UserNoteService implements UserNoteUseCase {
 
     @Override
     public UserNote update(UUID userId, UUID noteId, UserNoteRole role) {
-        userNoteRepository.findByUserIdAndNoteId(userId, noteId)
-            .orElseThrow(() -> new NoSuchElementException(userId + "/" + noteId));
+        if (!userNoteRepository.existsByUserIdAndNoteId(userId, noteId)) {
+            throw new UserNoteNotFoundException(userId, noteId);
+        }
         UserNote updated = new UserNote(userId, noteId, role);
         userNoteRepository.replace(updated);
         return updated;
@@ -59,7 +60,7 @@ class UserNoteService implements UserNoteUseCase {
     @Override
     public void delete(UUID userId, UUID noteId) {
         if (!userNoteRepository.existsByUserIdAndNoteId(userId, noteId)) {
-            throw new NoSuchElementException(userId + "/" + noteId);
+            throw new UserNoteNotFoundException(userId, noteId);
         }
         userNoteRepository.remove(userId, noteId);
     }

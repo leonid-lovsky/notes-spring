@@ -2,6 +2,7 @@ package com.example.note.data.jpa;
 
 import com.example.note.domain.Note;
 import com.example.note.domain.NoteRepository;
+import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -12,9 +13,11 @@ import java.util.UUID;
 class NoteJpaAdapter implements NoteRepository {
 
     private final NoteJpaRepository noteJpaRepository;
+    private final EntityManager em;
 
-    NoteJpaAdapter(NoteJpaRepository noteJpaRepository) {
+    NoteJpaAdapter(NoteJpaRepository noteJpaRepository, EntityManager em) {
         this.noteJpaRepository = noteJpaRepository;
+        this.em = em;
     }
 
     @Override
@@ -34,7 +37,7 @@ class NoteJpaAdapter implements NoteRepository {
 
     @Override
     public void add(Note note) {
-        noteJpaRepository.save(toEntity(note));
+        em.persist(toEntity(note));
     }
 
     @Override

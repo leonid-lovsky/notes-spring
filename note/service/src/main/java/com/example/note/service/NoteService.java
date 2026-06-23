@@ -1,13 +1,13 @@
 package com.example.note.service;
 
 import com.example.note.domain.Note;
+import com.example.note.domain.NoteNotFoundException;
 import com.example.note.domain.NoteRepository;
 import com.example.note.domain.NoteUseCase;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
@@ -31,7 +31,7 @@ class NoteService implements NoteUseCase {
     @Transactional(readOnly = true)
     public Note findById(UUID id) {
         return noteRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException(id.toString()));
+            .orElseThrow(() -> new NoteNotFoundException(id));
     }
 
     @Override
@@ -42,9 +42,10 @@ class NoteService implements NoteUseCase {
 
     @Override
     public Note update(UUID id, String content) {
-        Note note = noteRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException(id.toString()));
-        Note updated = note.withContent(content);
+        if (!noteRepository.existsById(id)) {
+            throw new NoteNotFoundException(id);
+        }
+        Note updated = new Note(id, content);
         noteRepository.replace(updated);
         return updated;
     }
@@ -52,7 +53,7 @@ class NoteService implements NoteUseCase {
     @Override
     public void delete(UUID id) {
         if (!noteRepository.existsById(id)) {
-            throw new NoSuchElementException(id.toString());
+            throw new NoteNotFoundException(id);
         }
         noteRepository.remove(id);
     }

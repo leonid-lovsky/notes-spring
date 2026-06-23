@@ -1,13 +1,13 @@
 package com.example.user.service;
 
 import com.example.user.domain.User;
+import com.example.user.domain.UserNotFoundException;
 import com.example.user.domain.UserRepository;
 import com.example.user.domain.UserUseCase;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
@@ -21,8 +21,8 @@ class UserService implements UserUseCase {
     }
 
     @Override
-    public User create(String username, String email, String password) {
-        User user = new User(UUID.randomUUID(), username, email, password);
+    public User create(String username, String email) {
+        User user = new User(UUID.randomUUID(), username, email);
         userRepository.add(user);
         return user;
     }
@@ -31,21 +31,21 @@ class UserService implements UserUseCase {
     @Transactional(readOnly = true)
     public User findById(UUID id) {
         return userRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException(id.toString()));
+            .orElseThrow(() -> new UserNotFoundException(id));
     }
 
     @Override
     @Transactional(readOnly = true)
     public User findByUsername(String username) {
         return userRepository.findByUsername(username)
-            .orElseThrow(() -> new NoSuchElementException(username));
+            .orElseThrow(() -> new UserNotFoundException(username));
     }
 
     @Override
     @Transactional(readOnly = true)
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
-            .orElseThrow(() -> new NoSuchElementException(email));
+            .orElseThrow(() -> new UserNotFoundException(email));
     }
 
     @Override
@@ -55,10 +55,11 @@ class UserService implements UserUseCase {
     }
 
     @Override
-    public User update(UUID id, String username, String email, String password) {
-        User user = userRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException(id.toString()));
-        User updated = new User(user.id(), username, email, password);
+    public User update(UUID id, String username, String email) {
+        if (!userRepository.existsById(id)) {
+            throw new UserNotFoundException(id);
+        }
+        User updated = new User(id, username, email);
         userRepository.replace(updated);
         return updated;
     }
@@ -66,7 +67,7 @@ class UserService implements UserUseCase {
     @Override
     public void delete(UUID id) {
         if (!userRepository.existsById(id)) {
-            throw new NoSuchElementException(id.toString());
+            throw new UserNotFoundException(id);
         }
         userRepository.remove(id);
     }

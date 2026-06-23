@@ -18,16 +18,13 @@ class UserDocument {
     @Indexed(unique = true)
     private String email;
 
-    private String password;
-
     protected UserDocument() {
     }
 
-    UserDocument(UUID id, String username, String email, String password) {
+    UserDocument(UUID id, String username, String email) {
         this.id = id;
         this.username = username;
         this.email = email;
-        this.password = password;
     }
 
     UUID getId() {
@@ -40,9 +37,5 @@ class UserDocument {
 
     String getEmail() {
         return email;
-    }
-
-    String getPassword() {
-        return password;
     }
 }

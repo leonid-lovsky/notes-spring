@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @RestController
@@ -52,10 +51,5 @@ class NoteController {
     ResponseEntity<Void> delete(@PathVariable UUID id) {
         noteUseCase.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
-
-    @ExceptionHandler(NoSuchElementException.class)
-    ResponseEntity<Void> handleNotFound() {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 }
