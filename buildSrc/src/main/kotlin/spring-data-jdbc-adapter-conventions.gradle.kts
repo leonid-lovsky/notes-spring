@@ -14,8 +14,8 @@ dependencyManagement {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
-    testImplementation("org.springframework.boot:spring-boot-starter-data-mongodb-test")
+    implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
+    testImplementation("org.springframework.boot:spring-boot-starter-data-jdbc-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 

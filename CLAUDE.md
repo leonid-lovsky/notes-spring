@@ -3,7 +3,7 @@
 > Живой документ проекта. Читается автоматически в начале каждой сессии.
 > **Всё в этом документе и в коде — временно.** Ничто не является окончательно принятым паттерном.
 > Любое решение подлежит обсуждению, изменению и уточнению — независимо от того, что уже написано.
-> Последнее обновление: 2026-06-23T19:57Z
+> Последнее обновление: 2026-06-23T20:40Z
 
 ---
 
@@ -12,7 +12,7 @@
 ### Начало каждой сессии
 
 1. Прочитать этот файл полностью
-2. **Текущий приоритет:** `auth/` — все архитектурные вопросы по Google Docs ACL закрыты
+2. **Текущий приоритет:** расширение портфолио адаптеров — JDBC, R2DBC, MongoDB Reactive, WebFlux, GraphQL
 3. Актуализировать файл: убрать устаревшее, улучшить формулировки, устранить избыточность
 4. Зафиксировать изменения коммитом и пушем _(постоянная авторизация, явный запрос не требуется)_
 
@@ -37,42 +37,58 @@
 ## Задачи
 
 ```
-ГОТОВО      user/ · note/ · user-note/  — domain · service · webmvc · data-jpa
-ТЕКУЩИЙ     auth/  — Spring Authorization Server + AuthUser + OIDC
-НЕ СОЗДАНО  bff/ · thymeleaf/ · auth/webmvc/ · auth/data-jpa/ · sharing/ · crud/
+ГОТОВО      user/ · note/ · user-note/  — domain · service · webmvc · data-jpa · data-mongodb
+ТЕКУЩИЙ     адаптеры — data-jdbc · data-r2dbc · data-mongodb-reactive · webflux · graphql
+ОТЛОЖЕНО    auth/  — Spring Authorization Server (реализация в самом конце)
+НЕ СОЗДАНО  bff/ · thymeleaf/ · sharing/ · crud/
 ```
 
-### Чистка перед `auth/`
+### Чистка
 
-1. Убрать `password` из `User` — `AuthUser ≠ User` уже принято; `user/` — профиль, не IdP
+1. Убрать `password` из `User` — `AuthUser ≠ User` принято; `user/` — профиль, не IdP
 2. Доменные исключения — заменить `NoSuchElementException` как сигнал 404
 3. `@ControllerAdvice` + `ProblemDetail` (RFC 9457) — убрать локальный `@ExceptionHandler` из каждого контроллера
 4. `UserNoteService.update()` → `existsByUserIdAndNoteId` — лишний read
 
-### `auth/` ← **ТЕКУЩИЙ ПРИОРИТЕТ**
+### Адаптеры ← **ТЕКУЩИЙ ПРИОРИТЕТ**
 
-> Скелет `auth/application/` уже создан (`AuthApplication.java`, пустой тест, пустой `application.properties`).
-> Модули `domain/`, `data-jpa/` и сам Authorization Server — не созданы.
+> Convention plugins созданы для всех технологий. Не реализованы: source files адаптеров.
 
-1. `auth/domain/` — `AuthUser` record + `AuthUserUseCase` + `AuthUserRepository`
-2. `auth/data-jpa/` — JPA adapter + Flyway schema
-3. Spring Authorization Server — OIDC endpoint + JWT issuer
+Реализовать (для каждого сервиса: `user/` · `note/` · `user-note/`):
 
-### После `auth/`
+1. `data-jdbc/` — Spring Data JDBC / JdbcTemplate; явный `INSERT` vs `UPDATE` (add vs replace)
+2. `data-r2dbc/` — реактивный SQL; выявляет reactive/sync impedance mismatch
+3. `data-mongodb-reactive/` — реактивный MongoDB; та же проблема
 
-1. Resource Server в одном сервисе — smoke test: `auth/` выдаёт токен, сервис принимает
-2. Resource Server во всех сервисах; убрать `userId` из `UserNoteRequest` (берётся из JWT `sub`)
-3. `sharing/` — Google Docs ACL сервис (после закрытия трёх открытых вопросов о домене):
+Реализовать driving adapters (для каждого сервиса):
+
+4. `webflux/` — реактивный REST (WebFlux)
+5. `graphql/` — GraphQL (Spring for GraphQL)
+
+### После адаптеров
+
+1. Принять решение по reactive/sync impedance: параллельные порты или другой подход
+2. `sharing/` — Google Docs ACL сервис:
    - `sharing/domain/` — `NoteAccess`, `NotePublication`, use cases: `effectiveRole`, `share`, `transferOwnership`, `publish`
    - `sharing/service/` — бизнес-логика; координирует `NoteAccess` + `NotePublication` + вызовы к `user-note/` и `note/`
    - `sharing/webmvc/` — REST API
    - `sharing/data-jpa/` — хранение `NoteAccess` и `NotePublication`
    - `sharing/feign/` — клиенты к `note/` и `user-note/`
-4. `bff/` — OAuth2 Client + Spring Session + Token Exchange
-5. `thymeleaf/` — server-rendered BFF
-6. Banking Phase 2 — MFA, token rotation, audit log
-7. `crud/` — shared library
-8. Широкий стек — один use case через WebMVC + gRPC + GraphQL; цель: доказать, что домен не зависит от протокола и хранилища
+3. `bff/` — OAuth2 Client + Spring Session + Token Exchange
+4. `thymeleaf/` — server-rendered BFF
+5. Banking Phase 2 — MFA, token rotation, audit log
+6. `crud/` — shared library
+7. Широкий стек — один use case через WebMVC + WebFlux + gRPC + GraphQL
+
+### `auth/` — В КОНЦЕ
+
+> Скелет `auth/application/` создан. Convention plugins готовы.
+> Реализация откладывается до завершения всего остального.
+
+1. `auth/domain/` — `AuthUser` record + `AuthUserUseCase` + `AuthUserRepository`
+2. `auth/data-jpa/` — JPA adapter + Flyway schema
+3. Spring Authorization Server — OIDC endpoint + JWT issuer
+4. Resource Server во всех сервисах; убрать `userId` из `UserNoteRequest`
 
 ---
 
@@ -124,10 +140,6 @@
   - **B — `void`** — чистый CQS; POST/PUT требует дополнительного `findById`
 - **Mapping** — где маппить между слоями; ручной / MapStruct; отдельные DTO/VO на каждом слое
 - **PATCH** — обрабатывать в `service/` (fetch → modify → replace) или не поддерживать вовсе
-- **Регистрация** — координация `auth/` ↔ `user/`; решить до реализации:
-  - **Lazy** — `user/` создаёт профиль при первом запросе; нет email при регистрации; нет coupling
-  - **Sync** — `auth/` → `user/` через RestClient; нарушает direction of dependencies
-  - **Events** — Kafka/RabbitMQ; единственный вариант без нарушения SoC/SRP; требует брокера
 
 ### Отложено (фундаментальное)
 
@@ -214,14 +226,19 @@
 Структура модулей:
 
 ```
-application/  Spring Boot app — composition root; знает все модули
-domain/       entities + port interfaces (UseCase + Repository) — чистая Java, без Spring
-service/      use case implementations (@Service, @Transactional) — зависит только от domain/
-webmvc/       driving adapter (HTTP/REST)      →  domain/
-grpc/         driving adapter (gRPC/Protobuf)  →  domain/
-graphql/      driving adapter (GraphQL)        →  domain/
-data-jpa/     driven adapter  (JPA/SQL)        →  domain/
-feign/        driven adapter  (HTTP client)    →  domain/  (sharing/feign/)
+application/            Spring Boot app — composition root; знает все модули
+domain/                 entities + port interfaces (UseCase + Repository) — чистая Java, без Spring
+service/                use case implementations (@Service, @Transactional) — зависит только от domain/
+webmvc/                 driving adapter (sync REST/HTTP)       →  domain/
+webflux/                driving adapter (reactive REST/HTTP)   →  domain/
+grpc/                   driving adapter (gRPC/Protobuf)        →  domain/
+graphql/                driving adapter (GraphQL)              →  domain/
+data-jpa/               driven adapter  (JPA/SQL, ORM)        →  domain/
+data-jdbc/              driven adapter  (JDBC/SQL, no ORM)    →  domain/
+data-r2dbc/             driven adapter  (reactive SQL)        →  domain/
+data-mongodb/           driven adapter  (MongoDB)             →  domain/
+data-mongodb-reactive/  driven adapter  (reactive MongoDB)    →  domain/
+feign/                  driven adapter  (HTTP client)         →  domain/  (sharing/feign/)
 ```
 
 **Dependency direction** — `application/` знает всё; адаптеры знают только `domain/`; `domain/` — ничего снаружи
@@ -403,21 +420,45 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 
 **Convention plugins:**
 
-| Plugin ID                                   | Назначение                       |
-|---------------------------------------------|----------------------------------|
-| `spring-boot-application-conventions`       | `application/` — Boot app        |
-| `java-domain-conventions`                   | `domain/` — чистая Java, без BOM |
-| `spring-service-conventions`                | `service/` — BOM + spring-tx     |
-| `spring-webmvc-adapter-conventions`         | `webmvc/` — driving adapter      |
-| `spring-data-jpa-adapter-conventions`       | `data-jpa/` — driven adapter     |
-| `spring-h2-database-conventions`            | add-on: H2 + h2console           |
-| `spring-oauth2-resource-server-conventions` | add-on: JWT-валидация            |
-| `spring-oauth2-client-conventions`          | add-on: OAuth2 Client            |
+| Plugin ID                                          | Назначение                                       |
+|----------------------------------------------------|--------------------------------------------------|
+| `spring-boot-application-conventions`              | `application/` — Boot app                        |
+| `java-domain-conventions`                          | `domain/` — чистая Java, без BOM                 |
+| `spring-service-conventions`                       | `service/` — BOM + spring-tx                     |
+| `spring-webmvc-adapter-conventions`                | `webmvc/` — driving adapter (sync REST)           |
+| `spring-webflux-adapter-conventions`               | `webflux/` — driving adapter (reactive REST)      |
+| `spring-graphql-adapter-conventions`               | `graphql/` — driving adapter (GraphQL)            |
+| `spring-data-jpa-adapter-conventions`              | `data-jpa/` — driven adapter (JPA/SQL, ORM)       |
+| `spring-data-jdbc-adapter-conventions`             | `data-jdbc/` — driven adapter (JDBC/SQL, no ORM)  |
+| `spring-data-r2dbc-adapter-conventions`            | `data-r2dbc/` — driven adapter (reactive SQL)     |
+| `spring-data-mongodb-adapter-conventions`          | `data-mongodb/` — driven adapter (MongoDB)        |
+| `spring-data-mongodb-reactive-adapter-conventions` | `data-mongodb-reactive/` — driven adapter         |
+| `spring-cloud-openfeign-adapter-conventions`       | `feign/` — driven adapter (HTTP client)           |
+| `spring-restclient-conventions`                    | add-on: RestClient (sync HTTP)                    |
+| `spring-webclient-conventions`                     | add-on: WebClient (reactive HTTP)                 |
+| `spring-cloud-gateway-webflux-conventions`         | `gateway/` — reactive gateway (WebFlux-based app) |
+| `spring-cloud-gateway-webmvc-conventions`          | `gateway/` — sync gateway (WebMVC-based app)      |
+| `spring-cloud-config-server-conventions`           | `config/` — Config Server app                     |
+| `spring-cloud-config-client-conventions`           | add-on: Config Client                             |
+| `spring-cloud-eureka-server-conventions`           | `registry/` — Eureka Server app                   |
+| `spring-cloud-eureka-client-conventions`           | add-on: Eureka Client                             |
+| `spring-cloud-circuit-breaker-conventions`         | add-on: Resilience4j Circuit Breaker (reactive)   |
+| `spring-cloud-loadbalancer-conventions`            | add-on: Spring Cloud LoadBalancer                 |
+| `spring-h2-database-conventions`                  | add-on: H2 + h2console                           |
+| `spring-actuator-conventions`                      | add-on: Actuator                                  |
+| `spring-oauth2-authorization-server-conventions`   | `auth/` — Authorization Server                    |
+| `spring-oauth2-resource-server-conventions`        | add-on: JWT-валидация (Resource Server)           |
+| `spring-oauth2-client-conventions`                 | add-on: OAuth2 Client                             |
+
+**`buildSrc/src/main/kotlin/CloudBom.kt`** — Kotlin object с координатами Spring Cloud BOM; используется в Cloud convention plugins вместо литерала.
 
 - **`domain`** — только `java`; без Spring BOM; JSpecify и JUnit с явными версиями
 - **`service`** — требует явный `implementation("org.springframework:spring-tx")`; `spring-boot-starter` не тянет его транзитивно
 - **`oauth2-resource-server`** — транспортно-независимая JWT-валидация; применим к `webmvc/`, `webflux/`, `graphql/` — не переименовывать в `webmvc-oauth2-*`
 - **`h2-database`** — add-on поверх `data-jpa`; не содержит `repositories {}`; применять совместно
+- **`gateway-webflux`** / **`gateway-webmvc`** / **`config-server`** / **`eureka-server`** — включают `org.springframework.boot` plugin (это Boot app, не просто модуль); не комбинировать с `spring-boot-application-conventions`
+- **`restclient`** / **`webclient`** — add-on поверх любого адаптера; для исходящих HTTP-вызовов между сервисами; альтернатива Feign без Spring Cloud
+- **`circuit-breaker`** — только реактивный вариант (Resilience4j reactor); для sync-стека: `resilience4j-spring-boot3` без Spring Cloud starter
 
 ### Spring Boot 4
 
@@ -425,7 +466,7 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 - `starter-test` — JUnit/Mockito/AssertJ; слайсы (`@WebMvcTest`, `@DataJpaTest` и др.) выведены в отдельные `*-test` стартеры (в Boot 3 входили в `starter-test`)
 - OAuth2 стартеры: `oauth2-*` (Boot 3) → `security-oauth2-*` (Boot 4); `docs.spring.io/spring-security` ссылается на Boot 3 имена — не доверять
 - Jackson 3: `com.fasterxml.jackson` → `tools.jackson`
-- RestTemplate deprecated → `RestClient`
+- RestTemplate deprecated → `RestClient` (`spring-boot-starter-restclient`); реактивный аналог — `WebClient` (`spring-boot-starter-webclient`)
 - Flyway + PostgreSQL: нужен `runtimeOnly("org.flywaydb:flyway-database-postgresql")`
 - Обработка ошибок: `ResponseEntityExceptionHandler` + `ProblemDetail` (RFC 9457)
 - Lombok: `compileOnly` + `annotationProcessor`;
@@ -544,6 +585,7 @@ spring-boot-starter-websocket
 
 ```
 spring-cloud-config-server
+spring-cloud-starter-circuitbreaker-reactor-resilience4j
 spring-cloud-starter-config
 spring-cloud-starter-gateway-server-webmvc
 spring-cloud-starter-gateway-server-webflux
@@ -579,15 +621,30 @@ org.springframework.boot:spring-boot-docker-compose
 
 ```
 spring-boot-starter-test
+spring-boot-starter-actuator-test
+spring-boot-starter-data-jdbc-test
 spring-boot-starter-data-jpa-test
+spring-boot-starter-data-mongodb-test
+spring-boot-starter-data-mongodb-reactive-test
+spring-boot-starter-data-r2dbc-test
+spring-boot-starter-graphql-test
 spring-boot-starter-grpc-client-test
 spring-boot-starter-grpc-server-test
+spring-boot-starter-restclient-test
 spring-boot-starter-security-test
 spring-boot-starter-security-oauth2-authorization-server-test
 spring-boot-starter-security-oauth2-client-test
 spring-boot-starter-security-oauth2-resource-server-test
+spring-boot-starter-webclient-test
+spring-boot-starter-webflux-test
 spring-boot-starter-webmvc-test
 spring-boot-testcontainers
+```
+
+**Reactor**
+
+```
+io.projectreactor:reactor-test   ← StepVerifier; нужен для тестов R2DBC, WebFlux, MongoDB Reactive
 ```
 
 **Testcontainers** (версия управляется Spring Boot BOM)

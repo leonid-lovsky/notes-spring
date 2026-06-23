@@ -1,3 +1,6 @@
 plugins {
-    id 'spring-boot-application-conventions'
+    id 'spring-cloud-gateway-webflux-conventions'
+    id 'spring-actuator-conventions'
+    id 'spring-cloud-eureka-client-conventions'
+    id 'spring-cloud-config-client-conventions'
 }

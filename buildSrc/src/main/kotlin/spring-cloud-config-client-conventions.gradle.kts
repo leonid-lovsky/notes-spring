@@ -10,12 +10,12 @@ repositories {
 dependencyManagement {
     imports {
         mavenBom(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
+        mavenBom(CloudBom.COORDINATES)
     }
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
-    testImplementation("org.springframework.boot:spring-boot-starter-data-mongodb-test")
+    implementation("org.springframework.cloud:spring-cloud-starter-config")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
