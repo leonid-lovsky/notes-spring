@@ -2,7 +2,7 @@
 
 > Живой документ проекта. Читается автоматически в начале каждой сессии.
 > Все решения — временные и подлежат уточнению и изменению по мере необходимости.
-> Последнее обновление: 2026-06-23T18:59Z
+> Последнее обновление: 2026-06-23T19:02Z
 
 ---
 
@@ -18,7 +18,7 @@
 ### Поведение
 
 - **Язык** — общение на русском; код, идентификаторы, комментарии в коде — на английском
-- **Формулировки** — пользователь делегирует точность формулировок ассистенту; сообщения могут быть как краткими, так и длинными, но не обязательно точными; при записи в этот файл — всегда переформулировать чётко, грамотно и полно
+- **Формулировки** — любое сообщение пользователя — черновик; длина и стиль значения не имеют; ассистент всегда переформулирует его точно, грамотно и полно — в ответах и при записи в этот файл
 - **Фокус** — в начале ответа называть текущую задачу из раздела Задачи; не предлагать отложенные задачи без запроса
 - **Архитектурные решения** — перед ответом проверять: актуальна ли проблема? кто выигрывает? не упускаем ли что-то важное? Далее: изложить варианты с плюсами и минусами, дать склонение, дождаться выбора, обосновать. Не предлагать реализацию, пока открыты архитектурные вопросы
 - **Единственный источник истины** — этот файл работает на любой машине и в любой сессии; локальная память — лишь кэш, недоступный другим пользователям и машинам. Всё важное фиксируется здесь: принципы, решения, договорённости, правила поведения
@@ -77,7 +77,7 @@
 
 ## Открытые решения
 
-> Откладываются при взаимозависимости или преждевременности. Не реализовывать без явного решения.
+> Не реализовывать до принятия явного решения.
 
 ### Google Docs ACL
 
@@ -128,7 +128,7 @@
 
 ### Четыре приоритетных критерия
 
-Все архитектурные решения проверяются по всем четырём в равной мере:
+Каждое архитектурное решение проверяется по всем четырём:
 
 - **Hexagonal Architecture** — ports & adapters; изоляция ядра от инфраструктуры
 - **Clean Architecture** — зависимости направлены внутрь; use cases в центре; framework — деталь
@@ -149,7 +149,7 @@
 
 ### Паттерны на рассмотрение
 
-Не первичные принципы — паттерны реализации, применяемые при конкретной необходимости:
+Инструменты реализации, применяемые по необходимости; не подменяют четыре основных критерия:
 
 - **Bounded Contexts (DDD)** — явные границы доменов; определяет, кто владеет какими данными
 - **Domain Events** — коммуникация между BC без прямой зависимости; альтернатива Feign для некритичных операций
@@ -175,7 +175,7 @@ webmvc/       driving adapter (HTTP/REST)      →  domain/
 grpc/         driving adapter (gRPC/Protobuf)  →  domain/
 graphql/      driving adapter (GraphQL)        →  domain/
 data-jpa/     driven adapter  (JPA/SQL)        →  domain/
-feign/        driven adapter  (HTTP client)    →  domain/  (только user-note/)
+feign/        driven adapter  (HTTP client)    →  domain/  (sharing/feign/)
 ```
 
 **Dependency direction** — `application/` знает всё; адаптеры знают только `domain/`; `domain/` — ничего снаружи
@@ -215,7 +215,7 @@ UUID генерируется в `service/` до вызова порта. `repla
 - **Gateway ≠ BFF** · **BFF — один на UX** (Sam Newman)
 - **Token Exchange (RFC 8693)** — BFF обменивает access token на internal JWT с `aud` микросервиса
 - **Spring Authorization Server — постоянный IdP**; Keycloak/Auth0 только после детальной оценки
-- **OpenFeign** — `spring-cloud-starter-openfeign` для `user-note/feign/`
+- **OpenFeign** — `spring-cloud-starter-openfeign` для `sharing/feign/`
 - **Input port — интерфейс в `domain/`** — `webmvc/` зависит от интерфейса, не от `service/`
 - **Domain objects — Java records** — `withXxx()` для изменённой копии; JPA entities — обычные классы
 - **`existsById` в Repository** — валидный паттерн; не заменять на `findById`
@@ -224,9 +224,9 @@ UUID генерируется в `service/` до вызова порта. `repla
 - **`AuthUser` (`auth/`) ≠ `User` (`user/`)**
 - **Wire format в адаптере** — `.proto` в `grpc/`, `.graphqls` в `graphql/`; Protobuf/GraphQL типы не проникают в `domain/`
 - **`service/` оправдан и остаётся** — UUID генерируется в `service/` (решение уровня приложения, не БД); `@Transactional` принадлежит use case, не адаптеру; перенос в `data-jpa/` дал бы двойную роль (output port + input port); подтверждено сценариями `share()` и `transferOwnership()` в `sharing/`
-- **`user/` · `note/` · `user-note/` — чистые REST CRUD сервисы** — каждый сервис знает только свои данные и предоставляет стандартный REST CRUD API; `note/` не знает о visibility, ACL, шаринге; бизнес-задачи реализуются в `sharing/` и не смешиваются с CRUD; решение принято через все четыре критерия: Hexagonal · Clean Architecture · SOLID · SoC
+- **`user/` · `note/` · `user-note/` — чистые REST CRUD сервисы** — каждый знает только свои данные; любая бизнес-логика поверх CRUD реализуется в `sharing/`, а не внутри самих сервисов
 - **`sharing/` — отдельный гексагональный сервис** — реализует всю бизнес-логику Google Docs ACL; вызывает `user-note/` и `note/` через output ports (Feign); CRUD сервисы не знают о `sharing/` вообще
-- **Enforcement — BFF + сетевая изоляция** — BFF вызывает `sharing/effectiveRole` перед вызовом `note/`; Token Exchange остаётся в `auth/` + `bff/`; `note/` — чистый Resource Server (валидирует JWT, не знает об ACL); сетевая изоляция: структурная гарантия, что CRUD сервисы недоступны в обход BFF
+- **Enforcement — BFF + сетевая изоляция** — перед вызовом `note/` BFF проверяет `sharing/effectiveRole`; `note/` — чистый Resource Server (JWT, без ACL); Token Exchange — ответственность `auth/` + `bff/`; сетевая изоляция исключает прямой доступ к CRUD-сервисам в обход BFF
 - **`NoteVisibility` — НЕ в `note/domain/`** — `note/` не знает о своей видимости; принадлежит `sharing/` или отдельной сущности в его домене
 - **Google Docs ACL модель** — принята как целевая модель доступа:
   - `UserNote { userId, noteId, role }` — явные права; `UserNoteRole`: `OWNER · EDITOR · COMMENTER · VIEWER`
@@ -284,7 +284,7 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 | BFF             | `bff/` · `thymeleaf/` | OAuth2 login flow, session, Token Exchange |
 | IdP             | `auth/`               | JWT issuing, credentials, OIDC             |
 | Resource Server | `*/webmvc/`           | JWT validation per request                 |
-| ACL             | `user-note/`          | `UserNote { userId, noteId, role }`        |
+| ACL             | `sharing/`            | effectiveRole, share, transferOwnership    |
 
 **UserNoteRole:** `OWNER` · `EDITOR` · `COMMENTER` _(не MVP)_ · `VIEWER`
 **General access:** `RESTRICTED` · `ANYONE_WITH_LINK` (viewer / commenter / editor)
