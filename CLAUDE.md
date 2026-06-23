@@ -3,7 +3,7 @@
 > Живой документ проекта. Читается автоматически в начале каждой сессии.
 > **Всё в этом документе и в коде — временно.** Ничто не является окончательно принятым паттерном.
 > Любое решение подлежит обсуждению, изменению и уточнению — независимо от того, что уже написано.
-> Последнее обновление: 2026-06-23T20:46Z
+> Последнее обновление: 2026-06-23T21:11Z
 
 ---
 
@@ -42,13 +42,6 @@
 ОТЛОЖЕНО    auth/  — Spring Authorization Server (реализация в самом конце)
 НЕ СОЗДАНО  bff/ · thymeleaf/ · sharing/ · crud/
 ```
-
-### Чистка
-
-1. Убрать `password` из `User` — `AuthUser ≠ User` принято; `user/` — профиль, не IdP
-2. Доменные исключения — заменить `NoSuchElementException` как сигнал 404
-3. `@ControllerAdvice` + `ProblemDetail` (RFC 9457) — убрать локальный `@ExceptionHandler` из каждого контроллера
-4. `UserNoteService.update()` → `existsByUserIdAndNoteId` — лишний read
 
 ### Адаптеры ← **ТЕКУЩИЙ ПРИОРИТЕТ**
 
@@ -117,7 +110,6 @@
 3. **Сигнатуры методов и возвращаемые типы** — **в анализе**
    - `*Repository`: семантика коллекции (Evans) — принята; `Optional<T>` / `List<T>` / `void` / `boolean` — только Java-типы; выявлено из анализа адаптеров
    - `*UseCase`: что возвращают мутирующие операции — стратегия не зафиксирована
-   - Выявлено: `NoteService.update()` и `UserNoteService.update()` делают лишний `findBy*` вместо `existsBy*` для проверки существования
 
 4. **Ответственность и состав методов** — **в анализе**
    - Граница `Repository` / `UseCase`: кто отвечает за валидацию существования? выявлено: это ответственность `service/`
@@ -328,6 +320,12 @@ Spring Data скрывает это за `repository.save()`, но семант�
 - **Один `OWNER` на заметку** — доменный инвариант в `sharing/`; два `OWNER` одновременно = невалидное состояние; `transferOwnership` атомарно: старый OWNER → EDITOR, новый → OWNER
 - **`NoteAccess`** — сущность в `sharing/domain/`: `{ noteId, generalAccess, editorsCanShare, canDownloadCopyPrint }`; `generalAccess`: `RESTRICTED · VIEWER · COMMENTER · EDITOR` (роль для «anyone with the link»)
 - **`NotePublication`** — отдельная сущность в `sharing/domain/`: `{ noteId, linkPublished, linkAutoRepublish, embedPublished, embedAutoRepublish }`; «publish to web» ≠ «share with link» — разные причины меняться (SRP)
+- **`password` удалён из `User`** — `User { id, username, email }`; `UserEntity` и `UserDocument` обновлены; `UserRequest` не содержит `password`; `AuthUser` в `auth/` хранит учётные данные
+- **Доменные исключения** — `UserNotFoundException` · `NoteNotFoundException` · `UserNoteNotFoundException` в соответствующих `domain/`; `NoSuchElementException` как сигнал 404 удалён
+- **`@ControllerAdvice` + `ProblemDetail`** — `UserExceptionHandler` · `NoteExceptionHandler` · `UserNoteExceptionHandler` в `webmvc/`; локальный `@ExceptionHandler` в контроллерах удалён
+- **`update()` в service/** — использует `existsBy*` вместо `findBy*`; лишний read устранён во всех трёх сервисах
+- **`add()` реализован через `em.persist()` / `mongoTemplate.insert()`** — бросает при коллизии (корректная семантика); `replace()` через `JpaRepository.save()` / `mongoTemplate.save()` (всегда merge/upsert, так как ID задан); ранее оба вызывали `save()` — семантика была потеряна
+- **Тесты инфра-сервисов** — пустой `src/test/resources/application.properties` затеняет main на test classpath; каждый инфра-сервис требует осмысленного тест-ресурса: gateway → `spring.cloud.config.enabled=false` + `spring.cloud.discovery.enabled=false`; config → `spring.profiles.active=native`; registry → `eureka.client.register-with-eureka=false` + `eureka.client.fetch-registry=false`
 
 ---
 
