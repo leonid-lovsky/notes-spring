@@ -3,7 +3,7 @@
 > Живой документ проекта. Читается автоматически в начале каждой сессии.
 > **Всё в этом документе и в коде — временно.** Ничто не является окончательно принятым паттерном.
 > Любое решение подлежит обсуждению, изменению и уточнению — независимо от того, что уже написано.
-> Последнее обновление: 2026-06-23T21:11Z
+> Последнее обновление: 2026-06-24T09:27Z
 
 ---
 
@@ -103,17 +103,15 @@
 
 1. ~~**Именование output port → output adapter**~~ — **закрыто**: `[Entity][Tech]Adapter` (`NoteJpaAdapter`, `NoteMongoAdapter`)
 
-2. **Именование input port → use case implementation** — **в анализе**
-   - `domain/`: `NoteUseCase` (input port, интерфейс)
-   - `service/`: `NoteService` (реализация) — стратегия не зафиксирована явно
+2. ~~**Именование input port → use case implementation**~~ — **закрыто**: `[Entity]Service implements [Entity]UseCase`; `UseCase` — суффикс интерфейса в `domain/`; `Service` — суффикс реализации в `service/`; пакет уточняет роль
 
-3. **Сигнатуры методов и возвращаемые типы** — **в анализе**
-   - `*Repository`: семантика коллекции (Evans) — принята; `Optional<T>` / `List<T>` / `void` / `boolean` — только Java-типы; выявлено из анализа адаптеров
-   - `*UseCase`: что возвращают мутирующие операции — стратегия не зафиксирована
+3. ~~**Сигнатуры методов и возвращаемые типы**~~ — **закрыто**:
+   - `*Repository`: семантика коллекции (Evans); `Optional<T>` / `List<T>` / `void` / `boolean` — только Java-типы
+   - `*UseCase`: мутирующие операции возвращают доменный объект (`create` → entity, `update` → entity, `delete` → void); де-факто закреплено в реализации
 
-4. **Ответственность и состав методов** — **в анализе**
-   - Граница `Repository` / `UseCase`: кто отвечает за валидацию существования? выявлено: это ответственность `service/`
-   - Стратегия группировки: один `UseCase` на сущность (текущее) или один на операцию (Uncle Bob)?
+4. **Ответственность и состав методов** — **частично закрыто**:
+   - ~~Граница `Repository` / `UseCase`~~ — **закрыто**: валидация существования — ответственность `service/`; `existsBy*` в `service/`, а не проверка через `findBy*`
+   - Стратегия группировки: один `UseCase` на сущность (текущее) или один на операцию (Uncle Bob)? — **в анализе**
 
 Решить до начала реализации `auth/domain/`.
 
@@ -266,10 +264,10 @@ void remove(UUID id);              // remove
 
 UUID генерируется в `service/` до вызова порта. `replace` — полная замена; PATCH решается в `webmvc/` + `service/`.
 
-**`add` ≠ `replace` — осознанная семантика, не случайная:** проверено на двух адаптерах:
-- JPA: `add` → `em.persist()` (бросает при коллизии) · `replace` → `em.merge()`
+**`add` ≠ `replace` — осознанная семантика, не случайная:** реализовано во всех шести адаптерах:
+- JPA: `add` → `em.persist()` (бросает при коллизии) · `replace` → `JpaRepository.save()` (всегда `merge()` при заданном ID)
 - MongoDB: `add` → `mongoTemplate.insert()` (бросает при коллизии) · `replace` → `mongoTemplate.save()`
-Spring Data скрывает это за `repository.save()`, но семантика сохраняется.
+Spring Data скрывает это за `repository.save()`, теряя семантику. Адаптеры сохраняют её явно.
 
 **`*JpaRepository` / `*MongoRepository` — не архитектурные элементы:** тонкие обёртки над `EntityManager` / `MongoTemplate`, которые Spring Data генерирует автоматически; живут внутри адаптера и невидимы из `domain/`.
 
@@ -326,6 +324,9 @@ Spring Data скрывает это за `repository.save()`, но семант�
 - **`update()` в service/** — использует `existsBy*` вместо `findBy*`; лишний read устранён во всех трёх сервисах
 - **`add()` реализован через `em.persist()` / `mongoTemplate.insert()`** — бросает при коллизии (корректная семантика); `replace()` через `JpaRepository.save()` / `mongoTemplate.save()` (всегда merge/upsert, так как ID задан); ранее оба вызывали `save()` — семантика была потеряна
 - **Тесты инфра-сервисов** — пустой `src/test/resources/application.properties` затеняет main на test classpath; каждый инфра-сервис требует осмысленного тест-ресурса: gateway → `spring.cloud.config.enabled=false` + `spring.cloud.discovery.enabled=false`; config → `spring.profiles.active=native`; registry → `eureka.client.register-with-eureka=false` + `eureka.client.fetch-registry=false`
+- **`[Entity]Service implements [Entity]UseCase`** — именование UseCase impl; суффикс `Service` для реализации, `UseCase` для интерфейса; закрыто из анализа кода
+- **Мутирующий UseCase возвращает доменный объект** — `create()` → entity, `update()` → entity, `delete()` → void; де-факто закреплено в реализации; согласуется со склонением A («После Resource Server»)
+- **Валидация существования — ответственность `service/`** — `existsBy*` в service/, а не `findBy*`; закрыто рефакторингом
 
 ---
 
@@ -420,11 +421,11 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 
 **Convention plugins:**
 
-| Plugin ID                                          | Назначение                                       |
-|----------------------------------------------------|--------------------------------------------------|
-| `spring-boot-application-conventions`              | `application/` — Boot app                        |
-| `java-domain-conventions`                          | `domain/` — чистая Java, без BOM                 |
-| `spring-service-conventions`                       | `service/` — BOM + spring-tx                     |
+| Plugin ID                                          | Назначение                                        |
+|----------------------------------------------------|---------------------------------------------------|
+| `spring-boot-application-conventions`              | `application/` — Boot app                         |
+| `java-domain-conventions`                          | `domain/` — чистая Java, без BOM                  |
+| `spring-service-conventions`                       | `service/` — BOM + spring-tx                      |
 | `spring-webmvc-adapter-conventions`                | `webmvc/` — driving adapter (sync REST)           |
 | `spring-webflux-adapter-conventions`               | `webflux/` — driving adapter (reactive REST)      |
 | `spring-graphql-adapter-conventions`               | `graphql/` — driving adapter (GraphQL)            |
@@ -444,7 +445,7 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 | `spring-cloud-eureka-client-conventions`           | add-on: Eureka Client                             |
 | `spring-cloud-circuit-breaker-conventions`         | add-on: Resilience4j Circuit Breaker (reactive)   |
 | `spring-cloud-loadbalancer-conventions`            | add-on: Spring Cloud LoadBalancer                 |
-| `spring-h2-database-conventions`                  | add-on: H2 + h2console                           |
+| `spring-h2-database-conventions`                  | add-on: H2 + h2console                             |
 | `spring-actuator-conventions`                      | add-on: Actuator                                  |
 | `spring-oauth2-authorization-server-conventions`   | `auth/` — Authorization Server                    |
 | `spring-oauth2-resource-server-conventions`        | add-on: JWT-валидация (Resource Server)           |
