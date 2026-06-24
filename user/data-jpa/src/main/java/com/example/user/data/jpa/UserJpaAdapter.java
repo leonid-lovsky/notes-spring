@@ -5,9 +5,7 @@ import com.example.user.domain.UserRepository;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Repository
 class UserJpaAdapter implements UserRepository {

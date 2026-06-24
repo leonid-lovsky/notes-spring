@@ -1,10 +1,6 @@
 package com.example.usernote.service;
 
-import com.example.usernote.domain.UserNote;
-import com.example.usernote.domain.UserNoteNotFoundException;
-import com.example.usernote.domain.UserNoteRepository;
-import com.example.usernote.domain.UserNoteRole;
-import com.example.usernote.domain.UserNoteUseCase;
+import com.example.usernote.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -5,9 +5,7 @@ import com.example.user.domain.UserRepository;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Repository
 class UserMongoAdapter implements UserRepository {

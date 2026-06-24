@@ -5,9 +5,7 @@ import com.example.note.domain.NoteRepository;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Repository
 class NoteMongoAdapter implements NoteRepository {

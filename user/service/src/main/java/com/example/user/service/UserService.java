@@ -1,9 +1,6 @@
 package com.example.user.service;
 
-import com.example.user.domain.User;
-import com.example.user.domain.UserNotFoundException;
-import com.example.user.domain.UserRepository;
-import com.example.user.domain.UserUseCase;
+import com.example.user.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

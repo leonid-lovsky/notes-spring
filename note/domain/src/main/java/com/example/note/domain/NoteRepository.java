@@ -1,8 +1,6 @@
 package com.example.note.domain;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public interface NoteRepository {
 

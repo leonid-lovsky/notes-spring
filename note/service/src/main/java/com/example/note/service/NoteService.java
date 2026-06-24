@@ -1,9 +1,6 @@
 package com.example.note.service;
 
-import com.example.note.domain.Note;
-import com.example.note.domain.NoteNotFoundException;
-import com.example.note.domain.NoteRepository;
-import com.example.note.domain.NoteUseCase;
+import com.example.note.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

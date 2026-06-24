@@ -5,9 +5,7 @@ import com.example.usernote.domain.UserNoteRepository;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Repository
 class UserNoteMongoAdapter implements UserNoteRepository {
