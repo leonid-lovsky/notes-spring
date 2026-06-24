@@ -10,7 +10,7 @@ repositories {
 dependencyManagement {
     imports {
         mavenBom(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
-        mavenBom(CloudBom.COORDINATES)
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2025.1.2")
     }
 }
 

@@ -3,7 +3,7 @@
 > Живой документ проекта. Читается автоматически в начале каждой сессии.
 > **Всё в этом документе и в коде — временно.** Ничто не является окончательно принятым паттерном.
 > Любое решение подлежит обсуждению, изменению и уточнению — независимо от того, что уже написано.
-> Последнее обновление: 2026-06-24T09:27Z
+> Последнее обновление: 2026-06-24T09:43Z
 
 ---
 
@@ -55,8 +55,8 @@
 
 Реализовать driving adapters (для каждого сервиса):
 
-4. `webflux/` — реактивный REST (WebFlux)
-5. `graphql/` — GraphQL (Spring for GraphQL)
+1. `webflux/` — реактивный REST (WebFlux)
+2. `graphql/` — GraphQL (Spring for GraphQL)
 
 ### После адаптеров
 
@@ -445,13 +445,13 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 | `spring-cloud-eureka-client-conventions`           | add-on: Eureka Client                             |
 | `spring-cloud-circuit-breaker-conventions`         | add-on: Resilience4j Circuit Breaker (reactive)   |
 | `spring-cloud-loadbalancer-conventions`            | add-on: Spring Cloud LoadBalancer                 |
-| `spring-h2-database-conventions`                  | add-on: H2 + h2console                             |
+| `spring-h2-database-conventions`                   | add-on: H2 + h2console                            |
 | `spring-actuator-conventions`                      | add-on: Actuator                                  |
 | `spring-oauth2-authorization-server-conventions`   | `auth/` — Authorization Server                    |
 | `spring-oauth2-resource-server-conventions`        | add-on: JWT-валидация (Resource Server)           |
 | `spring-oauth2-client-conventions`                 | add-on: OAuth2 Client                             |
 
-**`buildSrc/src/main/kotlin/CloudBom.kt`** — Kotlin object с координатами Spring Cloud BOM; используется в Cloud convention plugins вместо литерала.
+**Cloud BOM** — координаты инлайн прямо в каждом Cloud convention plugin: `"org.springframework.cloud:spring-cloud-dependencies:2025.1.2"`; отдельный файл для одной строки избыточен.
 
 - **`domain`** — только `java`; без Spring BOM; JSpecify и JUnit с явными версиями
 - **`service`** — требует явный `implementation("org.springframework:spring-tx")`; `spring-boot-starter` не тянет его транзитивно
