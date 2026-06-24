@@ -3,7 +3,7 @@
 > Живой документ проекта. Читается автоматически в начале каждой сессии.
 > **Всё в этом документе и в коде — временно.** Ничто не является окончательно принятым паттерном.
 > Любое решение подлежит обсуждению, изменению и уточнению — независимо от того, что уже написано.
-> Последнее обновление: 2026-06-24T09:51Z
+> Последнее обновление: 2026-06-24T10:11Z
 
 ---
 
@@ -91,27 +91,7 @@
 
 ### ⚠ Стратегия проектирования портов ← **НАИВЫСШИЙ ПРИОРИТЕТ**
 
-**Текущий контекст:** анализ `domain/` · `service/` · `data-*/` через принципы проектирования портов.
-Метод: добавление второго адаптера (`data-mongodb/`) и ручная реализация как способ выявить реальные проблемы.
-
-Корневая проблема: отсутствует единая стратегия проектирования портов (`domain/`).
-Все нижеперечисленные вопросы являются её следствиями.
-
-**Это стандартная проблема гексагональной архитектуры.** Стандартные подходы — Evans (DDD), Uncle Bob (Clean Architecture), CQRS на уровне портов — дают конкретные ответы. Решение должно опираться на один из них, а не формироваться ad hoc.
-
-Вопросы:
-
-1. ~~**Именование output port → output adapter**~~ — **закрыто**: `[Entity][Tech]Adapter` (`NoteJpaAdapter`, `NoteMongoAdapter`)
-
-2. ~~**Именование input port → use case implementation**~~ — **закрыто**: `[Entity]Service implements [Entity]UseCase`; `UseCase` — суффикс интерфейса в `domain/`; `Service` — суффикс реализации в `service/`; пакет уточняет роль
-
-3. ~~**Сигнатуры методов и возвращаемые типы**~~ — **закрыто**:
-   - `*Repository`: семантика коллекции (Evans); `Optional<T>` / `List<T>` / `void` / `boolean` — только Java-типы
-   - `*UseCase`: мутирующие операции возвращают доменный объект (`create` → entity, `update` → entity, `delete` → void); де-факто закреплено в реализации
-
-4. **Ответственность и состав методов** — **частично закрыто**:
-   - ~~Граница `Repository` / `UseCase`~~ — **закрыто**: валидация существования — ответственность `service/`; `existsBy*` в `service/`, а не проверка через `findBy*`
-   - Стратегия группировки: один `UseCase` на сущность (текущее) или один на операцию (Uncle Bob)? — **в анализе**
+Открытый вопрос: стратегия группировки — один `UseCase` на сущность (текущее) или один на операцию (Uncle Bob)? — **в анализе**
 
 Решить до начала реализации `auth/domain/`.
 
@@ -284,7 +264,6 @@ Spring Data скрывает это за `repository.save()`, теряя сем�
 
 ### Принятые решения
 
-- **`gateway/`, `config/`, `registry/` используют выделенные convention plugins** — раньше использовали только `spring-boot-application-conventions` и не включали Cloud-стартеры; Gateway работал как пустой Boot-app без Spring Cloud Gateway в classpath; теперь исправлено
 - **Gateway ≠ BFF** · **BFF — один на UX** (Sam Newman)
 - **Token Exchange (RFC 8693)** — BFF обменивает access token на internal JWT с `aud` микросервиса
 - **Spring Authorization Server — постоянный IdP**; Keycloak/Auth0 только после детальной оценки
@@ -293,40 +272,29 @@ Spring Data скрывает это за `repository.save()`, теряя сем�
 - **Domain objects — Java records** — `withXxx()` для изменённой копии; JPA entities — обычные классы
 - **`existsById` в Repository** — валидный паттерн; не заменять на `findById`
 - **Именование** — `*UseCase` (input port) · `*Repository` (output port, `domain/`) · `*JpaRepository` (Spring Data, `data-jpa/`) · `*[Tech]Adapter` (driven adapter)
-- **Именование driven adapter** — паттерн `[Entity][Tech]Adapter`: технология обязательна в имени; суффикс `Output` избыточен — роль выражена пакетом (`data-jpa/`, `data-mongodb/`) и словом `Adapter`; примеры: `NoteJpaAdapter`, `NoteMongoAdapter`; разные имена интерфейса и реализации не создают путаницы — связь явна через `implements`
 - **`ResponseEntity<T>` везде** — статусы явно через `HttpStatus`
-- **`AuthUser` (`auth/`) ≠ `User` (`user/`)**
+- **`AuthUser` (`auth/`) ≠ `User` (`user/`)** — `User { id, username, email }`; пароль хранит только `auth/`
 - **Wire format в адаптере** — `.proto` в `grpc/`, `.graphqls` в `graphql/`; Protobuf/GraphQL типы не проникают в `domain/`
-- **`service/` оправдан и остаётся** — UUID генерируется в `service/` (решение уровня приложения, не БД); `@Transactional` принадлежит use case, не адаптеру; перенос в `data-jpa/` дал бы двойную роль (output port + input port); подтверждено сценариями `share()` и `transferOwnership()` в `sharing/`
-- **`user/` · `note/` · `user-note/` — чистые REST CRUD сервисы** — каждый знает только свои данные; любая бизнес-логика поверх CRUD реализуется в `sharing/`, а не внутри самих сервисов
+- **`service/` оправдан и остаётся** — UUID генерируется в `service/` (решение уровня приложения, не БД); `@Transactional` принадлежит use case, не адаптеру; подтверждено сценариями `share()` и `transferOwnership()` в `sharing/`
+- **`user/` · `note/` · `user-note/` — чистые REST CRUD сервисы** — каждый знает только свои данные; любая бизнес-логика поверх CRUD реализуется в `sharing/`
 - **`sharing/` — отдельный гексагональный сервис** — реализует всю бизнес-логику Google Docs ACL; вызывает `user-note/` и `note/` через output ports (Feign); CRUD сервисы не знают о `sharing/` вообще
-- **Enforcement — BFF + сетевая изоляция** — перед вызовом `note/` BFF проверяет `sharing/effectiveRole`; `note/` — чистый Resource Server (JWT, без ACL); Token Exchange — ответственность `auth/` + `bff/`; сетевая изоляция исключает прямой доступ к CRUD-сервисам в обход BFF
-- **`NoteVisibility` — НЕ в `note/domain/`** — `note/` не знает о своей видимости; принадлежит `sharing/` или отдельной сущности в его домене
+- **Enforcement — BFF + сетевая изоляция** — перед вызовом `note/` BFF проверяет `sharing/effectiveRole`; `note/` — чистый Resource Server (JWT, без ACL); сетевая изоляция исключает прямой доступ в обход BFF
+- **`NoteVisibility` — НЕ в `note/domain/`** — `note/` не знает о своей видимости; принадлежит `sharing/`
 - **Google Docs ACL модель** — принята как целевая модель доступа:
   - `UserNote { userId, noteId, role }` — явные права; `UserNoteRole`: `OWNER · EDITOR · COMMENTER · VIEWER`
   - **Share with others:**
     - People with access — явные `UserNote` записи
     - General access: `RESTRICTED` (только явные) · `ANYONE_WITH_LINK` (viewer / commenter / editor)
-    - Settings: `editorsCanShare` (разрешить редакторам менять права и делиться); `canDownloadCopyPrint` (editors / commenters+viewers)
-  - **Publish to web** — отдельная концепция, не link sharing:
-    - Link publish · Embed publish
-    - `autoRepublish` — автоматически переопубликовывать при изменениях
+    - Settings: `editorsCanShare`; `canDownloadCopyPrint`
+  - **Publish to web** — отдельная концепция, не link sharing: link · embed; `autoRepublish`
   - **`effectiveRole(userId, noteId)`**: явная `UserNote` → иначе general access → deny
   - **`share(callerId, noteId, targetUserId, role)`**: caller = OWNER (или EDITOR при `editorsCanShare`); role ≤ роли caller'а
   - **`transferOwnership(callerId, noteId, newOwnerId)`**: атомарно — старый OWNER → EDITOR, новый → OWNER
   - Вся логика живёт в `sharing/service/`; `sharing/feign/` вызывает `note/` и `user-note/`
-- **Один `OWNER` на заметку** — доменный инвариант в `sharing/`; два `OWNER` одновременно = невалидное состояние; `transferOwnership` атомарно: старый OWNER → EDITOR, новый → OWNER
-- **`NoteAccess`** — сущность в `sharing/domain/`: `{ noteId, generalAccess, editorsCanShare, canDownloadCopyPrint }`; `generalAccess`: `RESTRICTED · VIEWER · COMMENTER · EDITOR` (роль для «anyone with the link»)
-- **`NotePublication`** — отдельная сущность в `sharing/domain/`: `{ noteId, linkPublished, linkAutoRepublish, embedPublished, embedAutoRepublish }`; «publish to web» ≠ «share with link» — разные причины меняться (SRP)
-- **`password` удалён из `User`** — `User { id, username, email }`; `UserEntity` и `UserDocument` обновлены; `UserRequest` не содержит `password`; `AuthUser` в `auth/` хранит учётные данные
-- **Доменные исключения** — `UserNotFoundException` · `NoteNotFoundException` · `UserNoteNotFoundException` в соответствующих `domain/`; `NoSuchElementException` как сигнал 404 удалён
-- **`@ControllerAdvice` + `ProblemDetail`** — `UserExceptionHandler` · `NoteExceptionHandler` · `UserNoteExceptionHandler` в `webmvc/`; локальный `@ExceptionHandler` в контроллерах удалён
-- **`update()` в service/** — использует `existsBy*` вместо `findBy*`; лишний read устранён во всех трёх сервисах
-- **`add()` реализован через `em.persist()` / `mongoTemplate.insert()`** — бросает при коллизии (корректная семантика); `replace()` через `JpaRepository.save()` / `mongoTemplate.save()` (всегда merge/upsert, так как ID задан); ранее оба вызывали `save()` — семантика была потеряна
-- **Тесты инфра-сервисов** — пустой `src/test/resources/application.properties` затеняет main на test classpath; каждый инфра-сервис требует осмысленного тест-ресурса: gateway → `spring.cloud.config.enabled=false` + `spring.cloud.discovery.enabled=false`; config → `spring.profiles.active=native`; registry → `eureka.client.register-with-eureka=false` + `eureka.client.fetch-registry=false`
-- **`[Entity]Service implements [Entity]UseCase`** — именование UseCase impl; суффикс `Service` для реализации, `UseCase` для интерфейса; закрыто из анализа кода
-- **Мутирующий UseCase возвращает доменный объект** — `create()` → entity, `update()` → entity, `delete()` → void; де-факто закреплено в реализации; согласуется со склонением A («После Resource Server»)
-- **Валидация существования — ответственность `service/`** — `existsBy*` в service/, а не `findBy*`; закрыто рефакторингом
+- **Один `OWNER` на заметку** — доменный инвариант; `transferOwnership` атомарно
+- **`NoteAccess`** — `{ noteId, generalAccess, editorsCanShare, canDownloadCopyPrint }`; `generalAccess`: `RESTRICTED · VIEWER · COMMENTER · EDITOR`
+- **`NotePublication`** — `{ noteId, linkPublished, linkAutoRepublish, embedPublished, embedAutoRepublish }`; «publish to web» ≠ «share with link» (SRP)
+- **Доменные исключения** — `UserNotFoundException` · `NoteNotFoundException` · `UserNoteNotFoundException` в `domain/`
 
 ---
 
