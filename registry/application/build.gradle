@@ -1,4 +1,4 @@
 plugins {
     id 'spring-cloud-eureka-server-conventions'
-    id 'spring-actuator-conventions'
+    id 'spring-boot-actuator-conventions'
 }

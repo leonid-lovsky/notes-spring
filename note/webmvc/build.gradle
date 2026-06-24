@@ -1,5 +1,5 @@
 plugins {
-    id 'spring-webmvc-adapter-conventions'
+    id 'spring-boot-webmvc-adapter-conventions'
 }
 
 dependencies {

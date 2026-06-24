@@ -3,7 +3,7 @@
 > Живой документ проекта. Читается автоматически в начале каждой сессии.
 > **Всё в этом документе и в коде — временно.** Ничто не является окончательно принятым паттерном.
 > Любое решение подлежит обсуждению, изменению и уточнению — независимо от того, что уже написано.
-> Последнее обновление: 2026-06-24T09:43Z
+> Последнее обновление: 2026-06-24T09:51Z
 
 ---
 
@@ -421,35 +421,35 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 
 **Convention plugins:**
 
-| Plugin ID                                          | Назначение                                        |
-|----------------------------------------------------|---------------------------------------------------|
-| `spring-boot-application-conventions`              | `application/` — Boot app                         |
-| `java-domain-conventions`                          | `domain/` — чистая Java, без BOM                  |
-| `spring-service-conventions`                       | `service/` — BOM + spring-tx                      |
-| `spring-webmvc-adapter-conventions`                | `webmvc/` — driving adapter (sync REST)           |
-| `spring-webflux-adapter-conventions`               | `webflux/` — driving adapter (reactive REST)      |
-| `spring-graphql-adapter-conventions`               | `graphql/` — driving adapter (GraphQL)            |
-| `spring-data-jpa-adapter-conventions`              | `data-jpa/` — driven adapter (JPA/SQL, ORM)       |
-| `spring-data-jdbc-adapter-conventions`             | `data-jdbc/` — driven adapter (JDBC/SQL, no ORM)  |
-| `spring-data-r2dbc-adapter-conventions`            | `data-r2dbc/` — driven adapter (reactive SQL)     |
-| `spring-data-mongodb-adapter-conventions`          | `data-mongodb/` — driven adapter (MongoDB)        |
-| `spring-data-mongodb-reactive-adapter-conventions` | `data-mongodb-reactive/` — driven adapter         |
-| `spring-cloud-openfeign-adapter-conventions`       | `feign/` — driven adapter (HTTP client)           |
-| `spring-restclient-conventions`                    | add-on: RestClient (sync HTTP)                    |
-| `spring-webclient-conventions`                     | add-on: WebClient (reactive HTTP)                 |
-| `spring-cloud-gateway-webflux-conventions`         | `gateway/` — reactive gateway (WebFlux-based app) |
-| `spring-cloud-gateway-webmvc-conventions`          | `gateway/` — sync gateway (WebMVC-based app)      |
-| `spring-cloud-config-server-conventions`           | `config/` — Config Server app                     |
-| `spring-cloud-config-client-conventions`           | add-on: Config Client                             |
-| `spring-cloud-eureka-server-conventions`           | `registry/` — Eureka Server app                   |
-| `spring-cloud-eureka-client-conventions`           | add-on: Eureka Client                             |
-| `spring-cloud-circuit-breaker-conventions`         | add-on: Resilience4j Circuit Breaker (reactive)   |
-| `spring-cloud-loadbalancer-conventions`            | add-on: Spring Cloud LoadBalancer                 |
-| `spring-h2-database-conventions`                   | add-on: H2 + h2console                            |
-| `spring-actuator-conventions`                      | add-on: Actuator                                  |
-| `spring-oauth2-authorization-server-conventions`   | `auth/` — Authorization Server                    |
-| `spring-oauth2-resource-server-conventions`        | add-on: JWT-валидация (Resource Server)           |
-| `spring-oauth2-client-conventions`                 | add-on: OAuth2 Client                             |
+| Plugin ID                                               | Назначение                                        |
+|---------------------------------------------------------|---------------------------------------------------|
+| `spring-boot-application-conventions`                   | `application/` — Boot app                         |
+| `java-domain-conventions`                               | `domain/` — чистая Java, без BOM                  |
+| `spring-boot-service-conventions`                       | `service/` — BOM + spring-tx                      |
+| `spring-boot-webmvc-adapter-conventions`                | `webmvc/` — driving adapter (sync REST)           |
+| `spring-boot-webflux-adapter-conventions`               | `webflux/` — driving adapter (reactive REST)      |
+| `spring-boot-graphql-adapter-conventions`               | `graphql/` — driving adapter (GraphQL)            |
+| `spring-boot-data-jpa-adapter-conventions`              | `data-jpa/` — driven adapter (JPA/SQL, ORM)       |
+| `spring-boot-data-jdbc-adapter-conventions`             | `data-jdbc/` — driven adapter (JDBC/SQL, no ORM)  |
+| `spring-boot-data-r2dbc-adapter-conventions`            | `data-r2dbc/` — driven adapter (reactive SQL)     |
+| `spring-boot-data-mongodb-adapter-conventions`          | `data-mongodb/` — driven adapter (MongoDB)        |
+| `spring-boot-data-mongodb-reactive-adapter-conventions` | `data-mongodb-reactive/` — driven adapter         |
+| `spring-cloud-openfeign-adapter-conventions`            | `feign/` — driven adapter (HTTP client)           |
+| `spring-boot-restclient-conventions`                    | add-on: RestClient (sync HTTP)                    |
+| `spring-boot-webclient-conventions`                     | add-on: WebClient (reactive HTTP)                 |
+| `spring-cloud-gateway-webflux-conventions`              | `gateway/` — reactive gateway (WebFlux-based app) |
+| `spring-cloud-gateway-webmvc-conventions`               | `gateway/` — sync gateway (WebMVC-based app)      |
+| `spring-cloud-config-server-conventions`                | `config/` — Config Server app                     |
+| `spring-cloud-config-client-conventions`                | add-on: Config Client                             |
+| `spring-cloud-eureka-server-conventions`                | `registry/` — Eureka Server app                   |
+| `spring-cloud-eureka-client-conventions`                | add-on: Eureka Client                             |
+| `spring-cloud-circuit-breaker-conventions`              | add-on: Resilience4j Circuit Breaker (reactive)   |
+| `spring-cloud-loadbalancer-conventions`                 | add-on: Spring Cloud LoadBalancer                 |
+| `spring-boot-h2-database-conventions`                   | add-on: H2 + h2console                            |
+| `spring-boot-actuator-conventions`                      | add-on: Actuator                                  |
+| `spring-boot-oauth2-authorization-server-conventions`   | `auth/` — Authorization Server                    |
+| `spring-boot-oauth2-resource-server-conventions`        | add-on: JWT-валидация (Resource Server)           |
+| `spring-boot-oauth2-client-conventions`                 | add-on: OAuth2 Client                             |
 
 **Cloud BOM** — координаты инлайн прямо в каждом Cloud convention plugin: `"org.springframework.cloud:spring-cloud-dependencies:2025.1.2"`; отдельный файл для одной строки избыточен.
 

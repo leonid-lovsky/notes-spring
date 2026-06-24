@@ -1,5 +1,5 @@
 plugins {
-    id 'spring-data-mongodb-reactive-adapter-conventions'
+    id 'spring-boot-data-mongodb-reactive-adapter-conventions'
 }
 
 dependencies {
