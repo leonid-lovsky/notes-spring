@@ -14,6 +14,7 @@ class NoteDocument {
     private String content;
 
     protected NoteDocument() {
+
     }
 
     NoteDocument(UUID id, String content) {

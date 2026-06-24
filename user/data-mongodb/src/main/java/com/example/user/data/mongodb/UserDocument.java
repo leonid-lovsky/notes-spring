@@ -19,6 +19,7 @@ class UserDocument {
     private String email;
 
     protected UserDocument() {
+
     }
 
     UserDocument(UUID id, String username, String email) {

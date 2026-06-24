@@ -10,6 +10,7 @@ class UserNoteKey implements Serializable {
     private UUID noteId;
 
     protected UserNoteKey() {
+
     }
 
     UserNoteKey(UUID userId, UUID noteId) {

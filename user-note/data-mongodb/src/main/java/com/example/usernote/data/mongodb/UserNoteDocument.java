@@ -13,6 +13,7 @@ class UserNoteDocument {
     private UserNoteRole role;
 
     protected UserNoteDocument() {
+
     }
 
     UserNoteDocument(UserNoteKey id, UserNoteRole role) {
