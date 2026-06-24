@@ -3,7 +3,7 @@
 > Живой документ проекта. Читается автоматически в начале каждой сессии.
 > **Всё в этом документе и в коде — временно.** Ничто не является окончательно принятым паттерном.
 > Любое решение подлежит обсуждению, изменению и уточнению — независимо от того, что уже написано.
-> Последнее обновление: 2026-06-24T10:31Z
+> Последнее обновление: 2026-06-24T10:33Z
 
 ---
 
@@ -89,7 +89,26 @@
 ### ⚠ Reactive/sync impedance ← **ТЕКУЩИЙ ПРИОРИТЕТ**
 
 Блокирует реализацию `data-r2dbc/`, `data-mongodb-reactive/`, `webflux/`.
-`Optional<T>` / `List<T>` в `*Repository` несовместимы с `Mono<T>` / `Flux<T>` из R2DBC / MongoDB Reactive / WebFlux.
+
+**Суть проблемы.** Порты `domain/` используют sync-типы Java:
+
+```java
+// NoteRepository (domain port)
+Optional<Note> findById(UUID id);
+List<Note>     findAll();
+void           add(Note note);
+```
+
+R2DBC и MongoDB Reactive возвращают реактивные типы:
+
+```java
+// Что возвращает R2DBC-драйвер внутри адаптера
+Mono<Note>  findById(UUID id);
+Flux<Note>  findAll();
+Mono<Void>  save(Note note);
+```
+
+Адаптер не может реализовать sync-порт без `.block()`. WebFlux-контроллер не может вернуть `Mono<ResponseEntity>`, если use case возвращает `Note` синхронно.
 
 Совместимость адаптеров:
 
