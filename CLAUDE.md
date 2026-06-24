@@ -3,7 +3,7 @@
 > Живой документ проекта. Читается автоматически в начале каждой сессии.
 > **Всё в этом документе и в коде — временно.** Ничто не является окончательно принятым паттерном.
 > Любое решение подлежит обсуждению, изменению и уточнению — независимо от того, что уже написано.
-> Последнее обновление: 2026-06-24T10:27Z
+> Последнее обновление: 2026-06-24T10:30Z
 
 ---
 
@@ -12,7 +12,7 @@
 ### Начало каждой сессии
 
 1. Прочитать этот файл полностью
-2. **Текущий приоритет:** расширение портфолио адаптеров — JDBC, R2DBC, MongoDB Reactive, WebFlux, GraphQL
+2. **Текущий приоритет:** принять решение по reactive/sync impedance → реализовать адаптеры — JDBC, R2DBC, MongoDB Reactive, WebFlux, GraphQL
 3. Актуализировать файл: убрать устаревшее, улучшить формулировки, устранить избыточность
 4. Зафиксировать изменения коммитом и пушем _(постоянная авторизация, явный запрос не требуется)_
 
@@ -38,7 +38,7 @@
 
 ```
 ГОТОВО      user/ · note/ · user-note/  — domain · service · webmvc · data-jpa · data-mongodb
-ТЕКУЩИЙ     адаптеры — data-jdbc · data-r2dbc · data-mongodb-reactive · webflux · graphql
+ТЕКУЩИЙ     решение по reactive/sync impedance + адаптеры — data-jdbc · data-r2dbc · data-mongodb-reactive · webflux · graphql
 ОТЛОЖЕНО    auth/  — Spring Authorization Server (реализация в самом конце)
 НЕ СОЗДАНО  bff/ · thymeleaf/ · sharing/ · crud/
 ```
@@ -61,18 +61,17 @@
 Реализовать driven adapters (для каждого сервиса: `user/` · `note/` · `user-note/`):
 
 1. `data-jdbc/` — Spring Data JDBC / JdbcTemplate; явный `INSERT` vs `UPDATE` (add vs replace)
-2. `data-r2dbc/` — реактивный SQL; выявляет reactive/sync impedance mismatch
+2. `data-r2dbc/` — реактивный SQL; **сначала принять решение по reactive/sync impedance**
 3. `data-mongodb-reactive/` — реактивный MongoDB; та же проблема
 
 Реализовать driving adapters (для каждого сервиса):
 
-1. `webflux/` — реактивный REST (WebFlux)
+1. `webflux/` — реактивный REST (WebFlux); **сначала принять решение по reactive/sync impedance**
 2. `graphql/` — GraphQL (Spring for GraphQL)
 
 ### После адаптеров
 
-1. Принять решение по reactive/sync impedance: параллельные порты или другой подход
-2. `sharing/` — Google Docs ACL сервис:
+1. `sharing/` — Google Docs ACL сервис:
    - `sharing/domain/` — `NoteAccess`, `NotePublication`, use cases: `effectiveRole`, `share`, `transferOwnership`, `publish`
    - `sharing/service/` — бизнес-логика; координирует `NoteAccess` + `NotePublication` + вызовы к `user-note/` и `note/`
    - `sharing/webmvc/` — REST API
@@ -100,7 +99,26 @@
 
 > Не реализовывать до принятия явного решения.
 
-### ⚠ Стратегия проектирования портов ← **НАИВЫСШИЙ ПРИОРИТЕТ**
+### ⚠ Reactive/sync impedance ← **ТЕКУЩИЙ ПРИОРИТЕТ**
+
+Блокирует реализацию `data-r2dbc/`, `data-mongodb-reactive/`, `webflux/`.
+`Optional<T>` / `List<T>` в `*Repository` несовместимы с `Mono<T>` / `Flux<T>` из R2DBC / MongoDB Reactive / WebFlux.
+
+Совместимость адаптеров:
+
+| driving \ driven              | `data-jpa` | `data-mongodb` | `data-jdbc` | `data-r2dbc` | `data-mongodb-reactive` |
+|-------------------------------|------------|----------------|-------------|--------------|-------------------------|
+| `webmvc`                      | ✓          | ✓              | ✓           | ✗            | ✗                       |
+| `webflux`                     | ✗          | ✗              | ✗           | ✓            | ✓                       |
+| `graphql` (WebMVC транспорт)  | ✓          | ✓              | ✓           | ✗            | ✗                       |
+| `graphql` (WebFlux транспорт) | ✗          | ✗              | ✗           | ✓            | ✓                       |
+
+Варианты решения:
+- **Параллельные порты** _(склонение)_ — `NoteRepository` + `ReactiveNoteRepository` в `domain/`; реакторные типы входят в `domain/`; два набора сервисов
+- **Sync обёртка с `.block()`** — адаптер реализует sync-интерфейс, блокируя реактивный поток; риск deadlock в event-loop потоке; не настоящий reactive
+- **Отдельные реактивные сервисы** — `domain/` + `service/` дублируются для каждого стека; нарушает DRY
+
+### ⚠ Стратегия проектирования портов
 
 Открытый вопрос: стратегия группировки — один `UseCase` на сущность (текущее) или один на операцию (Uncle Bob)? — **в анализе**
 
@@ -128,21 +146,6 @@
 - **Стратегия активации адаптеров** — как выбрать реализацию порта при нескольких:
   - **A — `@Profile("jpa")`** _(склонение)_ — просто; убирается когда появится вторая реализация
   - **B — Отдельные `application-jpa/` · `application-r2dbc/`** — чисто на уровне сборки; дублирует composition root
-- **Reactive/sync impedance** ← **БЛОКИРУЕТ реализацию `data-r2dbc/`, `data-mongodb-reactive/`, `webflux/`**
-  `Optional<T>` / `List<T>` в `*Repository` несовместимы с `Mono<T>` / `Flux<T>` из R2DBC / MongoDB Reactive / WebFlux.
-  Совместимость адаптеров по стекам:
-
-  | driving \ driven              | `data-jpa` | `data-mongodb` | `data-jdbc` | `data-r2dbc` | `data-mongodb-reactive` |
-  |-------------------------------|------------|----------------|-------------|--------------|-------------------------|
-  | `webmvc`                      | ✓          | ✓              | ✓           | ✗            | ✗                       |
-  | `webflux`                     | ✗          | ✗              | ✗           | ✓            | ✓                       |
-  | `graphql` (WebMVC транспорт)  | ✓          | ✓              | ✓           | ✗            | ✗                       |
-  | `graphql` (WebFlux транспорт) | ✗          | ✗              | ✗           | ✓            | ✓                       |
-
-  Варианты решения:
-  - **Параллельные порты** _(склонение)_ — `NoteRepository` + `ReactiveNoteRepository` в `domain/`; реакторные типы входят в `domain/`; два набора сервисов
-  - **Sync обёртка с `.block()`** — адаптер реализует sync-интерфейс, блокируя реактивный поток; риск deadlock в event-loop потоке; не настоящий reactive
-  - **Отдельные реактивные сервисы** — `domain/` + `service/` дублируются для каждого стека; нарушает DRY
 
 ---
 
