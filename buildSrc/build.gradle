@@ -1,0 +1,20 @@
+plugins {
+    id 'groovy-gradle-plugin'
+}
+
+repositories {
+	gradlePluginPortal()
+	mavenCentral()
+}
+
+def springBootVersion = '4.0.6'
+def dependencyManagementVersion = '1.1.7'
+def springJavaformatVersion = '0.0.47'
+def errorpronePluginVersion = '5.1.0'
+
+dependencies {
+	implementation "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
+	implementation "io.spring.gradle:dependency-management-plugin:$dependencyManagementVersion"
+	implementation "io.spring.javaformat:spring-javaformat-gradle-plugin:$springJavaformatVersion"
+	implementation "net.ltgt.gradle:gradle-errorprone-plugin:$errorpronePluginVersion"
+}

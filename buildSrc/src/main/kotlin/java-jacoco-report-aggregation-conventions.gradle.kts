@@ -1,3 +1,0 @@
-plugins {
-    id("jacoco-report-aggregation")
-}

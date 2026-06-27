@@ -1,0 +1,15 @@
+plugins {
+	id 'java'
+	id 'io.spring.javaformat'
+	id 'checkstyle'
+}
+
+repositories {
+	mavenCentral()
+}
+
+//springJavaFormat {
+//	checkstyle {
+//		applyDefaultConfig()
+//	}
+//}
