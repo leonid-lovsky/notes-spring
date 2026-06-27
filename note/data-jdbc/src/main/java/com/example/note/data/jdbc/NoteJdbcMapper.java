@@ -7,5 +7,6 @@ import java.sql.SQLException;
 
 interface NoteJdbcMapper {
 
-    NoteResponse fromRow(ResultSet rs, int rowNum) throws SQLException;
+	NoteResponse fromRow(ResultSet rs, int rowNum) throws SQLException;
+
 }

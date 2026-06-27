@@ -12,17 +12,18 @@ import java.util.UUID;
 @Repository
 class NoteAddPortAdapter implements NoteAddPort {
 
-    private final NamedParameterJdbcTemplate jdbc;
+	private final NamedParameterJdbcTemplate jdbc;
 
-    NoteAddPortAdapter(NamedParameterJdbcTemplate jdbc) {
-        this.jdbc = jdbc;
-    }
+	NoteAddPortAdapter(NamedParameterJdbcTemplate jdbc) {
+		this.jdbc = jdbc;
+	}
 
-    @Override
-    public NoteResponse add(NoteRequest request) {
-        UUID id = UUID.randomUUID();
-        jdbc.update("INSERT INTO notes (id, content) VALUES (:id, :content)",
-                Map.of("id", id, "content", request.content()));
-        return new NoteResponse(id, request.content());
-    }
+	@Override
+	public NoteResponse add(NoteRequest request) {
+		UUID id = UUID.randomUUID();
+		jdbc.update("INSERT INTO notes (id, content) VALUES (:id, :content)",
+				Map.of("id", id, "content", request.content()));
+		return new NoteResponse(id, request.content());
+	}
+
 }

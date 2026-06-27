@@ -9,32 +9,33 @@ import java.util.UUID;
 @Table(name = "notes")
 class NoteEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private @Nullable UUID id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	private @Nullable UUID id;
 
-    @Column(nullable = false)
-    private String content;
+	@Column(nullable = false)
+	private String content;
 
-    @SuppressWarnings("NullAway.Init")
-    protected NoteEntity() {
+	@SuppressWarnings("NullAway.Init")
+	protected NoteEntity() {
 
-    }
+	}
 
-    NoteEntity(String content) {
-        this.content = content;
-    }
+	NoteEntity(String content) {
+		this.content = content;
+	}
 
-    NoteEntity(UUID id, String content) {
-        this.id = id;
-        this.content = content;
-    }
+	NoteEntity(UUID id, String content) {
+		this.id = id;
+		this.content = content;
+	}
 
-    @Nullable UUID getId() {
-        return id;
-    }
+	@Nullable UUID getId() {
+		return id;
+	}
 
-    String getContent() {
-        return content;
-    }
+	String getContent() {
+		return content;
+	}
+
 }

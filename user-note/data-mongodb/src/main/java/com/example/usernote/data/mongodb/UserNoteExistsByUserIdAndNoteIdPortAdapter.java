@@ -8,14 +8,15 @@ import java.util.UUID;
 @Repository
 class UserNoteExistsByUserIdAndNoteIdPortAdapter implements UserNoteExistsByUserIdAndNoteIdPort {
 
-    private final UserNoteMongoRepository userNoteMongoRepository;
+	private final UserNoteMongoRepository userNoteMongoRepository;
 
-    UserNoteExistsByUserIdAndNoteIdPortAdapter(UserNoteMongoRepository userNoteMongoRepository) {
-        this.userNoteMongoRepository = userNoteMongoRepository;
-    }
+	UserNoteExistsByUserIdAndNoteIdPortAdapter(UserNoteMongoRepository userNoteMongoRepository) {
+		this.userNoteMongoRepository = userNoteMongoRepository;
+	}
 
-    @Override
-    public boolean existsByUserIdAndNoteId(UUID userId, UUID noteId) {
-        return userNoteMongoRepository.existsById(new UserNoteKey(userId, noteId));
-    }
+	@Override
+	public boolean existsByUserIdAndNoteId(UUID userId, UUID noteId) {
+		return userNoteMongoRepository.existsById(new UserNoteKey(userId, noteId));
+	}
+
 }

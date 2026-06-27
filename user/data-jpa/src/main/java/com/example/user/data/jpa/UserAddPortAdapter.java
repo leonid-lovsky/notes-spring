@@ -8,17 +8,19 @@ import org.springframework.stereotype.Repository;
 @Repository
 class UserAddPortAdapter implements UserAddPort {
 
-    private final UserJpaRepository userJpaRepository;
-    private final UserJpaMapper userJpaMapper;
+	private final UserJpaRepository userJpaRepository;
 
-    UserAddPortAdapter(UserJpaRepository userJpaRepository, UserJpaMapper userJpaMapper) {
-        this.userJpaRepository = userJpaRepository;
-        this.userJpaMapper = userJpaMapper;
-    }
+	private final UserJpaMapper userJpaMapper;
 
-    @Override
-    public UserResponse add(UserRequest request) {
-        UserEntity saved = userJpaRepository.save(userJpaMapper.toNewEntity(request));
-        return userJpaMapper.toResponse(saved);
-    }
+	UserAddPortAdapter(UserJpaRepository userJpaRepository, UserJpaMapper userJpaMapper) {
+		this.userJpaRepository = userJpaRepository;
+		this.userJpaMapper = userJpaMapper;
+	}
+
+	@Override
+	public UserResponse add(UserRequest request) {
+		UserEntity saved = userJpaRepository.save(userJpaMapper.toNewEntity(request));
+		return userJpaMapper.toResponse(saved);
+	}
+
 }

@@ -10,8 +10,9 @@ import java.util.UUID;
 @Component
 class NoteJdbcMapperImpl implements NoteJdbcMapper {
 
-    @Override
-    public NoteResponse fromRow(ResultSet rs, int rowNum) throws SQLException {
-        return new NoteResponse(rs.getObject("id", UUID.class), rs.getString("content"));
-    }
+	@Override
+	public NoteResponse fromRow(ResultSet rs, int rowNum) throws SQLException {
+		return new NoteResponse(rs.getObject("id", UUID.class), rs.getString("content"));
+	}
+
 }

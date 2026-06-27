@@ -8,14 +8,15 @@ import java.util.UUID;
 @Repository
 class UserExistsByIdPortAdapter implements UserExistsByIdPort {
 
-    private final UserJpaRepository userJpaRepository;
+	private final UserJpaRepository userJpaRepository;
 
-    UserExistsByIdPortAdapter(UserJpaRepository userJpaRepository) {
-        this.userJpaRepository = userJpaRepository;
-    }
+	UserExistsByIdPortAdapter(UserJpaRepository userJpaRepository) {
+		this.userJpaRepository = userJpaRepository;
+	}
 
-    @Override
-    public boolean existsById(UUID id) {
-        return userJpaRepository.existsById(id);
-    }
+	@Override
+	public boolean existsById(UUID id) {
+		return userJpaRepository.existsById(id);
+	}
+
 }

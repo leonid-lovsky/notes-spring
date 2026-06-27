@@ -10,16 +10,18 @@ import java.util.UUID;
 @Repository
 class NoteFindByIdPortAdapter implements NoteFindByIdPort {
 
-    private final NoteJpaRepository noteJpaRepository;
-    private final NoteJpaMapper noteJpaMapper;
+	private final NoteJpaRepository noteJpaRepository;
 
-    NoteFindByIdPortAdapter(NoteJpaRepository noteJpaRepository, NoteJpaMapper noteJpaMapper) {
-        this.noteJpaRepository = noteJpaRepository;
-        this.noteJpaMapper = noteJpaMapper;
-    }
+	private final NoteJpaMapper noteJpaMapper;
 
-    @Override
-    public Optional<NoteResponse> findById(UUID id) {
-        return noteJpaRepository.findById(id).map(noteJpaMapper::toResponse);
-    }
+	NoteFindByIdPortAdapter(NoteJpaRepository noteJpaRepository, NoteJpaMapper noteJpaMapper) {
+		this.noteJpaRepository = noteJpaRepository;
+		this.noteJpaMapper = noteJpaMapper;
+	}
+
+	@Override
+	public Optional<NoteResponse> findById(UUID id) {
+		return noteJpaRepository.findById(id).map(noteJpaMapper::toResponse);
+	}
+
 }

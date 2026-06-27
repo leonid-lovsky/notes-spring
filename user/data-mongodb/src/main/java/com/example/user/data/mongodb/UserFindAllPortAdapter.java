@@ -9,16 +9,18 @@ import java.util.List;
 @Repository
 class UserFindAllPortAdapter implements UserFindAllPort {
 
-    private final UserMongoRepository userMongoRepository;
-    private final UserMongoMapper userMongoMapper;
+	private final UserMongoRepository userMongoRepository;
 
-    UserFindAllPortAdapter(UserMongoRepository userMongoRepository, UserMongoMapper userMongoMapper) {
-        this.userMongoRepository = userMongoRepository;
-        this.userMongoMapper = userMongoMapper;
-    }
+	private final UserMongoMapper userMongoMapper;
 
-    @Override
-    public List<UserResponse> findAll() {
-        return userMongoRepository.findAll().stream().map(userMongoMapper::toResponse).toList();
-    }
+	UserFindAllPortAdapter(UserMongoRepository userMongoRepository, UserMongoMapper userMongoMapper) {
+		this.userMongoRepository = userMongoRepository;
+		this.userMongoMapper = userMongoMapper;
+	}
+
+	@Override
+	public List<UserResponse> findAll() {
+		return userMongoRepository.findAll().stream().map(userMongoMapper::toResponse).toList();
+	}
+
 }

@@ -9,35 +9,36 @@ import java.util.UUID;
 @Document(collection = "users")
 class UserDocument {
 
-    @Id
-    private UUID id;
+	@Id
+	private UUID id;
 
-    @Indexed(unique = true)
-    private String username;
+	@Indexed(unique = true)
+	private String username;
 
-    @Indexed(unique = true)
-    private String email;
+	@Indexed(unique = true)
+	private String email;
 
-    @SuppressWarnings("NullAway.Init")
-    protected UserDocument() {
+	@SuppressWarnings("NullAway.Init")
+	protected UserDocument() {
 
-    }
+	}
 
-    UserDocument(UUID id, String username, String email) {
-        this.id = id;
-        this.username = username;
-        this.email = email;
-    }
+	UserDocument(UUID id, String username, String email) {
+		this.id = id;
+		this.username = username;
+		this.email = email;
+	}
 
-    UUID getId() {
-        return id;
-    }
+	UUID getId() {
+		return id;
+	}
 
-    String getUsername() {
-        return username;
-    }
+	String getUsername() {
+		return username;
+	}
 
-    String getEmail() {
-        return email;
-    }
+	String getEmail() {
+		return email;
+	}
+
 }

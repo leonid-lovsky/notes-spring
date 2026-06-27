@@ -9,16 +9,18 @@ import java.util.List;
 @Repository
 class NoteFindAllPortAdapter implements NoteFindAllPort {
 
-    private final NoteJpaRepository noteJpaRepository;
-    private final NoteJpaMapper noteJpaMapper;
+	private final NoteJpaRepository noteJpaRepository;
 
-    NoteFindAllPortAdapter(NoteJpaRepository noteJpaRepository, NoteJpaMapper noteJpaMapper) {
-        this.noteJpaRepository = noteJpaRepository;
-        this.noteJpaMapper = noteJpaMapper;
-    }
+	private final NoteJpaMapper noteJpaMapper;
 
-    @Override
-    public List<NoteResponse> findAll() {
-        return noteJpaRepository.findAll().stream().map(noteJpaMapper::toResponse).toList();
-    }
+	NoteFindAllPortAdapter(NoteJpaRepository noteJpaRepository, NoteJpaMapper noteJpaMapper) {
+		this.noteJpaRepository = noteJpaRepository;
+		this.noteJpaMapper = noteJpaMapper;
+	}
+
+	@Override
+	public List<NoteResponse> findAll() {
+		return noteJpaRepository.findAll().stream().map(noteJpaMapper::toResponse).toList();
+	}
+
 }

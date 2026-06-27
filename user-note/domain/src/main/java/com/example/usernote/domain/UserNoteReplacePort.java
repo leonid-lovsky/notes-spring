@@ -4,5 +4,6 @@ import java.util.UUID;
 
 public interface UserNoteReplacePort {
 
-    UserNoteResponse replace(UUID userId, UUID noteId, UserNoteRequest request);
+	UserNoteResponse replace(UUID userId, UUID noteId, UserNoteRequest request);
+
 }

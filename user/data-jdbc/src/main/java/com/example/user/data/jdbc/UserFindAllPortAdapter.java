@@ -11,16 +11,18 @@ import java.util.Map;
 @Repository
 class UserFindAllPortAdapter implements UserFindAllPort {
 
-    private final NamedParameterJdbcTemplate jdbc;
-    private final UserJdbcMapper userJdbcMapper;
+	private final NamedParameterJdbcTemplate jdbc;
 
-    UserFindAllPortAdapter(NamedParameterJdbcTemplate jdbc, UserJdbcMapper userJdbcMapper) {
-        this.jdbc = jdbc;
-        this.userJdbcMapper = userJdbcMapper;
-    }
+	private final UserJdbcMapper userJdbcMapper;
 
-    @Override
-    public List<UserResponse> findAll() {
-        return jdbc.query("SELECT id, username, email FROM users", Map.of(), userJdbcMapper::fromRow);
-    }
+	UserFindAllPortAdapter(NamedParameterJdbcTemplate jdbc, UserJdbcMapper userJdbcMapper) {
+		this.jdbc = jdbc;
+		this.userJdbcMapper = userJdbcMapper;
+	}
+
+	@Override
+	public List<UserResponse> findAll() {
+		return jdbc.query("SELECT id, username, email FROM users", Map.of(), userJdbcMapper::fromRow);
+	}
+
 }

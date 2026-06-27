@@ -10,8 +10,9 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 class UserNoteExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(UserNoteNotFoundException.class)
-    ProblemDetail handleNotFound(UserNoteNotFoundException e) {
-        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
-    }
+	@ExceptionHandler(UserNoteNotFoundException.class)
+	ProblemDetail handleNotFound(UserNoteNotFoundException e) {
+		return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
+	}
+
 }

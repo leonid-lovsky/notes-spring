@@ -9,16 +9,18 @@ import java.util.List;
 @Repository
 class UserFindAllPortAdapter implements UserFindAllPort {
 
-    private final UserJpaRepository userJpaRepository;
-    private final UserJpaMapper userJpaMapper;
+	private final UserJpaRepository userJpaRepository;
 
-    UserFindAllPortAdapter(UserJpaRepository userJpaRepository, UserJpaMapper userJpaMapper) {
-        this.userJpaRepository = userJpaRepository;
-        this.userJpaMapper = userJpaMapper;
-    }
+	private final UserJpaMapper userJpaMapper;
 
-    @Override
-    public List<UserResponse> findAll() {
-        return userJpaRepository.findAll().stream().map(userJpaMapper::toResponse).toList();
-    }
+	UserFindAllPortAdapter(UserJpaRepository userJpaRepository, UserJpaMapper userJpaMapper) {
+		this.userJpaRepository = userJpaRepository;
+		this.userJpaMapper = userJpaMapper;
+	}
+
+	@Override
+	public List<UserResponse> findAll() {
+		return userJpaRepository.findAll().stream().map(userJpaMapper::toResponse).toList();
+	}
+
 }

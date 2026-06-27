@@ -10,15 +10,16 @@ import java.util.UUID;
 @Repository
 class UserNoteRemovePortAdapter implements UserNoteRemovePort {
 
-    private final NamedParameterJdbcTemplate jdbc;
+	private final NamedParameterJdbcTemplate jdbc;
 
-    UserNoteRemovePortAdapter(NamedParameterJdbcTemplate jdbc) {
-        this.jdbc = jdbc;
-    }
+	UserNoteRemovePortAdapter(NamedParameterJdbcTemplate jdbc) {
+		this.jdbc = jdbc;
+	}
 
-    @Override
-    public void remove(UUID userId, UUID noteId) {
-        jdbc.update("DELETE FROM user_notes WHERE user_id = :userId AND note_id = :noteId",
-                Map.of("userId", userId, "noteId", noteId));
-    }
+	@Override
+	public void remove(UUID userId, UUID noteId) {
+		jdbc.update("DELETE FROM user_notes WHERE user_id = :userId AND note_id = :noteId",
+				Map.of("userId", userId, "noteId", noteId));
+	}
+
 }

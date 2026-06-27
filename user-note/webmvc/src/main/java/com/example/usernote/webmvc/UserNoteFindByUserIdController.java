@@ -16,15 +16,16 @@ import java.util.UUID;
 @RequestMapping("/user-notes")
 class UserNoteFindByUserIdController {
 
-    private final UserNoteFindByUserIdPort userNoteFindByUserIdPort;
+	private final UserNoteFindByUserIdPort userNoteFindByUserIdPort;
 
-    UserNoteFindByUserIdController(UserNoteFindByUserIdPort userNoteFindByUserIdPort) {
-        this.userNoteFindByUserIdPort = userNoteFindByUserIdPort;
-    }
+	UserNoteFindByUserIdController(UserNoteFindByUserIdPort userNoteFindByUserIdPort) {
+		this.userNoteFindByUserIdPort = userNoteFindByUserIdPort;
+	}
 
-    @GetMapping("/user/{userId}")
-    ResponseEntity<List<UserNoteResponse>> findByUserId(@PathVariable UUID userId) {
-        List<UserNoteResponse> userNotes = userNoteFindByUserIdPort.findByUserId(userId);
-        return ResponseEntity.status(HttpStatus.OK).body(userNotes);
-    }
+	@GetMapping("/user/{userId}")
+	ResponseEntity<List<UserNoteResponse>> findByUserId(@PathVariable UUID userId) {
+		List<UserNoteResponse> userNotes = userNoteFindByUserIdPort.findByUserId(userId);
+		return ResponseEntity.status(HttpStatus.OK).body(userNotes);
+	}
+
 }

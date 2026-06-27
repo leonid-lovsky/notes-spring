@@ -6,8 +6,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class GatewayApplicationTest {
 
-    @Test
-    void contextLoads() {
+	@Test
+	void contextLoads() {
 
-    }
+	}
+
 }

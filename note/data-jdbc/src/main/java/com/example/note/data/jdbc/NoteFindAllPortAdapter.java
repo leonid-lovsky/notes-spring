@@ -11,16 +11,18 @@ import java.util.Map;
 @Repository
 class NoteFindAllPortAdapter implements NoteFindAllPort {
 
-    private final NamedParameterJdbcTemplate jdbc;
-    private final NoteJdbcMapper noteJdbcMapper;
+	private final NamedParameterJdbcTemplate jdbc;
 
-    NoteFindAllPortAdapter(NamedParameterJdbcTemplate jdbc, NoteJdbcMapper noteJdbcMapper) {
-        this.jdbc = jdbc;
-        this.noteJdbcMapper = noteJdbcMapper;
-    }
+	private final NoteJdbcMapper noteJdbcMapper;
 
-    @Override
-    public List<NoteResponse> findAll() {
-        return jdbc.query("SELECT id, content FROM notes", Map.of(), noteJdbcMapper::fromRow);
-    }
+	NoteFindAllPortAdapter(NamedParameterJdbcTemplate jdbc, NoteJdbcMapper noteJdbcMapper) {
+		this.jdbc = jdbc;
+		this.noteJdbcMapper = noteJdbcMapper;
+	}
+
+	@Override
+	public List<NoteResponse> findAll() {
+		return jdbc.query("SELECT id, content FROM notes", Map.of(), noteJdbcMapper::fromRow);
+	}
+
 }

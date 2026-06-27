@@ -10,14 +10,15 @@ import java.util.UUID;
 @Repository
 class UserRemovePortAdapter implements UserRemovePort {
 
-    private final NamedParameterJdbcTemplate jdbc;
+	private final NamedParameterJdbcTemplate jdbc;
 
-    UserRemovePortAdapter(NamedParameterJdbcTemplate jdbc) {
-        this.jdbc = jdbc;
-    }
+	UserRemovePortAdapter(NamedParameterJdbcTemplate jdbc) {
+		this.jdbc = jdbc;
+	}
 
-    @Override
-    public void remove(UUID id) {
-        jdbc.update("DELETE FROM users WHERE id = :id", Map.of("id", id));
-    }
+	@Override
+	public void remove(UUID id) {
+		jdbc.update("DELETE FROM users WHERE id = :id", Map.of("id", id));
+	}
+
 }

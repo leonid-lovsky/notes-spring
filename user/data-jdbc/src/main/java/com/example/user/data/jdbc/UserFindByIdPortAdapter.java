@@ -12,17 +12,21 @@ import java.util.UUID;
 @Repository
 class UserFindByIdPortAdapter implements UserFindByIdPort {
 
-    private final NamedParameterJdbcTemplate jdbc;
-    private final UserJdbcMapper userJdbcMapper;
+	private final NamedParameterJdbcTemplate jdbc;
 
-    UserFindByIdPortAdapter(NamedParameterJdbcTemplate jdbc, UserJdbcMapper userJdbcMapper) {
-        this.jdbc = jdbc;
-        this.userJdbcMapper = userJdbcMapper;
-    }
+	private final UserJdbcMapper userJdbcMapper;
 
-    @Override
-    public Optional<UserResponse> findById(UUID id) {
-        return jdbc.query("SELECT id, username, email FROM users WHERE id = :id",
-                Map.of("id", id), userJdbcMapper::fromRow).stream().findFirst();
-    }
+	UserFindByIdPortAdapter(NamedParameterJdbcTemplate jdbc, UserJdbcMapper userJdbcMapper) {
+		this.jdbc = jdbc;
+		this.userJdbcMapper = userJdbcMapper;
+	}
+
+	@Override
+	public Optional<UserResponse> findById(UUID id) {
+		return jdbc
+			.query("SELECT id, username, email FROM users WHERE id = :id", Map.of("id", id), userJdbcMapper::fromRow)
+			.stream()
+			.findFirst();
+	}
+
 }

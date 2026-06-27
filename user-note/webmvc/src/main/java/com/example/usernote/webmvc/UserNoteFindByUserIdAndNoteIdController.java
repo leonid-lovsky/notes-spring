@@ -16,19 +16,17 @@ import java.util.UUID;
 @RequestMapping("/user-notes")
 class UserNoteFindByUserIdAndNoteIdController {
 
-    private final UserNoteFindByUserIdAndNoteIdPort userNoteFindByUserIdAndNoteIdPort;
+	private final UserNoteFindByUserIdAndNoteIdPort userNoteFindByUserIdAndNoteIdPort;
 
-    UserNoteFindByUserIdAndNoteIdController(
-            UserNoteFindByUserIdAndNoteIdPort userNoteFindByUserIdAndNoteIdPort) {
-        this.userNoteFindByUserIdAndNoteIdPort = userNoteFindByUserIdAndNoteIdPort;
-    }
+	UserNoteFindByUserIdAndNoteIdController(UserNoteFindByUserIdAndNoteIdPort userNoteFindByUserIdAndNoteIdPort) {
+		this.userNoteFindByUserIdAndNoteIdPort = userNoteFindByUserIdAndNoteIdPort;
+	}
 
-    @GetMapping("/{userId}/{noteId}")
-    ResponseEntity<UserNoteResponse> findByUserIdAndNoteId(@PathVariable UUID userId,
-                                                            @PathVariable UUID noteId) {
-        UserNoteResponse userNote = userNoteFindByUserIdAndNoteIdPort
-                .findByUserIdAndNoteId(userId, noteId)
-                .orElseThrow(() -> new UserNoteNotFoundException(userId, noteId));
-        return ResponseEntity.status(HttpStatus.OK).body(userNote);
-    }
+	@GetMapping("/{userId}/{noteId}")
+	ResponseEntity<UserNoteResponse> findByUserIdAndNoteId(@PathVariable UUID userId, @PathVariable UUID noteId) {
+		UserNoteResponse userNote = userNoteFindByUserIdAndNoteIdPort.findByUserIdAndNoteId(userId, noteId)
+			.orElseThrow(() -> new UserNoteNotFoundException(userId, noteId));
+		return ResponseEntity.status(HttpStatus.OK).body(userNote);
+	}
+
 }

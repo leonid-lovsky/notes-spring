@@ -29,7 +29,7 @@
 - **Файлы** — не изменять и не создавать без явного указания («измени X в файле Y»)
 - **Таблицы** — выравнивать колонки по ширине: каждая строка таблицы должна иметь одинаковую длину в Unicode-символах; несоответствие вызывает предупреждение IDEA
 - **CI** — не изменять `.github/workflows/` без явного запроса
-- **Коммиты** — не коммитить и не пушить без явного запроса _(исключение: начало сессии)_
+- **Коммиты** — не коммитить и не пушить без явного запроса _(исключение: начало сессии)_; «Зафиксируй» = обновить CLAUDE.md (дата + всё новое из сессии) → коммит → пуш
 - **Перед коммитом** — обновить дату: `date -u +"%Y-%m-%dT%H:%MZ"`
 
 ---
@@ -607,7 +607,7 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 
 - **`domain`** — только `java`; без Spring BOM; JUnit с явными версиями; JSpecify приходит из `java-errorprone-conventions`
 - **`oauth2-resource-server`** — транспортно-независимая JWT-валидация; применим к `webmvc/`, `webflux/`, `graphql/` — не переименовывать в `webmvc-oauth2-*`
-- **`java-*-conventions` (quality)** — применяются во всех convention plugins; `java-jacoco-report-aggregation-conventions` дополнительно применяется везде, `jacocoAggregation` dependencies объявляются в `application/build.gradle`; плагины не наследуются от root project — явная декларация в каждом convention plugin (Explicit over Implicit)
+- **`java-*-conventions` (quality)** — `java-codequality-conventions` — мета-плагин, применяет все четыре (`javaformat` · `errorprone` · `jacoco` · `jacoco-report-aggregation`); каждый convention plugin объявляет `id("java-codequality-conventions")` явно (Explicit over Implicit — плагины не наследуются от root project); `jacocoAggregation` dependencies объявляются в `application/build.gradle`; это Spring-стандарт: spring-javaformat + ErrorProne + NullAway + JSpecify + JaCoCo используются в Spring Boot / Spring Framework / Spring Cloud
 - **`h2-database`** — add-on поверх `data-jpa`; не содержит `repositories {}`; применять совместно
 - **`gateway-webflux`** / **`gateway-webmvc`** / **`config-server`** / **`eureka-server`** — включают `org.springframework.boot` plugin (это Boot app, не просто модуль); не комбинировать с `spring-boot-application-conventions`
 - **`restclient`** / **`webclient`** — не адаптеры в гексагональном смысле; инструменты внутри других адаптеров (Feign, reactive adapter); именно поэтому в имени нет суффикса `-adapter-`
@@ -678,7 +678,7 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 
 ### Качество и наблюдаемость
 
-**ArchUnit** — `testImplementation("com.tngtech.archunit:archunit-junit5:<version>")`; версию брать с Maven Central; проверяет, что `domain/` не импортирует из адаптеров
+**ArchUnit** — `testImplementation("com.tngtech.archunit:archunit-junit5:<version>")`; версию брать с Maven Central; проверяет, что `domain/` не импортирует из адаптеров; полагается на именование пакетов/классов — менее надёжен, чем convention plugins (classpath isolation); **не реализован**: convention plugins уже дают compile-time enforcement; ArchUnit — дополнительный слой, не замена
 **JaCoCo** — встроен в Gradle (`jacoco`, toolVersion `0.8.14`); задачи: `jacocoTestReport` (HTML-отчёт) · `jacocoTestCoverageVerification` (минимальное покрытие); связь явная: `test.finalizedBy(jacocoTestReport)`; источник покрытия для SonarQube; `jacoco-report-aggregation` — агрегирует покрытие по всем модулям monorepo
 **SonarQube** — используется внешне: IDE-плагин, CI pipeline, standalone server, SonarCloud; не добавляется как Gradle-зависимость в проект
 **Actuator** — только в `application/`; `management.server.port` — отдельный порт; в Resource Server — отдельный `SecurityFilterChain` для `/actuator/**`
@@ -689,7 +689,7 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 
 **Стандарт Spring-экосистемы** (используются в Spring Boot / Spring Framework / Spring Cloud):
 
-- **spring-javaformat** _(ноль конфига)_ — `io.spring.javaformat version 0.0.47`; применяется вместе с `checkstyle` plugin + `toolVersion = "9.3"`; `springJavaFormat { checkstyle { applyDefaultConfig() } }`; проверяет: строки до 120 символов, пробелы, импорты, Javadoc; IDEA: автоактивируется при наличии Gradle-плагина, стандартный «Reformat Code»; для Checkstyle-IDEA — добавить `spring-javaformat-checkstyle` jar в Third-Party Checks
+- **spring-javaformat** _(ноль конфига)_ — `io.spring.javaformat version 0.0.47`; применяется вместе с `checkstyle` plugin + `toolVersion = "9.3"`; `springJavaFormat { }` — Groovy DSL only (нет extension class в jar); в Kotlin DSL precompiled script plugins доступны только задачи `format` и `checkFormat`; проверяет: строки до 120 символов, пробелы, импорты, Javadoc; IDEA: автоактивируется при наличии Gradle-плагина, стандартный «Reformat Code»; для Checkstyle-IDEA — добавить `spring-javaformat-checkstyle` jar в Third-Party Checks
 - **Checkstyle** _(минимальный конфиг)_ — Gradle built-in (`checkstyle` plugin, версия не нужна); конфиг: `config/checkstyle/checkstyle.xml`; `toolVersion` задаётся явно; пресеты: Spring Style (через `spring-javaformat`) или Google Style (`google_checks.xml` из `checkstyle/checkstyle`); IDEA: плагин CheckStyle-IDEA
 - **ErrorProne** _(ноль конфига)_ — `net.ltgt.gradle:gradle-errorprone-plugin:<version>`; зависимость: `errorprone("com.google.errorprone:error_prone_core")`; находит баги во время компиляции (`javac`); Java 21 требует версию 2.43+; JVM args для JDK 16+ настраиваются автоматически; конфиг через `tasks.withType<JavaCompile>().configureEach { options.errorprone { ... } }`; база для NullAway; IDEA: плагин ErrorProne Compiler; версии — GitHub `tbroyer/gradle-errorprone-plugin`
 - **NullAway** _(минимальный конфиг)_ — плагин к ErrorProne; `errorprone("com.uber.nullaway:nullaway:<version>")`; **обязательно** одно из двух: `option("NullAway:AnnotatedPackages", "com.example")` или `option("NullAway:OnlyNullMarked", "true")` (JSpecify-режим) — без этого NullAway не запускается; `check("NullAway", CheckSeverity.ERROR)` — нарушения ломают сборку; для тестов: `if (name.lowercase().contains("test")) { disable("NullAway") }`; проверяет `@NullMarked` / `@Nullable` (JSpecify) во время компиляции; без NullAway аннотации JSpecify декларативны; версии — Maven Central

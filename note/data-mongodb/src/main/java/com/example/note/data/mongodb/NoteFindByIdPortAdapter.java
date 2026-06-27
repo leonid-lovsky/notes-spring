@@ -10,16 +10,18 @@ import java.util.UUID;
 @Repository
 class NoteFindByIdPortAdapter implements NoteFindByIdPort {
 
-    private final NoteMongoRepository noteMongoRepository;
-    private final NoteMongoMapper noteMongoMapper;
+	private final NoteMongoRepository noteMongoRepository;
 
-    NoteFindByIdPortAdapter(NoteMongoRepository noteMongoRepository, NoteMongoMapper noteMongoMapper) {
-        this.noteMongoRepository = noteMongoRepository;
-        this.noteMongoMapper = noteMongoMapper;
-    }
+	private final NoteMongoMapper noteMongoMapper;
 
-    @Override
-    public Optional<NoteResponse> findById(UUID id) {
-        return noteMongoRepository.findById(id).map(noteMongoMapper::toResponse);
-    }
+	NoteFindByIdPortAdapter(NoteMongoRepository noteMongoRepository, NoteMongoMapper noteMongoMapper) {
+		this.noteMongoRepository = noteMongoRepository;
+		this.noteMongoMapper = noteMongoMapper;
+	}
+
+	@Override
+	public Optional<NoteResponse> findById(UUID id) {
+		return noteMongoRepository.findById(id).map(noteMongoMapper::toResponse);
+	}
+
 }

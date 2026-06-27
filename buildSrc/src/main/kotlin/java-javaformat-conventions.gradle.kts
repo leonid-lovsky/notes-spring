@@ -11,3 +11,9 @@ repositories {
 checkstyle {
     toolVersion = "9.3"
 }
+
+//springJavaFormat {
+//    checkstyle {
+//        applyDefaultConfig()
+//    }
+//}

@@ -12,17 +12,18 @@ import java.util.UUID;
 @Repository
 class UserAddPortAdapter implements UserAddPort {
 
-    private final NamedParameterJdbcTemplate jdbc;
+	private final NamedParameterJdbcTemplate jdbc;
 
-    UserAddPortAdapter(NamedParameterJdbcTemplate jdbc) {
-        this.jdbc = jdbc;
-    }
+	UserAddPortAdapter(NamedParameterJdbcTemplate jdbc) {
+		this.jdbc = jdbc;
+	}
 
-    @Override
-    public UserResponse add(UserRequest request) {
-        UUID id = UUID.randomUUID();
-        jdbc.update("INSERT INTO users (id, username, email) VALUES (:id, :username, :email)",
-                Map.of("id", id, "username", request.username(), "email", request.email()));
-        return new UserResponse(id, request.username(), request.email());
-    }
+	@Override
+	public UserResponse add(UserRequest request) {
+		UUID id = UUID.randomUUID();
+		jdbc.update("INSERT INTO users (id, username, email) VALUES (:id, :username, :email)",
+				Map.of("id", id, "username", request.username(), "email", request.email()));
+		return new UserResponse(id, request.username(), request.email());
+	}
+
 }

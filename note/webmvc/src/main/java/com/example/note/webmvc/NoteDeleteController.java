@@ -16,20 +16,22 @@ import java.util.UUID;
 @RequestMapping("/notes")
 class NoteDeleteController {
 
-    private final NoteExistsByIdPort noteExistsByIdPort;
-    private final NoteRemovePort noteRemovePort;
+	private final NoteExistsByIdPort noteExistsByIdPort;
 
-    NoteDeleteController(NoteExistsByIdPort noteExistsByIdPort, NoteRemovePort noteRemovePort) {
-        this.noteExistsByIdPort = noteExistsByIdPort;
-        this.noteRemovePort = noteRemovePort;
-    }
+	private final NoteRemovePort noteRemovePort;
 
-    @DeleteMapping("/{id}")
-    ResponseEntity<Void> delete(@PathVariable UUID id) {
-        if (!noteExistsByIdPort.existsById(id)) {
-            throw new NoteNotFoundException(id);
-        }
-        noteRemovePort.remove(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
+	NoteDeleteController(NoteExistsByIdPort noteExistsByIdPort, NoteRemovePort noteRemovePort) {
+		this.noteExistsByIdPort = noteExistsByIdPort;
+		this.noteRemovePort = noteRemovePort;
+	}
+
+	@DeleteMapping("/{id}")
+	ResponseEntity<Void> delete(@PathVariable UUID id) {
+		if (!noteExistsByIdPort.existsById(id)) {
+			throw new NoteNotFoundException(id);
+		}
+		noteRemovePort.remove(id);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
+
 }

@@ -10,14 +10,15 @@ import java.util.UUID;
 @Repository
 class NoteRemovePortAdapter implements NoteRemovePort {
 
-    private final NamedParameterJdbcTemplate jdbc;
+	private final NamedParameterJdbcTemplate jdbc;
 
-    NoteRemovePortAdapter(NamedParameterJdbcTemplate jdbc) {
-        this.jdbc = jdbc;
-    }
+	NoteRemovePortAdapter(NamedParameterJdbcTemplate jdbc) {
+		this.jdbc = jdbc;
+	}
 
-    @Override
-    public void remove(UUID id) {
-        jdbc.update("DELETE FROM notes WHERE id = :id", Map.of("id", id));
-    }
+	@Override
+	public void remove(UUID id) {
+		jdbc.update("DELETE FROM notes WHERE id = :id", Map.of("id", id));
+	}
+
 }

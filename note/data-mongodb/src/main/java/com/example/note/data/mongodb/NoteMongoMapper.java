@@ -7,9 +7,10 @@ import java.util.UUID;
 
 interface NoteMongoMapper {
 
-    NoteDocument toNewDocument(NoteRequest request);
+	NoteDocument toNewDocument(NoteRequest request);
 
-    NoteDocument toExistingDocument(UUID id, NoteRequest request);
+	NoteDocument toExistingDocument(UUID id, NoteRequest request);
 
-    NoteResponse toResponse(NoteDocument document);
+	NoteResponse toResponse(NoteDocument document);
+
 }

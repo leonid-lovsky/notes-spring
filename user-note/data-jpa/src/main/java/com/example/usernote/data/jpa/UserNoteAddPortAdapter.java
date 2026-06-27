@@ -8,17 +8,19 @@ import org.springframework.stereotype.Repository;
 @Repository
 class UserNoteAddPortAdapter implements UserNoteAddPort {
 
-    private final UserNoteJpaRepository userNoteJpaRepository;
-    private final UserNoteJpaMapper userNoteJpaMapper;
+	private final UserNoteJpaRepository userNoteJpaRepository;
 
-    UserNoteAddPortAdapter(UserNoteJpaRepository userNoteJpaRepository, UserNoteJpaMapper userNoteJpaMapper) {
-        this.userNoteJpaRepository = userNoteJpaRepository;
-        this.userNoteJpaMapper = userNoteJpaMapper;
-    }
+	private final UserNoteJpaMapper userNoteJpaMapper;
 
-    @Override
-    public UserNoteResponse add(UserNoteRequest request) {
-        UserNoteEntity saved = userNoteJpaRepository.save(userNoteJpaMapper.toEntity(request));
-        return userNoteJpaMapper.toResponse(saved);
-    }
+	UserNoteAddPortAdapter(UserNoteJpaRepository userNoteJpaRepository, UserNoteJpaMapper userNoteJpaMapper) {
+		this.userNoteJpaRepository = userNoteJpaRepository;
+		this.userNoteJpaMapper = userNoteJpaMapper;
+	}
+
+	@Override
+	public UserNoteResponse add(UserNoteRequest request) {
+		UserNoteEntity saved = userNoteJpaRepository.save(userNoteJpaMapper.toEntity(request));
+		return userNoteJpaMapper.toResponse(saved);
+	}
+
 }

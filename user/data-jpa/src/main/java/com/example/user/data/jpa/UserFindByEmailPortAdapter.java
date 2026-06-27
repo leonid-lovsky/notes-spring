@@ -9,16 +9,18 @@ import java.util.Optional;
 @Repository
 class UserFindByEmailPortAdapter implements UserFindByEmailPort {
 
-    private final UserJpaRepository userJpaRepository;
-    private final UserJpaMapper userJpaMapper;
+	private final UserJpaRepository userJpaRepository;
 
-    UserFindByEmailPortAdapter(UserJpaRepository userJpaRepository, UserJpaMapper userJpaMapper) {
-        this.userJpaRepository = userJpaRepository;
-        this.userJpaMapper = userJpaMapper;
-    }
+	private final UserJpaMapper userJpaMapper;
 
-    @Override
-    public Optional<UserResponse> findByEmail(String email) {
-        return userJpaRepository.findByEmail(email).map(userJpaMapper::toResponse);
-    }
+	UserFindByEmailPortAdapter(UserJpaRepository userJpaRepository, UserJpaMapper userJpaMapper) {
+		this.userJpaRepository = userJpaRepository;
+		this.userJpaMapper = userJpaMapper;
+	}
+
+	@Override
+	public Optional<UserResponse> findByEmail(String email) {
+		return userJpaRepository.findByEmail(email).map(userJpaMapper::toResponse);
+	}
+
 }

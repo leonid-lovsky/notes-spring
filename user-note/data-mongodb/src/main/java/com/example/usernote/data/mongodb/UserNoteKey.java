@@ -6,38 +6,42 @@ import java.util.UUID;
 
 class UserNoteKey implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private UUID userId;
-    private UUID noteId;
+	private UUID userId;
 
-    @SuppressWarnings("NullAway.Init")
-    protected UserNoteKey() {
+	private UUID noteId;
 
-    }
+	@SuppressWarnings("NullAway.Init")
+	protected UserNoteKey() {
 
-    UserNoteKey(UUID userId, UUID noteId) {
-        this.userId = userId;
-        this.noteId = noteId;
-    }
+	}
 
-    UUID getUserId() {
-        return userId;
-    }
+	UserNoteKey(UUID userId, UUID noteId) {
+		this.userId = userId;
+		this.noteId = noteId;
+	}
 
-    UUID getNoteId() {
-        return noteId;
-    }
+	UUID getUserId() {
+		return userId;
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof UserNoteKey that)) return false;
-        return Objects.equals(userId, that.userId) && Objects.equals(noteId, that.noteId);
-    }
+	UUID getNoteId() {
+		return noteId;
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(userId, noteId);
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof UserNoteKey that))
+			return false;
+		return Objects.equals(userId, that.userId) && Objects.equals(noteId, that.noteId);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(userId, noteId);
+	}
+
 }

@@ -16,20 +16,22 @@ import java.util.UUID;
 @RequestMapping("/users")
 class UserDeleteController {
 
-    private final UserExistsByIdPort userExistsByIdPort;
-    private final UserRemovePort userRemovePort;
+	private final UserExistsByIdPort userExistsByIdPort;
 
-    UserDeleteController(UserExistsByIdPort userExistsByIdPort, UserRemovePort userRemovePort) {
-        this.userExistsByIdPort = userExistsByIdPort;
-        this.userRemovePort = userRemovePort;
-    }
+	private final UserRemovePort userRemovePort;
 
-    @DeleteMapping("/{id}")
-    ResponseEntity<Void> delete(@PathVariable UUID id) {
-        if (!userExistsByIdPort.existsById(id)) {
-            throw new UserNotFoundException(id);
-        }
-        userRemovePort.remove(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
+	UserDeleteController(UserExistsByIdPort userExistsByIdPort, UserRemovePort userRemovePort) {
+		this.userExistsByIdPort = userExistsByIdPort;
+		this.userRemovePort = userRemovePort;
+	}
+
+	@DeleteMapping("/{id}")
+	ResponseEntity<Void> delete(@PathVariable UUID id) {
+		if (!userExistsByIdPort.existsById(id)) {
+			throw new UserNotFoundException(id);
+		}
+		userRemovePort.remove(id);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
+
 }

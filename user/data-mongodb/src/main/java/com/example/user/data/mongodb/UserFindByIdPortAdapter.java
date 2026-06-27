@@ -10,16 +10,18 @@ import java.util.UUID;
 @Repository
 class UserFindByIdPortAdapter implements UserFindByIdPort {
 
-    private final UserMongoRepository userMongoRepository;
-    private final UserMongoMapper userMongoMapper;
+	private final UserMongoRepository userMongoRepository;
 
-    UserFindByIdPortAdapter(UserMongoRepository userMongoRepository, UserMongoMapper userMongoMapper) {
-        this.userMongoRepository = userMongoRepository;
-        this.userMongoMapper = userMongoMapper;
-    }
+	private final UserMongoMapper userMongoMapper;
 
-    @Override
-    public Optional<UserResponse> findById(UUID id) {
-        return userMongoRepository.findById(id).map(userMongoMapper::toResponse);
-    }
+	UserFindByIdPortAdapter(UserMongoRepository userMongoRepository, UserMongoMapper userMongoMapper) {
+		this.userMongoRepository = userMongoRepository;
+		this.userMongoMapper = userMongoMapper;
+	}
+
+	@Override
+	public Optional<UserResponse> findById(UUID id) {
+		return userMongoRepository.findById(id).map(userMongoMapper::toResponse);
+	}
+
 }

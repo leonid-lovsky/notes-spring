@@ -4,5 +4,6 @@ import java.util.UUID;
 
 public interface UserNoteExistsByUserIdAndNoteIdPort {
 
-    boolean existsByUserIdAndNoteId(UUID userId, UUID noteId);
+	boolean existsByUserIdAndNoteId(UUID userId, UUID noteId);
+
 }

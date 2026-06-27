@@ -14,15 +14,16 @@ import java.util.List;
 @RequestMapping("/notes")
 class NoteFindAllController {
 
-    private final NoteFindAllPort noteFindAllPort;
+	private final NoteFindAllPort noteFindAllPort;
 
-    NoteFindAllController(NoteFindAllPort noteFindAllPort) {
-        this.noteFindAllPort = noteFindAllPort;
-    }
+	NoteFindAllController(NoteFindAllPort noteFindAllPort) {
+		this.noteFindAllPort = noteFindAllPort;
+	}
 
-    @GetMapping
-    ResponseEntity<List<NoteResponse>> findAll() {
-        List<NoteResponse> notes = noteFindAllPort.findAll();
-        return ResponseEntity.status(HttpStatus.OK).body(notes);
-    }
+	@GetMapping
+	ResponseEntity<List<NoteResponse>> findAll() {
+		List<NoteResponse> notes = noteFindAllPort.findAll();
+		return ResponseEntity.status(HttpStatus.OK).body(notes);
+	}
+
 }

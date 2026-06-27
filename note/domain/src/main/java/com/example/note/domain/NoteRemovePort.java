@@ -4,5 +4,6 @@ import java.util.UUID;
 
 public interface NoteRemovePort {
 
-    void remove(UUID id);
+	void remove(UUID id);
+
 }

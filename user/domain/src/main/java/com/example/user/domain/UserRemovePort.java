@@ -4,5 +4,6 @@ import java.util.UUID;
 
 public interface UserRemovePort {
 
-    void remove(UUID id);
+	void remove(UUID id);
+
 }

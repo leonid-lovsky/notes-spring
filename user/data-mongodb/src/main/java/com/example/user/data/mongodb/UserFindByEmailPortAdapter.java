@@ -9,16 +9,18 @@ import java.util.Optional;
 @Repository
 class UserFindByEmailPortAdapter implements UserFindByEmailPort {
 
-    private final UserMongoRepository userMongoRepository;
-    private final UserMongoMapper userMongoMapper;
+	private final UserMongoRepository userMongoRepository;
 
-    UserFindByEmailPortAdapter(UserMongoRepository userMongoRepository, UserMongoMapper userMongoMapper) {
-        this.userMongoRepository = userMongoRepository;
-        this.userMongoMapper = userMongoMapper;
-    }
+	private final UserMongoMapper userMongoMapper;
 
-    @Override
-    public Optional<UserResponse> findByEmail(String email) {
-        return userMongoRepository.findByEmail(email).map(userMongoMapper::toResponse);
-    }
+	UserFindByEmailPortAdapter(UserMongoRepository userMongoRepository, UserMongoMapper userMongoMapper) {
+		this.userMongoRepository = userMongoRepository;
+		this.userMongoMapper = userMongoMapper;
+	}
+
+	@Override
+	public Optional<UserResponse> findByEmail(String email) {
+		return userMongoRepository.findByEmail(email).map(userMongoMapper::toResponse);
+	}
+
 }

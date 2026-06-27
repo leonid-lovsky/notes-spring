@@ -11,11 +11,10 @@ import java.util.UUID;
 @Component
 class UserNoteJdbcMapperImpl implements UserNoteJdbcMapper {
 
-    @Override
-    public UserNoteResponse fromRow(ResultSet rs, int rowNum) throws SQLException {
-        return new UserNoteResponse(
-                rs.getObject("user_id", UUID.class),
-                rs.getObject("note_id", UUID.class),
-                UserNoteRole.valueOf(rs.getString("role")));
-    }
+	@Override
+	public UserNoteResponse fromRow(ResultSet rs, int rowNum) throws SQLException {
+		return new UserNoteResponse(rs.getObject("user_id", UUID.class), rs.getObject("note_id", UUID.class),
+				UserNoteRole.valueOf(rs.getString("role")));
+	}
+
 }

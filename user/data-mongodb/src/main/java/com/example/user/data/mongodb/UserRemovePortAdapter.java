@@ -8,14 +8,15 @@ import java.util.UUID;
 @Repository
 class UserRemovePortAdapter implements UserRemovePort {
 
-    private final UserMongoRepository userMongoRepository;
+	private final UserMongoRepository userMongoRepository;
 
-    UserRemovePortAdapter(UserMongoRepository userMongoRepository) {
-        this.userMongoRepository = userMongoRepository;
-    }
+	UserRemovePortAdapter(UserMongoRepository userMongoRepository) {
+		this.userMongoRepository = userMongoRepository;
+	}
 
-    @Override
-    public void remove(UUID id) {
-        userMongoRepository.deleteById(id);
-    }
+	@Override
+	public void remove(UUID id) {
+		userMongoRepository.deleteById(id);
+	}
+
 }

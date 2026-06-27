@@ -5,5 +5,6 @@ import java.util.UUID;
 
 public interface UserFindByIdPort {
 
-    Optional<UserResponse> findById(UUID id);
+	Optional<UserResponse> findById(UUID id);
+
 }

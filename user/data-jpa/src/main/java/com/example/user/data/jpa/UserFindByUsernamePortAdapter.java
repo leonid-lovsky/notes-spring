@@ -9,16 +9,18 @@ import java.util.Optional;
 @Repository
 class UserFindByUsernamePortAdapter implements UserFindByUsernamePort {
 
-    private final UserJpaRepository userJpaRepository;
-    private final UserJpaMapper userJpaMapper;
+	private final UserJpaRepository userJpaRepository;
 
-    UserFindByUsernamePortAdapter(UserJpaRepository userJpaRepository, UserJpaMapper userJpaMapper) {
-        this.userJpaRepository = userJpaRepository;
-        this.userJpaMapper = userJpaMapper;
-    }
+	private final UserJpaMapper userJpaMapper;
 
-    @Override
-    public Optional<UserResponse> findByUsername(String username) {
-        return userJpaRepository.findByUsername(username).map(userJpaMapper::toResponse);
-    }
+	UserFindByUsernamePortAdapter(UserJpaRepository userJpaRepository, UserJpaMapper userJpaMapper) {
+		this.userJpaRepository = userJpaRepository;
+		this.userJpaMapper = userJpaMapper;
+	}
+
+	@Override
+	public Optional<UserResponse> findByUsername(String username) {
+		return userJpaRepository.findByUsername(username).map(userJpaMapper::toResponse);
+	}
+
 }

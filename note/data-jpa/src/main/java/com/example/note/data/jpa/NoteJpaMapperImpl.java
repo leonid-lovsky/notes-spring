@@ -10,18 +10,19 @@ import java.util.UUID;
 @Component
 class NoteJpaMapperImpl implements NoteJpaMapper {
 
-    @Override
-    public NoteEntity toNewEntity(NoteRequest request) {
-        return new NoteEntity(request.content());
-    }
+	@Override
+	public NoteEntity toNewEntity(NoteRequest request) {
+		return new NoteEntity(request.content());
+	}
 
-    @Override
-    public NoteEntity toExistingEntity(UUID id, NoteRequest request) {
-        return new NoteEntity(id, request.content());
-    }
+	@Override
+	public NoteEntity toExistingEntity(UUID id, NoteRequest request) {
+		return new NoteEntity(id, request.content());
+	}
 
-    @Override
-    public NoteResponse toResponse(NoteEntity entity) {
-        return new NoteResponse(Objects.requireNonNull(entity.getId()), entity.getContent());
-    }
+	@Override
+	public NoteResponse toResponse(NoteEntity entity) {
+		return new NoteResponse(Objects.requireNonNull(entity.getId()), entity.getContent());
+	}
+
 }

@@ -2,5 +2,6 @@ package com.example.usernote.domain;
 
 public interface UserNoteAddPort {
 
-    UserNoteResponse add(UserNoteRequest request);
+	UserNoteResponse add(UserNoteRequest request);
+
 }

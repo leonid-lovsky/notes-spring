@@ -7,5 +7,6 @@ import java.sql.SQLException;
 
 interface UserJdbcMapper {
 
-    UserResponse fromRow(ResultSet rs, int rowNum) throws SQLException;
+	UserResponse fromRow(ResultSet rs, int rowNum) throws SQLException;
+
 }

@@ -12,17 +12,19 @@ import java.util.UUID;
 @Repository
 class UserNoteFindByNoteIdPortAdapter implements UserNoteFindByNoteIdPort {
 
-    private final NamedParameterJdbcTemplate jdbc;
-    private final UserNoteJdbcMapper userNoteJdbcMapper;
+	private final NamedParameterJdbcTemplate jdbc;
 
-    UserNoteFindByNoteIdPortAdapter(NamedParameterJdbcTemplate jdbc, UserNoteJdbcMapper userNoteJdbcMapper) {
-        this.jdbc = jdbc;
-        this.userNoteJdbcMapper = userNoteJdbcMapper;
-    }
+	private final UserNoteJdbcMapper userNoteJdbcMapper;
 
-    @Override
-    public List<UserNoteResponse> findByNoteId(UUID noteId) {
-        return jdbc.query("SELECT user_id, note_id, role FROM user_notes WHERE note_id = :noteId",
-                Map.of("noteId", noteId), userNoteJdbcMapper::fromRow);
-    }
+	UserNoteFindByNoteIdPortAdapter(NamedParameterJdbcTemplate jdbc, UserNoteJdbcMapper userNoteJdbcMapper) {
+		this.jdbc = jdbc;
+		this.userNoteJdbcMapper = userNoteJdbcMapper;
+	}
+
+	@Override
+	public List<UserNoteResponse> findByNoteId(UUID noteId) {
+		return jdbc.query("SELECT user_id, note_id, role FROM user_notes WHERE note_id = :noteId",
+				Map.of("noteId", noteId), userNoteJdbcMapper::fromRow);
+	}
+
 }

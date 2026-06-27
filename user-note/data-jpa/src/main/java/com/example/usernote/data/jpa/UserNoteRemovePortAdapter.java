@@ -8,14 +8,15 @@ import java.util.UUID;
 @Repository
 class UserNoteRemovePortAdapter implements UserNoteRemovePort {
 
-    private final UserNoteJpaRepository userNoteJpaRepository;
+	private final UserNoteJpaRepository userNoteJpaRepository;
 
-    UserNoteRemovePortAdapter(UserNoteJpaRepository userNoteJpaRepository) {
-        this.userNoteJpaRepository = userNoteJpaRepository;
-    }
+	UserNoteRemovePortAdapter(UserNoteJpaRepository userNoteJpaRepository) {
+		this.userNoteJpaRepository = userNoteJpaRepository;
+	}
 
-    @Override
-    public void remove(UUID userId, UUID noteId) {
-        userNoteJpaRepository.deleteById(new UserNoteId(userId, noteId));
-    }
+	@Override
+	public void remove(UUID userId, UUID noteId) {
+		userNoteJpaRepository.deleteById(new UserNoteId(userId, noteId));
+	}
+
 }
