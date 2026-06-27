@@ -11,22 +11,22 @@ import java.util.UUID;
 @RequestMapping("/users")
 class UserUpdateController {
 
-	private final UserExistsByIdPort userExistsByIdPort;
+    private final UserExistsByIdPort userExistsByIdPort;
 
-	private final UserReplacePort userReplacePort;
+    private final UserReplacePort userReplacePort;
 
-	UserUpdateController(UserExistsByIdPort userExistsByIdPort, UserReplacePort userReplacePort) {
-		this.userExistsByIdPort = userExistsByIdPort;
-		this.userReplacePort = userReplacePort;
-	}
+    UserUpdateController(UserExistsByIdPort userExistsByIdPort, UserReplacePort userReplacePort) {
+        this.userExistsByIdPort = userExistsByIdPort;
+        this.userReplacePort = userReplacePort;
+    }
 
-	@PutMapping("/{id}")
-	ResponseEntity<UserResponse> update(@PathVariable UUID id, @RequestBody UserRequest request) {
-		if (!userExistsByIdPort.existsById(id)) {
-			throw new UserNotFoundException(id);
-		}
-		UserResponse updated = userReplacePort.replace(id, request);
-		return ResponseEntity.status(HttpStatus.OK).body(updated);
-	}
+    @PutMapping("/{id}")
+    ResponseEntity<UserResponse> update(@PathVariable UUID id, @RequestBody UserRequest request) {
+        if (!userExistsByIdPort.existsById(id)) {
+            throw new UserNotFoundException(id);
+        }
+        UserResponse updated = userReplacePort.replace(id, request);
+        return ResponseEntity.status(HttpStatus.OK).body(updated);
+    }
 
 }

@@ -10,18 +10,18 @@ import java.util.UUID;
 @Repository
 class UserNoteExistsByUserIdAndNoteIdPortAdapter implements UserNoteExistsByUserIdAndNoteIdPort {
 
-	private final NamedParameterJdbcTemplate jdbc;
+    private final NamedParameterJdbcTemplate jdbc;
 
-	UserNoteExistsByUserIdAndNoteIdPortAdapter(NamedParameterJdbcTemplate jdbc) {
-		this.jdbc = jdbc;
-	}
+    UserNoteExistsByUserIdAndNoteIdPortAdapter(NamedParameterJdbcTemplate jdbc) {
+        this.jdbc = jdbc;
+    }
 
-	@Override
-	public boolean existsByUserIdAndNoteId(UUID userId, UUID noteId) {
-		Integer count = jdbc.queryForObject(
-				"SELECT COUNT(*) FROM user_notes WHERE user_id = :userId AND note_id = :noteId",
-				Map.of("userId", userId, "noteId", noteId), Integer.class);
-		return count != null && count > 0;
-	}
+    @Override
+    public boolean existsByUserIdAndNoteId(UUID userId, UUID noteId) {
+        Integer count = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM user_notes WHERE user_id = :userId AND note_id = :noteId",
+                Map.of("userId", userId, "noteId", noteId), Integer.class);
+        return count != null && count > 0;
+    }
 
 }

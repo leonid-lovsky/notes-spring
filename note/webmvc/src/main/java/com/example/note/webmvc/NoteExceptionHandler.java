@@ -10,9 +10,9 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 class NoteExceptionHandler extends ResponseEntityExceptionHandler {
 
-	@ExceptionHandler(NoteNotFoundException.class)
-	ProblemDetail handleNotFound(NoteNotFoundException e) {
-		return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
-	}
+    @ExceptionHandler(NoteNotFoundException.class)
+    ProblemDetail handleNotFound(NoteNotFoundException e) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
+    }
 
 }

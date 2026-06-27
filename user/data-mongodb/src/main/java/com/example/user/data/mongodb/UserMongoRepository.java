@@ -7,8 +7,8 @@ import java.util.UUID;
 
 interface UserMongoRepository extends MongoRepository<UserDocument, UUID> {
 
-	Optional<UserDocument> findByUsername(String username);
+    Optional<UserDocument> findByUsername(String username);
 
-	Optional<UserDocument> findByEmail(String email);
+    Optional<UserDocument> findByEmail(String email);
 
 }

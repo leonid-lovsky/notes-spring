@@ -12,20 +12,20 @@ import java.util.UUID;
 @Repository
 class NoteFindByIdPortAdapter implements NoteFindByIdPort {
 
-	private final NamedParameterJdbcTemplate jdbc;
+    private final NamedParameterJdbcTemplate jdbc;
 
-	private final NoteJdbcMapper noteJdbcMapper;
+    private final NoteJdbcMapper noteJdbcMapper;
 
-	NoteFindByIdPortAdapter(NamedParameterJdbcTemplate jdbc, NoteJdbcMapper noteJdbcMapper) {
-		this.jdbc = jdbc;
-		this.noteJdbcMapper = noteJdbcMapper;
-	}
+    NoteFindByIdPortAdapter(NamedParameterJdbcTemplate jdbc, NoteJdbcMapper noteJdbcMapper) {
+        this.jdbc = jdbc;
+        this.noteJdbcMapper = noteJdbcMapper;
+    }
 
-	@Override
-	public Optional<NoteResponse> findById(UUID id) {
-		return jdbc.query("SELECT id, content FROM notes WHERE id = :id", Map.of("id", id), noteJdbcMapper::fromRow)
-			.stream()
-			.findFirst();
-	}
+    @Override
+    public Optional<NoteResponse> findById(UUID id) {
+        return jdbc.query("SELECT id, content FROM notes WHERE id = :id", Map.of("id", id), noteJdbcMapper::fromRow)
+            .stream()
+            .findFirst();
+    }
 
 }

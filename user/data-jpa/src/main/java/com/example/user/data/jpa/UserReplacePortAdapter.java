@@ -10,19 +10,19 @@ import java.util.UUID;
 @Repository
 class UserReplacePortAdapter implements UserReplacePort {
 
-	private final UserJpaRepository userJpaRepository;
+    private final UserJpaRepository userJpaRepository;
 
-	private final UserJpaMapper userJpaMapper;
+    private final UserJpaMapper userJpaMapper;
 
-	UserReplacePortAdapter(UserJpaRepository userJpaRepository, UserJpaMapper userJpaMapper) {
-		this.userJpaRepository = userJpaRepository;
-		this.userJpaMapper = userJpaMapper;
-	}
+    UserReplacePortAdapter(UserJpaRepository userJpaRepository, UserJpaMapper userJpaMapper) {
+        this.userJpaRepository = userJpaRepository;
+        this.userJpaMapper = userJpaMapper;
+    }
 
-	@Override
-	public UserResponse replace(UUID id, UserRequest request) {
-		UserEntity saved = userJpaRepository.save(userJpaMapper.toExistingEntity(id, request));
-		return userJpaMapper.toResponse(saved);
-	}
+    @Override
+    public UserResponse replace(UUID id, UserRequest request) {
+        UserEntity saved = userJpaRepository.save(userJpaMapper.toExistingEntity(id, request));
+        return userJpaMapper.toResponse(saved);
+    }
 
 }

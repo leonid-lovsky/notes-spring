@@ -9,20 +9,20 @@ import org.springframework.stereotype.Repository;
 @Repository
 class NoteAddPortAdapter implements NoteAddPort {
 
-	private final MongoTemplate mongoTemplate;
+    private final MongoTemplate mongoTemplate;
 
-	private final NoteMongoMapper noteMongoMapper;
+    private final NoteMongoMapper noteMongoMapper;
 
-	NoteAddPortAdapter(MongoTemplate mongoTemplate, NoteMongoMapper noteMongoMapper) {
-		this.mongoTemplate = mongoTemplate;
-		this.noteMongoMapper = noteMongoMapper;
-	}
+    NoteAddPortAdapter(MongoTemplate mongoTemplate, NoteMongoMapper noteMongoMapper) {
+        this.mongoTemplate = mongoTemplate;
+        this.noteMongoMapper = noteMongoMapper;
+    }
 
-	@Override
-	public NoteResponse add(NoteRequest request) {
-		NoteDocument document = noteMongoMapper.toNewDocument(request);
-		mongoTemplate.insert(document);
-		return noteMongoMapper.toResponse(document);
-	}
+    @Override
+    public NoteResponse add(NoteRequest request) {
+        NoteDocument document = noteMongoMapper.toNewDocument(request);
+        mongoTemplate.insert(document);
+        return noteMongoMapper.toResponse(document);
+    }
 
 }

@@ -10,9 +10,9 @@ import java.util.UUID;
 @Component
 class UserJdbcMapperImpl implements UserJdbcMapper {
 
-	@Override
-	public UserResponse fromRow(ResultSet rs, int rowNum) throws SQLException {
-		return new UserResponse(rs.getObject("id", UUID.class), rs.getString("username"), rs.getString("email"));
-	}
+    @Override
+    public UserResponse fromRow(ResultSet rs, int rowNum) throws SQLException {
+        return new UserResponse(rs.getObject("id", UUID.class), rs.getString("username"), rs.getString("email"));
+    }
 
 }

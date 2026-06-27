@@ -16,16 +16,16 @@ import java.util.UUID;
 @RequestMapping("/users")
 class UserFindByIdController {
 
-	private final UserFindByIdPort userFindByIdPort;
+    private final UserFindByIdPort userFindByIdPort;
 
-	UserFindByIdController(UserFindByIdPort userFindByIdPort) {
-		this.userFindByIdPort = userFindByIdPort;
-	}
+    UserFindByIdController(UserFindByIdPort userFindByIdPort) {
+        this.userFindByIdPort = userFindByIdPort;
+    }
 
-	@GetMapping("/{id}")
-	ResponseEntity<UserResponse> findById(@PathVariable UUID id) {
-		UserResponse user = userFindByIdPort.findById(id).orElseThrow(() -> new UserNotFoundException(id));
-		return ResponseEntity.status(HttpStatus.OK).body(user);
-	}
+    @GetMapping("/{id}")
+    ResponseEntity<UserResponse> findById(@PathVariable UUID id) {
+        UserResponse user = userFindByIdPort.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+        return ResponseEntity.status(HttpStatus.OK).body(user);
+    }
 
 }

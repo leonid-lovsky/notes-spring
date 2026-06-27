@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 class UserNoteApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(UserNoteApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(UserNoteApplication.class, args);
+    }
 
 }

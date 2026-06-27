@@ -11,22 +11,22 @@ import java.util.Optional;
 @Repository
 class UserFindByUsernamePortAdapter implements UserFindByUsernamePort {
 
-	private final NamedParameterJdbcTemplate jdbc;
+    private final NamedParameterJdbcTemplate jdbc;
 
-	private final UserJdbcMapper userJdbcMapper;
+    private final UserJdbcMapper userJdbcMapper;
 
-	UserFindByUsernamePortAdapter(NamedParameterJdbcTemplate jdbc, UserJdbcMapper userJdbcMapper) {
-		this.jdbc = jdbc;
-		this.userJdbcMapper = userJdbcMapper;
-	}
+    UserFindByUsernamePortAdapter(NamedParameterJdbcTemplate jdbc, UserJdbcMapper userJdbcMapper) {
+        this.jdbc = jdbc;
+        this.userJdbcMapper = userJdbcMapper;
+    }
 
-	@Override
-	public Optional<UserResponse> findByUsername(String username) {
-		return jdbc
-			.query("SELECT id, username, email FROM users WHERE username = :username", Map.of("username", username),
-					userJdbcMapper::fromRow)
-			.stream()
-			.findFirst();
-	}
+    @Override
+    public Optional<UserResponse> findByUsername(String username) {
+        return jdbc
+            .query("SELECT id, username, email FROM users WHERE username = :username", Map.of("username", username),
+                    userJdbcMapper::fromRow)
+            .stream()
+            .findFirst();
+    }
 
 }

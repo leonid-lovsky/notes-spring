@@ -9,20 +9,20 @@ import org.springframework.stereotype.Repository;
 @Repository
 class UserAddPortAdapter implements UserAddPort {
 
-	private final MongoTemplate mongoTemplate;
+    private final MongoTemplate mongoTemplate;
 
-	private final UserMongoMapper userMongoMapper;
+    private final UserMongoMapper userMongoMapper;
 
-	UserAddPortAdapter(MongoTemplate mongoTemplate, UserMongoMapper userMongoMapper) {
-		this.mongoTemplate = mongoTemplate;
-		this.userMongoMapper = userMongoMapper;
-	}
+    UserAddPortAdapter(MongoTemplate mongoTemplate, UserMongoMapper userMongoMapper) {
+        this.mongoTemplate = mongoTemplate;
+        this.userMongoMapper = userMongoMapper;
+    }
 
-	@Override
-	public UserResponse add(UserRequest request) {
-		UserDocument document = userMongoMapper.toNewDocument(request);
-		mongoTemplate.insert(document);
-		return userMongoMapper.toResponse(document);
-	}
+    @Override
+    public UserResponse add(UserRequest request) {
+        UserDocument document = userMongoMapper.toNewDocument(request);
+        mongoTemplate.insert(document);
+        return userMongoMapper.toResponse(document);
+    }
 
 }

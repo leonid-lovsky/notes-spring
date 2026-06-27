@@ -10,19 +10,19 @@ import java.util.UUID;
 @Repository
 class NoteReplacePortAdapter implements NoteReplacePort {
 
-	private final NoteJpaRepository noteJpaRepository;
+    private final NoteJpaRepository noteJpaRepository;
 
-	private final NoteJpaMapper noteJpaMapper;
+    private final NoteJpaMapper noteJpaMapper;
 
-	NoteReplacePortAdapter(NoteJpaRepository noteJpaRepository, NoteJpaMapper noteJpaMapper) {
-		this.noteJpaRepository = noteJpaRepository;
-		this.noteJpaMapper = noteJpaMapper;
-	}
+    NoteReplacePortAdapter(NoteJpaRepository noteJpaRepository, NoteJpaMapper noteJpaMapper) {
+        this.noteJpaRepository = noteJpaRepository;
+        this.noteJpaMapper = noteJpaMapper;
+    }
 
-	@Override
-	public NoteResponse replace(UUID id, NoteRequest request) {
-		NoteEntity saved = noteJpaRepository.save(noteJpaMapper.toExistingEntity(id, request));
-		return noteJpaMapper.toResponse(saved);
-	}
+    @Override
+    public NoteResponse replace(UUID id, NoteRequest request) {
+        NoteEntity saved = noteJpaRepository.save(noteJpaMapper.toExistingEntity(id, request));
+        return noteJpaMapper.toResponse(saved);
+    }
 
 }

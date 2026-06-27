@@ -10,17 +10,17 @@ import java.util.UUID;
 @Repository
 class UserExistsByIdPortAdapter implements UserExistsByIdPort {
 
-	private final NamedParameterJdbcTemplate jdbc;
+    private final NamedParameterJdbcTemplate jdbc;
 
-	UserExistsByIdPortAdapter(NamedParameterJdbcTemplate jdbc) {
-		this.jdbc = jdbc;
-	}
+    UserExistsByIdPortAdapter(NamedParameterJdbcTemplate jdbc) {
+        this.jdbc = jdbc;
+    }
 
-	@Override
-	public boolean existsById(UUID id) {
-		Integer count = jdbc.queryForObject("SELECT COUNT(*) FROM users WHERE id = :id", Map.of("id", id),
-				Integer.class);
-		return count != null && count > 0;
-	}
+    @Override
+    public boolean existsById(UUID id) {
+        Integer count = jdbc.queryForObject("SELECT COUNT(*) FROM users WHERE id = :id", Map.of("id", id),
+                Integer.class);
+        return count != null && count > 0;
+    }
 
 }

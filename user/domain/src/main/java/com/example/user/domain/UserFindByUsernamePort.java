@@ -4,6 +4,6 @@ import java.util.Optional;
 
 public interface UserFindByUsernamePort {
 
-	Optional<UserResponse> findByUsername(String username);
+    Optional<UserResponse> findByUsername(String username);
 
 }

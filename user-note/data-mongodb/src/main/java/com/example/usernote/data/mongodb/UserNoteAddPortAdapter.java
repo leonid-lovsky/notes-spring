@@ -9,20 +9,20 @@ import org.springframework.stereotype.Repository;
 @Repository
 class UserNoteAddPortAdapter implements UserNoteAddPort {
 
-	private final MongoTemplate mongoTemplate;
+    private final MongoTemplate mongoTemplate;
 
-	private final UserNoteMongoMapper userNoteMongoMapper;
+    private final UserNoteMongoMapper userNoteMongoMapper;
 
-	UserNoteAddPortAdapter(MongoTemplate mongoTemplate, UserNoteMongoMapper userNoteMongoMapper) {
-		this.mongoTemplate = mongoTemplate;
-		this.userNoteMongoMapper = userNoteMongoMapper;
-	}
+    UserNoteAddPortAdapter(MongoTemplate mongoTemplate, UserNoteMongoMapper userNoteMongoMapper) {
+        this.mongoTemplate = mongoTemplate;
+        this.userNoteMongoMapper = userNoteMongoMapper;
+    }
 
-	@Override
-	public UserNoteResponse add(UserNoteRequest request) {
-		UserNoteDocument document = userNoteMongoMapper.toDocument(request);
-		mongoTemplate.insert(document);
-		return userNoteMongoMapper.toResponse(document);
-	}
+    @Override
+    public UserNoteResponse add(UserNoteRequest request) {
+        UserNoteDocument document = userNoteMongoMapper.toDocument(request);
+        mongoTemplate.insert(document);
+        return userNoteMongoMapper.toResponse(document);
+    }
 
 }

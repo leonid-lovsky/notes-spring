@@ -7,10 +7,10 @@ import java.util.UUID;
 
 interface NoteJpaMapper {
 
-	NoteEntity toNewEntity(NoteRequest request);
+    NoteEntity toNewEntity(NoteRequest request);
 
-	NoteEntity toExistingEntity(UUID id, NoteRequest request);
+    NoteEntity toExistingEntity(UUID id, NoteRequest request);
 
-	NoteResponse toResponse(NoteEntity entity);
+    NoteResponse toResponse(NoteEntity entity);
 
 }

@@ -9,18 +9,18 @@ import java.util.Optional;
 @Repository
 class UserFindByUsernamePortAdapter implements UserFindByUsernamePort {
 
-	private final UserMongoRepository userMongoRepository;
+    private final UserMongoRepository userMongoRepository;
 
-	private final UserMongoMapper userMongoMapper;
+    private final UserMongoMapper userMongoMapper;
 
-	UserFindByUsernamePortAdapter(UserMongoRepository userMongoRepository, UserMongoMapper userMongoMapper) {
-		this.userMongoRepository = userMongoRepository;
-		this.userMongoMapper = userMongoMapper;
-	}
+    UserFindByUsernamePortAdapter(UserMongoRepository userMongoRepository, UserMongoMapper userMongoMapper) {
+        this.userMongoRepository = userMongoRepository;
+        this.userMongoMapper = userMongoMapper;
+    }
 
-	@Override
-	public Optional<UserResponse> findByUsername(String username) {
-		return userMongoRepository.findByUsername(username).map(userMongoMapper::toResponse);
-	}
+    @Override
+    public Optional<UserResponse> findByUsername(String username) {
+        return userMongoRepository.findByUsername(username).map(userMongoMapper::toResponse);
+    }
 
 }

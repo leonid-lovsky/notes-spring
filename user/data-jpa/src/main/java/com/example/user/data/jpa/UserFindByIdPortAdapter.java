@@ -10,18 +10,18 @@ import java.util.UUID;
 @Repository
 class UserFindByIdPortAdapter implements UserFindByIdPort {
 
-	private final UserJpaRepository userJpaRepository;
+    private final UserJpaRepository userJpaRepository;
 
-	private final UserJpaMapper userJpaMapper;
+    private final UserJpaMapper userJpaMapper;
 
-	UserFindByIdPortAdapter(UserJpaRepository userJpaRepository, UserJpaMapper userJpaMapper) {
-		this.userJpaRepository = userJpaRepository;
-		this.userJpaMapper = userJpaMapper;
-	}
+    UserFindByIdPortAdapter(UserJpaRepository userJpaRepository, UserJpaMapper userJpaMapper) {
+        this.userJpaRepository = userJpaRepository;
+        this.userJpaMapper = userJpaMapper;
+    }
 
-	@Override
-	public Optional<UserResponse> findById(UUID id) {
-		return userJpaRepository.findById(id).map(userJpaMapper::toResponse);
-	}
+    @Override
+    public Optional<UserResponse> findById(UUID id) {
+        return userJpaRepository.findById(id).map(userJpaMapper::toResponse);
+    }
 
 }

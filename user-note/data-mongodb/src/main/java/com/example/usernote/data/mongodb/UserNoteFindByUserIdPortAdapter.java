@@ -10,19 +10,19 @@ import java.util.UUID;
 @Repository
 class UserNoteFindByUserIdPortAdapter implements UserNoteFindByUserIdPort {
 
-	private final UserNoteMongoRepository userNoteMongoRepository;
+    private final UserNoteMongoRepository userNoteMongoRepository;
 
-	private final UserNoteMongoMapper userNoteMongoMapper;
+    private final UserNoteMongoMapper userNoteMongoMapper;
 
-	UserNoteFindByUserIdPortAdapter(UserNoteMongoRepository userNoteMongoRepository,
-			UserNoteMongoMapper userNoteMongoMapper) {
-		this.userNoteMongoRepository = userNoteMongoRepository;
-		this.userNoteMongoMapper = userNoteMongoMapper;
-	}
+    UserNoteFindByUserIdPortAdapter(UserNoteMongoRepository userNoteMongoRepository,
+            UserNoteMongoMapper userNoteMongoMapper) {
+        this.userNoteMongoRepository = userNoteMongoRepository;
+        this.userNoteMongoMapper = userNoteMongoMapper;
+    }
 
-	@Override
-	public List<UserNoteResponse> findByUserId(UUID userId) {
-		return userNoteMongoRepository.findByIdUserId(userId).stream().map(userNoteMongoMapper::toResponse).toList();
-	}
+    @Override
+    public List<UserNoteResponse> findByUserId(UUID userId) {
+        return userNoteMongoRepository.findByIdUserId(userId).stream().map(userNoteMongoMapper::toResponse).toList();
+    }
 
 }

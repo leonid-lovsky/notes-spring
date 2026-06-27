@@ -8,19 +8,19 @@ import org.springframework.stereotype.Repository;
 @Repository
 class NoteAddPortAdapter implements NoteAddPort {
 
-	private final NoteJpaRepository noteJpaRepository;
+    private final NoteJpaRepository noteJpaRepository;
 
-	private final NoteJpaMapper noteJpaMapper;
+    private final NoteJpaMapper noteJpaMapper;
 
-	NoteAddPortAdapter(NoteJpaRepository noteJpaRepository, NoteJpaMapper noteJpaMapper) {
-		this.noteJpaRepository = noteJpaRepository;
-		this.noteJpaMapper = noteJpaMapper;
-	}
+    NoteAddPortAdapter(NoteJpaRepository noteJpaRepository, NoteJpaMapper noteJpaMapper) {
+        this.noteJpaRepository = noteJpaRepository;
+        this.noteJpaMapper = noteJpaMapper;
+    }
 
-	@Override
-	public NoteResponse add(NoteRequest request) {
-		NoteEntity saved = noteJpaRepository.save(noteJpaMapper.toNewEntity(request));
-		return noteJpaMapper.toResponse(saved);
-	}
+    @Override
+    public NoteResponse add(NoteRequest request) {
+        NoteEntity saved = noteJpaRepository.save(noteJpaMapper.toNewEntity(request));
+        return noteJpaMapper.toResponse(saved);
+    }
 
 }

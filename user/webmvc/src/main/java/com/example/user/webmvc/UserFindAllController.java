@@ -14,16 +14,16 @@ import java.util.List;
 @RequestMapping("/users")
 class UserFindAllController {
 
-	private final UserFindAllPort userFindAllPort;
+    private final UserFindAllPort userFindAllPort;
 
-	UserFindAllController(UserFindAllPort userFindAllPort) {
-		this.userFindAllPort = userFindAllPort;
-	}
+    UserFindAllController(UserFindAllPort userFindAllPort) {
+        this.userFindAllPort = userFindAllPort;
+    }
 
-	@GetMapping
-	ResponseEntity<List<UserResponse>> findAll() {
-		List<UserResponse> users = userFindAllPort.findAll();
-		return ResponseEntity.status(HttpStatus.OK).body(users);
-	}
+    @GetMapping
+    ResponseEntity<List<UserResponse>> findAll() {
+        List<UserResponse> users = userFindAllPort.findAll();
+        return ResponseEntity.status(HttpStatus.OK).body(users);
+    }
 
 }

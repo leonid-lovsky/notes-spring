@@ -14,16 +14,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/user-notes")
 class UserNoteCreateController {
 
-	private final UserNoteAddPort userNoteAddPort;
+    private final UserNoteAddPort userNoteAddPort;
 
-	UserNoteCreateController(UserNoteAddPort userNoteAddPort) {
-		this.userNoteAddPort = userNoteAddPort;
-	}
+    UserNoteCreateController(UserNoteAddPort userNoteAddPort) {
+        this.userNoteAddPort = userNoteAddPort;
+    }
 
-	@PostMapping
-	ResponseEntity<UserNoteResponse> create(@RequestBody UserNoteRequest request) {
-		UserNoteResponse userNote = userNoteAddPort.add(request);
-		return ResponseEntity.status(HttpStatus.CREATED).body(userNote);
-	}
+    @PostMapping
+    ResponseEntity<UserNoteResponse> create(@RequestBody UserNoteRequest request) {
+        UserNoteResponse userNote = userNoteAddPort.add(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(userNote);
+    }
 
 }

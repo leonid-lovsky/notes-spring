@@ -7,27 +7,27 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "user_notes")
 class UserNoteDocument {
 
-	@Id
-	private UserNoteKey id;
+    @Id
+    private UserNoteKey id;
 
-	private UserNoteRole role;
+    private UserNoteRole role;
 
-	@SuppressWarnings("NullAway.Init")
-	protected UserNoteDocument() {
+    @SuppressWarnings("NullAway.Init")
+    protected UserNoteDocument() {
 
-	}
+    }
 
-	UserNoteDocument(UserNoteKey id, UserNoteRole role) {
-		this.id = id;
-		this.role = role;
-	}
+    UserNoteDocument(UserNoteKey id, UserNoteRole role) {
+        this.id = id;
+        this.role = role;
+    }
 
-	UserNoteKey getId() {
-		return id;
-	}
+    UserNoteKey getId() {
+        return id;
+    }
 
-	UserNoteRole getRole() {
-		return role;
-	}
+    UserNoteRole getRole() {
+        return role;
+    }
 
 }

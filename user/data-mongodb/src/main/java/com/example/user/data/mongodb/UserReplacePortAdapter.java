@@ -11,20 +11,20 @@ import java.util.UUID;
 @Repository
 class UserReplacePortAdapter implements UserReplacePort {
 
-	private final MongoTemplate mongoTemplate;
+    private final MongoTemplate mongoTemplate;
 
-	private final UserMongoMapper userMongoMapper;
+    private final UserMongoMapper userMongoMapper;
 
-	UserReplacePortAdapter(MongoTemplate mongoTemplate, UserMongoMapper userMongoMapper) {
-		this.mongoTemplate = mongoTemplate;
-		this.userMongoMapper = userMongoMapper;
-	}
+    UserReplacePortAdapter(MongoTemplate mongoTemplate, UserMongoMapper userMongoMapper) {
+        this.mongoTemplate = mongoTemplate;
+        this.userMongoMapper = userMongoMapper;
+    }
 
-	@Override
-	public UserResponse replace(UUID id, UserRequest request) {
-		UserDocument document = userMongoMapper.toExistingDocument(id, request);
-		mongoTemplate.save(document);
-		return userMongoMapper.toResponse(document);
-	}
+    @Override
+    public UserResponse replace(UUID id, UserRequest request) {
+        UserDocument document = userMongoMapper.toExistingDocument(id, request);
+        mongoTemplate.save(document);
+        return userMongoMapper.toResponse(document);
+    }
 
 }

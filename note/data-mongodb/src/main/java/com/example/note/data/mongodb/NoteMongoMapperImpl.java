@@ -9,19 +9,19 @@ import java.util.UUID;
 @Component
 class NoteMongoMapperImpl implements NoteMongoMapper {
 
-	@Override
-	public NoteDocument toNewDocument(NoteRequest request) {
-		return new NoteDocument(UUID.randomUUID(), request.content());
-	}
+    @Override
+    public NoteDocument toNewDocument(NoteRequest request) {
+        return new NoteDocument(UUID.randomUUID(), request.content());
+    }
 
-	@Override
-	public NoteDocument toExistingDocument(UUID id, NoteRequest request) {
-		return new NoteDocument(id, request.content());
-	}
+    @Override
+    public NoteDocument toExistingDocument(UUID id, NoteRequest request) {
+        return new NoteDocument(id, request.content());
+    }
 
-	@Override
-	public NoteResponse toResponse(NoteDocument document) {
-		return new NoteResponse(document.getId(), document.getContent());
-	}
+    @Override
+    public NoteResponse toResponse(NoteDocument document) {
+        return new NoteResponse(document.getId(), document.getContent());
+    }
 
 }

@@ -6,9 +6,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class ConfigApplicationTest {
 
-	@Test
-	void contextLoads() {
+    @Test
+    void contextLoads() {
 
-	}
+    }
 
 }

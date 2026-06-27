@@ -12,17 +12,17 @@ import java.util.UUID;
 @Repository
 class UserNoteReplacePortAdapter implements UserNoteReplacePort {
 
-	private final NamedParameterJdbcTemplate jdbc;
+    private final NamedParameterJdbcTemplate jdbc;
 
-	UserNoteReplacePortAdapter(NamedParameterJdbcTemplate jdbc) {
-		this.jdbc = jdbc;
-	}
+    UserNoteReplacePortAdapter(NamedParameterJdbcTemplate jdbc) {
+        this.jdbc = jdbc;
+    }
 
-	@Override
-	public UserNoteResponse replace(UUID userId, UUID noteId, UserNoteRequest request) {
-		jdbc.update("UPDATE user_notes SET role = :role WHERE user_id = :userId AND note_id = :noteId",
-				Map.of("userId", userId, "noteId", noteId, "role", request.role().name()));
-		return new UserNoteResponse(userId, noteId, request.role());
-	}
+    @Override
+    public UserNoteResponse replace(UUID userId, UUID noteId, UserNoteRequest request) {
+        jdbc.update("UPDATE user_notes SET role = :role WHERE user_id = :userId AND note_id = :noteId",
+                Map.of("userId", userId, "noteId", noteId, "role", request.role().name()));
+        return new UserNoteResponse(userId, noteId, request.role());
+    }
 
 }

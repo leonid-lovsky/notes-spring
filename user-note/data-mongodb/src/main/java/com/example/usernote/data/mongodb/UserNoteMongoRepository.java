@@ -7,8 +7,8 @@ import java.util.UUID;
 
 interface UserNoteMongoRepository extends MongoRepository<UserNoteDocument, UserNoteKey> {
 
-	List<UserNoteDocument> findByIdUserId(UUID userId);
+    List<UserNoteDocument> findByIdUserId(UUID userId);
 
-	List<UserNoteDocument> findByIdNoteId(UUID noteId);
+    List<UserNoteDocument> findByIdNoteId(UUID noteId);
 
 }

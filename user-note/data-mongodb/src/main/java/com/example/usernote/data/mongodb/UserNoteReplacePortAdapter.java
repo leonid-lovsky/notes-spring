@@ -11,21 +11,21 @@ import java.util.UUID;
 @Repository
 class UserNoteReplacePortAdapter implements UserNoteReplacePort {
 
-	private final MongoTemplate mongoTemplate;
+    private final MongoTemplate mongoTemplate;
 
-	private final UserNoteMongoMapper userNoteMongoMapper;
+    private final UserNoteMongoMapper userNoteMongoMapper;
 
-	UserNoteReplacePortAdapter(MongoTemplate mongoTemplate, UserNoteMongoMapper userNoteMongoMapper) {
-		this.mongoTemplate = mongoTemplate;
-		this.userNoteMongoMapper = userNoteMongoMapper;
-	}
+    UserNoteReplacePortAdapter(MongoTemplate mongoTemplate, UserNoteMongoMapper userNoteMongoMapper) {
+        this.mongoTemplate = mongoTemplate;
+        this.userNoteMongoMapper = userNoteMongoMapper;
+    }
 
-	@Override
-	public UserNoteResponse replace(UUID userId, UUID noteId, UserNoteRequest request) {
-		UserNoteRequest normalized = new UserNoteRequest(userId, noteId, request.role());
-		UserNoteDocument document = userNoteMongoMapper.toDocument(normalized);
-		mongoTemplate.save(document);
-		return userNoteMongoMapper.toResponse(document);
-	}
+    @Override
+    public UserNoteResponse replace(UUID userId, UUID noteId, UserNoteRequest request) {
+        UserNoteRequest normalized = new UserNoteRequest(userId, noteId, request.role());
+        UserNoteDocument document = userNoteMongoMapper.toDocument(normalized);
+        mongoTemplate.save(document);
+        return userNoteMongoMapper.toResponse(document);
+    }
 
 }

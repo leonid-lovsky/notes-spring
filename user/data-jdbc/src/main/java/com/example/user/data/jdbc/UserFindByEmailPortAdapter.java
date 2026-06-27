@@ -11,22 +11,22 @@ import java.util.Optional;
 @Repository
 class UserFindByEmailPortAdapter implements UserFindByEmailPort {
 
-	private final NamedParameterJdbcTemplate jdbc;
+    private final NamedParameterJdbcTemplate jdbc;
 
-	private final UserJdbcMapper userJdbcMapper;
+    private final UserJdbcMapper userJdbcMapper;
 
-	UserFindByEmailPortAdapter(NamedParameterJdbcTemplate jdbc, UserJdbcMapper userJdbcMapper) {
-		this.jdbc = jdbc;
-		this.userJdbcMapper = userJdbcMapper;
-	}
+    UserFindByEmailPortAdapter(NamedParameterJdbcTemplate jdbc, UserJdbcMapper userJdbcMapper) {
+        this.jdbc = jdbc;
+        this.userJdbcMapper = userJdbcMapper;
+    }
 
-	@Override
-	public Optional<UserResponse> findByEmail(String email) {
-		return jdbc
-			.query("SELECT id, username, email FROM users WHERE email = :email", Map.of("email", email),
-					userJdbcMapper::fromRow)
-			.stream()
-			.findFirst();
-	}
+    @Override
+    public Optional<UserResponse> findByEmail(String email) {
+        return jdbc
+            .query("SELECT id, username, email FROM users WHERE email = :email", Map.of("email", email),
+                    userJdbcMapper::fromRow)
+            .stream()
+            .findFirst();
+    }
 
 }

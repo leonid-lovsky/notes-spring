@@ -7,29 +7,29 @@ import jakarta.persistence.*;
 @Table(name = "user_notes")
 class UserNoteEntity {
 
-	@EmbeddedId
-	private UserNoteId id;
+    @EmbeddedId
+    private UserNoteId id;
 
-	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
-	private UserNoteRole role;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserNoteRole role;
 
-	@SuppressWarnings("NullAway.Init")
-	protected UserNoteEntity() {
+    @SuppressWarnings("NullAway.Init")
+    protected UserNoteEntity() {
 
-	}
+    }
 
-	UserNoteEntity(UserNoteId id, UserNoteRole role) {
-		this.id = id;
-		this.role = role;
-	}
+    UserNoteEntity(UserNoteId id, UserNoteRole role) {
+        this.id = id;
+        this.role = role;
+    }
 
-	UserNoteId getId() {
-		return id;
-	}
+    UserNoteId getId() {
+        return id;
+    }
 
-	UserNoteRole getRole() {
-		return role;
-	}
+    UserNoteRole getRole() {
+        return role;
+    }
 
 }

@@ -10,20 +10,20 @@ import java.util.UUID;
 @Repository
 class UserNoteReplacePortAdapter implements UserNoteReplacePort {
 
-	private final UserNoteJpaRepository userNoteJpaRepository;
+    private final UserNoteJpaRepository userNoteJpaRepository;
 
-	private final UserNoteJpaMapper userNoteJpaMapper;
+    private final UserNoteJpaMapper userNoteJpaMapper;
 
-	UserNoteReplacePortAdapter(UserNoteJpaRepository userNoteJpaRepository, UserNoteJpaMapper userNoteJpaMapper) {
-		this.userNoteJpaRepository = userNoteJpaRepository;
-		this.userNoteJpaMapper = userNoteJpaMapper;
-	}
+    UserNoteReplacePortAdapter(UserNoteJpaRepository userNoteJpaRepository, UserNoteJpaMapper userNoteJpaMapper) {
+        this.userNoteJpaRepository = userNoteJpaRepository;
+        this.userNoteJpaMapper = userNoteJpaMapper;
+    }
 
-	@Override
-	public UserNoteResponse replace(UUID userId, UUID noteId, UserNoteRequest request) {
-		UserNoteRequest normalized = new UserNoteRequest(userId, noteId, request.role());
-		UserNoteEntity saved = userNoteJpaRepository.save(userNoteJpaMapper.toEntity(normalized));
-		return userNoteJpaMapper.toResponse(saved);
-	}
+    @Override
+    public UserNoteResponse replace(UUID userId, UUID noteId, UserNoteRequest request) {
+        UserNoteRequest normalized = new UserNoteRequest(userId, noteId, request.role());
+        UserNoteEntity saved = userNoteJpaRepository.save(userNoteJpaMapper.toEntity(normalized));
+        return userNoteJpaMapper.toResponse(saved);
+    }
 
 }

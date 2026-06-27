@@ -8,15 +8,15 @@ import java.util.UUID;
 @Repository
 class UserNoteRemovePortAdapter implements UserNoteRemovePort {
 
-	private final UserNoteMongoRepository userNoteMongoRepository;
+    private final UserNoteMongoRepository userNoteMongoRepository;
 
-	UserNoteRemovePortAdapter(UserNoteMongoRepository userNoteMongoRepository) {
-		this.userNoteMongoRepository = userNoteMongoRepository;
-	}
+    UserNoteRemovePortAdapter(UserNoteMongoRepository userNoteMongoRepository) {
+        this.userNoteMongoRepository = userNoteMongoRepository;
+    }
 
-	@Override
-	public void remove(UUID userId, UUID noteId) {
-		userNoteMongoRepository.deleteById(new UserNoteKey(userId, noteId));
-	}
+    @Override
+    public void remove(UUID userId, UUID noteId) {
+        userNoteMongoRepository.deleteById(new UserNoteKey(userId, noteId));
+    }
 
 }

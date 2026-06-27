@@ -9,18 +9,18 @@ import java.util.List;
 @Repository
 class NoteFindAllPortAdapter implements NoteFindAllPort {
 
-	private final NoteMongoRepository noteMongoRepository;
+    private final NoteMongoRepository noteMongoRepository;
 
-	private final NoteMongoMapper noteMongoMapper;
+    private final NoteMongoMapper noteMongoMapper;
 
-	NoteFindAllPortAdapter(NoteMongoRepository noteMongoRepository, NoteMongoMapper noteMongoMapper) {
-		this.noteMongoRepository = noteMongoRepository;
-		this.noteMongoMapper = noteMongoMapper;
-	}
+    NoteFindAllPortAdapter(NoteMongoRepository noteMongoRepository, NoteMongoMapper noteMongoMapper) {
+        this.noteMongoRepository = noteMongoRepository;
+        this.noteMongoMapper = noteMongoMapper;
+    }
 
-	@Override
-	public List<NoteResponse> findAll() {
-		return noteMongoRepository.findAll().stream().map(noteMongoMapper::toResponse).toList();
-	}
+    @Override
+    public List<NoteResponse> findAll() {
+        return noteMongoRepository.findAll().stream().map(noteMongoMapper::toResponse).toList();
+    }
 
 }

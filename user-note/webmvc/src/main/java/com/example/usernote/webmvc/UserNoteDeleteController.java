@@ -16,23 +16,23 @@ import java.util.UUID;
 @RequestMapping("/user-notes")
 class UserNoteDeleteController {
 
-	private final UserNoteExistsByUserIdAndNoteIdPort userNoteExistsByUserIdAndNoteIdPort;
+    private final UserNoteExistsByUserIdAndNoteIdPort userNoteExistsByUserIdAndNoteIdPort;
 
-	private final UserNoteRemovePort userNoteRemovePort;
+    private final UserNoteRemovePort userNoteRemovePort;
 
-	UserNoteDeleteController(UserNoteExistsByUserIdAndNoteIdPort userNoteExistsByUserIdAndNoteIdPort,
-			UserNoteRemovePort userNoteRemovePort) {
-		this.userNoteExistsByUserIdAndNoteIdPort = userNoteExistsByUserIdAndNoteIdPort;
-		this.userNoteRemovePort = userNoteRemovePort;
-	}
+    UserNoteDeleteController(UserNoteExistsByUserIdAndNoteIdPort userNoteExistsByUserIdAndNoteIdPort,
+            UserNoteRemovePort userNoteRemovePort) {
+        this.userNoteExistsByUserIdAndNoteIdPort = userNoteExistsByUserIdAndNoteIdPort;
+        this.userNoteRemovePort = userNoteRemovePort;
+    }
 
-	@DeleteMapping("/{userId}/{noteId}")
-	ResponseEntity<Void> delete(@PathVariable UUID userId, @PathVariable UUID noteId) {
-		if (!userNoteExistsByUserIdAndNoteIdPort.existsByUserIdAndNoteId(userId, noteId)) {
-			throw new UserNoteNotFoundException(userId, noteId);
-		}
-		userNoteRemovePort.remove(userId, noteId);
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-	}
+    @DeleteMapping("/{userId}/{noteId}")
+    ResponseEntity<Void> delete(@PathVariable UUID userId, @PathVariable UUID noteId) {
+        if (!userNoteExistsByUserIdAndNoteIdPort.existsByUserIdAndNoteId(userId, noteId)) {
+            throw new UserNoteNotFoundException(userId, noteId);
+        }
+        userNoteRemovePort.remove(userId, noteId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 
 }

@@ -10,18 +10,18 @@ import java.util.UUID;
 @Repository
 class UserNoteFindByUserIdPortAdapter implements UserNoteFindByUserIdPort {
 
-	private final UserNoteJpaRepository userNoteJpaRepository;
+    private final UserNoteJpaRepository userNoteJpaRepository;
 
-	private final UserNoteJpaMapper userNoteJpaMapper;
+    private final UserNoteJpaMapper userNoteJpaMapper;
 
-	UserNoteFindByUserIdPortAdapter(UserNoteJpaRepository userNoteJpaRepository, UserNoteJpaMapper userNoteJpaMapper) {
-		this.userNoteJpaRepository = userNoteJpaRepository;
-		this.userNoteJpaMapper = userNoteJpaMapper;
-	}
+    UserNoteFindByUserIdPortAdapter(UserNoteJpaRepository userNoteJpaRepository, UserNoteJpaMapper userNoteJpaMapper) {
+        this.userNoteJpaRepository = userNoteJpaRepository;
+        this.userNoteJpaMapper = userNoteJpaMapper;
+    }
 
-	@Override
-	public List<UserNoteResponse> findByUserId(UUID userId) {
-		return userNoteJpaRepository.findByIdUserId(userId).stream().map(userNoteJpaMapper::toResponse).toList();
-	}
+    @Override
+    public List<UserNoteResponse> findByUserId(UUID userId) {
+        return userNoteJpaRepository.findByIdUserId(userId).stream().map(userNoteJpaMapper::toResponse).toList();
+    }
 
 }

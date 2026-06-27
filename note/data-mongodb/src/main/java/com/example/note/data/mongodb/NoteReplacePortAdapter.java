@@ -11,20 +11,20 @@ import java.util.UUID;
 @Repository
 class NoteReplacePortAdapter implements NoteReplacePort {
 
-	private final MongoTemplate mongoTemplate;
+    private final MongoTemplate mongoTemplate;
 
-	private final NoteMongoMapper noteMongoMapper;
+    private final NoteMongoMapper noteMongoMapper;
 
-	NoteReplacePortAdapter(MongoTemplate mongoTemplate, NoteMongoMapper noteMongoMapper) {
-		this.mongoTemplate = mongoTemplate;
-		this.noteMongoMapper = noteMongoMapper;
-	}
+    NoteReplacePortAdapter(MongoTemplate mongoTemplate, NoteMongoMapper noteMongoMapper) {
+        this.mongoTemplate = mongoTemplate;
+        this.noteMongoMapper = noteMongoMapper;
+    }
 
-	@Override
-	public NoteResponse replace(UUID id, NoteRequest request) {
-		NoteDocument document = noteMongoMapper.toExistingDocument(id, request);
-		mongoTemplate.save(document);
-		return noteMongoMapper.toResponse(document);
-	}
+    @Override
+    public NoteResponse replace(UUID id, NoteRequest request) {
+        NoteDocument document = noteMongoMapper.toExistingDocument(id, request);
+        mongoTemplate.save(document);
+        return noteMongoMapper.toResponse(document);
+    }
 
 }

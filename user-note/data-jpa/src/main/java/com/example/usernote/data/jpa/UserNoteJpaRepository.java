@@ -7,8 +7,8 @@ import java.util.UUID;
 
 interface UserNoteJpaRepository extends JpaRepository<UserNoteEntity, UserNoteId> {
 
-	List<UserNoteEntity> findByIdUserId(UUID userId);
+    List<UserNoteEntity> findByIdUserId(UUID userId);
 
-	List<UserNoteEntity> findByIdNoteId(UUID noteId);
+    List<UserNoteEntity> findByIdNoteId(UUID noteId);
 
 }

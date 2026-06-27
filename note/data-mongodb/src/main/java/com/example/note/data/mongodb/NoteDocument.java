@@ -8,27 +8,27 @@ import java.util.UUID;
 @Document(collection = "notes")
 class NoteDocument {
 
-	@Id
-	private UUID id;
+    @Id
+    private UUID id;
 
-	private String content;
+    private String content;
 
-	@SuppressWarnings("NullAway.Init")
-	protected NoteDocument() {
+    @SuppressWarnings("NullAway.Init")
+    protected NoteDocument() {
 
-	}
+    }
 
-	NoteDocument(UUID id, String content) {
-		this.id = id;
-		this.content = content;
-	}
+    NoteDocument(UUID id, String content) {
+        this.id = id;
+        this.content = content;
+    }
 
-	UUID getId() {
-		return id;
-	}
+    UUID getId() {
+        return id;
+    }
 
-	String getContent() {
-		return content;
-	}
+    String getContent() {
+        return content;
+    }
 
 }

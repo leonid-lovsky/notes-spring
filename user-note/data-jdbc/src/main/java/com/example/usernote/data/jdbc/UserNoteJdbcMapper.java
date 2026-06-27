@@ -7,6 +7,6 @@ import java.sql.SQLException;
 
 interface UserNoteJdbcMapper {
 
-	UserNoteResponse fromRow(ResultSet rs, int rowNum) throws SQLException;
+    UserNoteResponse fromRow(ResultSet rs, int rowNum) throws SQLException;
 
 }

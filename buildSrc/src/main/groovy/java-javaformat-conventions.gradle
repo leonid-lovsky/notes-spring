@@ -1,14 +1,19 @@
 plugins {
-	id 'java'
-	id 'io.spring.javaformat'
-	id 'checkstyle'
+    id 'java'
+    id 'io.spring.javaformat'
+    id 'checkstyle'
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
-// applyDefaultConfig() added in 0.0.48 — not available on Maven Central; keep commented
+checkstyle {
+    toolVersion = "9.3"
+    configFile = rootProject.file('gradle/checkstyle/checkstyle.xml')
+}
+
+//applyDefaultConfig() added in 0.0.48 — not available on Maven Central; keep commented
 //springJavaFormat {
 //	checkstyle {
 //		applyDefaultConfig()

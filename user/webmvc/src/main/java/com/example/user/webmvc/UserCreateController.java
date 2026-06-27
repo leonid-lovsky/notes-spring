@@ -14,16 +14,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/users")
 class UserCreateController {
 
-	private final UserAddPort userAddPort;
+    private final UserAddPort userAddPort;
 
-	UserCreateController(UserAddPort userAddPort) {
-		this.userAddPort = userAddPort;
-	}
+    UserCreateController(UserAddPort userAddPort) {
+        this.userAddPort = userAddPort;
+    }
 
-	@PostMapping
-	ResponseEntity<UserResponse> create(@RequestBody UserRequest request) {
-		UserResponse user = userAddPort.add(request);
-		return ResponseEntity.status(HttpStatus.CREATED).body(user);
-	}
+    @PostMapping
+    ResponseEntity<UserResponse> create(@RequestBody UserRequest request) {
+        UserResponse user = userAddPort.add(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
+    }
 
 }

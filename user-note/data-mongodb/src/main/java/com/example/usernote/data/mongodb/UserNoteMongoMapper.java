@@ -5,8 +5,8 @@ import com.example.usernote.domain.UserNoteResponse;
 
 interface UserNoteMongoMapper {
 
-	UserNoteDocument toDocument(UserNoteRequest request);
+    UserNoteDocument toDocument(UserNoteRequest request);
 
-	UserNoteResponse toResponse(UserNoteDocument document);
+    UserNoteResponse toResponse(UserNoteDocument document);
 
 }

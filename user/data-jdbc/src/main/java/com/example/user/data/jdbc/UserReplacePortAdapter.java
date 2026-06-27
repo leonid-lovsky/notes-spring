@@ -12,17 +12,17 @@ import java.util.UUID;
 @Repository
 class UserReplacePortAdapter implements UserReplacePort {
 
-	private final NamedParameterJdbcTemplate jdbc;
+    private final NamedParameterJdbcTemplate jdbc;
 
-	UserReplacePortAdapter(NamedParameterJdbcTemplate jdbc) {
-		this.jdbc = jdbc;
-	}
+    UserReplacePortAdapter(NamedParameterJdbcTemplate jdbc) {
+        this.jdbc = jdbc;
+    }
 
-	@Override
-	public UserResponse replace(UUID id, UserRequest request) {
-		jdbc.update("UPDATE users SET username = :username, email = :email WHERE id = :id",
-				Map.of("id", id, "username", request.username(), "email", request.email()));
-		return new UserResponse(id, request.username(), request.email());
-	}
+    @Override
+    public UserResponse replace(UUID id, UserRequest request) {
+        jdbc.update("UPDATE users SET username = :username, email = :email WHERE id = :id",
+                Map.of("id", id, "username", request.username(), "email", request.email()));
+        return new UserResponse(id, request.username(), request.email());
+    }
 
 }

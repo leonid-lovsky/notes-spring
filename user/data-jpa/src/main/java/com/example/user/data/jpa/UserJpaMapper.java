@@ -7,10 +7,10 @@ import java.util.UUID;
 
 interface UserJpaMapper {
 
-	UserEntity toNewEntity(UserRequest request);
+    UserEntity toNewEntity(UserRequest request);
 
-	UserEntity toExistingEntity(UUID id, UserRequest request);
+    UserEntity toExistingEntity(UUID id, UserRequest request);
 
-	UserResponse toResponse(UserEntity entity);
+    UserResponse toResponse(UserEntity entity);
 
 }
