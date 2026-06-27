@@ -6,6 +6,8 @@ import java.util.UUID;
 
 class UserNoteKey implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     private UUID userId;
     private UUID noteId;
 

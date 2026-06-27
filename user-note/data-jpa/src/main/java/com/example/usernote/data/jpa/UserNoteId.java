@@ -9,6 +9,8 @@ import java.util.UUID;
 @Embeddable
 class UserNoteId implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     private UUID userId;
 
     private UUID noteId;
