@@ -3,7 +3,7 @@
 > Живой документ проекта. Читается автоматически в начале каждой сессии.
 > **Всё в этом документе и в коде — временно.** Ничто не является окончательно принятым паттерном.
 > Любое решение подлежит обсуждению, изменению и уточнению — независимо от того, что уже написано.
-> Последнее обновление: 2026-06-27T16:29Z
+> Последнее обновление: 2026-06-27T16:37Z
 
 ---
 
@@ -681,11 +681,20 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 **OWASP Dependency-Check** — `org.owasp.dependencycheck`; artifact: `org.owasp:dependency-check-gradle`; версию брать с Maven Central
 **Renovate** — автоматические PR на обновление зависимостей; конфигурируется через `renovate.json`
 
-**Линтеры** — все три поддерживают Gradle, IDEA, Jenkins, GitLab CI, GitHub Actions:
+**Линтеры** — все поддерживают Gradle, IDEA, Jenkins, GitLab CI, GitHub Actions:
 
+**Стандарт Spring-экосистемы** (используются в Spring Boot / Spring Framework / Spring Cloud):
+
+- **spring-javaformat** _(ноль конфига)_ — Gradle-плагин `io.spring.javaformat`; встроенный Checkstyle-конфиг от Spring-команды; IDEA: плагин Spring Java Format
+- **Checkstyle** _(минимальный конфиг)_ — Gradle built-in (`checkstyle` plugin, версия не нужна); пресеты: Spring Style (через `spring-javaformat`) или Google Style (`google_checks.xml` из `checkstyle/checkstyle`); IDEA: плагин CheckStyle-IDEA
 - **ErrorProne** _(ноль конфига)_ — `net.ltgt.gradle:gradle-errorprone-plugin:<version>`; зависимость: `errorprone("com.google.errorprone:error_prone_core")`; находит баги во время компиляции (`javac`); IDEA: плагин ErrorProne Compiler; версии — GitHub `tbroyer/gradle-errorprone-plugin`
+- **NullAway** _(ноль конфига)_ — плагин к ErrorProne; зависимость: `errorprone("com.uber.nullaway:nullaway:<version>")`; проверяет `@NullMarked` / `@Nullable` (JSpecify) на уровне компилятора; **актуально: проект использует JSpecify**; версии — Maven Central
+
+**Общая Java-экосистема** (популярны, менее специфичны для Spring):
+
 - **SpotBugs** _(ноль конфига)_ — `com.github.spotbugs:spotbugs-gradle-plugin:<version>`; анализирует байткод; IDEA: плагин SpotBugs; версии — Maven Central
-- **Checkstyle** _(минимальный конфиг)_ — Gradle built-in (`checkstyle` plugin, версия не нужна); нужен файл конфигурации: Google Java Style (`google_checks.xml` из репозитория `checkstyle/checkstyle`) или Sun Style (из дистрибутива Checkstyle); IDEA: плагин CheckStyle-IDEA
+- **PMD** _(ноль конфига)_ — Gradle built-in (`pmd` plugin, версия не нужна); анализирует исходный код; включает CPD (Copy-Paste Detector)
+- **SonarLint** — IDEA-плагин; работает локально без SonarQube-сервера; агрегирует правила Checkstyle · PMD · SpotBugs + собственные
 
 ### CI/CD
 
