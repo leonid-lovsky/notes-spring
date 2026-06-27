@@ -8,6 +8,7 @@ repositories {
 	mavenCentral()
 }
 
+// applyDefaultConfig() added in 0.0.48 — not available on Maven Central; keep commented
 //springJavaFormat {
 //	checkstyle {
 //		applyDefaultConfig()
