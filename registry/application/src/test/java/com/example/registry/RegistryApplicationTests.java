@@ -1,10 +1,10 @@
-package com.example.gateway;
+package com.example.registry;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class GatewayApplicationTest {
+class RegistryApplicationTests {
 
     @Test
     void contextLoads() {

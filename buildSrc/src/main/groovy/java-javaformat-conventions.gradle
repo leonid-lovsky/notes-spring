@@ -13,6 +13,10 @@ checkstyle {
     configFile = rootProject.file('gradle/checkstyle/checkstyle.xml')
 }
 
+dependencies {
+    checkstyle "io.spring.javaformat:spring-javaformat-checkstyle:${project.property('springJavaformatVersion')}"
+}
+
 //applyDefaultConfig() added in 0.0.48 — not available on Maven Central; keep commented
 //springJavaFormat {
 //	checkstyle {

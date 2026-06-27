@@ -1,1 +1,2 @@
 indentation-style=spaces
+java-conventions.project-root-package = com.example

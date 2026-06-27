@@ -1,10 +1,10 @@
-package com.example.usernote;
+package com.example.gateway;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class UserNoteApplicationTest {
+class GatewayApplicationTests {
 
     @Test
     void contextLoads() {

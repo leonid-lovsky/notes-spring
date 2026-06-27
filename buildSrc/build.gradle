@@ -7,6 +7,7 @@ repositories {
 	mavenCentral()
 }
 
+// versions here must be kept in sync with gradle.properties (buildSrc is a separate build)
 def springBootVersion = '4.0.6'
 def dependencyManagementVersion = '1.1.7'
 def springJavaformatVersion = '0.0.47'

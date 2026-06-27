@@ -1,10 +1,10 @@
-package com.example.auth;
+package com.example.note;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class AuthApplicationTest {
+class NoteApplicationTests {
 
     @Test
     void contextLoads() {
