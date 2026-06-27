@@ -3,7 +3,7 @@
 > Живой документ проекта. Читается автоматически в начале каждой сессии.
 > **Всё в этом документе и в коде — временно.** Ничто не является окончательно принятым паттерном.
 > Любое решение подлежит обсуждению, изменению и уточнению — независимо от того, что уже написано.
-> Последнее обновление: 2026-06-27T16:02Z
+> Последнее обновление: 2026-06-27T16:15Z
 
 ---
 
@@ -71,7 +71,7 @@
 |------------|--------------------------|---------------------------------------|---------------------------|
 | Config src | native (classpath)       | Git-репо                              | одно property в `config/` |
 | Logging    | plain text               | JSON (Loki/ELK)                       | `logback-spring.xml`      |
-| Monitoring | Prometheus via Actuator  | Spring Boot Admin / Datadog / Grafana | конфиг, не код            |
+| Monitoring | Prometheus via Actuator  | Grafana LGTM / Datadog / Boot Admin   | конфиг, не код            |
 | OAuth2     | resource server (плагин) | другой IdP                            | `issuer-uri` property     |
 
 **Порядок реализации:**
@@ -81,7 +81,7 @@
 3. **Config Server** — `native` (classpath); конфиги в `config/src/main/resources/config/`
 4. **OAuth2 Resource Server** — добавить плагин; `issuer-uri=http://localhost:9000` как placeholder
 5. **Logging** — `logback-spring.xml` с профилем `json` для prod
-6. **Monitoring** — `docker-compose.yml` с Prometheus + Grafana
+6. **Monitoring** — `compose.yaml` с `grafana/otel-lgtm` (LGTM стек + OTLP endpoint); Prometheus scrape endpoint автоматически через Actuator + `micrometer-registry-prometheus`
 7. **Gateway routing** — маршруты к `user/`, `note/`, `user-note/`
 
 ### После адаптеров
@@ -681,6 +681,12 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 **OWASP Dependency-Check** — `org.owasp.dependencycheck`; artifact: `org.owasp:dependency-check-gradle`; версию брать с Maven Central
 **Renovate** — автоматические PR на обновление зависимостей; конфигурируется через `renovate.json`
 
+**Линтеры** — все три поддерживают Gradle, IDEA, Jenkins, GitLab CI, GitHub Actions:
+
+- **ErrorProne** _(ноль конфига)_ — `net.ltgt.gradle:gradle-errorprone-plugin:<version>`; зависимость: `errorprone("com.google.errorprone:error_prone_core")`; находит баги во время компиляции (`javac`); IDEA: плагин ErrorProne Compiler; версии — GitHub `tbroyer/gradle-errorprone-plugin`
+- **SpotBugs** _(ноль конфига)_ — `com.github.spotbugs:spotbugs-gradle-plugin:<version>`; анализирует байткод; IDEA: плагин SpotBugs; версии — Maven Central
+- **Checkstyle** _(минимальный конфиг)_ — Gradle built-in (`checkstyle` plugin, версия не нужна); нужен файл конфигурации: Google Java Style (`google_checks.xml` из репозитория `checkstyle/checkstyle`) или Sun Style (из дистрибутива Checkstyle); IDEA: плагин CheckStyle-IDEA
+
 ### CI/CD
 
 Платформы используются последовательно: **GitHub Actions** → **GitLab CI** → **Jenkins**.
@@ -838,7 +844,7 @@ spring-integration-websocket
 spring-integration-ws
 ```
 
-**`org.springframework.modulith`** (BOM: `spring-modulith-bom:<version>`)
+**`org.springframework.modulith`** (BOM: `spring-modulith-bom:2.1.0`)
 
 ```
 spring-modulith-events-api
@@ -1120,9 +1126,9 @@ org.springframework.cloud.contract version 5.0.3 ← Spring Cloud Contract (Cons
 jacoco
 
 # BOM (третьи стороны, инлайн в convention plugin)
-org.springframework.modulith:spring-modulith-bom:<version>         ← Spring Modulith
-com.vaadin:vaadin-bom:<version>                                    ← Vaadin
-de.codecentric:spring-boot-admin-dependencies:<version>            ← Spring Boot Admin
+org.springframework.modulith:spring-modulith-bom:2.1.0             ← Spring Modulith
+com.vaadin:vaadin-bom:25.2.0                                       ← Vaadin
+de.codecentric:spring-boot-admin-dependencies:4.1.1                ← Spring Boot Admin
 
 # Maven repositories (нестандартные)
 # https://build.shibboleth.net/maven/releases   ← обязателен для spring-boot-starter-security-saml2
