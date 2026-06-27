@@ -3,7 +3,7 @@
 > Живой документ проекта. Читается автоматически в начале каждой сессии.
 > **Всё в этом документе и в коде — временно.** Ничто не является окончательно принятым паттерном.
 > Любое решение подлежит обсуждению, изменению и уточнению — независимо от того, что уже написано.
-> Последнее обновление: 2026-06-27T10:54Z
+> Последнее обновление: 2026-06-27T11:18Z
 
 ---
 
@@ -92,11 +92,11 @@
    - `sharing/webmvc/` — REST API
    - `sharing/data-jpa/` — хранение `NoteAccess` и `NotePublication`
    - `sharing/feign/` — клиенты к `note/` и `user-note/`
-3. `bff/` — OAuth2 Client + Spring Session + Token Exchange
-4. `thymeleaf/` — server-rendered BFF
-5. Banking Phase 2 — MFA, token rotation, audit log
-6. `crud/` — shared library
-7. Широкий стек — один use case через WebMVC + WebFlux + gRPC + GraphQL
+2. `bff/` — OAuth2 Client + Spring Session + Token Exchange
+3. `thymeleaf/` — server-rendered BFF
+4. Banking Phase 2 — MFA, token rotation, audit log
+5. `crud/` — shared library
+6. Широкий стек — один use case через WebMVC + WebFlux + gRPC + GraphQL
 
 ### `auth/` — В КОНЦЕ
 
@@ -522,13 +522,46 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 
 ### Spring Boot 4
 
-- `starter-web` → `starter-webmvc`
+- `starter-web` → `starter-webmvc`; `starter-aop` → `starter-aspectj`; `starter-tomcat` → `starter-tomcat-runtime` (war)
 - `starter-test` — JUnit/Mockito/AssertJ; слайсы (`@WebMvcTest`, `@DataJpaTest` и др.) выведены в отдельные `*-test` стартеры (в Boot 3 входили в `starter-test`)
+- `@SpringBootTest` больше не предоставляет MockMVC / WebClient / TestRestTemplate автоматически; добавить `@AutoConfigureMockMvc` / `@AutoConfigureTestRestTemplate` / `@AutoConfigureRestTestClient`
 - OAuth2 стартеры: `oauth2-*` (Boot 3) → `security-oauth2-*` (Boot 4); `docs.spring.io/spring-security` ссылается на Boot 3 имена — не доверять
-- Jackson 3: `com.fasterxml.jackson` → `tools.jackson`
+- **Spring Authorization Server** теперь часть Spring Security 7.0; `spring-authorization-server.version` property убран — использовать версию Security
+- Jackson 3: `com.fasterxml.jackson` → `tools.jackson`; `jackson-annotations` остаётся на `com.fasterxml.jackson.core`
+  - `@JsonComponent` → `@JacksonComponent`; `@JsonMixin` → `@JacksonMixin`
+  - `Jackson2ObjectMapperBuilderCustomizer` → `JsonMapperBuilderCustomizer`
+  - `spring.jackson.read.*` / `spring.jackson.write.*` → `spring.jackson.json.read.*` / `spring.jackson.json.write.*`
+  - Для миграции без кода: `spring-boot-jackson2` (deprecated, временный)
 - RestTemplate deprecated → `RestClient` (`spring-boot-starter-restclient`); реактивный аналог — `WebClient` (`spring-boot-starter-webclient`)
+- HTTP Service Clients — декларативные REST-клиенты из аннотированных Java-интерфейсов; интегрируются с auto-configuration и properties
+- API Versioning auto-configuration: `spring.mvc.apiversion.*` (WebMVC) / `spring.webflux.apiversion.*` (WebFlux)
 - Flyway + PostgreSQL: нужен `runtimeOnly("org.flywaydb:flyway-database-postgresql")`
 - Обработка ошибок: `ResponseEntityExceptionHandler` + `ProblemDetail` (RFC 9457)
+- `@MockBean` / `@SpyBean` (Boot 3) → `@MockitoBean` / `@MockitoSpyBean` (Boot 4); в `@Configuration`-классах запрещены — только на полях тест-класса
+- `@AutoConfigureWebServer` — новая аннотация для тестов с embedded web server factory beans _(4.1)_
+- Spock 2.4 поддерживается (Groovy 5); в 4.0 была удалена _(4.1)_
+- `hibernate-jpamodelgen` → `hibernate-processor`
+- Elasticsearch: `RestClient` → `Rest5Client`; `RestClientBuilderCustomizer` → `Rest5ClientBuilderCustomizer`
+- Spring Batch: `spring-boot-starter-batch` — in-memory (без БД); `spring-boot-starter-batch-jdbc` — с БД (восстанавливает прежнее поведение)
+- Spring Batch MongoDB: `spring-boot-starter-batch-data-mongodb` + `spring.batch.data.mongo.schema.initialize` _(4.1)_
+- Kafka Streams: `StreamBuilderFactoryBeanCustomizer` → `StreamsBuilderFactoryBeanConfigurer`
+- jOOQ: минимальная версия 3.20, требует Java 21 _(4.1)_
+- Spring Data JPA: `deferred` bootstrap теперь требует бин `AsyncTaskExecutor`; `lazy` больше не устанавливает executor _(4.1)_
+- Undertow больше не поддерживается (несовместим с Servlet 6.1)
+- Liveness / Readiness probes включены по умолчанию; отключить: `management.endpoint.health.probes.enabled=false`
+- DevTools LiveReload: в 4.0 отключён по умолчанию; в 4.1 объявлен deprecated (замены нет)
+- Redis: Master/Replica auto-configuration (только Lettuce): `spring.data.redis.masterreplica.nodes`
+- `spring.datasource.connection-fetch=lazy` — отложенное получение JDBC-соединения _(4.1)_
+- OAuth2 JWT authorities via SpEL: `spring.security.oauth2.resourceserver.jwt.authorities-claim-expressions`; префикс: `spring.security.oauth2.resourceserver.jwt.authority-prefix` _(4.1)_
+- `spring.session.redis.*` → `spring.session.data.redis.*`; `spring.session.mongodb.*` → `spring.session.data.mongodb.*`
+- `spring.dao.exceptiontranslation.enabled` → `spring.persistence.exceptiontranslation.enabled`
+- Миграция properties: добавить `spring-boot-properties-migrator` как `runtimeOnly`; удалить после завершения
+- Apache Derby deprecated в 4.1 (проект закрыт); рекомендована миграция на H2 или HSQLDB
+- Dynatrace Micrometer: V1 API deprecated в 4.1 → использовать V2
+- gRPC: нативная поддержка `spring-boot-starter-grpc-client` / `spring-boot-starter-grpc-server` _(4.1)_
+- Kotlin serialization: `spring-boot-starter-kotlinx-serialization-json` (`spring.kotlinx.serialization.json.*`)
+- OpenTelemetry: новый `spring-boot-starter-opentelemetry` для OTLP metric + trace export
+- Gradle 9 поддерживается; минимум — 8.14
 - Lombok: `compileOnly` + `annotationProcessor`;
   `@Data` / `@EqualsAndHashCode` запрещены на entities — нарушают Hibernate lifecycle;
   `equals()` / `hashCode()` по ID вручную: `hashCode() { return getClass().hashCode(); }`
@@ -602,9 +635,11 @@ spring-boot-starter-actuator
 spring-boot-starter-amqp
 spring-boot-starter-artemis
 spring-boot-starter-batch
+spring-boot-starter-batch-data-mongodb
 spring-boot-starter-batch-jdbc
 spring-boot-starter-cache
 spring-boot-starter-cassandra
+spring-boot-starter-cloudfoundry
 spring-boot-starter-couchbase
 spring-boot-starter-data-cassandra
 spring-boot-starter-data-cassandra-reactive
@@ -613,6 +648,7 @@ spring-boot-starter-data-couchbase-reactive
 spring-boot-starter-data-elasticsearch
 spring-boot-starter-data-jdbc
 spring-boot-starter-data-jpa
+spring-boot-starter-data-ldap
 spring-boot-starter-data-mongodb
 spring-boot-starter-data-mongodb-reactive
 spring-boot-starter-data-neo4j
@@ -632,6 +668,7 @@ spring-boot-starter-integration
 spring-boot-starter-jdbc
 spring-boot-starter-jersey
 spring-boot-starter-kafka
+spring-boot-starter-ldap
 spring-boot-starter-liquibase
 spring-boot-starter-mail
 spring-boot-starter-mongodb
@@ -647,6 +684,7 @@ spring-boot-starter-security
 spring-boot-starter-security-oauth2-authorization-server
 spring-boot-starter-security-oauth2-client
 spring-boot-starter-security-oauth2-resource-server
+spring-boot-starter-security-saml2
 spring-boot-starter-session-data-redis
 spring-boot-starter-session-jdbc
 spring-boot-starter-thymeleaf
@@ -654,6 +692,7 @@ spring-boot-starter-validation
 spring-boot-starter-webclient
 spring-boot-starter-webflux
 spring-boot-starter-webmvc
+spring-boot-starter-webservices
 spring-boot-starter-websocket
 spring-boot-starter-zipkin
 ```
@@ -663,6 +702,8 @@ spring-boot-starter-zipkin
 ```
 spring-cloud-bus
 spring-cloud-config-server
+spring-cloud-function-web
+spring-cloud-starter
 spring-cloud-starter-circuitbreaker-reactor-resilience4j
 spring-cloud-starter-config
 spring-cloud-starter-consul-config
@@ -673,6 +714,7 @@ spring-cloud-starter-loadbalancer
 spring-cloud-starter-netflix-eureka-client
 spring-cloud-starter-netflix-eureka-server
 spring-cloud-starter-openfeign
+spring-cloud-starter-task
 spring-cloud-starter-vault-config
 spring-cloud-starter-zookeeper-config
 spring-cloud-starter-zookeeper-discovery
@@ -693,6 +735,7 @@ spring-integration-jdbc
 spring-integration-jms
 spring-integration-jpa
 spring-integration-kafka
+spring-integration-mail
 spring-integration-mongodb
 spring-integration-r2dbc
 spring-integration-redis
@@ -700,6 +743,7 @@ spring-integration-rsocket
 spring-integration-stomp
 spring-integration-webflux
 spring-integration-websocket
+spring-integration-ws
 ```
 
 **`org.springframework.modulith`** (BOM: `spring-modulith-bom:<version>`)
@@ -719,6 +763,7 @@ spring-modulith-starter-neo4j
 ```
 spring-security-messaging
 spring-security-rsocket
+spring-security-webauthn
 ```
 
 **`org.apache.kafka`**
@@ -731,6 +776,20 @@ org.apache.kafka:kafka-streams
 
 ```
 org.springframework.amqp:spring-rabbit-stream
+```
+
+**`org.springframework.data`**
+
+```
+org.springframework.data:spring-data-rest-hal-explorer
+```
+
+**Third-party (явная версия)**
+
+```
+de.codecentric:spring-boot-admin-starter-client   ← BOM: spring-boot-admin-dependencies
+de.codecentric:spring-boot-admin-starter-server   ← BOM: spring-boot-admin-dependencies
+org.jobrunr:jobrunr-spring-boot-4-starter:8.7.0   ← явная версия (не в BOM)
 ```
 
 ### `runtimeOnly`
@@ -758,11 +817,16 @@ io.r2dbc:r2dbc-mssql:1.0.0.RELEASE    ← явная версия (не в BOM)
 com.oracle.database.jdbc:ojdbc11
 com.oracle.database.r2dbc:oracle-r2dbc
 
+# Derby (deprecated в Boot 4.1 — проект закрыт; мигрировать на H2 или HSQLDB)
+org.apache.derby:derby
+org.apache.derby:derbytools
+
 # Other
 org.hsqldb:hsqldb
 org.xerial:sqlite-jdbc
 
 # Flyway drivers (нужны при использовании spring-boot-starter-flyway)
+org.flywaydb:flyway-database-derby              ← для Derby (deprecated в Boot 4.1)
 org.flywaydb:flyway-database-hsqldb
 org.flywaydb:flyway-database-oracle
 org.flywaydb:flyway-database-postgresql
@@ -770,7 +834,8 @@ org.flywaydb:flyway-mysql
 org.flywaydb:flyway-sqlserver
 
 # Micrometer registries (для Actuator /actuator/prometheus и др.)
-io.micrometer:micrometer-registry-dynatrace
+io.micrometer:micrometer-registry-datadog
+io.micrometer:micrometer-registry-dynatrace          ← V1 deprecated в Boot 4.1; использовать V2 API
 io.micrometer:micrometer-registry-graphite
 io.micrometer:micrometer-registry-influx
 io.micrometer:micrometer-registry-new-relic
@@ -806,8 +871,12 @@ spring-boot-starter-activemq-test
 spring-boot-starter-actuator-test
 spring-boot-starter-amqp-test
 spring-boot-starter-artemis-test
+spring-boot-starter-batch-data-mongodb-test
+spring-boot-starter-batch-jdbc-test
 spring-boot-starter-batch-test
+spring-boot-starter-cache-test
 spring-boot-starter-cassandra-test
+spring-boot-starter-cloudfoundry-test
 spring-boot-starter-couchbase-test
 spring-boot-starter-data-cassandra-test
 spring-boot-starter-data-cassandra-reactive-test
@@ -816,6 +885,7 @@ spring-boot-starter-data-couchbase-reactive-test
 spring-boot-starter-data-elasticsearch-test
 spring-boot-starter-data-jdbc-test
 spring-boot-starter-data-jpa-test
+spring-boot-starter-data-ldap-test
 spring-boot-starter-data-mongodb-test
 spring-boot-starter-data-mongodb-reactive-test
 spring-boot-starter-data-neo4j-test
@@ -834,12 +904,16 @@ spring-boot-starter-hateoas-test
 spring-boot-starter-jdbc-test
 spring-boot-starter-jersey-test
 spring-boot-starter-kafka-test
+spring-boot-starter-ldap                              ← без -test; нужен в testImplementation для embedded LDAP
+spring-boot-starter-ldap-test
 spring-boot-starter-liquibase-test
+spring-boot-starter-mail-test
 spring-boot-starter-mongodb-test
 spring-boot-starter-mustache-test
 spring-boot-starter-neo4j-test
 spring-boot-starter-opentelemetry-test
 spring-boot-starter-pulsar-test
+spring-boot-starter-quartz-test
 spring-boot-starter-r2dbc-test
 spring-boot-starter-restclient-test
 spring-boot-starter-restdocs
@@ -848,6 +922,7 @@ spring-boot-starter-security-test
 spring-boot-starter-security-oauth2-authorization-server-test
 spring-boot-starter-security-oauth2-client-test
 spring-boot-starter-security-oauth2-resource-server-test
+spring-boot-starter-security-saml2-test
 spring-boot-starter-session-data-redis-test
 spring-boot-starter-session-jdbc-test
 spring-boot-starter-thymeleaf-test
@@ -855,6 +930,7 @@ spring-boot-starter-validation-test
 spring-boot-starter-webclient-test
 spring-boot-starter-webflux-test
 spring-boot-starter-webmvc-test
+spring-boot-starter-webservices-test
 spring-boot-starter-websocket-test
 spring-boot-starter-zipkin-test
 spring-boot-testcontainers
@@ -894,15 +970,24 @@ org.testcontainers:testcontainers-vault
 **Spring Cloud / Integration / Modulith**
 
 ```
+org.springframework.cloud:spring-cloud-starter-contract-stub-runner
+org.springframework.cloud:spring-cloud-starter-contract-verifier
 org.springframework.cloud:spring-cloud-stream-test-binder
 org.springframework.integration:spring-integration-test
 org.springframework.modulith:spring-modulith-starter-test
 ```
 
-**REST Docs**
+**REST Docs / REST Assured**
 
 ```
 org.springframework.restdocs:spring-restdocs-mockmvc
+io.rest-assured:spring-web-test-client
+```
+
+**LDAP**
+
+```
+com.unboundid:unboundid-ldapsdk   ← embedded LDAP для тестов
 ```
 
 ### `testRuntimeOnly`
@@ -922,13 +1007,20 @@ com.tngtech.archunit:archunit-junit5:<version>           ← версию бра
 # Gradle plugins (third-party, явная версия)
 com.google.protobuf version 0.9.6             ← обязателен для gRPC (кодогенерация из .proto)
 com.netflix.dgs.codegen version 8.3.0         ← Netflix DGS codegen (GraphQL client)
+com.vaadin version 25.2.0                     ← Vaadin UI framework
 org.asciidoctor.jvm.convert version 4.0.5    ← Spring REST Docs (Asciidoctor)
+org.cyclonedx.bom version 3.2.4              ← CycloneDX SBOM generation
 org.owasp.dependencycheck version <version>   ← artifact: org.owasp:dependency-check-gradle
+org.springframework.cloud.contract version 5.0.3 ← Spring Cloud Contract (Consumer-Driven)
 
 # Gradle plugins (встроенные, версия не нужна)
 jacoco
 
 # BOM (третьи стороны, инлайн в convention plugin)
-org.springframework.modulith:spring-modulith-bom:<version>   ← Spring Modulith
-com.vaadin:vaadin-bom:<version>                              ← Vaadin (если нужен)
+org.springframework.modulith:spring-modulith-bom:<version>         ← Spring Modulith
+com.vaadin:vaadin-bom:<version>                                    ← Vaadin
+de.codecentric:spring-boot-admin-dependencies:<version>            ← Spring Boot Admin
+
+# Maven repositories (нестандартные)
+# https://build.shibboleth.net/maven/releases   ← обязателен для spring-boot-starter-security-saml2
 ```
