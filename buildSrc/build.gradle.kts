@@ -1,10 +1,11 @@
 plugins {
-    `kotlin-dsl`
+    id("org.gradle.kotlin.kotlin-dsl") version "6.7.4"
+    id("groovy-gradle-plugin")
 }
 
 repositories {
-    mavenCentral()
     gradlePluginPortal()
+    mavenCentral()
 }
 
 val springBootVersion = "4.0.6"
