@@ -3,7 +3,7 @@
 > Живой документ проекта. Читается автоматически в начале каждой сессии.
 > **Всё в этом документе и в коде — временно.** Ничто не является окончательно принятым паттерном.
 > Любое решение подлежит обсуждению, изменению и уточнению — независимо от того, что уже написано.
-> Последнее обновление: 2026-06-27T16:37Z
+> Последнее обновление: 2026-06-27T16:45Z
 
 ---
 
@@ -664,7 +664,7 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 
 ### Null Safety и стиль
 
-**JSpecify** (`@NullMarked` через `package-info.java`) — non-null по умолчанию; каждый пакет требует своего `package-info.java`. Выбран вместо `org.springframework.lang` (deprecated) и JSR-305 (заброшен).
+**JSpecify** (`@NullMarked` через `package-info.java`) — non-null по умолчанию; каждый пакет требует своего `package-info.java`; `org.jspecify:jspecify:<version>` в `domain/`; выбран вместо `org.springframework.lang` (deprecated) и JSR-305 (заброшен); **NullAway** (ErrorProne-плагин) проверяет соблюдение аннотаций во время компиляции — без него `@NullMarked` носит декларативный характер.
 **`@Nullable`** — `@Target(TYPE_USE)`: `private @Nullable String field`; массивы: `Object @Nullable []` (nullable ссылка), `@Nullable Object[]` (nullable элементы)
 **Spring Cloud (2025.1.x)** — ещё не null-safe в `registry/`, `config/`, `gateway/`; при нужде: `@NullUnmarked`
 **Импорты** — `com.example.*` + `org.*` / `jakarta.*`, затем `java.*`; wildcard при 3+
@@ -675,7 +675,7 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 ### Качество и наблюдаемость
 
 **ArchUnit** — `testImplementation("com.tngtech.archunit:archunit-junit5:<version>")`; версию брать с Maven Central; проверяет, что `domain/` не импортирует из адаптеров
-**JaCoCo** — встроен в Gradle (`jacoco`), версия не нужна; источник покрытия для SonarQube
+**JaCoCo** — встроен в Gradle (`jacoco`, toolVersion `0.8.14`); задачи: `jacocoTestReport` (HTML-отчёт) · `jacocoTestCoverageVerification` (минимальное покрытие); связь явная: `test.finalizedBy(jacocoTestReport)`; источник покрытия для SonarQube; `jacoco-report-aggregation` — агрегирует покрытие по всем модулям monorepo
 **SonarQube** — используется внешне: IDE-плагин, CI pipeline, standalone server, SonarCloud; не добавляется как Gradle-зависимость в проект
 **Actuator** — только в `application/`; `management.server.port` — отдельный порт; в Resource Server — отдельный `SecurityFilterChain` для `/actuator/**`
 **OWASP Dependency-Check** — `org.owasp.dependencycheck`; artifact: `org.owasp:dependency-check-gradle`; версию брать с Maven Central
@@ -685,10 +685,10 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 
 **Стандарт Spring-экосистемы** (используются в Spring Boot / Spring Framework / Spring Cloud):
 
-- **spring-javaformat** _(ноль конфига)_ — Gradle-плагин `io.spring.javaformat`; встроенный Checkstyle-конфиг от Spring-команды; IDEA: плагин Spring Java Format
-- **Checkstyle** _(минимальный конфиг)_ — Gradle built-in (`checkstyle` plugin, версия не нужна); пресеты: Spring Style (через `spring-javaformat`) или Google Style (`google_checks.xml` из `checkstyle/checkstyle`); IDEA: плагин CheckStyle-IDEA
-- **ErrorProne** _(ноль конфига)_ — `net.ltgt.gradle:gradle-errorprone-plugin:<version>`; зависимость: `errorprone("com.google.errorprone:error_prone_core")`; находит баги во время компиляции (`javac`); IDEA: плагин ErrorProne Compiler; версии — GitHub `tbroyer/gradle-errorprone-plugin`
-- **NullAway** _(ноль конфига)_ — плагин к ErrorProne; зависимость: `errorprone("com.uber.nullaway:nullaway:<version>")`; проверяет `@NullMarked` / `@Nullable` (JSpecify) на уровне компилятора; **актуально: проект использует JSpecify**; версии — Maven Central
+- **spring-javaformat** _(ноль конфига)_ — `io.spring.javaformat version 0.0.47`; применяется вместе с `checkstyle` plugin + `toolVersion = "9.3"`; `springJavaFormat { checkstyle { applyDefaultConfig() } }`; проверяет: строки до 120 символов, пробелы, импорты, Javadoc; IDEA: автоактивируется при наличии Gradle-плагина, стандартный «Reformat Code»; для Checkstyle-IDEA — добавить `spring-javaformat-checkstyle` jar в Third-Party Checks
+- **Checkstyle** _(минимальный конфиг)_ — Gradle built-in (`checkstyle` plugin, версия не нужна); конфиг: `config/checkstyle/checkstyle.xml`; `toolVersion` задаётся явно; пресеты: Spring Style (через `spring-javaformat`) или Google Style (`google_checks.xml` из `checkstyle/checkstyle`); IDEA: плагин CheckStyle-IDEA
+- **ErrorProne** _(ноль конфига)_ — `net.ltgt.gradle:gradle-errorprone-plugin:<version>`; зависимость: `errorprone("com.google.errorprone:error_prone_core")`; находит баги во время компиляции (`javac`); база для NullAway; IDEA: плагин ErrorProne Compiler; версии — GitHub `tbroyer/gradle-errorprone-plugin`
+- **NullAway** _(ноль конфига)_ — плагин к ErrorProne; `errorprone("com.uber.nullaway:nullaway:<version>")`; проверяет соблюдение `@NullMarked` / `@Nullable` (JSpecify) во время компиляции; без NullAway аннотации JSpecify ничего не гарантируют на уровне сборки; версии — Maven Central
 
 **Общая Java-экосистема** (популярны, менее специфичны для Spring):
 
@@ -1120,20 +1120,28 @@ org.thymeleaf.extras:thymeleaf-extras-springsecurity6   ← имя "6", даже
 com.vaadin:vaadin-spring-boot-starter                         ← BOM: vaadin-bom
 org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2
 com.tngtech.archunit:archunit-junit5:<version>           ← версию брать с Maven Central
+com.uber.nullaway:nullaway:<version>                     ← ErrorProne-плагин для JSpecify; errorprone scope
+org.jspecify:jspecify:<version>                          ← null-safety аннотации; compileOnly или implementation
 
 # Gradle plugins (third-party, явная версия)
-com.google.protobuf version 0.9.6             ← обязателен для gRPC (кодогенерация из .proto)
-com.netflix.dgs.codegen version 8.3.0         ← Netflix DGS codegen (GraphQL client)
-com.vaadin version 25.2.0                     ← Vaadin UI framework
-org.asciidoctor.jvm.convert version 4.0.5    ← Spring REST Docs (Asciidoctor)
-org.cyclonedx.bom version 3.2.4              ← CycloneDX SBOM generation
-org.graalvm.buildtools.native version 1.1.1  ← GraalVM Native Image
-org.hibernate.orm version 7.4.1.Final        ← Hibernate ORM plugin (кодогенерация метамодели)
-org.owasp.dependencycheck version <version>   ← artifact: org.owasp:dependency-check-gradle
+com.google.protobuf version 0.9.6              ← обязателен для gRPC (кодогенерация из .proto)
+com.netflix.dgs.codegen version 8.3.0          ← Netflix DGS codegen (GraphQL client)
+com.vaadin version 25.2.0                      ← Vaadin UI framework
+io.spring.javaformat version 0.0.47            ← Spring Java Format (стиль Spring-команды)
+net.ltgt.errorprone version <version>          ← ErrorProne; artifact: net.ltgt.gradle:gradle-errorprone-plugin
+org.asciidoctor.jvm.convert version 4.0.5     ← Spring REST Docs (Asciidoctor)
+org.cyclonedx.bom version 3.2.4               ← CycloneDX SBOM generation
+org.graalvm.buildtools.native version 1.1.1   ← GraalVM Native Image
+org.hibernate.orm version 7.4.1.Final         ← Hibernate ORM plugin (кодогенерация метамодели)
+org.owasp.dependencycheck version <version>    ← artifact: org.owasp:dependency-check-gradle
 org.springframework.cloud.contract version 5.0.3 ← Spring Cloud Contract (Consumer-Driven)
 
 # Gradle plugins (встроенные, версия не нужна)
+checkstyle
+idea                       ← кастомизация IDEA-модулей через DSL; сами задачи deprecated в Gradle 10 — IDEA импортирует нативно
 jacoco
+jacoco-report-aggregation  ← агрегирует покрытие по всем модулям monorepo
+pmd
 
 # BOM (третьи стороны, инлайн в convention plugin)
 org.springframework.modulith:spring-modulith-bom:2.1.0             ← Spring Modulith
