@@ -52,9 +52,11 @@ class UserJdbcAdapter implements UserRepository {
     }
 
     @Override
-    public void add(User user) {
+    public User add(User user) {
+        UUID id = UUID.randomUUID();
         String sql = "INSERT INTO users (id, username, email) VALUES (:id, :username, :email)";
-        jdbc.update(sql, Map.of("id", user.id(), "username", user.username(), "email", user.email()));
+        jdbc.update(sql, Map.of("id", id, "username", user.username(), "email", user.email()));
+        return new User(id, user.username(), user.email());
     }
 
     @Override

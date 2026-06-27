@@ -14,7 +14,7 @@ public interface UserRepository {
 
     List<User> findAll();
 
-    void add(User user);
+    User add(User user);
 
     void replace(User user);
 

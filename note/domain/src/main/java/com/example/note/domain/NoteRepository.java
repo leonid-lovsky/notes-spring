@@ -10,7 +10,7 @@ public interface NoteRepository {
 
     List<Note> findAll();
 
-    void add(Note note);
+    Note add(Note note);
 
     void replace(Note note);
 

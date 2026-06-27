@@ -44,8 +44,10 @@ class UserJpaAdapter implements UserRepository {
     }
 
     @Override
-    public void add(User user) {
-        em.persist(toEntity(user));
+    public User add(User user) {
+        UserEntity entity = new UserEntity(user.username(), user.email());
+        em.persist(entity);
+        return toDomain(entity);
     }
 
     @Override

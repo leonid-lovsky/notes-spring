@@ -44,8 +44,9 @@ class UserNoteMongoAdapter implements UserNoteRepository {
     }
 
     @Override
-    public void add(UserNote userNote) {
+    public UserNote add(UserNote userNote) {
         mongoTemplate.insert(toDocument(userNote));
+        return userNote;
     }
 
     @Override

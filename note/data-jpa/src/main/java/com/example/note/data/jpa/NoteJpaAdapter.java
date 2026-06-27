@@ -34,8 +34,10 @@ class NoteJpaAdapter implements NoteRepository {
     }
 
     @Override
-    public void add(Note note) {
-        em.persist(toEntity(note));
+    public Note add(Note note) {
+        NoteEntity entity = new NoteEntity(note.content());
+        em.persist(entity);
+        return toDomain(entity);
     }
 
     @Override

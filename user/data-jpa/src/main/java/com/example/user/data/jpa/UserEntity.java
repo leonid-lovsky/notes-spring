@@ -9,6 +9,7 @@ import java.util.UUID;
 class UserEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(nullable = false, unique = true)
@@ -19,6 +20,11 @@ class UserEntity {
 
     protected UserEntity() {
 
+    }
+
+    UserEntity(String username, String email) {
+        this.username = username;
+        this.email = email;
     }
 
     UserEntity(UUID id, String username, String email) {

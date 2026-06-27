@@ -34,8 +34,10 @@ class NoteMongoAdapter implements NoteRepository {
     }
 
     @Override
-    public void add(Note note) {
-        mongoTemplate.insert(toDocument(note));
+    public Note add(Note note) {
+        UUID id = UUID.randomUUID();
+        mongoTemplate.insert(new NoteDocument(id, note.content()));
+        return new Note(id, note.content());
     }
 
     @Override

@@ -9,6 +9,7 @@ import java.util.UUID;
 class NoteEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(nullable = false)
@@ -16,6 +17,10 @@ class NoteEntity {
 
     protected NoteEntity() {
 
+    }
+
+    NoteEntity(String content) {
+        this.content = content;
     }
 
     NoteEntity(UUID id, String content) {

@@ -38,9 +38,11 @@ class NoteJdbcAdapter implements NoteRepository {
     }
 
     @Override
-    public void add(Note note) {
+    public Note add(Note note) {
+        UUID id = UUID.randomUUID();
         String sql = "INSERT INTO notes (id, content) VALUES (:id, :content)";
-        jdbc.update(sql, Map.of("id", note.id(), "content", note.content()));
+        jdbc.update(sql, Map.of("id", id, "content", note.content()));
+        return new Note(id, note.content());
     }
 
     @Override

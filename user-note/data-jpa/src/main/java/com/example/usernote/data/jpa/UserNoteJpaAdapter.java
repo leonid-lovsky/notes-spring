@@ -44,8 +44,9 @@ class UserNoteJpaAdapter implements UserNoteRepository {
     }
 
     @Override
-    public void add(UserNote userNote) {
+    public UserNote add(UserNote userNote) {
         em.persist(toEntity(userNote));
+        return userNote;
     }
 
     @Override

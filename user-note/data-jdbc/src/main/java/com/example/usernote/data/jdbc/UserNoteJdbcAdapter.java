@@ -46,9 +46,10 @@ class UserNoteJdbcAdapter implements UserNoteRepository {
     }
 
     @Override
-    public void add(UserNote userNote) {
+    public UserNote add(UserNote userNote) {
         String sql = "INSERT INTO user_notes (user_id, note_id, role) VALUES (:userId, :noteId, :role)";
         jdbc.update(sql, Map.of("userId", userNote.userId(), "noteId", userNote.noteId(), "role", userNote.role().name()));
+        return userNote;
     }
 
     @Override

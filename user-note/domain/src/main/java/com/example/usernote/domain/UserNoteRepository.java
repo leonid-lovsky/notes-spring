@@ -12,7 +12,7 @@ public interface UserNoteRepository {
 
     List<UserNote> findByNoteId(UUID noteId);
 
-    void add(UserNote userNote);
+    UserNote add(UserNote userNote);
 
     void replace(UserNote userNote);
 

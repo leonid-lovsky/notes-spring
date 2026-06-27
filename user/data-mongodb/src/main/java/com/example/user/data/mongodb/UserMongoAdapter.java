@@ -44,8 +44,10 @@ class UserMongoAdapter implements UserRepository {
     }
 
     @Override
-    public void add(User user) {
-        mongoTemplate.insert(toDocument(user));
+    public User add(User user) {
+        UUID id = UUID.randomUUID();
+        mongoTemplate.insert(new UserDocument(id, user.username(), user.email()));
+        return new User(id, user.username(), user.email());
     }
 
     @Override
