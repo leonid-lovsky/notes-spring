@@ -1,7 +1,7 @@
 package com.example.usernote.data.jpa;
 
-import com.example.usernote.domain.UserNote;
 import com.example.usernote.domain.UserNoteFindByNoteIdPort;
+import com.example.usernote.domain.UserNoteResponse;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -11,15 +11,17 @@ import java.util.UUID;
 class UserNoteFindByNoteIdPortAdapter implements UserNoteFindByNoteIdPort {
 
     private final UserNoteJpaRepository userNoteJpaRepository;
+    private final UserNoteJpaMapper userNoteJpaMapper;
 
-    UserNoteFindByNoteIdPortAdapter(UserNoteJpaRepository userNoteJpaRepository) {
+    UserNoteFindByNoteIdPortAdapter(UserNoteJpaRepository userNoteJpaRepository,
+                                    UserNoteJpaMapper userNoteJpaMapper) {
         this.userNoteJpaRepository = userNoteJpaRepository;
+        this.userNoteJpaMapper = userNoteJpaMapper;
     }
 
     @Override
-    public List<UserNote> findByNoteId(UUID noteId) {
+    public List<UserNoteResponse> findByNoteId(UUID noteId) {
         return userNoteJpaRepository.findByIdNoteId(noteId).stream()
-                .map(e -> new UserNote(e.getId().getUserId(), e.getId().getNoteId(), e.getRole()))
-                .toList();
+                .map(userNoteJpaMapper::toResponse).toList();
     }
 }

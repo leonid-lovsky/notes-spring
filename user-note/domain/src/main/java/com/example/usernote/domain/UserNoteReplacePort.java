@@ -1,6 +1,8 @@
 package com.example.usernote.domain;
 
+import java.util.UUID;
+
 public interface UserNoteReplacePort {
 
-    void replace(UserNote userNote);
+    UserNoteResponse replace(UUID userId, UUID noteId, UserNoteRequest request);
 }

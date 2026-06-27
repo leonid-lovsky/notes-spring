@@ -4,5 +4,5 @@ import java.util.List;
 
 public interface UserFindAllPort {
 
-    List<User> findAll();
+    List<UserResponse> findAll();
 }

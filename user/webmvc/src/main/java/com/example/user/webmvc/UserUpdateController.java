@@ -1,8 +1,9 @@
 package com.example.user.webmvc;
 
-import com.example.user.domain.User;
 import com.example.user.domain.UserExistsByIdPort;
 import com.example.user.domain.UserNotFoundException;
+import com.example.user.domain.UserRequest;
+import com.example.user.domain.UserResponse;
 import com.example.user.domain.UserReplacePort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,8 +32,7 @@ class UserUpdateController {
         if (!userExistsByIdPort.existsById(id)) {
             throw new UserNotFoundException(id);
         }
-        User updated = new User(id, request.username(), request.email());
-        userReplacePort.replace(updated);
-        return ResponseEntity.status(HttpStatus.OK).body(UserResponse.from(updated));
+        UserResponse updated = userReplacePort.replace(id, request);
+        return ResponseEntity.status(HttpStatus.OK).body(updated);
     }
 }

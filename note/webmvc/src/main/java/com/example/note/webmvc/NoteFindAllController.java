@@ -1,6 +1,7 @@
 package com.example.note.webmvc;
 
 import com.example.note.domain.NoteFindAllPort;
+import com.example.note.domain.NoteResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,9 +22,7 @@ class NoteFindAllController {
 
     @GetMapping
     ResponseEntity<List<NoteResponse>> findAll() {
-        List<NoteResponse> notes = noteFindAllPort.findAll().stream()
-                .map(NoteResponse::from)
-                .toList();
+        List<NoteResponse> notes = noteFindAllPort.findAll();
         return ResponseEntity.status(HttpStatus.OK).body(notes);
     }
 }

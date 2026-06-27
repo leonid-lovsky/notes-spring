@@ -1,20 +1,26 @@
 package com.example.user.data.jpa;
 
-import com.example.user.domain.User;
+import com.example.user.domain.UserRequest;
+import com.example.user.domain.UserResponse;
 import com.example.user.domain.UserReplacePort;
 import org.springframework.stereotype.Repository;
+
+import java.util.UUID;
 
 @Repository
 class UserReplacePortAdapter implements UserReplacePort {
 
     private final UserJpaRepository userJpaRepository;
+    private final UserJpaMapper userJpaMapper;
 
-    UserReplacePortAdapter(UserJpaRepository userJpaRepository) {
+    UserReplacePortAdapter(UserJpaRepository userJpaRepository, UserJpaMapper userJpaMapper) {
         this.userJpaRepository = userJpaRepository;
+        this.userJpaMapper = userJpaMapper;
     }
 
     @Override
-    public void replace(User user) {
-        userJpaRepository.save(new UserEntity(user.id(), user.username(), user.email()));
+    public UserResponse replace(UUID id, UserRequest request) {
+        UserEntity saved = userJpaRepository.save(userJpaMapper.toExistingEntity(id, request));
+        return userJpaMapper.toResponse(saved);
     }
 }

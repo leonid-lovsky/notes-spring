@@ -1,7 +1,7 @@
 package com.example.user.data.jpa;
 
-import com.example.user.domain.User;
 import com.example.user.domain.UserFindByUsernamePort;
+import com.example.user.domain.UserResponse;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -10,14 +10,15 @@ import java.util.Optional;
 class UserFindByUsernamePortAdapter implements UserFindByUsernamePort {
 
     private final UserJpaRepository userJpaRepository;
+    private final UserJpaMapper userJpaMapper;
 
-    UserFindByUsernamePortAdapter(UserJpaRepository userJpaRepository) {
+    UserFindByUsernamePortAdapter(UserJpaRepository userJpaRepository, UserJpaMapper userJpaMapper) {
         this.userJpaRepository = userJpaRepository;
+        this.userJpaMapper = userJpaMapper;
     }
 
     @Override
-    public Optional<User> findByUsername(String username) {
-        return userJpaRepository.findByUsername(username)
-                .map(e -> new User(e.getId(), e.getUsername(), e.getEmail()));
+    public Optional<UserResponse> findByUsername(String username) {
+        return userJpaRepository.findByUsername(username).map(userJpaMapper::toResponse);
     }
 }

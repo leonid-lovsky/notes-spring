@@ -5,5 +5,5 @@ import java.util.UUID;
 
 public interface UserNoteFindByUserIdPort {
 
-    List<UserNote> findByUserId(UUID userId);
+    List<UserNoteResponse> findByUserId(UUID userId);
 }

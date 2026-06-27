@@ -1,7 +1,9 @@
 package com.example.note.webmvc;
 
-import com.example.note.domain.NoteNotFoundException;
+import com.example.note.domain.NoteExistsByIdPort;
 import com.example.note.domain.NoteFindByIdPort;
+import com.example.note.domain.NoteNotFoundException;
+import com.example.note.domain.NoteResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +26,6 @@ class NoteFindByIdController {
     @GetMapping("/{id}")
     ResponseEntity<NoteResponse> findById(@PathVariable UUID id) {
         NoteResponse note = noteFindByIdPort.findById(id)
-                .map(NoteResponse::from)
                 .orElseThrow(() -> new NoteNotFoundException(id));
         return ResponseEntity.status(HttpStatus.OK).body(note);
     }

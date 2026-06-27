@@ -1,6 +1,7 @@
 package com.example.user.webmvc;
 
 import com.example.user.domain.UserFindAllPort;
+import com.example.user.domain.UserResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,9 +22,7 @@ class UserFindAllController {
 
     @GetMapping
     ResponseEntity<List<UserResponse>> findAll() {
-        List<UserResponse> users = userFindAllPort.findAll().stream()
-                .map(UserResponse::from)
-                .toList();
+        List<UserResponse> users = userFindAllPort.findAll();
         return ResponseEntity.status(HttpStatus.OK).body(users);
     }
 }

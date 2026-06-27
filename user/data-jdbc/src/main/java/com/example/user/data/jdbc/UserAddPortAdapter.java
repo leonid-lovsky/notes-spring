@@ -1,7 +1,8 @@
 package com.example.user.data.jdbc;
 
-import com.example.user.domain.User;
 import com.example.user.domain.UserAddPort;
+import com.example.user.domain.UserRequest;
+import com.example.user.domain.UserResponse;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -18,10 +19,10 @@ class UserAddPortAdapter implements UserAddPort {
     }
 
     @Override
-    public User add(User user) {
+    public UserResponse add(UserRequest request) {
         UUID id = UUID.randomUUID();
         jdbc.update("INSERT INTO users (id, username, email) VALUES (:id, :username, :email)",
-                Map.of("id", id, "username", user.username(), "email", user.email()));
-        return new User(id, user.username(), user.email());
+                Map.of("id", id, "username", request.username(), "email", request.email()));
+        return new UserResponse(id, request.username(), request.email());
     }
 }

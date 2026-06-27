@@ -4,5 +4,5 @@ import java.util.List;
 
 public interface NoteFindAllPort {
 
-    List<Note> findAll();
+    List<NoteResponse> findAll();
 }

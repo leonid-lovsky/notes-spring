@@ -2,6 +2,7 @@ package com.example.usernote.webmvc;
 
 import com.example.usernote.domain.UserNoteFindByUserIdAndNoteIdPort;
 import com.example.usernote.domain.UserNoteNotFoundException;
+import com.example.usernote.domain.UserNoteResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,14 +18,16 @@ class UserNoteFindByUserIdAndNoteIdController {
 
     private final UserNoteFindByUserIdAndNoteIdPort userNoteFindByUserIdAndNoteIdPort;
 
-    UserNoteFindByUserIdAndNoteIdController(UserNoteFindByUserIdAndNoteIdPort userNoteFindByUserIdAndNoteIdPort) {
+    UserNoteFindByUserIdAndNoteIdController(
+            UserNoteFindByUserIdAndNoteIdPort userNoteFindByUserIdAndNoteIdPort) {
         this.userNoteFindByUserIdAndNoteIdPort = userNoteFindByUserIdAndNoteIdPort;
     }
 
     @GetMapping("/{userId}/{noteId}")
-    ResponseEntity<UserNoteResponse> findByUserIdAndNoteId(@PathVariable UUID userId, @PathVariable UUID noteId) {
-        UserNoteResponse userNote = userNoteFindByUserIdAndNoteIdPort.findByUserIdAndNoteId(userId, noteId)
-                .map(UserNoteResponse::from)
+    ResponseEntity<UserNoteResponse> findByUserIdAndNoteId(@PathVariable UUID userId,
+                                                            @PathVariable UUID noteId) {
+        UserNoteResponse userNote = userNoteFindByUserIdAndNoteIdPort
+                .findByUserIdAndNoteId(userId, noteId)
                 .orElseThrow(() -> new UserNoteNotFoundException(userId, noteId));
         return ResponseEntity.status(HttpStatus.OK).body(userNote);
     }

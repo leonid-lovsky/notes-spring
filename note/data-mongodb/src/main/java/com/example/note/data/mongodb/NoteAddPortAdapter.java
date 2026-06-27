@@ -1,25 +1,26 @@
 package com.example.note.data.mongodb;
 
-import com.example.note.domain.Note;
 import com.example.note.domain.NoteAddPort;
+import com.example.note.domain.NoteRequest;
+import com.example.note.domain.NoteResponse;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Repository;
-
-import java.util.UUID;
 
 @Repository
 class NoteAddPortAdapter implements NoteAddPort {
 
     private final MongoTemplate mongoTemplate;
+    private final NoteMongoMapper noteMongoMapper;
 
-    NoteAddPortAdapter(MongoTemplate mongoTemplate) {
+    NoteAddPortAdapter(MongoTemplate mongoTemplate, NoteMongoMapper noteMongoMapper) {
         this.mongoTemplate = mongoTemplate;
+        this.noteMongoMapper = noteMongoMapper;
     }
 
     @Override
-    public Note add(Note note) {
-        UUID id = UUID.randomUUID();
-        mongoTemplate.insert(new NoteDocument(id, note.content()));
-        return new Note(id, note.content());
+    public NoteResponse add(NoteRequest request) {
+        NoteDocument document = noteMongoMapper.toNewDocument(request);
+        mongoTemplate.insert(document);
+        return noteMongoMapper.toResponse(document);
     }
 }

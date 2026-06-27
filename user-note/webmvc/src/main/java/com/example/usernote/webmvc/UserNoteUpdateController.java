@@ -1,8 +1,9 @@
 package com.example.usernote.webmvc;
 
-import com.example.usernote.domain.UserNote;
 import com.example.usernote.domain.UserNoteExistsByUserIdAndNoteIdPort;
 import com.example.usernote.domain.UserNoteNotFoundException;
+import com.example.usernote.domain.UserNoteRequest;
+import com.example.usernote.domain.UserNoteResponse;
 import com.example.usernote.domain.UserNoteReplacePort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,8 +34,7 @@ class UserNoteUpdateController {
         if (!userNoteExistsByUserIdAndNoteIdPort.existsByUserIdAndNoteId(userId, noteId)) {
             throw new UserNoteNotFoundException(userId, noteId);
         }
-        UserNote updated = new UserNote(userId, noteId, request.role());
-        userNoteReplacePort.replace(updated);
-        return ResponseEntity.status(HttpStatus.OK).body(UserNoteResponse.from(updated));
+        UserNoteResponse updated = userNoteReplacePort.replace(userId, noteId, request);
+        return ResponseEntity.status(HttpStatus.OK).body(updated);
     }
 }

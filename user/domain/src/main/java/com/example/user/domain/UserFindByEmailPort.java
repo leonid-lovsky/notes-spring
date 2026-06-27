@@ -4,5 +4,5 @@ import java.util.Optional;
 
 public interface UserFindByEmailPort {
 
-    Optional<User> findByEmail(String email);
+    Optional<UserResponse> findByEmail(String email);
 }

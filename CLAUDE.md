@@ -3,7 +3,7 @@
 > Живой документ проекта. Читается автоматически в начале каждой сессии.
 > **Всё в этом документе и в коде — временно.** Ничто не является окончательно принятым паттерном.
 > Любое решение подлежит обсуждению, изменению и уточнению — независимо от того, что уже написано.
-> Последнее обновление: 2026-06-27T15:36Z
+> Последнее обновление: 2026-06-27T16:02Z
 
 ---
 
@@ -37,7 +37,8 @@
 ## Задачи
 
 ```
-ГОТОВО      user/ · note/ · user-note/  — domain · webmvc · data-jpa · data-mongodb · data-jdbc; service/ удалён
+ГОТОВО      user/ · note/ · user-note/  — domain (DTO + port interfaces) · webmvc · data-jpa · data-mongodb · data-jdbc
+            Принципы: крайний ISP · Single Data Flow · DTO в domain · маппер в адаптере · ProblemDetail
 ТЕКУЩИЙ     решение по reactive/sync impedance + адаптеры — data-r2dbc · data-mongodb-reactive · webflux · graphql
 ОТЛОЖЕНО    инфраструктура — actuator · eureka · config · oauth2 · gateway · logging · monitoring
 ОТЛОЖЕНО    auth/  — Spring Authorization Server (реализация в самом конце)
@@ -48,9 +49,8 @@
 
 Реализовать driven adapters (для каждого сервиса: `user/` · `note/` · `user-note/`):
 
-1. `data-jdbc/` — Spring Data JDBC / JdbcTemplate; явный `INSERT` vs `UPDATE` (add vs replace)
-2. `data-r2dbc/` — реактивный SQL; **сначала принять решение по reactive/sync impedance**
-3. `data-mongodb-reactive/` — реактивный MongoDB; та же проблема
+1. `data-r2dbc/` — реактивный SQL; **сначала принять решение по reactive/sync impedance**
+2. `data-mongodb-reactive/` — реактивный MongoDB; та же проблема
 
 Реализовать driving adapters (для каждого сервиса):
 
@@ -103,8 +103,8 @@
 > Скелет `auth/application/` создан. Convention plugins готовы.
 > Реализация откладывается до завершения всего остального.
 
-1. `auth/domain/` — `AuthUser` record + `AuthUserUseCase` + `AuthUserRepository`
-2. `auth/data-jpa/` — JPA adapter + Flyway schema
+1. `auth/domain/` — `AuthUser` record + port interfaces по ISP: `AuthUserAddPort` · `AuthUserFindByUsernamePort` и др.
+2. `auth/data-jpa/` — JPA adapter + Flyway schema; mapper: `AuthUserJpaMapper` + `AuthUserJpaMapperImpl`
 3. Spring Authorization Server — OIDC endpoint + JWT issuer
 4. Resource Server во всех сервисах; убрать `userId` из `UserNoteRequest`
 
@@ -121,22 +121,22 @@
 **Суть проблемы.** Порты `domain/` используют sync-типы Java:
 
 ```java
-// NoteRepository (domain port)
-Optional<Note> findById(UUID id);
-List<Note>     findAll();
-void           add(Note note);
+// NoteAddPort, NoteFindByIdPort, ... (domain ports)
+NoteResponse          add(NoteRequest request);
+Optional<NoteResponse> findById(UUID id);
+List<NoteResponse>    findAll();
 ```
 
 R2DBC и MongoDB Reactive возвращают реактивные типы:
 
 ```java
 // Что возвращает R2DBC-драйвер внутри адаптера
-Mono<Note>  findById(UUID id);
-Flux<Note>  findAll();
-Mono<Void>  save(Note note);
+Mono<NoteEntity>  save(NoteEntity entity);
+Mono<NoteEntity>  findById(UUID id);
+Flux<NoteEntity>  findAll();
 ```
 
-Адаптер не может реализовать sync-порт без `.block()`. WebFlux-контроллер не может вернуть `Mono<ResponseEntity>`, если use case возвращает `Note` синхронно.
+Адаптер не может реализовать sync-порт без `.block()`. WebFlux-контроллер не может вернуть `Mono<ResponseEntity>`, если use case возвращает `NoteResponse` синхронно.
 
 Совместимость адаптеров:
 
@@ -148,25 +148,23 @@ Mono<Void>  save(Note note);
 | `graphql` (WebFlux транспорт) | ✗          | ✗              | ✗           | ✓            | ✓                       |
 
 Варианты решения:
-- **Параллельные порты** _(склонение)_ — `NoteRepository` + `ReactiveNoteRepository` в `domain/`; реакторные типы входят в `domain/`; два набора сервисов
+- **Параллельные порты** _(склонение)_ — набор sync-интерфейсов (`NoteAddPort`, `NoteFindByIdPort`, ...) + набор reactive-интерфейсов (`ReactiveNoteAddPort`, `ReactiveNoteFindByIdPort`, ...); реакторные типы (`Mono`, `Flux`) входят в `domain/`; два набора адаптеров
 - **Sync обёртка с `.block()`** — адаптер реализует sync-интерфейс, блокируя реактивный поток; риск deadlock в event-loop потоке; не настоящий reactive
 - **Отдельные реактивные сервисы** — `domain/` дублируется для каждого стека; нарушает DRY
 
 ### Устранение сервисного слоя для CRUD-сервисов — решено
 
-`service/` убран из `user/` · `note/` · `user-note/`; `*UseCase` интерфейсы убраны из `domain/`; `add` возвращает `Note`; UUID генерирует адаптер; `@Transactional` на методах адаптера. Для `sharing/` — сервисный слой остаётся.
+`service/` убран из `user/` · `note/` · `user-note/`; `*UseCase` интерфейсы убраны из `domain/`; `add` возвращает `NoteResponse`; UUID генерирует адаптер; `@Transactional` на методах адаптера. Для `sharing/` — сервисный слой остаётся.
 
-### ⚠ Стратегия проектирования портов
+### Стратегия проектирования портов — решено
 
-Открытый вопрос: стратегия группировки — один `UseCase` на сущность (текущее) или один на операцию (Uncle Bob)? — **в анализе**
-
-Решить до начала реализации `auth/domain/`.
+Крайний ISP: один интерфейс — один метод. `NoteAddPort` · `NoteFindByIdPort` · `NoteFindAllPort` · `NoteReplacePort` · `NoteRemovePort` · `NoteExistsByIdPort` — аналогично для `user/` и `user-note/`. Применяется к `auth/domain/` при реализации.
 
 ### Устранение агрегированных портов — решено
 
 Все методы `*Repository` разбиты на отдельные интерфейсы (крайний ISP, Role Interface — Fowler).
 
-`NoteAdd` · `NoteFindById` · `NoteFindAll` · `NoteReplace` · `NoteRemove` · `NoteExistsById` — аналогично для `user/` и `user-note/`.
+`NoteAddPort` · `NoteFindByIdPort` · `NoteFindAllPort` · `NoteReplacePort` · `NoteRemovePort` · `NoteExistsByIdPort` — аналогично для `user/` и `user-note/`.
 
 Один bean реализует ровно один интерфейс (`NoteAddPortAdapter implements NoteAddPort`); Spring инжектирует напрямую без `@Primary`. Контроллер зависит ровно от тех портов, которые использует: `UserCreateController` знает только `UserAddPort`.
 
@@ -188,9 +186,9 @@ Mono<Void>  save(Note note);
   - **Sync** — `auth/` → `user/` через RestClient; нарушает direction of dependencies
   - **Events** — Kafka/RabbitMQ; единственный вариант без нарушения SoC/SRP; требует брокера
 - **Возврат из use case** — что возвращает мутирующий use case (`create`, `update`):
-  - **A — доменный объект** _(склонение)_ — вызывающей стороне не нужен второй запрос; HTTP-контракт ожидает тело
+  - **A — DTO (`NoteResponse`)** _(склонение)_ — вызывающей стороне не нужен второй запрос; HTTP-контракт ожидает тело
   - **B — `void`** — чистый CQS; POST/PUT требует дополнительного `findById`
-- **Mapping** — где маппить между слоями; ручной / MapStruct; отдельные DTO/VO на каждом слое
+- ~~**Mapping**~~ — **решено**: маппинг в адаптере; ручной; `[Entity][Tech]MapperImpl`; DTO живут в `domain/`; отдельные DTO/VO на каждом слое не нужны
 - **PATCH** — обрабатывать в `webmvc/` + repository (fetch → modify → replace) или не поддерживать вовсе
 
 ### Отложено (фундаментальное)
@@ -208,7 +206,7 @@ Mono<Void>  save(Note note);
 
 | Инструмент                   | Целевая версия | Сейчас   |
 |------------------------------|----------------|----------|
-| Java                         | 17             | 17       |
+| Java                         | 21             | 21       |
 | Gradle                       | 9.6.0          | 9.5.1    |
 | Spring Boot                  | 4.1.0          | 4.0.6    |
 | Spring Cloud                 | 2025.1.2       | 2025.1.1 |
@@ -250,7 +248,7 @@ Mono<Void>  save(Note note);
 Frameworks & Drivers      ← webmvc/ · data-jpa/ · data-mongodb/ · data-jdbc/
 Interface Adapters        ← (маппинг между слоями; в этом проекте живёт внутри адаптеров)
 Use Cases                 ← service/ (только когда оправдан)
-Entities                  ← domain/ (entities + port interfaces)
+Entities                  ← domain/ (DTO + port interfaces)
 ```
 
 Пять принципов:
@@ -371,7 +369,7 @@ DeleteNote/
 
 ```
 application/            Spring Boot app — composition root; знает все модули
-domain/                 entities + port interfaces (Repository) — чистая Java, без Spring
+domain/                 DTO + port interfaces — чистая Java, без Spring
 service/                use case implementations — только при координации нескольких портов
 webmvc/                 driving adapter (sync REST/HTTP)       →  domain/
 webflux/                driving adapter (reactive REST/HTTP)   →  domain/
@@ -402,39 +400,40 @@ feign/                  driven adapter  (HTTP client)         →  domain/  (sha
 
 **ArchUnit** — архитектурные тесты в CI; проверяет, что `domain/` не импортирует из адаптеров.
 
-### Семантика репозиториев
+### Семантика портов
 
-`*Repository` в `domain/` говорит на языке домена. Коллекционная семантика (Evans):
+Порты в `domain/` говорят на языке домена — принимают и возвращают DTO. Коллекционная семантика (Evans):
 
 ```java
-boolean existsById(UUID id);       // containsKey
-Optional<Note> findById(UUID id);  // get
-List<Note> findAll();              // values
-Note add(Note note);               // put — адаптер генерирует id, возвращает объект с id
-void replace(Note note);           // replace (full)
-void remove(UUID id);              // remove
+// Порты note/ (аналогично user/ и user-note/)
+NoteResponse           add(NoteRequest request);         // put — адаптер генерирует UUID
+Optional<NoteResponse> findById(UUID id);                // get
+List<NoteResponse>     findAll();                        // values
+NoteResponse           replace(UUID id, NoteRequest r);  // replace (full)
+void                   remove(UUID id);                  // remove
+boolean                existsById(UUID id);              // containsKey
 ```
 
-UUID генерируется в адаптере: JPA через `@GeneratedValue(strategy = GenerationType.UUID)`, JDBC/MongoDB через `UUID.randomUUID()`. `replace` — полная замена; PATCH решается в `webmvc/` + repository.
+UUID генерируется в адаптере: JPA через `@GeneratedValue(strategy = GenerationType.UUID)`, JDBC/MongoDB через `UUID.randomUUID()`. `replace` — полная замена; PATCH решается в `webmvc/` + port.
 
-**`add` ≠ `replace` — осознанная семантика, не случайная:** реализовано во всех адаптерах:
-- JPA: `add` → `JpaRepository.save()` (null ID → `persist` + `@GeneratedValue`) · `replace` → `JpaRepository.save()` (merge при заданном ID)
+**`add` ≠ `replace` — осознанная семантика, не случайная:**
+- JPA: `add` → `save()` (null ID → `persist` + `@GeneratedValue`) · `replace` → `save()` (merge при заданном ID)
 - MongoDB: `add` → `mongoTemplate.insert()` (бросает при коллизии) · `replace` → `mongoTemplate.save()`
 - JDBC: `add` → `INSERT INTO ...` (бросает при коллизии) · `replace` → `UPDATE ... WHERE id = ...`
 Spring Data скрывает это за `repository.save()`, теряя семантику. Адаптеры сохраняют её явно.
 
+**Маппинг — ответственность адаптера.** Каждый adapter module содержит `[Entity][Tech]Mapper` (interface) + `[Entity][Tech]MapperImpl` (`@Component`); ручной маппинг, без MapStruct. Порты не знают о persistence-типах (`NoteEntity`, `NoteDocument`).
+
 **`*JpaRepository` / `*MongoRepository` — не архитектурные элементы:** тонкие обёртки над `EntityManager` / `MongoTemplate`, которые Spring Data генерирует автоматически; живут внутри адаптера и невидимы из `domain/`.
 
-**`*Repository` (domain port) не изменился ни разу** — ни для JPA, ни для MongoDB, ни при Spring Data, ни при `MongoTemplate`. Порт изолирован от инфраструктуры.
-
-**Spring Data — деталь реализации адаптера, не архитектурный выбор.** Адаптер можно реализовать через Spring Data (`NoteJpaRepository`) или вручную через `EntityManager` / `MongoTemplate` — `domain/` не меняется ни в одном из случаев. Spring Data подключается или убирается внутри адаптера без последствий для архитектуры.
+**Spring Data — деталь реализации адаптера, не архитектурный выбор.** Адаптер можно реализовать через Spring Data (`NoteJpaRepository`) или вручную через `EntityManager` / `MongoTemplate` — `domain/` не меняется ни в одном из случаев.
 
 Следствия для проектирования портов:
 
-- **Методы в `*Repository` добавляются по потребности домена, не по возможностям Spring Data.** Добавлять метод только потому, что Spring Data его сгенерирует — нарушение SRP.
-- **Возвращаемые типы — только Java или доменные типы.** `Pageable` · `Page` · `Slice` · `Specification` из Spring Data в `domain/` — утечка инфраструктуры. При необходимости пагинации: `List<Note> findAll(int offset, int limit)` или собственный `Page<T>` record в `domain/`.
-- **`add` / `replace` — осознанное различие, не случайное.** Spring Data скрывает их за `save()`, теряя семантику. Домен должен различать «добавить новое» и «заменить существующее» явно.
-- **Совпадение имён методов со Spring Data — удобство, не архитектурная связь.** `findByUsername` есть в `UserRepository` потому, что домен это требует, а не потому, что Spring Data это генерирует.
+- **Методы добавляются по потребности домена, не по возможностям Spring Data.** Добавлять метод только потому, что Spring Data его сгенерирует — нарушение SRP.
+- **Возвращаемые типы — только Java-типы или DTO из `domain/`.** `Pageable` · `Page` · `Slice` · `Specification` — утечка инфраструктуры. При необходимости пагинации: `List<NoteResponse> findAll(int offset, int limit)` или собственный `Page<T>` record в `domain/`.
+- **`add` / `replace` — осознанное различие, не случайное.** Порт явно выражает разницу между «добавить новое» и «заменить существующее».
+- **Совпадение имён методов со Spring Data — удобство, не архитектурная связь.** `findByUsername` есть в `UserFindByUsernamePort` потому, что домен это требует, а не потому, что Spring Data это генерирует.
 
 ### Принятые решения
 
@@ -442,18 +441,19 @@ Spring Data скрывает это за `repository.save()`, теряя сем�
 - **Token Exchange (RFC 8693)** — BFF обменивает access token на internal JWT с `aud` микросервиса
 - **Spring Authorization Server — постоянный IdP**; Keycloak/Auth0 только после детальной оценки
 - **OpenFeign** — `spring-cloud-starter-openfeign` для `sharing/feign/`
-- **Входящие адаптеры зависят напрямую от `*Repository`** — `webmvc/` зависит от output port (`*Repository` в `domain/`); `*UseCase` input port интерфейсы убраны вместе с `service/`
-- **Domain objects — Java records** — `withXxx()` для изменённой копии; JPA entities — обычные классы
-- **`existsById` в Repository** — валидный паттерн; не заменять на `findById`
+- **Входящие адаптеры зависят напрямую от port-интерфейсов** — `webmvc/` зависит от output ports (`*Port` в `domain/`); `*UseCase` input port интерфейсы убраны вместе с `service/`
+- **DTO в `domain/`** — `NoteRequest` · `NoteResponse`; `UserRequest` · `UserResponse`; `UserNoteRequest` · `UserNoteResponse`; domain objects (`Note` · `User` · `UserNote`) удалены; `domain/` содержит только DTO + port interfaces; JPA entities / MongoDB documents живут внутри адаптеров
+- **Mapper в адаптере** — `[Entity][Tech]Mapper` (interface) + `[Entity][Tech]MapperImpl` (`@Component`); ручной маппинг; `NoteJpaMapper` · `NoteMongoMapper` · `NoteJdbcMapper` (только `fromRow`) — аналогично для `user/` и `user-note/`
+- **`existsById` в port** — валидный паттерн; не заменять на `findById`
 - **Именование портов** — `[Entity][Operation]Port`: `NoteAddPort` · `NoteFindByIdPort`; **именование адаптеров** — `[ИмяПорта]Adapter`: `NoteAddPortAdapter implements NoteAddPort`
 - **Один контроллер на операцию** — `NoteCreateController` · `NoteFindByIdController` · `NoteFindAllController` · `NoteUpdateController` · `NoteDeleteController`; каждый класс реализует ровно один поток данных
 - **`ResponseEntity<T>` в контроллерах** — статусы явно через `HttpStatus`; exception handlers с `ProblemDetail` возвращают его напрямую — Spring берёт статус из `ProblemDetail.getStatus()`; базовый класс — `ResponseEntityExceptionHandler`; `spring.mvc.problemdetails.enabled=true` в `application.properties`
 - **`AuthUser` (`auth/`) ≠ `User` (`user/`)** — `User { id, username, email }`; пароль хранит только `auth/`
 - **Wire format в адаптере** — `.proto` в `grpc/`, `.graphqls` в `graphql/`; Protobuf/GraphQL типы не проникают в `domain/`
-- **Делегировать Spring Data репозиториям** — JPA делегирует `JpaRepository`; MongoDB делегирует `MongoRepository`; JDBC дублирует функциональность JPA через `NamedParameterJdbcTemplate`; кастомная реализация только там, где Spring Data не покрывает задачу; domain порты дублируют сигнатуры Spring Data, заменяя Spring-типы на Java-типы
+- **Делегировать Spring Data репозиториям** — JPA делегирует `JpaRepository`; MongoDB делегирует `MongoRepository`; JDBC дублирует функциональность JPA через `NamedParameterJdbcTemplate`; кастомная реализация только там, где Spring Data не покрывает задачу; domain порты дублируют декларации Spring Data, заменяя Spring-типы на Java-типы
 - **`@Transactional` на методах адаптера** — `spring-tx` входит транзитивно в `spring-boot-starter-data-jpa` и `spring-boot-starter-data-jdbc`; адаптер несёт ответственность за свои инфраструктурные детали самостоятельно
-- **`*UseCase` интерфейсы убраны из `domain/`** — `domain/` содержит только entities + output ports; без сервисного слоя input port избыточен
-- **UUID генерирует адаптер, `add` возвращает `Note`** — аналог `GenerationType.SEQUENCE`: вызывающая сторона не может предсказать ID до вызова; JPA — `@GeneratedValue(strategy = GenerationType.UUID)`; JDBC/MongoDB — `UUID.randomUUID()` внутри метода; сигнатура порта: `Note add(Note note)`
+- **`*UseCase` интерфейсы убраны из `domain/`** — `domain/` содержит только DTO + output ports; без сервисного слоя input port избыточен
+- **UUID генерирует адаптер, `add` возвращает `NoteResponse`** — аналог `GenerationType.SEQUENCE`: вызывающая сторона не может предсказать ID до вызова; JPA — `@GeneratedValue(strategy = GenerationType.UUID)`; JDBC/MongoDB — `UUID.randomUUID()` внутри метода; сигнатура порта: `NoteResponse add(NoteRequest request)`
 - **`service/` только когда оправдан** — для `sharing/`: координация нескольких портов + `@Transactional` через несколько шагов; для `user/` · `note/` · `user-note/`: удалён
 - **`user/` · `note/` · `user-note/` — чистые REST CRUD сервисы** — каждый знает только свои данные; любая бизнес-логика поверх CRUD реализуется в `sharing/`
 - **`sharing/` — отдельный гексагональный сервис** — реализует всю бизнес-логику Google Docs ACL; вызывает `user-note/` и `note/` через output ports (Feign); CRUD сервисы не знают о `sharing/` вообще
@@ -753,6 +753,7 @@ spring-boot-starter-graphql
 spring-boot-starter-groovy-templates
 spring-boot-starter-grpc-client
 spring-boot-starter-grpc-server
+spring-boot-starter-hazelcast
 spring-boot-starter-hateoas
 spring-boot-starter-integration
 spring-boot-starter-jdbc
@@ -900,6 +901,9 @@ io.asyncer:r2dbc-mysql
 org.mariadb.jdbc:mariadb-java-client
 org.mariadb:r2dbc-mariadb:1.1.3       ← явная версия (не в BOM)
 
+# IBM DB2
+com.ibm.db2:jcc
+
 # SQL Server
 com.microsoft.sqlserver:mssql-jdbc
 io.r2dbc:r2dbc-mssql:1.0.0.RELEASE    ← явная версия (не в BOM)
@@ -917,6 +921,7 @@ org.hsqldb:hsqldb
 org.xerial:sqlite-jdbc
 
 # Flyway drivers (нужны при использовании spring-boot-starter-flyway)
+org.flywaydb:flyway-database-db2
 org.flywaydb:flyway-database-derby              ← для Derby (deprecated в Boot 4.1)
 org.flywaydb:flyway-database-hsqldb
 org.flywaydb:flyway-database-oracle
@@ -993,6 +998,7 @@ spring-boot-starter-groovy-templates-test
 spring-boot-starter-grpc-client-test
 spring-boot-starter-grpc-server-test
 spring-boot-starter-hateoas-test
+spring-boot-starter-hazelcast-test
 spring-boot-starter-jdbc-test
 spring-boot-starter-jersey-test
 spring-boot-starter-jooq-test
@@ -1042,6 +1048,7 @@ org.testcontainers:testcontainers-activemq
 org.testcontainers:testcontainers-cassandra
 org.testcontainers:testcontainers-consul
 org.testcontainers:testcontainers-couchbase
+org.testcontainers:testcontainers-db2
 org.testcontainers:testcontainers-elasticsearch
 org.testcontainers:testcontainers-grafana
 org.testcontainers:testcontainers-junit-jupiter
@@ -1104,6 +1111,8 @@ com.netflix.dgs.codegen version 8.3.0         ← Netflix DGS codegen (GraphQL c
 com.vaadin version 25.2.0                     ← Vaadin UI framework
 org.asciidoctor.jvm.convert version 4.0.5    ← Spring REST Docs (Asciidoctor)
 org.cyclonedx.bom version 3.2.4              ← CycloneDX SBOM generation
+org.graalvm.buildtools.native version 1.1.1  ← GraalVM Native Image
+org.hibernate.orm version 7.4.1.Final        ← Hibernate ORM plugin (кодогенерация метамодели)
 org.owasp.dependencycheck version <version>   ← artifact: org.owasp:dependency-check-gradle
 org.springframework.cloud.contract version 5.0.3 ← Spring Cloud Contract (Consumer-Driven)
 

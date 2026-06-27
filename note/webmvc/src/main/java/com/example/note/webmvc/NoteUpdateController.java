@@ -1,8 +1,9 @@
 package com.example.note.webmvc;
 
-import com.example.note.domain.Note;
 import com.example.note.domain.NoteExistsByIdPort;
 import com.example.note.domain.NoteNotFoundException;
+import com.example.note.domain.NoteRequest;
+import com.example.note.domain.NoteResponse;
 import com.example.note.domain.NoteReplacePort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,8 +32,7 @@ class NoteUpdateController {
         if (!noteExistsByIdPort.existsById(id)) {
             throw new NoteNotFoundException(id);
         }
-        Note updated = new Note(id, request.content());
-        noteReplacePort.replace(updated);
-        return ResponseEntity.status(HttpStatus.OK).body(NoteResponse.from(updated));
+        NoteResponse updated = noteReplacePort.replace(id, request);
+        return ResponseEntity.status(HttpStatus.OK).body(updated);
     }
 }

@@ -1,6 +1,7 @@
 package com.example.usernote.webmvc;
 
 import com.example.usernote.domain.UserNoteFindByUserIdPort;
+import com.example.usernote.domain.UserNoteResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,9 +24,7 @@ class UserNoteFindByUserIdController {
 
     @GetMapping("/user/{userId}")
     ResponseEntity<List<UserNoteResponse>> findByUserId(@PathVariable UUID userId) {
-        List<UserNoteResponse> userNotes = userNoteFindByUserIdPort.findByUserId(userId).stream()
-                .map(UserNoteResponse::from)
-                .toList();
+        List<UserNoteResponse> userNotes = userNoteFindByUserIdPort.findByUserId(userId);
         return ResponseEntity.status(HttpStatus.OK).body(userNotes);
     }
 }

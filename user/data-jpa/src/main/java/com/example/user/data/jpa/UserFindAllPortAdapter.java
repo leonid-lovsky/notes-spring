@@ -1,7 +1,7 @@
 package com.example.user.data.jpa;
 
-import com.example.user.domain.User;
 import com.example.user.domain.UserFindAllPort;
+import com.example.user.domain.UserResponse;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -10,15 +10,15 @@ import java.util.List;
 class UserFindAllPortAdapter implements UserFindAllPort {
 
     private final UserJpaRepository userJpaRepository;
+    private final UserJpaMapper userJpaMapper;
 
-    UserFindAllPortAdapter(UserJpaRepository userJpaRepository) {
+    UserFindAllPortAdapter(UserJpaRepository userJpaRepository, UserJpaMapper userJpaMapper) {
         this.userJpaRepository = userJpaRepository;
+        this.userJpaMapper = userJpaMapper;
     }
 
     @Override
-    public List<User> findAll() {
-        return userJpaRepository.findAll().stream()
-                .map(e -> new User(e.getId(), e.getUsername(), e.getEmail()))
-                .toList();
+    public List<UserResponse> findAll() {
+        return userJpaRepository.findAll().stream().map(userJpaMapper::toResponse).toList();
     }
 }

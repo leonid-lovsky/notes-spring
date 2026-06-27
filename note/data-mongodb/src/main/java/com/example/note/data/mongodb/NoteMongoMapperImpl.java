@@ -1,0 +1,26 @@
+package com.example.note.data.mongodb;
+
+import com.example.note.domain.NoteRequest;
+import com.example.note.domain.NoteResponse;
+import org.springframework.stereotype.Component;
+
+import java.util.UUID;
+
+@Component
+class NoteMongoMapperImpl implements NoteMongoMapper {
+
+    @Override
+    public NoteDocument toNewDocument(NoteRequest request) {
+        return new NoteDocument(UUID.randomUUID(), request.content());
+    }
+
+    @Override
+    public NoteDocument toExistingDocument(UUID id, NoteRequest request) {
+        return new NoteDocument(id, request.content());
+    }
+
+    @Override
+    public NoteResponse toResponse(NoteDocument document) {
+        return new NoteResponse(document.getId(), document.getContent());
+    }
+}

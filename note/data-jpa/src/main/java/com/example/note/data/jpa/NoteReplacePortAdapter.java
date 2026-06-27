@@ -1,20 +1,26 @@
 package com.example.note.data.jpa;
 
-import com.example.note.domain.Note;
+import com.example.note.domain.NoteRequest;
+import com.example.note.domain.NoteResponse;
 import com.example.note.domain.NoteReplacePort;
 import org.springframework.stereotype.Repository;
+
+import java.util.UUID;
 
 @Repository
 class NoteReplacePortAdapter implements NoteReplacePort {
 
     private final NoteJpaRepository noteJpaRepository;
+    private final NoteJpaMapper noteJpaMapper;
 
-    NoteReplacePortAdapter(NoteJpaRepository noteJpaRepository) {
+    NoteReplacePortAdapter(NoteJpaRepository noteJpaRepository, NoteJpaMapper noteJpaMapper) {
         this.noteJpaRepository = noteJpaRepository;
+        this.noteJpaMapper = noteJpaMapper;
     }
 
     @Override
-    public void replace(Note note) {
-        noteJpaRepository.save(new NoteEntity(note.id(), note.content()));
+    public NoteResponse replace(UUID id, NoteRequest request) {
+        NoteEntity saved = noteJpaRepository.save(noteJpaMapper.toExistingEntity(id, request));
+        return noteJpaMapper.toResponse(saved);
     }
 }

@@ -1,6 +1,8 @@
 package com.example.note.domain;
 
+import java.util.UUID;
+
 public interface NoteReplacePort {
 
-    void replace(Note note);
+    NoteResponse replace(UUID id, NoteRequest request);
 }

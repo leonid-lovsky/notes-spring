@@ -1,7 +1,7 @@
 package com.example.usernote.data.mongodb;
 
-import com.example.usernote.domain.UserNote;
 import com.example.usernote.domain.UserNoteFindByNoteIdPort;
+import com.example.usernote.domain.UserNoteResponse;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -11,15 +11,17 @@ import java.util.UUID;
 class UserNoteFindByNoteIdPortAdapter implements UserNoteFindByNoteIdPort {
 
     private final UserNoteMongoRepository userNoteMongoRepository;
+    private final UserNoteMongoMapper userNoteMongoMapper;
 
-    UserNoteFindByNoteIdPortAdapter(UserNoteMongoRepository userNoteMongoRepository) {
+    UserNoteFindByNoteIdPortAdapter(UserNoteMongoRepository userNoteMongoRepository,
+                                    UserNoteMongoMapper userNoteMongoMapper) {
         this.userNoteMongoRepository = userNoteMongoRepository;
+        this.userNoteMongoMapper = userNoteMongoMapper;
     }
 
     @Override
-    public List<UserNote> findByNoteId(UUID noteId) {
+    public List<UserNoteResponse> findByNoteId(UUID noteId) {
         return userNoteMongoRepository.findByIdNoteId(noteId).stream()
-                .map(d -> new UserNote(d.getId().getUserId(), d.getId().getNoteId(), d.getRole()))
-                .toList();
+                .map(userNoteMongoMapper::toResponse).toList();
     }
 }

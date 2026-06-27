@@ -1,6 +1,8 @@
 package com.example.user.domain;
 
+import java.util.UUID;
+
 public interface UserReplacePort {
 
-    void replace(User user);
+    UserResponse replace(UUID id, UserRequest request);
 }

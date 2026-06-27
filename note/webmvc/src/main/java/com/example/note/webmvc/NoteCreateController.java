@@ -1,7 +1,8 @@
 package com.example.note.webmvc;
 
-import com.example.note.domain.Note;
 import com.example.note.domain.NoteAddPort;
+import com.example.note.domain.NoteRequest;
+import com.example.note.domain.NoteResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,7 +22,7 @@ class NoteCreateController {
 
     @PostMapping
     ResponseEntity<NoteResponse> create(@RequestBody NoteRequest request) {
-        Note note = noteAddPort.add(new Note(null, request.content()));
-        return ResponseEntity.status(HttpStatus.CREATED).body(NoteResponse.from(note));
+        NoteResponse note = noteAddPort.add(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(note);
     }
 }

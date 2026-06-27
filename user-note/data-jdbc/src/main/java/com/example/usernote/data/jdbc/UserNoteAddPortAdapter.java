@@ -1,7 +1,8 @@
 package com.example.usernote.data.jdbc;
 
-import com.example.usernote.domain.UserNote;
 import com.example.usernote.domain.UserNoteAddPort;
+import com.example.usernote.domain.UserNoteRequest;
+import com.example.usernote.domain.UserNoteResponse;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -17,9 +18,9 @@ class UserNoteAddPortAdapter implements UserNoteAddPort {
     }
 
     @Override
-    public UserNote add(UserNote userNote) {
+    public UserNoteResponse add(UserNoteRequest request) {
         jdbc.update("INSERT INTO user_notes (user_id, note_id, role) VALUES (:userId, :noteId, :role)",
-                Map.of("userId", userNote.userId(), "noteId", userNote.noteId(), "role", userNote.role().name()));
-        return userNote;
+                Map.of("userId", request.userId(), "noteId", request.noteId(), "role", request.role().name()));
+        return new UserNoteResponse(request.userId(), request.noteId(), request.role());
     }
 }

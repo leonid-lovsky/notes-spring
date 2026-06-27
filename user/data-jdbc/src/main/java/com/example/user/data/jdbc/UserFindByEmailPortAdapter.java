@@ -1,32 +1,27 @@
 package com.example.user.data.jdbc;
 
-import com.example.user.domain.User;
 import com.example.user.domain.UserFindByEmailPort;
+import com.example.user.domain.UserResponse;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 @Repository
 class UserFindByEmailPortAdapter implements UserFindByEmailPort {
 
     private final NamedParameterJdbcTemplate jdbc;
+    private final UserJdbcMapper userJdbcMapper;
 
-    UserFindByEmailPortAdapter(NamedParameterJdbcTemplate jdbc) {
+    UserFindByEmailPortAdapter(NamedParameterJdbcTemplate jdbc, UserJdbcMapper userJdbcMapper) {
         this.jdbc = jdbc;
+        this.userJdbcMapper = userJdbcMapper;
     }
 
     @Override
-    public Optional<User> findByEmail(String email) {
+    public Optional<UserResponse> findByEmail(String email) {
         return jdbc.query("SELECT id, username, email FROM users WHERE email = :email",
-                Map.of("email", email), UserFindByEmailPortAdapter::toUser).stream().findFirst();
-    }
-
-    private static User toUser(ResultSet rs, int row) throws SQLException {
-        return new User(rs.getObject("id", UUID.class), rs.getString("username"), rs.getString("email"));
+                Map.of("email", email), userJdbcMapper::fromRow).stream().findFirst();
     }
 }
