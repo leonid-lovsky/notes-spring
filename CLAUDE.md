@@ -3,7 +3,7 @@
 > Живой документ проекта. Читается автоматически в начале каждой сессии.
 > **Всё в этом документе и в коде — временно.** Ничто не является окончательно принятым паттерном.
 > Любое решение подлежит обсуждению, изменению и уточнению — независимо от того, что уже написано.
-> Последнее обновление: 2026-06-27T16:46Z
+> Последнее обновление: 2026-06-27T16:50Z
 
 ---
 
@@ -664,7 +664,7 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 
 ### Null Safety и стиль
 
-**JSpecify** (`@NullMarked` через `package-info.java`) — non-null по умолчанию; каждый пакет требует своего `package-info.java`; `org.jspecify:jspecify:<version>` в `domain/`; выбран вместо `org.springframework.lang` (deprecated) и JSR-305 (заброшен); **NullAway** (ErrorProne-плагин) проверяет соблюдение аннотаций во время компиляции — без него `@NullMarked` носит декларативный характер.
+**JSpecify** (`@NullMarked` через `package-info.java`) — non-null по умолчанию; каждый пакет требует своего `package-info.java`; `org.jspecify:jspecify:1.0.0` (`compileOnly`) в `domain/`; выбран вместо `org.springframework.lang` (deprecated) и JSR-305 (заброшен); **NullAway** (ErrorProne-плагин) проверяет соблюдение аннотаций во время компиляции — без него `@NullMarked` носит декларативный характер.
 **`@Nullable`** — `@Target(TYPE_USE)`: `private @Nullable String field`; массивы: `Object @Nullable []` (nullable ссылка), `@Nullable Object[]` (nullable элементы)
 **Spring Cloud (2025.1.x)** — ещё не null-safe в `registry/`, `config/`, `gateway/`; при нужде: `@NullUnmarked`
 **Импорты** — `com.example.*` + `org.*` / `jakarta.*`, затем `java.*`; wildcard при 3+
@@ -687,8 +687,8 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 
 - **spring-javaformat** _(ноль конфига)_ — `io.spring.javaformat version 0.0.47`; применяется вместе с `checkstyle` plugin + `toolVersion = "9.3"`; `springJavaFormat { checkstyle { applyDefaultConfig() } }`; проверяет: строки до 120 символов, пробелы, импорты, Javadoc; IDEA: автоактивируется при наличии Gradle-плагина, стандартный «Reformat Code»; для Checkstyle-IDEA — добавить `spring-javaformat-checkstyle` jar в Third-Party Checks
 - **Checkstyle** _(минимальный конфиг)_ — Gradle built-in (`checkstyle` plugin, версия не нужна); конфиг: `config/checkstyle/checkstyle.xml`; `toolVersion` задаётся явно; пресеты: Spring Style (через `spring-javaformat`) или Google Style (`google_checks.xml` из `checkstyle/checkstyle`); IDEA: плагин CheckStyle-IDEA
-- **ErrorProne** _(ноль конфига)_ — `net.ltgt.gradle:gradle-errorprone-plugin:<version>`; зависимость: `errorprone("com.google.errorprone:error_prone_core")`; находит баги во время компиляции (`javac`); база для NullAway; IDEA: плагин ErrorProne Compiler; версии — GitHub `tbroyer/gradle-errorprone-plugin`
-- **NullAway** _(ноль конфига)_ — плагин к ErrorProne; `errorprone("com.uber.nullaway:nullaway:<version>")`; проверяет соблюдение `@NullMarked` / `@Nullable` (JSpecify) во время компиляции; без NullAway аннотации JSpecify ничего не гарантируют на уровне сборки; версии — Maven Central
+- **ErrorProne** _(ноль конфига)_ — `net.ltgt.gradle:gradle-errorprone-plugin:<version>`; зависимость: `errorprone("com.google.errorprone:error_prone_core")`; находит баги во время компиляции (`javac`); Java 21 требует версию 2.43+; JVM args для JDK 16+ настраиваются автоматически; конфиг через `tasks.withType<JavaCompile>().configureEach { options.errorprone { ... } }`; база для NullAway; IDEA: плагин ErrorProne Compiler; версии — GitHub `tbroyer/gradle-errorprone-plugin`
+- **NullAway** _(минимальный конфиг)_ — плагин к ErrorProne; `errorprone("com.uber.nullaway:nullaway:<version>")`; **обязательно** одно из двух: `option("NullAway:AnnotatedPackages", "com.example")` или `option("NullAway:OnlyNullMarked", "true")` (JSpecify-режим) — без этого NullAway не запускается; проверяет `@NullMarked` / `@Nullable` (JSpecify) во время компиляции; без NullAway аннотации JSpecify декларативны; версии — Maven Central
 
 **Общая Java-экосистема** (популярны, менее специфичны для Spring):
 
@@ -1121,7 +1121,7 @@ com.vaadin:vaadin-spring-boot-starter                         ← BOM: vaadin-bo
 org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2
 com.tngtech.archunit:archunit-junit5:<version>           ← версию брать с Maven Central
 com.uber.nullaway:nullaway:<version>                     ← ErrorProne-плагин для JSpecify; errorprone scope
-org.jspecify:jspecify:<version>                          ← null-safety аннотации; compileOnly или implementation
+org.jspecify:jspecify:1.0.0                              ← null-safety аннотации; compileOnly в domain/
 
 # Gradle plugins (third-party, явная версия)
 com.google.protobuf version 0.9.6              ← обязателен для gRPC (кодогенерация из .proto)
