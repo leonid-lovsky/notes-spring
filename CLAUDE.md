@@ -3,7 +3,7 @@
 > Живой документ проекта. Читается автоматически в начале каждой сессии.
 > **Всё в этом документе и в коде — временно.** Ничто не является окончательно принятым паттерном.
 > Любое решение подлежит обсуждению, изменению и уточнению — независимо от того, что уже написано.
-> Последнее обновление: 2026-06-27T11:52Z
+> Последнее обновление: 2026-06-27T12:10Z
 
 ---
 
@@ -12,7 +12,7 @@
 ### Начало каждой сессии
 
 1. Прочитать этот файл полностью
-2. **Текущий приоритет:** устранение `service/` — решить @Transactional · UUID · *UseCase по одному за раз
+2. **Текущий приоритет:** реализация — удалить `service/` и `*UseCase`, обновить `domain/` (`add` → `Note`), `webmvc/`, `application/`
 3. Актуализировать файл: убрать устаревшее, улучшить формулировки, устранить избыточность
 4. Зафиксировать изменения коммитом и пушем _(постоянная авторизация, явный запрос не требуется)_
 
@@ -38,7 +38,7 @@
 
 ```
 ГОТОВО      user/ · note/ · user-note/  — domain · service · webmvc · data-jpa · data-mongodb · data-jdbc
-ТЕКУЩИЙ     устранение service/ — @Transactional · UUID · *UseCase — по одному вопросу за раз
+ТЕКУЩИЙ     реализация: удалить service/ и *UseCase; обновить domain/ (add → Note), webmvc/, application/
 СЛЕДУЮЩИЙ  решение по reactive/sync impedance + адаптеры — data-r2dbc · data-mongodb-reactive · webflux · graphql
 ОТЛОЖЕНО    инфраструктура — actuator · eureka · config · oauth2 · gateway · logging · monitoring
 ОТЛОЖЕНО    auth/  — Spring Authorization Server (реализация в самом конце)
@@ -153,16 +153,9 @@ Mono<Void>  save(Note note);
 - **Sync обёртка с `.block()`** — адаптер реализует sync-интерфейс, блокируя реактивный поток; риск deadlock в event-loop потоке; не настоящий reactive
 - **Отдельные реактивные сервисы** — `domain/` + `service/` дублируются для каждого стека; нарушает DRY
 
-### ⚠ Устранение сервисного слоя для CRUD-сервисов ← **ТЕКУЩИЙ ПРИОРИТЕТ**
+### Устранение сервисного слоя для CRUD-сервисов — решено
 
-Принцип принят: `service/` убирается из `user/` · `note/` · `user-note/`; контроллер вызывает порт репозитория напрямую.
-Для `sharing/` — сервисный слой остаётся (координация нескольких портов + сложная транзакционная граница).
-
-Три вопроса для последовательного решения:
-
-1. **`@Transactional`** — на методы адаптера или иначе?
-2. **UUID** — генерировать в контроллере?
-3. **`*UseCase` интерфейсы в `domain/`** — убрать вместе с сервисом?
+`service/` убран из `user/` · `note/` · `user-note/`; `*UseCase` интерфейсы убраны из `domain/`; `add` возвращает `Note`; UUID генерирует адаптер; `@Transactional` на методах адаптера. Для `sharing/` — сервисный слой остаётся.
 
 ### ⚠ Стратегия проектирования портов
 
@@ -356,7 +349,7 @@ feign/                  driven adapter  (HTTP client)         →  domain/  (sha
 boolean existsById(UUID id);       // containsKey
 Optional<Note> findById(UUID id);  // get
 List<Note> findAll();              // values
-void add(Note note);               // put
+Note add(Note note);               // put — адаптер генерирует id, возвращает объект с id
 void replace(Note note);           // replace (full)
 void remove(UUID id);              // remove
 ```
@@ -388,13 +381,16 @@ Spring Data скрывает это за `repository.save()`, теряя сем�
 - **Token Exchange (RFC 8693)** — BFF обменивает access token на internal JWT с `aud` микросервиса
 - **Spring Authorization Server — постоянный IdP**; Keycloak/Auth0 только после детальной оценки
 - **OpenFeign** — `spring-cloud-starter-openfeign` для `sharing/feign/`
-- **Input port — интерфейс в `domain/`** — `webmvc/` зависит от интерфейса, не от `service/`
+- **Входящие адаптеры зависят напрямую от `*Repository`** — `webmvc/` зависит от output port (`*Repository` в `domain/`); `*UseCase` input port интерфейсы убраны вместе с `service/`
 - **Domain objects — Java records** — `withXxx()` для изменённой копии; JPA entities — обычные классы
 - **`existsById` в Repository** — валидный паттерн; не заменять на `findById`
-- **Именование** — `*UseCase` (input port) · `*Repository` (output port, `domain/`) · `*JpaRepository` (Spring Data, `data-jpa/`) · `*[Tech]Adapter` (driven adapter)
+- **Именование** — `*Repository` (output port, `domain/`) · `*JpaRepository` (Spring Data, `data-jpa/`) · `*[Tech]Adapter` (driven adapter)
 - **`ResponseEntity<T>` везде** — статусы явно через `HttpStatus`
 - **`AuthUser` (`auth/`) ≠ `User` (`user/`)** — `User { id, username, email }`; пароль хранит только `auth/`
 - **Wire format в адаптере** — `.proto` в `grpc/`, `.graphqls` в `graphql/`; Protobuf/GraphQL типы не проникают в `domain/`
+- **`@Transactional` на методах адаптера** — `spring-tx` входит транзитивно в `spring-boot-starter-data-jpa` и `spring-boot-starter-data-jdbc`; адаптер несёт ответственность за свои инфраструктурные детали самостоятельно
+- **`*UseCase` интерфейсы убраны из `domain/`** — `domain/` содержит только entities + output ports; без сервисного слоя input port избыточен
+- **UUID генерирует адаптер, `add` возвращает `Note`** — аналог `GenerationType.SEQUENCE`: вызывающая сторона не может предсказать ID до вызова; JPA — `@GeneratedValue(strategy = GenerationType.UUID)`; JDBC/MongoDB — `UUID.randomUUID()` внутри метода; сигнатура порта: `Note add(Note note)`
 - **`service/` только когда оправдан** — для `sharing/`: координация нескольких портов + `@Transactional` через несколько шагов; для `user/` · `note/` · `user-note/`: убирается (принцип принят, детали реализации открыты — см. «Открытые решения»)
 - **`user/` · `note/` · `user-note/` — чистые REST CRUD сервисы** — каждый знает только свои данные; любая бизнес-логика поверх CRUD реализуется в `sharing/`
 - **`sharing/` — отдельный гексагональный сервис** — реализует всю бизнес-логику Google Docs ACL; вызывает `user-note/` и `note/` через output ports (Feign); CRUD сервисы не знают о `sharing/` вообще
