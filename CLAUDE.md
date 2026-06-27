@@ -3,7 +3,7 @@
 > Живой документ проекта. Читается автоматически в начале каждой сессии.
 > **Всё в этом документе и в коде — временно.** Ничто не является окончательно принятым паттерном.
 > Любое решение подлежит обсуждению, изменению и уточнению — независимо от того, что уже написано.
-> Последнее обновление: 2026-06-27T16:45Z
+> Последнее обновление: 2026-06-27T16:46Z
 
 ---
 
@@ -1137,11 +1137,13 @@ org.owasp.dependencycheck version <version>    ← artifact: org.owasp:dependenc
 org.springframework.cloud.contract version 5.0.3 ← Spring Cloud Contract (Consumer-Driven)
 
 # Gradle plugins (встроенные, версия не нужна)
+build-dashboard            ← HTML-дашборд со ссылками на все отчёты; не совместим с Configuration Cache
 checkstyle
 idea                       ← кастомизация IDEA-модулей через DSL; сами задачи deprecated в Gradle 10 — IDEA импортирует нативно
 jacoco
 jacoco-report-aggregation  ← агрегирует покрытие по всем модулям monorepo
 pmd
+project-report             ← отчёты в файлы: dependencyReport · htmlDependencyReport · propertyReport · taskReport
 
 # BOM (третьи стороны, инлайн в convention plugin)
 org.springframework.modulith:spring-modulith-bom:2.1.0             ← Spring Modulith
