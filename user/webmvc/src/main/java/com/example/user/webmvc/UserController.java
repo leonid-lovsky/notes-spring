@@ -12,15 +12,15 @@ import java.util.UUID;
 @RequestMapping("/users")
 class UserController {
 
-    private final UserExistsById userExistsById;
-    private final UserFindById userFindById;
-    private final UserFindAll userFindAll;
-    private final UserAdd userAdd;
-    private final UserReplace userReplace;
-    private final UserRemove userRemove;
+    private final UserExistsByIdPort userExistsById;
+    private final UserFindByIdPort userFindById;
+    private final UserFindAllPort userFindAll;
+    private final UserAddPort userAdd;
+    private final UserReplacePort userReplace;
+    private final UserRemovePort userRemove;
 
-    UserController(UserExistsById userExistsById, UserFindById userFindById, UserFindAll userFindAll,
-                   UserAdd userAdd, UserReplace userReplace, UserRemove userRemove) {
+    UserController(UserExistsByIdPort userExistsById, UserFindByIdPort userFindById, UserFindAllPort userFindAll,
+                   UserAddPort userAdd, UserReplacePort userReplace, UserRemovePort userRemove) {
         this.userExistsById = userExistsById;
         this.userFindById = userFindById;
         this.userFindAll = userFindAll;

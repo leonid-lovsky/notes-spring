@@ -12,21 +12,21 @@ import java.util.UUID;
 @RequestMapping("/user-notes")
 class UserNoteController {
 
-    private final UserNoteExistsByUserIdAndNoteId userNoteExistsByUserIdAndNoteId;
-    private final UserNoteFindByUserIdAndNoteId userNoteFindByUserIdAndNoteId;
-    private final UserNoteFindByUserId userNoteFindByUserId;
-    private final UserNoteFindByNoteId userNoteFindByNoteId;
-    private final UserNoteAdd userNoteAdd;
-    private final UserNoteReplace userNoteReplace;
-    private final UserNoteRemove userNoteRemove;
+    private final UserNoteExistsByUserIdAndNoteIdPort userNoteExistsByUserIdAndNoteId;
+    private final UserNoteFindByUserIdAndNoteIdPort userNoteFindByUserIdAndNoteId;
+    private final UserNoteFindByUserIdPort userNoteFindByUserId;
+    private final UserNoteFindByNoteIdPort userNoteFindByNoteId;
+    private final UserNoteAddPort userNoteAdd;
+    private final UserNoteReplacePort userNoteReplace;
+    private final UserNoteRemovePort userNoteRemove;
 
-    UserNoteController(UserNoteExistsByUserIdAndNoteId userNoteExistsByUserIdAndNoteId,
-                       UserNoteFindByUserIdAndNoteId userNoteFindByUserIdAndNoteId,
-                       UserNoteFindByUserId userNoteFindByUserId,
-                       UserNoteFindByNoteId userNoteFindByNoteId,
-                       UserNoteAdd userNoteAdd,
-                       UserNoteReplace userNoteReplace,
-                       UserNoteRemove userNoteRemove) {
+    UserNoteController(UserNoteExistsByUserIdAndNoteIdPort userNoteExistsByUserIdAndNoteId,
+                       UserNoteFindByUserIdAndNoteIdPort userNoteFindByUserIdAndNoteId,
+                       UserNoteFindByUserIdPort userNoteFindByUserId,
+                       UserNoteFindByNoteIdPort userNoteFindByNoteId,
+                       UserNoteAddPort userNoteAdd,
+                       UserNoteReplacePort userNoteReplace,
+                       UserNoteRemovePort userNoteRemove) {
         this.userNoteExistsByUserIdAndNoteId = userNoteExistsByUserIdAndNoteId;
         this.userNoteFindByUserIdAndNoteId = userNoteFindByUserIdAndNoteId;
         this.userNoteFindByUserId = userNoteFindByUserId;

@@ -12,15 +12,15 @@ import java.util.UUID;
 @RequestMapping("/notes")
 class NoteController {
 
-    private final NoteExistsById noteExistsById;
-    private final NoteFindById noteFindById;
-    private final NoteFindAll noteFindAll;
-    private final NoteAdd noteAdd;
-    private final NoteReplace noteReplace;
-    private final NoteRemove noteRemove;
+    private final NoteExistsByIdPort noteExistsById;
+    private final NoteFindByIdPort noteFindById;
+    private final NoteFindAllPort noteFindAll;
+    private final NoteAddPort noteAdd;
+    private final NoteReplacePort noteReplace;
+    private final NoteRemovePort noteRemove;
 
-    NoteController(NoteExistsById noteExistsById, NoteFindById noteFindById, NoteFindAll noteFindAll,
-                   NoteAdd noteAdd, NoteReplace noteReplace, NoteRemove noteRemove) {
+    NoteController(NoteExistsByIdPort noteExistsById, NoteFindByIdPort noteFindById, NoteFindAllPort noteFindAll,
+                   NoteAddPort noteAdd, NoteReplacePort noteReplace, NoteRemovePort noteRemove) {
         this.noteExistsById = noteExistsById;
         this.noteFindById = noteFindById;
         this.noteFindAll = noteFindAll;
