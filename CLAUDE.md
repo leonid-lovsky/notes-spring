@@ -3,7 +3,7 @@
 > Живой документ проекта. Читается автоматически в начале каждой сессии.
 > **Всё в этом документе и в коде — временно.** Ничто не является окончательно принятым паттерном.
 > Любое решение подлежит обсуждению, изменению и уточнению — независимо от того, что уже написано.
-> Последнее обновление: 2026-06-27T12:10Z
+> Последнее обновление: 2026-06-27T12:32Z
 
 ---
 
@@ -12,7 +12,7 @@
 ### Начало каждой сессии
 
 1. Прочитать этот файл полностью
-2. **Текущий приоритет:** реализация — удалить `service/` и `*UseCase`, обновить `domain/` (`add` → `Note`), `webmvc/`, `application/`
+2. **Текущий приоритет:** решение по reactive/sync impedance → реализовать адаптеры — data-r2dbc · data-mongodb-reactive · webflux · graphql
 3. Актуализировать файл: убрать устаревшее, улучшить формулировки, устранить избыточность
 4. Зафиксировать изменения коммитом и пушем _(постоянная авторизация, явный запрос не требуется)_
 
@@ -37,9 +37,8 @@
 ## Задачи
 
 ```
-ГОТОВО      user/ · note/ · user-note/  — domain · service · webmvc · data-jpa · data-mongodb · data-jdbc
-ТЕКУЩИЙ     реализация: удалить service/ и *UseCase; обновить domain/ (add → Note), webmvc/, application/
-СЛЕДУЮЩИЙ  решение по reactive/sync impedance + адаптеры — data-r2dbc · data-mongodb-reactive · webflux · graphql
+ГОТОВО      user/ · note/ · user-note/  — domain · webmvc · data-jpa · data-mongodb · data-jdbc; service/ удалён
+ТЕКУЩИЙ     решение по reactive/sync impedance + адаптеры — data-r2dbc · data-mongodb-reactive · webflux · graphql
 ОТЛОЖЕНО    инфраструктура — actuator · eureka · config · oauth2 · gateway · logging · monitoring
 ОТЛОЖЕНО    auth/  — Spring Authorization Server (реализация в самом конце)
 НЕ СОЗДАНО  bff/ · thymeleaf/ · sharing/ · crud/
@@ -60,10 +59,10 @@
 
 ### Инфраструктура ← ОТЛОЖЕНО
 
-> Реализовать после решения по reactive/sync impedance. Все изменения — только в `application/build.gradle` и `*.properties`; `domain/` и `service/` не затрагиваются.
+> Реализовать после решения по reactive/sync impedance. Все изменения — только в `application/build.gradle` и `*.properties`; `domain/` не затрагивается.
 
 **Корневая идея:** тот же принцип изоляции — на двух уровнях:
-- **Intra-service** — hexagonal architecture: `domain/` + `service/` не знают о JPA, MongoDB, WebMVC
+- **Intra-service** — hexagonal architecture: `domain/` не знает о JPA, MongoDB, WebMVC
 - **Inter-service** — convention plugins: бизнес-сервис не знает о Eureka, Config, Gateway, OAuth2
 
 Замена любого инфраструктурного компонента = смена конфига или одной строки в `build.gradle`.
@@ -151,7 +150,7 @@ Mono<Void>  save(Note note);
 Варианты решения:
 - **Параллельные порты** _(склонение)_ — `NoteRepository` + `ReactiveNoteRepository` в `domain/`; реакторные типы входят в `domain/`; два набора сервисов
 - **Sync обёртка с `.block()`** — адаптер реализует sync-интерфейс, блокируя реактивный поток; риск deadlock в event-loop потоке; не настоящий reactive
-- **Отдельные реактивные сервисы** — `domain/` + `service/` дублируются для каждого стека; нарушает DRY
+- **Отдельные реактивные сервисы** — `domain/` дублируется для каждого стека; нарушает DRY
 
 ### Устранение сервисного слоя для CRUD-сервисов — решено
 
@@ -177,7 +176,7 @@ Mono<Void>  save(Note note);
   - **A — доменный объект** _(склонение)_ — вызывающей стороне не нужен второй запрос; HTTP-контракт ожидает тело
   - **B — `void`** — чистый CQS; POST/PUT требует дополнительного `findById`
 - **Mapping** — где маппить между слоями; ручной / MapStruct; отдельные DTO/VO на каждом слое
-- **PATCH** — обрабатывать в `service/` (fetch → modify → replace) или не поддерживать вовсе
+- **PATCH** — обрабатывать в `webmvc/` + repository (fetch → modify → replace) или не поддерживать вовсе
 
 ### Отложено (фундаментальное)
 
@@ -206,7 +205,7 @@ Mono<Void>  save(Note note);
 
 ## Принципы
 
-> Применяются с первого дня. Код, архитектура, тесты, деплой проектируются так, чтобы менять backing service (H2 → PostgreSQL, local → AWS) без правок в `domain/` и `service/`.
+> Применяются с первого дня. Код, архитектура, тесты, деплой проектируются так, чтобы менять backing service (H2 → PostgreSQL, local → AWS) без правок в `domain/`.
 
 ### Четыре приоритетных критерия
 
@@ -255,7 +254,7 @@ Mono<Void>  save(Note note);
 
 | # | Что менять             | Механизм                                                           | Цена    |
 |---|------------------------|--------------------------------------------------------------------|---------|
-| 1 | Бизнес-логику          | `service/` зависит только от `domain/`; адаптеры не трогаются      | Дёшево  |
+| 1 | Бизнес-логику          | в `domain/` (и `service/` при наличии); адаптеры не трогаются      | Дёшево  |
 | 2 | Порты                  | Порты — контракты в `domain/`; смена порта = смена контракта       | Дорого  |
 | 3 | Адаптеры               | Одна строка в `application/build.gradle`; convention plugin        | Дёшево  |
 | 4 | Внешние инструменты    | backing services — меняется конфиг и plugin; код не меняется       | Дёшево  |
@@ -310,8 +309,8 @@ Mono<Void>  save(Note note);
 
 ```
 application/            Spring Boot app — composition root; знает все модули
-domain/                 entities + port interfaces (UseCase + Repository) — чистая Java, без Spring
-service/                use case implementations (@Service, @Transactional) — зависит только от domain/
+domain/                 entities + port interfaces (Repository) — чистая Java, без Spring
+service/                use case implementations — только при координации нескольких портов
 webmvc/                 driving adapter (sync REST/HTTP)       →  domain/
 webflux/                driving adapter (reactive REST/HTTP)   →  domain/
 grpc/                   driving adapter (gRPC/Protobuf)        →  domain/
@@ -334,7 +333,7 @@ feign/                  driven adapter  (HTTP client)         →  domain/  (sha
 | Модуль         | Тест-слой                | Что проверяет                                      |
 |----------------|--------------------------|----------------------------------------------------|
 | `domain/`      | JUnit (чистая Java)      | Доменная логика без Spring context                 |
-| `service/`     | Spring context + Mockito | Use case; Repository мокируется                    |
+| `service/`     | Spring context + Mockito | Use case при наличии; Repository мокируется        |
 | `webmvc/`      | `@WebMvcTest` (MockMvc)  | HTTP binding, статусы, сериализация                |
 | `data-jpa/`    | `@DataJpaTest` + TC      | SQL, маппинг; Testcontainers = реальный PostgreSQL |
 | `application/` | `@SpringBootTest` + TC   | Полный smoke test; все слои вместе                 |
@@ -354,10 +353,10 @@ void replace(Note note);           // replace (full)
 void remove(UUID id);              // remove
 ```
 
-UUID генерируется в `service/` до вызова порта. `replace` — полная замена; PATCH решается в `webmvc/` + `service/`.
+UUID генерируется в адаптере: JPA через `@GeneratedValue(strategy = GenerationType.UUID)`, JDBC/MongoDB через `UUID.randomUUID()`. `replace` — полная замена; PATCH решается в `webmvc/` + repository.
 
 **`add` ≠ `replace` — осознанная семантика, не случайная:** реализовано во всех адаптерах:
-- JPA: `add` → `em.persist()` (бросает при коллизии) · `replace` → `JpaRepository.save()` (всегда `merge()` при заданном ID)
+- JPA: `add` → `JpaRepository.save()` (null ID → `persist` + `@GeneratedValue`) · `replace` → `JpaRepository.save()` (merge при заданном ID)
 - MongoDB: `add` → `mongoTemplate.insert()` (бросает при коллизии) · `replace` → `mongoTemplate.save()`
 - JDBC: `add` → `INSERT INTO ...` (бросает при коллизии) · `replace` → `UPDATE ... WHERE id = ...`
 Spring Data скрывает это за `repository.save()`, теряя семантику. Адаптеры сохраняют её явно.
@@ -366,7 +365,7 @@ Spring Data скрывает это за `repository.save()`, теряя сем�
 
 **`*Repository` (domain port) не изменился ни разу** — ни для JPA, ни для MongoDB, ни при Spring Data, ни при `MongoTemplate`. Порт изолирован от инфраструктуры.
 
-**Spring Data — деталь реализации адаптера, не архитектурный выбор.** Адаптер можно реализовать через Spring Data (`NoteJpaRepository`) или вручную через `EntityManager` / `MongoTemplate` — `domain/` и `service/` не меняются ни в одном из случаев. Spring Data подключается или убирается внутри адаптера без последствий для архитектуры.
+**Spring Data — деталь реализации адаптера, не архитектурный выбор.** Адаптер можно реализовать через Spring Data (`NoteJpaRepository`) или вручную через `EntityManager` / `MongoTemplate` — `domain/` не меняется ни в одном из случаев. Spring Data подключается или убирается внутри адаптера без последствий для архитектуры.
 
 Следствия для проектирования портов:
 
@@ -388,10 +387,11 @@ Spring Data скрывает это за `repository.save()`, теряя сем�
 - **`ResponseEntity<T>` везде** — статусы явно через `HttpStatus`
 - **`AuthUser` (`auth/`) ≠ `User` (`user/`)** — `User { id, username, email }`; пароль хранит только `auth/`
 - **Wire format в адаптере** — `.proto` в `grpc/`, `.graphqls` в `graphql/`; Protobuf/GraphQL типы не проникают в `domain/`
+- **Делегировать Spring Data репозиториям** — JPA делегирует `JpaRepository`; MongoDB делегирует `MongoRepository`; JDBC дублирует функциональность JPA через `NamedParameterJdbcTemplate`; кастомная реализация только там, где Spring Data не покрывает задачу; domain порты дублируют сигнатуры Spring Data, заменяя Spring-типы на Java-типы
 - **`@Transactional` на методах адаптера** — `spring-tx` входит транзитивно в `spring-boot-starter-data-jpa` и `spring-boot-starter-data-jdbc`; адаптер несёт ответственность за свои инфраструктурные детали самостоятельно
 - **`*UseCase` интерфейсы убраны из `domain/`** — `domain/` содержит только entities + output ports; без сервисного слоя input port избыточен
 - **UUID генерирует адаптер, `add` возвращает `Note`** — аналог `GenerationType.SEQUENCE`: вызывающая сторона не может предсказать ID до вызова; JPA — `@GeneratedValue(strategy = GenerationType.UUID)`; JDBC/MongoDB — `UUID.randomUUID()` внутри метода; сигнатура порта: `Note add(Note note)`
-- **`service/` только когда оправдан** — для `sharing/`: координация нескольких портов + `@Transactional` через несколько шагов; для `user/` · `note/` · `user-note/`: убирается (принцип принят, детали реализации открыты — см. «Открытые решения»)
+- **`service/` только когда оправдан** — для `sharing/`: координация нескольких портов + `@Transactional` через несколько шагов; для `user/` · `note/` · `user-note/`: удалён
 - **`user/` · `note/` · `user-note/` — чистые REST CRUD сервисы** — каждый знает только свои данные; любая бизнес-логика поверх CRUD реализуется в `sharing/`
 - **`sharing/` — отдельный гексагональный сервис** — реализует всю бизнес-логику Google Docs ACL; вызывает `user-note/` и `note/` через output ports (Feign); CRUD сервисы не знают о `sharing/` вообще
 - **Enforcement — BFF + сетевая изоляция** — перед вызовом `note/` BFF проверяет `sharing/effectiveRole`; `note/` — чистый Resource Server (JWT, без ACL); сетевая изоляция исключает прямой доступ в обход BFF
@@ -694,6 +694,7 @@ spring-boot-starter-hateoas
 spring-boot-starter-integration
 spring-boot-starter-jdbc
 spring-boot-starter-jersey
+spring-boot-starter-jooq
 spring-boot-starter-kafka
 spring-boot-starter-ldap
 spring-boot-starter-liquibase
@@ -886,6 +887,7 @@ org.springframework.boot:spring-boot-configuration-processor
 ```
 org.springframework.boot:spring-boot-devtools
 org.springframework.boot:spring-boot-docker-compose
+com.vaadin:vaadin-dev                                         ← Vaadin hot reload
 ```
 
 ### `testImplementation`
@@ -930,6 +932,7 @@ spring-boot-starter-grpc-server-test
 spring-boot-starter-hateoas-test
 spring-boot-starter-jdbc-test
 spring-boot-starter-jersey-test
+spring-boot-starter-jooq-test
 spring-boot-starter-kafka-test
 spring-boot-starter-ldap                              ← без -test; нужен в testImplementation для embedded LDAP
 spring-boot-starter-ldap-test
@@ -1028,6 +1031,7 @@ org.junit.platform:junit-platform-launcher
 ```
 # Maven (third-party, явная версия)
 org.thymeleaf.extras:thymeleaf-extras-springsecurity6   ← имя "6", даже с Security 7
+com.vaadin:vaadin-spring-boot-starter                         ← BOM: vaadin-bom
 org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2
 com.tngtech.archunit:archunit-junit5:<version>           ← версию брать с Maven Central
 

@@ -2,7 +2,6 @@ package com.example.usernote.data.jpa;
 
 import com.example.usernote.domain.UserNote;
 import com.example.usernote.domain.UserNoteRepository;
-import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
@@ -11,11 +10,9 @@ import java.util.*;
 class UserNoteJpaAdapter implements UserNoteRepository {
 
     private final UserNoteJpaRepository userNoteJpaRepository;
-    private final EntityManager em;
 
-    UserNoteJpaAdapter(UserNoteJpaRepository userNoteJpaRepository, EntityManager em) {
+    UserNoteJpaAdapter(UserNoteJpaRepository userNoteJpaRepository) {
         this.userNoteJpaRepository = userNoteJpaRepository;
-        this.em = em;
     }
 
     @Override
@@ -45,7 +42,7 @@ class UserNoteJpaAdapter implements UserNoteRepository {
 
     @Override
     public UserNote add(UserNote userNote) {
-        em.persist(toEntity(userNote));
+        userNoteJpaRepository.save(toEntity(userNote));
         return userNote;
     }
 
