@@ -1,13 +1,12 @@
 package com.example.user.data.jpa;
 
-import com.example.user.domain.User;
-import com.example.user.domain.UserRepository;
+import com.example.user.domain.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
 @Repository
-class UserJpaAdapter implements UserRepository {
+class UserJpaAdapter implements UserExistsById, UserFindById, UserFindByUsername, UserFindByEmail, UserFindAll, UserAdd, UserReplace, UserRemove {
 
     private final UserJpaRepository userJpaRepository;
 

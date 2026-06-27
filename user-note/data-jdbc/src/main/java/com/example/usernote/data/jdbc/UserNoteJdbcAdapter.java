@@ -1,8 +1,6 @@
 package com.example.usernote.data.jdbc;
 
-import com.example.usernote.domain.UserNote;
-import com.example.usernote.domain.UserNoteRepository;
-import com.example.usernote.domain.UserNoteRole;
+import com.example.usernote.domain.*;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -11,7 +9,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 @Repository
-class UserNoteJdbcAdapter implements UserNoteRepository {
+class UserNoteJdbcAdapter implements UserNoteExistsByUserIdAndNoteId, UserNoteFindByUserIdAndNoteId, UserNoteFindByUserId, UserNoteFindByNoteId, UserNoteAdd, UserNoteReplace, UserNoteRemove {
 
     private final NamedParameterJdbcTemplate jdbc;
 

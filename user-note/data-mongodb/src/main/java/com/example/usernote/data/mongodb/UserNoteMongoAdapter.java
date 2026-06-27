@@ -1,14 +1,13 @@
 package com.example.usernote.data.mongodb;
 
-import com.example.usernote.domain.UserNote;
-import com.example.usernote.domain.UserNoteRepository;
+import com.example.usernote.domain.*;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
 @Repository
-class UserNoteMongoAdapter implements UserNoteRepository {
+class UserNoteMongoAdapter implements UserNoteExistsByUserIdAndNoteId, UserNoteFindByUserIdAndNoteId, UserNoteFindByUserId, UserNoteFindByNoteId, UserNoteAdd, UserNoteReplace, UserNoteRemove {
 
     private final UserNoteMongoRepository userNoteMongoRepository;
     private final MongoTemplate mongoTemplate;

@@ -162,16 +162,13 @@ Mono<Void>  save(Note note);
 
 Решить до начала реализации `auth/domain/`.
 
-### ⚠ ISP для портов: один интерфейс — один метод
+### Устранение агрегированных портов — решено
 
-Требование: каждый метод `*Repository` выделить в отдельный интерфейс (Role Interface, Fowler).
+Все методы `*Repository` разбиты на отдельные интерфейсы (крайний ISP, Role Interface — Fowler).
 
-Варианты:
-- **CQS-разрез** _(склонение)_ — `NoteQueryPort` (`existsById · findById · findAll`) + `NoteCommandPort` (`add · replace · remove`); осмысленный разрез, не механический; два параметра в конструкторе вместо одного
-- **Один-метод** (крайний ISP) — `NoteAdd` · `NoteFindById` · `NoteFindAll` · `NoteReplace` · `NoteRemove` · `NoteExistsById`; максимальная изоляция; имеет смысл когда клиенты (`sharing/`) используют только часть методов
-- **Оставить как есть** — `NoteRepository` с 6 методами; один объект, одна инжекция; для CRUD-контроллера достаточно
+`NoteAdd` · `NoteFindById` · `NoteFindAll` · `NoteReplace` · `NoteRemove` · `NoteExistsById` — аналогично для `user/` и `user-note/`.
 
-Один bean (`NoteJpaAdapter`) реализует несколько интерфейсов; Spring требует `@Primary` при инжекции по отдельным типам.
+Один bean реализует все интерфейсы; Spring инжектирует без `@Primary` при единственной реализации. Контроллер зависит только от портов, которые использует: `UserController` не знает о `UserFindByUsername` / `UserFindByEmail`.
 
 ### ⚠ Согласованность именования портов и адаптеров
 
@@ -448,7 +445,7 @@ Spring Data скрывает это за `repository.save()`, теряя сем�
 - **Входящие адаптеры зависят напрямую от `*Repository`** — `webmvc/` зависит от output port (`*Repository` в `domain/`); `*UseCase` input port интерфейсы убраны вместе с `service/`
 - **Domain objects — Java records** — `withXxx()` для изменённой копии; JPA entities — обычные классы
 - **`existsById` в Repository** — валидный паттерн; не заменять на `findById`
-- **Именование** — `*Repository` (output port, `domain/`) · `*JpaRepository` (Spring Data, `data-jpa/`) · `*[Tech]Adapter` (driven adapter)
+- **Именование output ports** — `NoteAdd` · `NoteFindById` · `NoteFindAll` · `NoteReplace` · `NoteRemove` · `NoteExistsById` (один интерфейс — один метод; ISP)
 - **Один контроллер на ресурс** — `NoteController` объединяет все операции над ресурсом; один контроллер на операцию (Clean Architecture / Vertical Slice) отложен как преждевременный для текущего CRUD
 - **`ResponseEntity<T>` в контроллерах** — статусы явно через `HttpStatus`; exception handlers с `ProblemDetail` возвращают его напрямую — Spring берёт статус из `ProblemDetail.getStatus()`; базовый класс — `ResponseEntityExceptionHandler`; `spring.mvc.problemdetails.enabled=true` в `application.properties`
 - **`AuthUser` (`auth/`) ≠ `User` (`user/`)** — `User { id, username, email }`; пароль хранит только `auth/`

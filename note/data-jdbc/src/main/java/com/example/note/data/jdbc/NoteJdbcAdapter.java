@@ -1,7 +1,6 @@
 package com.example.note.data.jdbc;
 
-import com.example.note.domain.Note;
-import com.example.note.domain.NoteRepository;
+import com.example.note.domain.*;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -10,7 +9,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 @Repository
-class NoteJdbcAdapter implements NoteRepository {
+class NoteJdbcAdapter implements NoteExistsById, NoteFindById, NoteFindAll, NoteAdd, NoteReplace, NoteRemove {
 
     private final NamedParameterJdbcTemplate jdbc;
 

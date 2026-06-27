@@ -1,14 +1,13 @@
 package com.example.note.data.mongodb;
 
-import com.example.note.domain.Note;
-import com.example.note.domain.NoteRepository;
+import com.example.note.domain.*;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
 @Repository
-class NoteMongoAdapter implements NoteRepository {
+class NoteMongoAdapter implements NoteExistsById, NoteFindById, NoteFindAll, NoteAdd, NoteReplace, NoteRemove {
 
     private final NoteMongoRepository noteMongoRepository;
     private final MongoTemplate mongoTemplate;

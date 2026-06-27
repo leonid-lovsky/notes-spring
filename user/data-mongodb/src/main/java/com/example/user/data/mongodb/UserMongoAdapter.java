@@ -1,14 +1,13 @@
 package com.example.user.data.mongodb;
 
-import com.example.user.domain.User;
-import com.example.user.domain.UserRepository;
+import com.example.user.domain.*;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
 @Repository
-class UserMongoAdapter implements UserRepository {
+class UserMongoAdapter implements UserExistsById, UserFindById, UserFindByUsername, UserFindByEmail, UserFindAll, UserAdd, UserReplace, UserRemove {
 
     private final UserMongoRepository userMongoRepository;
     private final MongoTemplate mongoTemplate;

@@ -1,8 +1,6 @@
 package com.example.note.webmvc;
 
-import com.example.note.domain.Note;
-import com.example.note.domain.NoteNotFoundException;
-import com.example.note.domain.NoteRepository;
+import com.example.note.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,15 +12,26 @@ import java.util.UUID;
 @RequestMapping("/notes")
 class NoteController {
 
-    private final NoteRepository noteRepository;
+    private final NoteExistsById noteExistsById;
+    private final NoteFindById noteFindById;
+    private final NoteFindAll noteFindAll;
+    private final NoteAdd noteAdd;
+    private final NoteReplace noteReplace;
+    private final NoteRemove noteRemove;
 
-    NoteController(NoteRepository noteRepository) {
-        this.noteRepository = noteRepository;
+    NoteController(NoteExistsById noteExistsById, NoteFindById noteFindById, NoteFindAll noteFindAll,
+                   NoteAdd noteAdd, NoteReplace noteReplace, NoteRemove noteRemove) {
+        this.noteExistsById = noteExistsById;
+        this.noteFindById = noteFindById;
+        this.noteFindAll = noteFindAll;
+        this.noteAdd = noteAdd;
+        this.noteReplace = noteReplace;
+        this.noteRemove = noteRemove;
     }
 
     @GetMapping
     ResponseEntity<List<NoteResponse>> findAll() {
-        List<NoteResponse> notes = noteRepository.findAll().stream()
+        List<NoteResponse> notes = noteFindAll.findAll().stream()
             .map(NoteResponse::from)
             .toList();
         return ResponseEntity.status(HttpStatus.OK).body(notes);
@@ -30,33 +39,33 @@ class NoteController {
 
     @GetMapping("/{id}")
     ResponseEntity<NoteResponse> findById(@PathVariable UUID id) {
-        Note note = noteRepository.findById(id)
+        Note note = noteFindById.findById(id)
             .orElseThrow(() -> new NoteNotFoundException(id));
         return ResponseEntity.status(HttpStatus.OK).body(NoteResponse.from(note));
     }
 
     @PostMapping
     ResponseEntity<NoteResponse> create(@RequestBody NoteRequest request) {
-        Note note = noteRepository.add(new Note(null, request.content()));
+        Note note = noteAdd.add(new Note(null, request.content()));
         return ResponseEntity.status(HttpStatus.CREATED).body(NoteResponse.from(note));
     }
 
     @PutMapping("/{id}")
     ResponseEntity<NoteResponse> update(@PathVariable UUID id, @RequestBody NoteRequest request) {
-        if (!noteRepository.existsById(id)) {
+        if (!noteExistsById.existsById(id)) {
             throw new NoteNotFoundException(id);
         }
         Note updated = new Note(id, request.content());
-        noteRepository.replace(updated);
+        noteReplace.replace(updated);
         return ResponseEntity.status(HttpStatus.OK).body(NoteResponse.from(updated));
     }
 
     @DeleteMapping("/{id}")
     ResponseEntity<Void> delete(@PathVariable UUID id) {
-        if (!noteRepository.existsById(id)) {
+        if (!noteExistsById.existsById(id)) {
             throw new NoteNotFoundException(id);
         }
-        noteRepository.remove(id);
+        noteRemove.remove(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

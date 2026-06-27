@@ -1,13 +1,12 @@
 package com.example.usernote.data.jpa;
 
-import com.example.usernote.domain.UserNote;
-import com.example.usernote.domain.UserNoteRepository;
+import com.example.usernote.domain.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
 @Repository
-class UserNoteJpaAdapter implements UserNoteRepository {
+class UserNoteJpaAdapter implements UserNoteExistsByUserIdAndNoteId, UserNoteFindByUserIdAndNoteId, UserNoteFindByUserId, UserNoteFindByNoteId, UserNoteAdd, UserNoteReplace, UserNoteRemove {
 
     private final UserNoteJpaRepository userNoteJpaRepository;
 

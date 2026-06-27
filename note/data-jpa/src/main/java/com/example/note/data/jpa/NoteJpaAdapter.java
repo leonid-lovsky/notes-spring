@@ -1,13 +1,12 @@
 package com.example.note.data.jpa;
 
-import com.example.note.domain.Note;
-import com.example.note.domain.NoteRepository;
+import com.example.note.domain.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
 @Repository
-class NoteJpaAdapter implements NoteRepository {
+class NoteJpaAdapter implements NoteExistsById, NoteFindById, NoteFindAll, NoteAdd, NoteReplace, NoteRemove {
 
     private final NoteJpaRepository noteJpaRepository;
 

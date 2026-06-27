@@ -1,7 +1,6 @@
 package com.example.user.data.jdbc;
 
-import com.example.user.domain.User;
-import com.example.user.domain.UserRepository;
+import com.example.user.domain.*;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -10,7 +9,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 @Repository
-class UserJdbcAdapter implements UserRepository {
+class UserJdbcAdapter implements UserExistsById, UserFindById, UserFindByUsername, UserFindByEmail, UserFindAll, UserAdd, UserReplace, UserRemove {
 
     private final NamedParameterJdbcTemplate jdbc;
 
