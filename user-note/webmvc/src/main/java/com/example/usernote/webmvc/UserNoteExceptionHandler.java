@@ -1,16 +1,17 @@
 package com.example.usernote.webmvc;
 
 import com.example.usernote.domain.UserNoteNotFoundException;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @ControllerAdvice
-class UserNoteExceptionHandler {
+class UserNoteExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(UserNoteNotFoundException.class)
-    ResponseEntity<ProblemDetail> handleNotFound(UserNoteNotFoundException e) {
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problem);
+    ProblemDetail handleNotFound(UserNoteNotFoundException e) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
     }
 }
