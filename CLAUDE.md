@@ -3,7 +3,7 @@
 > Живой документ проекта. Читается автоматически в начале каждой сессии.
 > **Всё в этом документе и в коде — временно.** Ничто не является окончательно принятым паттерном.
 > Любое решение подлежит обсуждению, изменению и уточнению — независимо от того, что уже написано.
-> Последнее обновление: 2026-06-27T16:15Z
+> Последнее обновление: 2026-06-27T16:29Z
 
 ---
 
@@ -699,6 +699,7 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 - **Spring Modulith** — миграция multi-module → modular monolith; Gradle-модули дают более сильную compile-time enforcement
 - **jMolecules** — аннотирует архитектурные роли явно: `@DrivingAdapter`, `@AggregateRoot`, `@Repository`
 - **Docker · Docker Compose · Kubernetes** — контейнеризация и оркестрация
+- **Terraform** — IaC провижининг инфраструктуры; AWS: VPC · ECS/EKS · RDS · ElastiCache · MSK · ALB · ACM
 - **AWS** (ECS Fargate → EKS, RDS, ElastiCache, MSK, ALB, ACM, Secrets Manager, CloudWatch + X-Ray)
 - **Elastic Stack** — Elasticsearch + Logstash + Kibana
 
