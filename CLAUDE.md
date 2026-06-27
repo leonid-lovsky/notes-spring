@@ -3,7 +3,7 @@
 > Живой документ проекта. Читается автоматически в начале каждой сессии.
 > **Всё в этом документе и в коде — временно.** Ничто не является окончательно принятым паттерном.
 > Любое решение подлежит обсуждению, изменению и уточнению — независимо от того, что уже написано.
-> Последнее обновление: 2026-06-27T11:18Z
+> Последнее обновление: 2026-06-27T11:33Z
 
 ---
 
@@ -37,8 +37,8 @@
 ## Задачи
 
 ```
-ГОТОВО      user/ · note/ · user-note/  — domain · service · webmvc · data-jpa · data-mongodb
-ТЕКУЩИЙ     решение по reactive/sync impedance + адаптеры — data-jdbc · data-r2dbc · data-mongodb-reactive · webflux · graphql
+ГОТОВО      user/ · note/ · user-note/  — domain · service · webmvc · data-jpa · data-mongodb · data-jdbc
+ТЕКУЩИЙ     решение по reactive/sync impedance + адаптеры — data-r2dbc · data-mongodb-reactive · webflux · graphql
 ОТЛОЖЕНО    инфраструктура — actuator · eureka · config · oauth2 · gateway · logging · monitoring
 ОТЛОЖЕНО    auth/  — Spring Authorization Server (реализация в самом конце)
 НЕ СОЗДАНО  bff/ · thymeleaf/ · sharing/ · crud/
@@ -333,9 +333,10 @@ void remove(UUID id);              // remove
 
 UUID генерируется в `service/` до вызова порта. `replace` — полная замена; PATCH решается в `webmvc/` + `service/`.
 
-**`add` ≠ `replace` — осознанная семантика, не случайная:** реализовано во всех шести адаптерах:
+**`add` ≠ `replace` — осознанная семантика, не случайная:** реализовано во всех адаптерах:
 - JPA: `add` → `em.persist()` (бросает при коллизии) · `replace` → `JpaRepository.save()` (всегда `merge()` при заданном ID)
 - MongoDB: `add` → `mongoTemplate.insert()` (бросает при коллизии) · `replace` → `mongoTemplate.save()`
+- JDBC: `add` → `INSERT INTO ...` (бросает при коллизии) · `replace` → `UPDATE ... WHERE id = ...`
 Spring Data скрывает это за `repository.save()`, теряя семантику. Адаптеры сохраняют её явно.
 
 **`*JpaRepository` / `*MongoRepository` — не архитектурные элементы:** тонкие обёртки над `EntityManager` / `MongoTemplate`, которые Spring Data генерирует автоматически; живут внутри адаптера и невидимы из `domain/`.
