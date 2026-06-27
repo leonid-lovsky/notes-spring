@@ -3,7 +3,7 @@
 > Живой документ проекта. Читается автоматически в начале каждой сессии.
 > **Всё в этом документе и в коде — временно.** Ничто не является окончательно принятым паттерном.
 > Любое решение подлежит обсуждению, изменению и уточнению — независимо от того, что уже написано.
-> Последнее обновление: 2026-06-27T12:32Z
+> Последнее обновление: 2026-06-27T12:43Z
 
 ---
 
@@ -162,6 +162,29 @@ Mono<Void>  save(Note note);
 
 Решить до начала реализации `auth/domain/`.
 
+### ⚠ ISP для портов: один интерфейс — один метод
+
+Требование: каждый метод `*Repository` выделить в отдельный интерфейс (Role Interface, Fowler).
+
+Варианты:
+- **CQS-разрез** _(склонение)_ — `NoteQueryPort` (`existsById · findById · findAll`) + `NoteCommandPort` (`add · replace · remove`); осмысленный разрез, не механический; два параметра в конструкторе вместо одного
+- **Один-метод** (крайний ISP) — `NoteAdd` · `NoteFindById` · `NoteFindAll` · `NoteReplace` · `NoteRemove` · `NoteExistsById`; максимальная изоляция; имеет смысл когда клиенты (`sharing/`) используют только часть методов
+- **Оставить как есть** — `NoteRepository` с 6 методами; один объект, одна инжекция; для CRUD-контроллера достаточно
+
+Один bean (`NoteJpaAdapter`) реализует несколько интерфейсов; Spring требует `@Primary` при инжекции по отдельным типам.
+
+### ⚠ Согласованность именования портов и адаптеров
+
+Требование: имя адаптера должно выражать связь с реализуемым портом.
+
+Текущее именование (принято ранее): `NoteRepository` (port) · `NoteJpaAdapter` (impl) — связь неявная.
+
+Варианты:
+- **`Note[Tech]RepositoryAdapter`** _(склонение)_ — `NoteJpaRepositoryAdapter` · `NoteMongoRepositoryAdapter`; явно выражает «реализация `NoteRepository` через JPA»; длиннее
+- **Оставить** — `NoteJpaAdapter`; компактнее; связь с портом неявная
+
+Пересматривает принятое ранее правило `*[Tech]Adapter`.
+
 ### Google Docs ACL
 
 > Все архитектурные вопросы закрыты. Реализация после `auth/`.
@@ -207,6 +230,12 @@ Mono<Void>  save(Note note);
 
 > Применяются с первого дня. Код, архитектура, тесты, деплой проектируются так, чтобы менять backing service (H2 → PostgreSQL, local → AWS) без правок в `domain/`.
 
+### Корень проекта
+
+**Все принципы доводятся до абсолюта.** Не как ориентир, а как требование. Это отличает учебный стек от production-grade: правило соблюдается всегда, а не «там, где удобно».
+
+Следствие: любой компромисс требует явного обоснования и фиксации в этом файле. Без обоснования — нарушение.
+
 ### Четыре приоритетных критерия
 
 Каждое архитектурное решение проверяется по всем четырём:
@@ -215,6 +244,41 @@ Mono<Void>  save(Note note);
 - **Clean Architecture** — зависимости направлены внутрь; use cases в центре; framework — деталь
 - **SOLID** — SRP · OCP · LSP · ISP · DIP; на уровне классов, модулей и сервисов
 - **Separation of Concerns** — каждый сервис / модуль отвечает за одну зону ответственности
+
+### Clean Architecture (Uncle Bob, 2017)
+
+Четыре слоя — зависимости идут только внутрь (Dependency Rule):
+
+```
+Frameworks & Drivers      ← webmvc/ · data-jpa/ · data-mongodb/ · data-jdbc/
+Interface Adapters        ← (маппинг между слоями; в этом проекте живёт внутри адаптеров)
+Use Cases                 ← service/ (только когда оправдан)
+Entities                  ← domain/ (entities + port interfaces)
+```
+
+Пять принципов:
+- **Framework Independent** — фреймворк — деталь; бизнес-логика не зависит от Spring
+- **Testable** — use cases тестируются без БД, UI и фреймворка
+- **UI Independent** — UI заменяется без изменения use cases
+- **Database Independent** — `domain/` не знает о JPA, MongoDB, JDBC
+- **External Agency Independent** — внешние сервисы — детали output адаптеров
+
+**Screaming Architecture** — структура кода кричит о предметной области, а не о фреймворке. `note/`, `user/`, `sharing/` — не потому что Spring, а потому что это домены.
+
+### Vertical Slice Architecture (Jimmy Bogard)
+
+Альтернативный принцип декомпозиции: код организован по операциям (вертикальным разрезам), а не по техническим слоям.
+
+```
+CreateNote/   ← HTTP handler + use case + persistence + mapping в одном месте
+GetNote/
+UpdateNote/
+DeleteNote/
+```
+
+Ортогонально Hexagonal: Hexagonal задаёт направление зависимостей, VSA задаёт группировку файлов. Совместимы.
+
+В проекте VSA применяется аналитически: при анализе декомпозиции контроллеров и портов. Структура модулей остаётся Hexagonal; VSA не меняет `domain/` · `webmvc/` · `data-jpa/`.
 
 ### Классический принцип декомпозиции
 
@@ -237,6 +301,7 @@ Mono<Void>  save(Note note);
 - **Defense in Depth** — безопасность на нескольких слоях; для этого проекта: BFF + сетевая изоляция
 - **CQRS** — разделение read/write моделей; актуально для `sharing/` (`effectiveRole` — query; `share`/`transferOwnership` — command)
 - **SAGA** — распределённые транзакции без двухфазного коммита; актуально для `transferOwnership` (`sharing/` + `user-note/`)
+- **Vertical Slice Architecture** — каждая операция (slice) содержит весь стек от HTTP до БД в одном месте; ортогонально Hexagonal; актуально для анализа декомпозиции контроллеров и портов
 
 ### Метод решения архитектурных проблем
 
@@ -384,7 +449,8 @@ Spring Data скрывает это за `repository.save()`, теряя сем�
 - **Domain objects — Java records** — `withXxx()` для изменённой копии; JPA entities — обычные классы
 - **`existsById` в Repository** — валидный паттерн; не заменять на `findById`
 - **Именование** — `*Repository` (output port, `domain/`) · `*JpaRepository` (Spring Data, `data-jpa/`) · `*[Tech]Adapter` (driven adapter)
-- **`ResponseEntity<T>` везде** — статусы явно через `HttpStatus`
+- **Один контроллер на ресурс** — `NoteController` объединяет все операции над ресурсом; один контроллер на операцию (Clean Architecture / Vertical Slice) отложен как преждевременный для текущего CRUD
+- **`ResponseEntity<T>` в контроллерах** — статусы явно через `HttpStatus`; exception handlers с `ProblemDetail` возвращают его напрямую — Spring берёт статус из `ProblemDetail.getStatus()`; базовый класс — `ResponseEntityExceptionHandler`; `spring.mvc.problemdetails.enabled=true` в `application.properties`
 - **`AuthUser` (`auth/`) ≠ `User` (`user/`)** — `User { id, username, email }`; пароль хранит только `auth/`
 - **Wire format в адаптере** — `.proto` в `grpc/`, `.graphqls` в `graphql/`; Protobuf/GraphQL типы не проникают в `domain/`
 - **Делегировать Spring Data репозиториям** — JPA делегирует `JpaRepository`; MongoDB делегирует `MongoRepository`; JDBC дублирует функциональность JPA через `NamedParameterJdbcTemplate`; кастомная реализация только там, где Spring Data не покрывает задачу; domain порты дублируют сигнатуры Spring Data, заменяя Spring-типы на Java-типы
