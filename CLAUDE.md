@@ -3,7 +3,7 @@
 > Живой документ проекта. Читается автоматически в начале каждой сессии.
 > **Всё в этом документе и в коде — временно.** Ничто не является окончательно принятым паттерном.
 > Любое решение подлежит обсуждению, изменению и уточнению — независимо от того, что уже написано.
-> Последнее обновление: 2026-06-24T10:33Z
+> Последнее обновление: 2026-06-27T10:54Z
 
 ---
 
@@ -39,6 +39,7 @@
 ```
 ГОТОВО      user/ · note/ · user-note/  — domain · service · webmvc · data-jpa · data-mongodb
 ТЕКУЩИЙ     решение по reactive/sync impedance + адаптеры — data-jdbc · data-r2dbc · data-mongodb-reactive · webflux · graphql
+ОТЛОЖЕНО    инфраструктура — actuator · eureka · config · oauth2 · gateway · logging · monitoring
 ОТЛОЖЕНО    auth/  — Spring Authorization Server (реализация в самом конце)
 НЕ СОЗДАНО  bff/ · thymeleaf/ · sharing/ · crud/
 ```
@@ -55,6 +56,33 @@
 
 1. `webflux/` — реактивный REST (WebFlux); **сначала принять решение по reactive/sync impedance**
 2. `graphql/` — GraphQL (Spring for GraphQL)
+
+### Инфраструктура ← ОТЛОЖЕНО
+
+> Реализовать после решения по reactive/sync impedance. Все изменения — только в `application/build.gradle` и `*.properties`; `domain/` и `service/` не затрагиваются.
+
+**Корневая идея:** тот же принцип изоляции — на двух уровнях:
+- **Intra-service** — hexagonal architecture: `domain/` + `service/` не знают о JPA, MongoDB, WebMVC
+- **Inter-service** — convention plugins: бизнес-сервис не знает о Eureka, Config, Gateway, OAuth2
+
+Замена любого инфраструктурного компонента = смена конфига или одной строки в `build.gradle`.
+
+| Компонент  | MVP                      | Замена                                | Что меняется              |
+|------------|--------------------------|---------------------------------------|---------------------------|
+| Config src | native (classpath)       | Git-репо                              | одно property в `config/` |
+| Logging    | plain text               | JSON (Loki/ELK)                       | `logback-spring.xml`      |
+| Monitoring | Prometheus via Actuator  | Spring Boot Admin / Datadog / Grafana | конфиг, не код            |
+| OAuth2     | resource server (плагин) | другой IdP                            | `issuer-uri` property     |
+
+**Порядок реализации:**
+
+1. `spring-boot-actuator-conventions` — добавить во все бизнес-сервисы (`user/`, `note/`, `user-note/`)
+2. `spring-cloud-eureka-client-conventions` + `spring-cloud-config-client-conventions` — туда же
+3. **Config Server** — `native` (classpath); конфиги в `config/src/main/resources/config/`
+4. **OAuth2 Resource Server** — добавить плагин; `issuer-uri=http://localhost:9000` как placeholder
+5. **Logging** — `logback-spring.xml` с профилем `json` для prod
+6. **Monitoring** — `docker-compose.yml` с Prometheus + Grafana
+7. **Gateway routing** — маршруты к `user/`, `note/`, `user-note/`
 
 ### После адаптеров
 
@@ -215,6 +243,37 @@ Mono<Void>  save(Note note);
 Пример: есть `data-jpa/` → добавить `data-inmemory/`. Вопросы именования, сигнатур и ответственности разрешатся из конкретного кода, а не из абстрактного обсуждения. Если второй адаптер не реализует интерфейс чисто — интерфейс нужно менять.
 
 Применяется к: именованию адаптеров · сигнатурам методов Repository · ответственности UseCase · стратегии активации адаптеров.
+
+### Что легко менять и почему
+
+Цель архитектуры — сделать каждый слой независимо заменяемым. `domain/` — единственное, что не меняется без причины; всё вокруг — сменные детали.
+
+| # | Что менять             | Механизм                                                           | Цена    |
+|---|------------------------|--------------------------------------------------------------------|---------|
+| 1 | Бизнес-логику          | `service/` зависит только от `domain/`; адаптеры не трогаются      | Дёшево  |
+| 2 | Порты                  | Порты — контракты в `domain/`; смена порта = смена контракта       | Дорого  |
+| 3 | Адаптеры               | Одна строка в `application/build.gradle`; convention plugin        | Дёшево  |
+| 4 | Внешние инструменты    | backing services — меняется конфиг и plugin; код не меняется       | Дёшево  |
+| 5 | Внутренние инструменты | Spring, Hibernate — только в адаптерах; `domain/` их не видит      | Дёшево  |
+| 6 | Язык реализации        | `domain/` — чистая логика без фреймворка; порты — контракты        | Принцип |
+| 7 | Фреймворк              | Фреймворк — деталь адаптера; нет `import org.springframework.*`    | Принцип |
+| 8 | Платформу              | Паттерн языко-независим; Java → C#/TypeScript/Python — механически | Принцип |
+
+Пункт 2 намеренно дорогой: смена порта — это смена контракта между бизнес-логикой и инфраструктурой. Если это дёшево — граница размыта.
+
+Пункты 6–8 достигаются дисциплиной, не кодом: если `domain/` — чистая логика без единой инфраструктурной зависимости, его можно переписать на любом языке механически. Convention plugins — Java/Gradle-выражение этого принципа; в любом стеке есть эквивалент (NuGet, npm workspaces, pyproject.toml).
+
+**Классические формулировки.** Эти 8 целей — содержание **Clean Architecture** (Robert Martin, 2017): *Framework Independent · Testable · UI Independent · Database Independent · External Agency Independent*. Структурный механизм — **Hexagonal Architecture / Ports & Adapters** (Alistair Cockburn, 2005). Единственное правило, из которого всё следует: **Dependency Rule** — зависимости идут только внутрь. Если `domain/` не импортирует ничего снаружи, все 8 целей достижимы.
+
+**Как обеспечить соблюдение.** Три механизма в порядке надёжности:
+
+1. **Convention plugins** — нарушение не компилируется; `domain/` физически не видит `data-jpa/` в classpath
+2. **ArchUnit** — нарушение обнаруживается в CI; проверяет отсутствие `import org.springframework.*` в `domain/`
+3. **Тесты домена без Spring** — если тест `domain/` не поднимает Spring context, граница чистая
+
+Критерий выбора пути: **автоматически ли нарушение обнаруживается?** Структурные ограничения лучше автотестов; автотесты лучше ревью.
+
+**Самый сложный пункт — порты (2), не язык (6–8).** Проектирование порта — единственное место, где нужно думать о будущем: слишком узкий — трудно добавить адаптер; слишком широкий — нарушает ISP. Лучший способ проверить: добавить второй адаптер. Если он не реализует интерфейс чисто — порт спроектирован неверно.
 
 ### Остальные принципы кодовой базы
 
@@ -432,6 +491,7 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 | `spring-boot-data-r2dbc-adapter-conventions`            | `data-r2dbc/` — driven adapter (reactive SQL)     |
 | `spring-boot-data-mongodb-adapter-conventions`          | `data-mongodb/` — driven adapter (MongoDB)        |
 | `spring-boot-data-mongodb-reactive-adapter-conventions` | `data-mongodb-reactive/` — driven adapter         |
+| `spring-boot-data-elasticsearch-adapter-conventions`    | `data-elasticsearch/` — driven adapter            |
 | `spring-cloud-openfeign-adapter-conventions`            | `feign/` — driven adapter (HTTP client)           |
 | `spring-boot-restclient-conventions`                    | add-on: RestClient (sync HTTP)                    |
 | `spring-boot-webclient-conventions`                     | add-on: WebClient (reactive HTTP)                 |
@@ -537,30 +597,46 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 
 ```
 spring-boot-h2console
+spring-boot-starter-activemq
 spring-boot-starter-actuator
 spring-boot-starter-amqp
+spring-boot-starter-artemis
 spring-boot-starter-batch
 spring-boot-starter-batch-jdbc
 spring-boot-starter-cache
+spring-boot-starter-cassandra
+spring-boot-starter-couchbase
+spring-boot-starter-data-cassandra
+spring-boot-starter-data-cassandra-reactive
+spring-boot-starter-data-couchbase
+spring-boot-starter-data-couchbase-reactive
+spring-boot-starter-data-elasticsearch
 spring-boot-starter-data-jdbc
 spring-boot-starter-data-jpa
 spring-boot-starter-data-mongodb
 spring-boot-starter-data-mongodb-reactive
+spring-boot-starter-data-neo4j
 spring-boot-starter-data-r2dbc
 spring-boot-starter-data-redis
 spring-boot-starter-data-redis-reactive
 spring-boot-starter-data-rest
 spring-boot-starter-elasticsearch
 spring-boot-starter-flyway
+spring-boot-starter-freemarker
 spring-boot-starter-graphql
+spring-boot-starter-groovy-templates
 spring-boot-starter-grpc-client
 spring-boot-starter-grpc-server
 spring-boot-starter-hateoas
 spring-boot-starter-integration
 spring-boot-starter-jdbc
+spring-boot-starter-jersey
 spring-boot-starter-kafka
 spring-boot-starter-liquibase
 spring-boot-starter-mail
+spring-boot-starter-mongodb
+spring-boot-starter-mustache
+spring-boot-starter-neo4j
 spring-boot-starter-opentelemetry
 spring-boot-starter-pulsar
 spring-boot-starter-quartz
@@ -579,33 +655,138 @@ spring-boot-starter-webclient
 spring-boot-starter-webflux
 spring-boot-starter-webmvc
 spring-boot-starter-websocket
+spring-boot-starter-zipkin
 ```
 
 **`org.springframework.cloud`** (2025.1.x)
 
 ```
+spring-cloud-bus
 spring-cloud-config-server
 spring-cloud-starter-circuitbreaker-reactor-resilience4j
 spring-cloud-starter-config
+spring-cloud-starter-consul-config
+spring-cloud-starter-consul-discovery
 spring-cloud-starter-gateway-server-webmvc
 spring-cloud-starter-gateway-server-webflux
 spring-cloud-starter-loadbalancer
 spring-cloud-starter-netflix-eureka-client
 spring-cloud-starter-netflix-eureka-server
 spring-cloud-starter-openfeign
+spring-cloud-starter-vault-config
+spring-cloud-starter-zookeeper-config
+spring-cloud-starter-zookeeper-discovery
 spring-cloud-stream
 spring-cloud-stream-binder-kafka
+spring-cloud-stream-binder-kafka-streams
+spring-cloud-stream-binder-pulsar
 spring-cloud-stream-binder-rabbit
+```
+
+**`org.springframework.integration`** (версия управляется Spring Boot BOM)
+
+```
+spring-integration-amqp
+spring-integration-grpc
+spring-integration-http
+spring-integration-jdbc
+spring-integration-jms
+spring-integration-jpa
+spring-integration-kafka
+spring-integration-mongodb
+spring-integration-r2dbc
+spring-integration-redis
+spring-integration-rsocket
+spring-integration-stomp
+spring-integration-webflux
+spring-integration-websocket
+```
+
+**`org.springframework.modulith`** (BOM: `spring-modulith-bom:<version>`)
+
+```
+spring-modulith-events-api
+spring-modulith-starter-core
+spring-modulith-starter-insight
+spring-modulith-starter-jdbc
+spring-modulith-starter-jpa
+spring-modulith-starter-mongodb
+spring-modulith-starter-neo4j
+```
+
+**`org.springframework.security`** (версия управляется Spring Boot BOM)
+
+```
+spring-security-messaging
+spring-security-rsocket
+```
+
+**`org.apache.kafka`**
+
+```
+org.apache.kafka:kafka-streams
+```
+
+**`org.springframework.amqp`**
+
+```
+org.springframework.amqp:spring-rabbit-stream
 ```
 
 ### `runtimeOnly`
 
 ```
+# PostgreSQL
 org.postgresql:postgresql
 org.postgresql:r2dbc-postgresql
+
+# H2
 com.h2database:h2
-org.flywaydb:flyway-database-postgresql   ← обязателен с spring-boot-starter-flyway + PostgreSQL
+io.r2dbc:r2dbc-h2
+
+# MySQL / MariaDB
+com.mysql:mysql-connector-j
+io.asyncer:r2dbc-mysql
+org.mariadb.jdbc:mariadb-java-client
+org.mariadb:r2dbc-mariadb:1.1.3       ← явная версия (не в BOM)
+
+# SQL Server
+com.microsoft.sqlserver:mssql-jdbc
+io.r2dbc:r2dbc-mssql:1.0.0.RELEASE    ← явная версия (не в BOM)
+
+# Oracle
+com.oracle.database.jdbc:ojdbc11
+com.oracle.database.r2dbc:oracle-r2dbc
+
+# Other
+org.hsqldb:hsqldb
+org.xerial:sqlite-jdbc
+
+# Flyway drivers (нужны при использовании spring-boot-starter-flyway)
+org.flywaydb:flyway-database-hsqldb
+org.flywaydb:flyway-database-oracle
+org.flywaydb:flyway-database-postgresql
 org.flywaydb:flyway-mysql
+org.flywaydb:flyway-sqlserver
+
+# Micrometer registries (для Actuator /actuator/prometheus и др.)
+io.micrometer:micrometer-registry-dynatrace
+io.micrometer:micrometer-registry-graphite
+io.micrometer:micrometer-registry-influx
+io.micrometer:micrometer-registry-new-relic
+io.micrometer:micrometer-registry-otlp
+io.micrometer:micrometer-registry-prometheus
+
+# Spring Modulith runtime
+org.springframework.modulith:spring-modulith-events-amqp
+org.springframework.modulith:spring-modulith-events-jms
+org.springframework.modulith:spring-modulith-runtime
+```
+
+### `annotationProcessor`
+
+```
+org.springframework.boot:spring-boot-configuration-processor
 ```
 
 ### `developmentOnly`
@@ -621,23 +802,61 @@ org.springframework.boot:spring-boot-docker-compose
 
 ```
 spring-boot-starter-test
+spring-boot-starter-activemq-test
 spring-boot-starter-actuator-test
+spring-boot-starter-amqp-test
+spring-boot-starter-artemis-test
+spring-boot-starter-batch-test
+spring-boot-starter-cassandra-test
+spring-boot-starter-couchbase-test
+spring-boot-starter-data-cassandra-test
+spring-boot-starter-data-cassandra-reactive-test
+spring-boot-starter-data-couchbase-test
+spring-boot-starter-data-couchbase-reactive-test
+spring-boot-starter-data-elasticsearch-test
 spring-boot-starter-data-jdbc-test
 spring-boot-starter-data-jpa-test
 spring-boot-starter-data-mongodb-test
 spring-boot-starter-data-mongodb-reactive-test
+spring-boot-starter-data-neo4j-test
 spring-boot-starter-data-r2dbc-test
+spring-boot-starter-data-redis-test
+spring-boot-starter-data-redis-reactive-test
+spring-boot-starter-data-rest-test
+spring-boot-starter-elasticsearch-test
+spring-boot-starter-flyway-test
+spring-boot-starter-freemarker-test
 spring-boot-starter-graphql-test
+spring-boot-starter-groovy-templates-test
 spring-boot-starter-grpc-client-test
 spring-boot-starter-grpc-server-test
+spring-boot-starter-hateoas-test
+spring-boot-starter-jdbc-test
+spring-boot-starter-jersey-test
+spring-boot-starter-kafka-test
+spring-boot-starter-liquibase-test
+spring-boot-starter-mongodb-test
+spring-boot-starter-mustache-test
+spring-boot-starter-neo4j-test
+spring-boot-starter-opentelemetry-test
+spring-boot-starter-pulsar-test
+spring-boot-starter-r2dbc-test
 spring-boot-starter-restclient-test
+spring-boot-starter-restdocs
+spring-boot-starter-rsocket-test
 spring-boot-starter-security-test
 spring-boot-starter-security-oauth2-authorization-server-test
 spring-boot-starter-security-oauth2-client-test
 spring-boot-starter-security-oauth2-resource-server-test
+spring-boot-starter-session-data-redis-test
+spring-boot-starter-session-jdbc-test
+spring-boot-starter-thymeleaf-test
+spring-boot-starter-validation-test
 spring-boot-starter-webclient-test
 spring-boot-starter-webflux-test
 spring-boot-starter-webmvc-test
+spring-boot-starter-websocket-test
+spring-boot-starter-zipkin-test
 spring-boot-testcontainers
 ```
 
@@ -647,14 +866,43 @@ spring-boot-testcontainers
 io.projectreactor:reactor-test   ← StepVerifier; нужен для тестов R2DBC, WebFlux, MongoDB Reactive
 ```
 
-**Testcontainers** (версия управляется Spring Boot BOM)
+**Testcontainers** (версия управляется Spring Boot BOM; Boot 4 использует `testcontainers-*` префикс)
 
 ```
+org.testcontainers:testcontainers-activemq
+org.testcontainers:testcontainers-cassandra
+org.testcontainers:testcontainers-consul
+org.testcontainers:testcontainers-couchbase
+org.testcontainers:testcontainers-elasticsearch
+org.testcontainers:testcontainers-grafana
 org.testcontainers:testcontainers-junit-jupiter
-org.testcontainers:postgresql
-org.testcontainers:kafka
-org.testcontainers:mongodb
+org.testcontainers:testcontainers-kafka
+org.testcontainers:testcontainers-mariadb
+org.testcontainers:testcontainers-mongodb
+org.testcontainers:testcontainers-mssqlserver
+org.testcontainers:testcontainers-mysql
+org.testcontainers:testcontainers-neo4j
+org.testcontainers:testcontainers-oracle-free
+org.testcontainers:testcontainers-postgresql
+org.testcontainers:testcontainers-pulsar
+org.testcontainers:testcontainers-r2dbc
+org.testcontainers:testcontainers-rabbitmq
+org.testcontainers:testcontainers-vault
 # Redis: нет официального TC модуля → GenericContainer("redis:latest")
+```
+
+**Spring Cloud / Integration / Modulith**
+
+```
+org.springframework.cloud:spring-cloud-stream-test-binder
+org.springframework.integration:spring-integration-test
+org.springframework.modulith:spring-modulith-starter-test
+```
+
+**REST Docs**
+
+```
+org.springframework.restdocs:spring-restdocs-mockmvc
 ```
 
 ### `testRuntimeOnly`
@@ -672,9 +920,15 @@ org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2
 com.tngtech.archunit:archunit-junit5:<version>           ← версию брать с Maven Central
 
 # Gradle plugins (third-party, явная версия)
-com.google.protobuf version 0.9.6            ← обязателен для gRPC (кодогенерация из .proto)
-org.owasp.dependencycheck version <version>  ← artifact: org.owasp:dependency-check-gradle
+com.google.protobuf version 0.9.6             ← обязателен для gRPC (кодогенерация из .proto)
+com.netflix.dgs.codegen version 8.3.0         ← Netflix DGS codegen (GraphQL client)
+org.asciidoctor.jvm.convert version 4.0.5    ← Spring REST Docs (Asciidoctor)
+org.owasp.dependencycheck version <version>   ← artifact: org.owasp:dependency-check-gradle
 
 # Gradle plugins (встроенные, версия не нужна)
 jacoco
+
+# BOM (третьи стороны, инлайн в convention plugin)
+org.springframework.modulith:spring-modulith-bom:<version>   ← Spring Modulith
+com.vaadin:vaadin-bom:<version>                              ← Vaadin (если нужен)
 ```
