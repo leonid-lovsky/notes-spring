@@ -3,7 +3,7 @@
 > Живой документ проекта. Читается автоматически в начале каждой сессии.
 > **Всё в этом документе и в коде — временно.** Ничто не является окончательно принятым паттерном.
 > Любое решение подлежит обсуждению, изменению и уточнению — независимо от того, что уже написано.
-> Последнее обновление: 2026-06-27T12:43Z
+> Последнее обновление: 2026-06-27T15:36Z
 
 ---
 
@@ -168,19 +168,14 @@ Mono<Void>  save(Note note);
 
 `NoteAdd` · `NoteFindById` · `NoteFindAll` · `NoteReplace` · `NoteRemove` · `NoteExistsById` — аналогично для `user/` и `user-note/`.
 
-Один bean реализует все интерфейсы; Spring инжектирует без `@Primary` при единственной реализации. Контроллер зависит только от портов, которые использует: `UserController` не знает о `UserFindByUsername` / `UserFindByEmail`.
+Один bean реализует ровно один интерфейс (`NoteAddPortAdapter implements NoteAddPort`); Spring инжектирует напрямую без `@Primary`. Контроллер зависит ровно от тех портов, которые использует: `UserCreateController` знает только `UserAddPort`.
 
-### ⚠ Согласованность именования портов и адаптеров
+### Именование портов и адаптеров — решено
 
-Требование: имя адаптера должно выражать связь с реализуемым портом.
+- **Порт** — `[Entity][Operation]Port`: `NoteAddPort` · `NoteFindByIdPort` · `NoteExistsByIdPort`
+- **Адаптер** — `[ИмяПорта]Adapter`: `NoteAddPortAdapter` · `NoteFindByIdPortAdapter`
 
-Текущее именование (принято ранее): `NoteRepository` (port) · `NoteJpaAdapter` (impl) — связь неявная.
-
-Варианты:
-- **`Note[Tech]RepositoryAdapter`** _(склонение)_ — `NoteJpaRepositoryAdapter` · `NoteMongoRepositoryAdapter`; явно выражает «реализация `NoteRepository` через JPA»; длиннее
-- **Оставить** — `NoteJpaAdapter`; компактнее; связь с портом неявная
-
-Пересматривает принятое ранее правило `*[Tech]Adapter`.
+Связь между портом и адаптером выражена в имени явно и без двусмысленности.
 
 ### Google Docs ACL
 
@@ -230,6 +225,11 @@ Mono<Void>  save(Note note);
 ### Корень проекта
 
 **Все принципы доводятся до абсолюта.** Не как ориентир, а как требование. Это отличает учебный стек от production-grade: правило соблюдается всегда, а не «там, где удобно».
+
+**Единый принцип декомпозиции — Single Data Flow:** каждый класс содержит только те методы, которые необходимы для прохождения одного потока данных. Применяется на всех уровнях:
+- **Порт** — один интерфейс, один метод (`NoteAddPort`, `NoteFindByIdPort`)
+- **Адаптер** — один bean, один порт (`NoteAddPortAdapter implements NoteAddPort`)
+- **Контроллер** — один bean, одна операция (`NoteCreateController` → `POST /notes`)
 
 Следствие: любой компромисс требует явного обоснования и фиксации в этом файле. Без обоснования — нарушение.
 
@@ -298,7 +298,7 @@ DeleteNote/
 - **Defense in Depth** — безопасность на нескольких слоях; для этого проекта: BFF + сетевая изоляция
 - **CQRS** — разделение read/write моделей; актуально для `sharing/` (`effectiveRole` — query; `share`/`transferOwnership` — command)
 - **SAGA** — распределённые транзакции без двухфазного коммита; актуально для `transferOwnership` (`sharing/` + `user-note/`)
-- **Vertical Slice Architecture** — каждая операция (slice) содержит весь стек от HTTP до БД в одном месте; ортогонально Hexagonal; актуально для анализа декомпозиции контроллеров и портов
+- **Vertical Slice Architecture** — каждая операция (slice) содержит весь стек от HTTP до БД в одном месте; ортогонально Hexagonal; применяется: один контроллер — одна операция; один адаптер — один порт
 
 ### Метод решения архитектурных проблем
 
@@ -445,8 +445,8 @@ Spring Data скрывает это за `repository.save()`, теряя сем�
 - **Входящие адаптеры зависят напрямую от `*Repository`** — `webmvc/` зависит от output port (`*Repository` в `domain/`); `*UseCase` input port интерфейсы убраны вместе с `service/`
 - **Domain objects — Java records** — `withXxx()` для изменённой копии; JPA entities — обычные классы
 - **`existsById` в Repository** — валидный паттерн; не заменять на `findById`
-- **Именование output ports** — `NoteAdd` · `NoteFindById` · `NoteFindAll` · `NoteReplace` · `NoteRemove` · `NoteExistsById` (один интерфейс — один метод; ISP)
-- **Один контроллер на ресурс** — `NoteController` объединяет все операции над ресурсом; один контроллер на операцию (Clean Architecture / Vertical Slice) отложен как преждевременный для текущего CRUD
+- **Именование портов** — `[Entity][Operation]Port`: `NoteAddPort` · `NoteFindByIdPort`; **именование адаптеров** — `[ИмяПорта]Adapter`: `NoteAddPortAdapter implements NoteAddPort`
+- **Один контроллер на операцию** — `NoteCreateController` · `NoteFindByIdController` · `NoteFindAllController` · `NoteUpdateController` · `NoteDeleteController`; каждый класс реализует ровно один поток данных
 - **`ResponseEntity<T>` в контроллерах** — статусы явно через `HttpStatus`; exception handlers с `ProblemDetail` возвращают его напрямую — Spring берёт статус из `ProblemDetail.getStatus()`; базовый класс — `ResponseEntityExceptionHandler`; `spring.mvc.problemdetails.enabled=true` в `application.properties`
 - **`AuthUser` (`auth/`) ≠ `User` (`user/`)** — `User { id, username, email }`; пароль хранит только `auth/`
 - **Wire format в адаптере** — `.proto` в `grpc/`, `.graphqls` в `graphql/`; Protobuf/GraphQL типы не проникают в `domain/`
