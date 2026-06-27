@@ -4,6 +4,7 @@ import com.example.user.domain.UserRequest;
 import com.example.user.domain.UserResponse;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
 import java.util.UUID;
 
 @Component
@@ -21,6 +22,6 @@ class UserJpaMapperImpl implements UserJpaMapper {
 
     @Override
     public UserResponse toResponse(UserEntity entity) {
-        return new UserResponse(entity.getId(), entity.getUsername(), entity.getEmail());
+        return new UserResponse(Objects.requireNonNull(entity.getId()), entity.getUsername(), entity.getEmail());
     }
 }

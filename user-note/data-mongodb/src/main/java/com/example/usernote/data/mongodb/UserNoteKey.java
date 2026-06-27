@@ -11,6 +11,7 @@ class UserNoteKey implements Serializable {
     private UUID userId;
     private UUID noteId;
 
+    @SuppressWarnings("NullAway.Init")
     protected UserNoteKey() {
 
     }

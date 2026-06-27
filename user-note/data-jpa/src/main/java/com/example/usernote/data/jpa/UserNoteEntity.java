@@ -14,6 +14,7 @@ class UserNoteEntity {
     @Column(nullable = false)
     private UserNoteRole role;
 
+    @SuppressWarnings("NullAway.Init")
     protected UserNoteEntity() {
 
     }

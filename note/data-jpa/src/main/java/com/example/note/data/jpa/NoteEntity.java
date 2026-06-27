@@ -1,6 +1,7 @@
 package com.example.note.data.jpa;
 
 import jakarta.persistence.*;
+import org.jspecify.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -10,11 +11,12 @@ class NoteEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private @Nullable UUID id;
 
     @Column(nullable = false)
     private String content;
 
+    @SuppressWarnings("NullAway.Init")
     protected NoteEntity() {
 
     }
@@ -28,7 +30,7 @@ class NoteEntity {
         this.content = content;
     }
 
-    UUID getId() {
+    @Nullable UUID getId() {
         return id;
     }
 

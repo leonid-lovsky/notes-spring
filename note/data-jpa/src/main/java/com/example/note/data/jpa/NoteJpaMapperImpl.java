@@ -4,6 +4,7 @@ import com.example.note.domain.NoteRequest;
 import com.example.note.domain.NoteResponse;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
 import java.util.UUID;
 
 @Component
@@ -21,6 +22,6 @@ class NoteJpaMapperImpl implements NoteJpaMapper {
 
     @Override
     public NoteResponse toResponse(NoteEntity entity) {
-        return new NoteResponse(entity.getId(), entity.getContent());
+        return new NoteResponse(Objects.requireNonNull(entity.getId()), entity.getContent());
     }
 }

@@ -1,6 +1,7 @@
 package com.example.user.data.jpa;
 
 import jakarta.persistence.*;
+import org.jspecify.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -10,7 +11,7 @@ class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private @Nullable UUID id;
 
     @Column(nullable = false, unique = true)
     private String username;
@@ -18,6 +19,7 @@ class UserEntity {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @SuppressWarnings("NullAway.Init")
     protected UserEntity() {
 
     }
@@ -33,7 +35,7 @@ class UserEntity {
         this.email = email;
     }
 
-    UUID getId() {
+    @Nullable UUID getId() {
         return id;
     }
 

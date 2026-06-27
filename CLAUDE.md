@@ -3,7 +3,7 @@
 > Живой документ проекта. Читается автоматически в начале каждой сессии.
 > **Всё в этом документе и в коде — временно.** Ничто не является окончательно принятым паттерном.
 > Любое решение подлежит обсуждению, изменению и уточнению — независимо от того, что уже написано.
-> Последнее обновление: 2026-06-27T16:50Z
+> Последнее обновление: 2026-06-27T17:26Z
 
 ---
 
@@ -563,8 +563,8 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 **Файлы:** `buildSrc/build.gradle.kts` (версии плагинов — в `val`-константах); convention plugins — `src/main/kotlin/*.gradle.kts`; субпроекты — `build.gradle` (Groovy, только `id '...'`)
 **Нет:** root `build.gradle` · `buildSrc/settings.gradle` · `libs.versions.toml`
 **Порядок блоков:** `plugins` → `repositories` → `dependencyManagement` → `dependencies` → `test`
-**Порядок зависимостей:** `domain` → `service` → `webmvc` → `data-jpa`
-**`settings.gradle`:** `gateway` → `config` → `registry` → `auth` → `user` → `note` → `user-note`; внутри: `application` → `domain` → `service` → `webmvc` → `data-jpa`
+**Порядок зависимостей:** `domain` → `webmvc` → `data-jpa`
+**`settings.gradle`:** `gateway` → `config` → `registry` → `auth` → `user` → `note` → `user-note`; внутри: `application` → `domain` → `webmvc` → `data-jpa`
 
 **Convention plugins:**
 
@@ -572,7 +572,6 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 |---------------------------------------------------------|---------------------------------------------------|
 | `spring-boot-application-conventions`                   | `application/` — Boot app                         |
 | `java-domain-conventions`                               | `domain/` — чистая Java, без BOM                  |
-| `spring-boot-service-conventions`                       | `service/` — BOM + spring-tx                      |
 | `spring-boot-webmvc-adapter-conventions`                | `webmvc/` — driving adapter (sync REST)           |
 | `spring-boot-webflux-adapter-conventions`               | `webflux/` — driving adapter (reactive REST)      |
 | `spring-boot-graphql-adapter-conventions`               | `graphql/` — driving adapter (GraphQL)            |
@@ -598,12 +597,17 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 | `spring-boot-oauth2-authorization-server-conventions`   | `auth/` — Authorization Server                    |
 | `spring-boot-oauth2-resource-server-conventions`        | add-on: JWT-валидация (Resource Server)           |
 | `spring-boot-oauth2-client-conventions`                 | add-on: OAuth2 Client                             |
+| `java-codequality-conventions`                          | quality: мета-плагин — все четыре ниже            |
+| `java-javaformat-conventions`                           | quality: io.spring.javaformat + Checkstyle        |
+| `java-errorprone-conventions`                           | quality: ErrorProne + NullAway + JSpecify         |
+| `java-jacoco-conventions`                               | quality: JaCoCo (покрытие)                        |
+| `java-jacoco-report-aggregation-conventions`            | quality: JaCoCo агрегация (все модули)            |
 
 **Cloud BOM** — координаты инлайн прямо в каждом Cloud convention plugin: `"org.springframework.cloud:spring-cloud-dependencies:2025.1.2"`; отдельный файл для одной строки избыточен.
 
-- **`domain`** — только `java`; без Spring BOM; JSpecify и JUnit с явными версиями
-- **`service`** — требует явный `implementation("org.springframework:spring-tx")`; `spring-boot-starter` не тянет его транзитивно
+- **`domain`** — только `java`; без Spring BOM; JUnit с явными версиями; JSpecify приходит из `java-errorprone-conventions`
 - **`oauth2-resource-server`** — транспортно-независимая JWT-валидация; применим к `webmvc/`, `webflux/`, `graphql/` — не переименовывать в `webmvc-oauth2-*`
+- **`java-*-conventions` (quality)** — применяются во всех convention plugins; `java-jacoco-report-aggregation-conventions` дополнительно применяется везде, `jacocoAggregation` dependencies объявляются в `application/build.gradle`; плагины не наследуются от root project — явная декларация в каждом convention plugin (Explicit over Implicit)
 - **`h2-database`** — add-on поверх `data-jpa`; не содержит `repositories {}`; применять совместно
 - **`gateway-webflux`** / **`gateway-webmvc`** / **`config-server`** / **`eureka-server`** — включают `org.springframework.boot` plugin (это Boot app, не просто модуль); не комбинировать с `spring-boot-application-conventions`
 - **`restclient`** / **`webclient`** — не адаптеры в гексагональном смысле; инструменты внутри других адаптеров (Feign, reactive adapter); именно поэтому в имени нет суффикса `-adapter-`
@@ -664,7 +668,7 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 
 ### Null Safety и стиль
 
-**JSpecify** (`@NullMarked` через `package-info.java`) — non-null по умолчанию; каждый пакет требует своего `package-info.java`; `org.jspecify:jspecify:1.0.0` (`compileOnly`) в `domain/`; выбран вместо `org.springframework.lang` (deprecated) и JSR-305 (заброшен); **NullAway** (ErrorProne-плагин) проверяет соблюдение аннотаций во время компиляции — без него `@NullMarked` носит декларативный характер.
+**JSpecify** (`@NullMarked` через `package-info.java`) — non-null по умолчанию; каждый пакет требует своего `package-info.java`; `org.jspecify:jspecify:1.0.0` (`compileOnly`) из `java-errorprone-conventions` — во всех модулях; выбран вместо `org.springframework.lang` (deprecated) и JSR-305 (заброшен); **NullAway** (ErrorProne-плагин) проверяет соблюдение аннотаций во время компиляции: `check("NullAway", CheckSeverity.ERROR)` + `option("NullAway:AnnotatedPackages", "com.example")`; для тестовых задач NullAway отключается (`disable("NullAway")` при `name.contains("test")`); `@Nullable UUID id` — для JPA полей с `@GeneratedValue` (null до persist); `@SuppressWarnings("NullAway.Init")` — только на `protected` no-arg конструкторах framework entities.
 **`@Nullable`** — `@Target(TYPE_USE)`: `private @Nullable String field`; массивы: `Object @Nullable []` (nullable ссылка), `@Nullable Object[]` (nullable элементы)
 **Spring Cloud (2025.1.x)** — ещё не null-safe в `registry/`, `config/`, `gateway/`; при нужде: `@NullUnmarked`
 **Импорты** — `com.example.*` + `org.*` / `jakarta.*`, затем `java.*`; wildcard при 3+
@@ -688,7 +692,7 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 - **spring-javaformat** _(ноль конфига)_ — `io.spring.javaformat version 0.0.47`; применяется вместе с `checkstyle` plugin + `toolVersion = "9.3"`; `springJavaFormat { checkstyle { applyDefaultConfig() } }`; проверяет: строки до 120 символов, пробелы, импорты, Javadoc; IDEA: автоактивируется при наличии Gradle-плагина, стандартный «Reformat Code»; для Checkstyle-IDEA — добавить `spring-javaformat-checkstyle` jar в Third-Party Checks
 - **Checkstyle** _(минимальный конфиг)_ — Gradle built-in (`checkstyle` plugin, версия не нужна); конфиг: `config/checkstyle/checkstyle.xml`; `toolVersion` задаётся явно; пресеты: Spring Style (через `spring-javaformat`) или Google Style (`google_checks.xml` из `checkstyle/checkstyle`); IDEA: плагин CheckStyle-IDEA
 - **ErrorProne** _(ноль конфига)_ — `net.ltgt.gradle:gradle-errorprone-plugin:<version>`; зависимость: `errorprone("com.google.errorprone:error_prone_core")`; находит баги во время компиляции (`javac`); Java 21 требует версию 2.43+; JVM args для JDK 16+ настраиваются автоматически; конфиг через `tasks.withType<JavaCompile>().configureEach { options.errorprone { ... } }`; база для NullAway; IDEA: плагин ErrorProne Compiler; версии — GitHub `tbroyer/gradle-errorprone-plugin`
-- **NullAway** _(минимальный конфиг)_ — плагин к ErrorProne; `errorprone("com.uber.nullaway:nullaway:<version>")`; **обязательно** одно из двух: `option("NullAway:AnnotatedPackages", "com.example")` или `option("NullAway:OnlyNullMarked", "true")` (JSpecify-режим) — без этого NullAway не запускается; проверяет `@NullMarked` / `@Nullable` (JSpecify) во время компиляции; без NullAway аннотации JSpecify декларативны; версии — Maven Central
+- **NullAway** _(минимальный конфиг)_ — плагин к ErrorProne; `errorprone("com.uber.nullaway:nullaway:<version>")`; **обязательно** одно из двух: `option("NullAway:AnnotatedPackages", "com.example")` или `option("NullAway:OnlyNullMarked", "true")` (JSpecify-режим) — без этого NullAway не запускается; `check("NullAway", CheckSeverity.ERROR)` — нарушения ломают сборку; для тестов: `if (name.lowercase().contains("test")) { disable("NullAway") }`; проверяет `@NullMarked` / `@Nullable` (JSpecify) во время компиляции; без NullAway аннотации JSpecify декларативны; версии — Maven Central
 
 **Общая Java-экосистема** (популярны, менее специфичны для Spring):
 
@@ -1120,15 +1124,16 @@ org.thymeleaf.extras:thymeleaf-extras-springsecurity6   ← имя "6", даже
 com.vaadin:vaadin-spring-boot-starter                         ← BOM: vaadin-bom
 org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2
 com.tngtech.archunit:archunit-junit5:<version>           ← версию брать с Maven Central
-com.uber.nullaway:nullaway:<version>                     ← ErrorProne-плагин для JSpecify; errorprone scope
-org.jspecify:jspecify:1.0.0                              ← null-safety аннотации; compileOnly в domain/
+com.uber.nullaway:nullaway:0.13.7                         ← ErrorProne-плагин; errorprone scope; GitHub: uber/NullAway
+com.google.errorprone:error_prone_core:2.50.0            ← ErrorProne core; errorprone scope; Java 21 требует 2.43+
+org.jspecify:jspecify:1.0.0                              ← null-safety аннотации; compileOnly; из java-errorprone-conventions
 
 # Gradle plugins (third-party, явная версия)
 com.google.protobuf version 0.9.6              ← обязателен для gRPC (кодогенерация из .proto)
 com.netflix.dgs.codegen version 8.3.0          ← Netflix DGS codegen (GraphQL client)
 com.vaadin version 25.2.0                      ← Vaadin UI framework
-io.spring.javaformat version 0.0.47            ← Spring Java Format (стиль Spring-команды)
-net.ltgt.errorprone version <version>          ← ErrorProne; artifact: net.ltgt.gradle:gradle-errorprone-plugin
+io.spring.javaformat version 0.0.47            ← Spring Java Format (стиль Spring-команды); checkstyle toolVersion = "9.3"
+net.ltgt.errorprone version 5.1.0             ← ErrorProne plugin; artifact: net.ltgt.gradle:gradle-errorprone-plugin; Gradle Plugin Portal
 org.asciidoctor.jvm.convert version 4.0.5     ← Spring REST Docs (Asciidoctor)
 org.cyclonedx.bom version 3.2.4               ← CycloneDX SBOM generation
 org.graalvm.buildtools.native version 1.1.1   ← GraalVM Native Image

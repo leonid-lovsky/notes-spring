@@ -18,6 +18,7 @@ class UserDocument {
     @Indexed(unique = true)
     private String email;
 
+    @SuppressWarnings("NullAway.Init")
     protected UserDocument() {
 
     }

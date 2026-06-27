@@ -1,6 +1,7 @@
 plugins {
-    java
+    id("java")
     id("io.spring.dependency-management")
+    id("java-codequality-conventions")
 }
 
 repositories {

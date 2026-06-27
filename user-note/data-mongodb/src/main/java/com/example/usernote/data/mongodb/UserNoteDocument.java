@@ -12,6 +12,7 @@ class UserNoteDocument {
 
     private UserNoteRole role;
 
+    @SuppressWarnings("NullAway.Init")
     protected UserNoteDocument() {
 
     }

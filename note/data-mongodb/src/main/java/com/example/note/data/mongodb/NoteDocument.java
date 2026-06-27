@@ -13,6 +13,7 @@ class NoteDocument {
 
     private String content;
 
+    @SuppressWarnings("NullAway.Init")
     protected NoteDocument() {
 
     }

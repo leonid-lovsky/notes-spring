@@ -15,6 +15,7 @@ class UserNoteId implements Serializable {
 
     private UUID noteId;
 
+    @SuppressWarnings("NullAway.Init")
     protected UserNoteId() {
 
     }
