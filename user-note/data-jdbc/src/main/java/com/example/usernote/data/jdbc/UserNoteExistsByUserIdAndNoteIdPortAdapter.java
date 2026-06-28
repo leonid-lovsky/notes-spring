@@ -1,11 +1,12 @@
 package com.example.usernote.data.jdbc;
 
-import com.example.usernote.domain.UserNoteExistsByUserIdAndNoteIdPort;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Repository;
-
 import java.util.Map;
 import java.util.UUID;
+
+import com.example.usernote.domain.UserNoteExistsByUserIdAndNoteIdPort;
+
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 @Repository
 class UserNoteExistsByUserIdAndNoteIdPortAdapter implements UserNoteExistsByUserIdAndNoteIdPort {
@@ -18,7 +19,7 @@ class UserNoteExistsByUserIdAndNoteIdPortAdapter implements UserNoteExistsByUser
 
     @Override
     public boolean existsByUserIdAndNoteId(UUID userId, UUID noteId) {
-        Integer count = jdbc.queryForObject(
+        Integer count = this.jdbc.queryForObject(
                 "SELECT COUNT(*) FROM user_notes WHERE user_id = :userId AND note_id = :noteId",
                 Map.of("userId", userId, "noteId", noteId), Integer.class);
         return count != null && count > 0;

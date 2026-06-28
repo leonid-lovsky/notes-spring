@@ -3,6 +3,7 @@ package com.example.user.data.mongodb;
 import com.example.user.domain.UserAddPort;
 import com.example.user.domain.UserRequest;
 import com.example.user.domain.UserResponse;
+
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -20,9 +21,9 @@ class UserAddPortAdapter implements UserAddPort {
 
     @Override
     public UserResponse add(UserRequest request) {
-        UserDocument document = userMongoMapper.toNewDocument(request);
-        mongoTemplate.insert(document);
-        return userMongoMapper.toResponse(document);
+        UserDocument document = this.userMongoMapper.toNewDocument(request);
+        this.mongoTemplate.insert(document);
+        return this.userMongoMapper.toResponse(document);
     }
 
 }

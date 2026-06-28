@@ -3,6 +3,7 @@ package com.example.usernote.webmvc;
 import com.example.usernote.domain.UserNoteAddPort;
 import com.example.usernote.domain.UserNoteRequest;
 import com.example.usernote.domain.UserNoteResponse;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +23,7 @@ class UserNoteCreateController {
 
     @PostMapping
     ResponseEntity<UserNoteResponse> create(@RequestBody UserNoteRequest request) {
-        UserNoteResponse userNote = userNoteAddPort.add(request);
+        UserNoteResponse userNote = this.userNoteAddPort.add(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(userNote);
     }
 

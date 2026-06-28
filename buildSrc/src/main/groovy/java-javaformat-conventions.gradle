@@ -11,6 +11,7 @@ repositories {
 checkstyle {
     toolVersion = "9.3"
     configFile = rootProject.file('gradle/checkstyle/checkstyle.xml')
+    configProperties = ['projectRootPackage': 'com.example']
 }
 
 dependencies {

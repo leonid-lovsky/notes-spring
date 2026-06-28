@@ -3,6 +3,7 @@ package com.example.usernote.data.mongodb;
 import com.example.usernote.domain.UserNoteAddPort;
 import com.example.usernote.domain.UserNoteRequest;
 import com.example.usernote.domain.UserNoteResponse;
+
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -20,9 +21,9 @@ class UserNoteAddPortAdapter implements UserNoteAddPort {
 
     @Override
     public UserNoteResponse add(UserNoteRequest request) {
-        UserNoteDocument document = userNoteMongoMapper.toDocument(request);
-        mongoTemplate.insert(document);
-        return userNoteMongoMapper.toResponse(document);
+        UserNoteDocument document = this.userNoteMongoMapper.toDocument(request);
+        this.mongoTemplate.insert(document);
+        return this.userNoteMongoMapper.toResponse(document);
     }
 
 }

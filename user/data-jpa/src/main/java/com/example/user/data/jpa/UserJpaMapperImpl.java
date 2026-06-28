@@ -1,11 +1,12 @@
 package com.example.user.data.jpa;
 
-import com.example.user.domain.UserRequest;
-import com.example.user.domain.UserResponse;
-import org.springframework.stereotype.Component;
-
 import java.util.Objects;
 import java.util.UUID;
+
+import com.example.user.domain.UserRequest;
+import com.example.user.domain.UserResponse;
+
+import org.springframework.stereotype.Component;
 
 @Component
 class UserJpaMapperImpl implements UserJpaMapper {

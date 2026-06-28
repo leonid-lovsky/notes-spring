@@ -1,9 +1,9 @@
 package com.example.note.data.mongodb;
 
+import java.util.UUID;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.util.UUID;
 
 @Document(collection = "notes")
 class NoteDocument {
@@ -24,11 +24,11 @@ class NoteDocument {
     }
 
     UUID getId() {
-        return id;
+        return this.id;
     }
 
     String getContent() {
-        return content;
+        return this.content;
     }
 
 }

@@ -2,7 +2,7 @@
 
 > Живой документ проекта. Читается автоматически в начале каждой сессии.
 > **Всё в этом документе и в коде — временно.** Любое решение подлежит обсуждению и изменению.
-> Последнее обновление: 2026-06-27T18:00Z
+> Последнее обновление: 2026-06-28T04:36Z
 
 ---
 
@@ -473,12 +473,16 @@ EXTERNAL      Redis        JTI Blocklist + Spring Session (bff/ + thymeleaf/)
 **`@Nullable`** — `@Target(TYPE_USE)`: `private @Nullable String field`; `@Nullable UUID id` — для JPA полей с `@GeneratedValue`.
 **`@SuppressWarnings("NullAway.Init")`** — только на `protected` no-arg конструкторах framework entities.
 **Spring Cloud (2025.1.x)** — не null-safe в `registry/`, `config/`, `gateway/`; при нужде: `@NullUnmarked`.
-**Импорты** — `com.example.*` + `org.*` / `jakarta.*`, затем `java.*`; wildcard при 3+.
+**Импорты** — порядок групп (SpringImportOrderCheck): `java.*` → `javax.*` → `*` (jakarta, org, com.example и т.д.) → `org.springframework.*`; blank line между группами; без blank внутри группы; wildcard запрещён (AvoidStarImportCheck).
 **Промежуточная переменная** — перед `return` всегда извлекать результат; не inline в `.body()`.
 
 ### Качество и наблюдаемость
 
-- **spring-javaformat** `0.0.47` — `checkstyle toolVersion = "9.3"`; строки до 120 символов; `springJavaFormat {}` — Groovy DSL only; в Kotlin DSL precompiled scripts — только задачи `format`/`checkFormat`
+- **spring-javaformat** `0.0.47` — `checkstyle toolVersion = "9.3"`; строки до 120 символов; `springJavaFormat {}` — Groovy DSL only; в Kotlin DSL precompiled scripts — только задачи `format`/`checkFormat`; README: `https://github.com/spring-io/spring-javaformat/blob/v0.0.47/README.adoc`
+- **SpringChecks** — `io.spring.javaformat.checkstyle.SpringChecks` загружает `spring-checkstyle.xml` из classpath JAR через `getResourceAsStream("spring-checkstyle.xml")`; отключение конкретных проверок — через `<property name="excludes" value="..."/>` с comma-separated именами классов; список всех проверок — в `spring-checkstyle.xml` репозитория
+- **applyDefaultConfig()** — добавлен в 0.0.48, недоступен на Maven Central; блок `springJavaFormat { checkstyle { } }` в convention plugin закомментирован — не удалять
+- **configProperties** → `SpringImportOrderCheck`: `configProperties = ['projectRootPackage': 'com.example']` в Gradle НЕ пробрасывается внутрь SpringChecks; `SpringImportOrderCheck` использует дефолтный `projectRootPackage = "org.springframework"` → `org.springframework.*` — последняя группа импортов
+- **`format` не переупорядочивает импорты** — Eclipse JDT форматирует тело, но не меняет порядок групп импортов
 - **ErrorProne** `net.ltgt.errorprone 5.1.0` — `error_prone_core 2.50.0`; Java 21 требует 2.43+
 - **NullAway** `0.13.7` — плагин к ErrorProne; без `AnnotatedPackages` не запускается
 - **JaCoCo** `0.8.14` — `test.finalizedBy(jacocoTestReport)`; `jacoco-report-aggregation` — агрегация по monorepo

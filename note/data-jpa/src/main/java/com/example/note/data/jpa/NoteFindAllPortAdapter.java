@@ -1,10 +1,11 @@
 package com.example.note.data.jpa;
 
+import java.util.List;
+
 import com.example.note.domain.NoteFindAllPort;
 import com.example.note.domain.NoteResponse;
-import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import org.springframework.stereotype.Repository;
 
 @Repository
 class NoteFindAllPortAdapter implements NoteFindAllPort {
@@ -20,7 +21,7 @@ class NoteFindAllPortAdapter implements NoteFindAllPort {
 
     @Override
     public List<NoteResponse> findAll() {
-        return noteJpaRepository.findAll().stream().map(noteJpaMapper::toResponse).toList();
+        return this.noteJpaRepository.findAll().stream().map(this.noteJpaMapper::toResponse).toList();
     }
 
 }

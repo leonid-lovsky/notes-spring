@@ -3,6 +3,7 @@ package com.example.note.data.mongodb;
 import com.example.note.domain.NoteAddPort;
 import com.example.note.domain.NoteRequest;
 import com.example.note.domain.NoteResponse;
+
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -20,9 +21,9 @@ class NoteAddPortAdapter implements NoteAddPort {
 
     @Override
     public NoteResponse add(NoteRequest request) {
-        NoteDocument document = noteMongoMapper.toNewDocument(request);
-        mongoTemplate.insert(document);
-        return noteMongoMapper.toResponse(document);
+        NoteDocument document = this.noteMongoMapper.toNewDocument(request);
+        this.mongoTemplate.insert(document);
+        return this.noteMongoMapper.toResponse(document);
     }
 
 }

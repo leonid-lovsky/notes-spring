@@ -1,13 +1,14 @@
 package com.example.note.data.jdbc;
 
-import com.example.note.domain.NoteFindByIdPort;
-import com.example.note.domain.NoteResponse;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Repository;
-
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+
+import com.example.note.domain.NoteFindByIdPort;
+import com.example.note.domain.NoteResponse;
+
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 @Repository
 class NoteFindByIdPortAdapter implements NoteFindByIdPort {
@@ -23,7 +24,8 @@ class NoteFindByIdPortAdapter implements NoteFindByIdPort {
 
     @Override
     public Optional<NoteResponse> findById(UUID id) {
-        return jdbc.query("SELECT id, content FROM notes WHERE id = :id", Map.of("id", id), noteJdbcMapper::fromRow)
+        return this.jdbc
+            .query("SELECT id, content FROM notes WHERE id = :id", Map.of("id", id), this.noteJdbcMapper::fromRow)
             .stream()
             .findFirst();
     }

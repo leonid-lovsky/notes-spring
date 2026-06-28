@@ -1,16 +1,17 @@
 package com.example.user.webmvc;
 
+import java.util.UUID;
+
 import com.example.user.domain.UserExistsByIdPort;
 import com.example.user.domain.UserNotFoundException;
 import com.example.user.domain.UserRemovePort;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/users")
@@ -27,10 +28,10 @@ class UserDeleteController {
 
     @DeleteMapping("/{id}")
     ResponseEntity<Void> delete(@PathVariable UUID id) {
-        if (!userExistsByIdPort.existsById(id)) {
+        if (!this.userExistsByIdPort.existsById(id)) {
             throw new UserNotFoundException(id);
         }
-        userRemovePort.remove(id);
+        this.userRemovePort.remove(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

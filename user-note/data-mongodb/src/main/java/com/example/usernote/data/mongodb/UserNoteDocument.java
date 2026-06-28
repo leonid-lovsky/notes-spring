@@ -1,6 +1,7 @@
 package com.example.usernote.data.mongodb;
 
 import com.example.usernote.domain.UserNoteRole;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -23,11 +24,11 @@ class UserNoteDocument {
     }
 
     UserNoteKey getId() {
-        return id;
+        return this.id;
     }
 
     UserNoteRole getRole() {
-        return role;
+        return this.role;
     }
 
 }

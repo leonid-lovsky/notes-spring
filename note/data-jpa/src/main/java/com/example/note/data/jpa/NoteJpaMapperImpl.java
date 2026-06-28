@@ -1,11 +1,12 @@
 package com.example.note.data.jpa;
 
-import com.example.note.domain.NoteRequest;
-import com.example.note.domain.NoteResponse;
-import org.springframework.stereotype.Component;
-
 import java.util.Objects;
 import java.util.UUID;
+
+import com.example.note.domain.NoteRequest;
+import com.example.note.domain.NoteResponse;
+
+import org.springframework.stereotype.Component;
 
 @Component
 class NoteJpaMapperImpl implements NoteJpaMapper {

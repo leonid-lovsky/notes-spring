@@ -1,6 +1,7 @@
 package com.example.usernote.webmvc;
 
 import com.example.usernote.domain.UserNoteNotFoundException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ControllerAdvice;

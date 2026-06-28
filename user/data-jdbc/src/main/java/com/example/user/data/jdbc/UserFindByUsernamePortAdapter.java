@@ -1,12 +1,13 @@
 package com.example.user.data.jdbc;
 
-import com.example.user.domain.UserFindByUsernamePort;
-import com.example.user.domain.UserResponse;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Repository;
-
 import java.util.Map;
 import java.util.Optional;
+
+import com.example.user.domain.UserFindByUsernamePort;
+import com.example.user.domain.UserResponse;
+
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 @Repository
 class UserFindByUsernamePortAdapter implements UserFindByUsernamePort {
@@ -22,9 +23,9 @@ class UserFindByUsernamePortAdapter implements UserFindByUsernamePort {
 
     @Override
     public Optional<UserResponse> findByUsername(String username) {
-        return jdbc
+        return this.jdbc
             .query("SELECT id, username, email FROM users WHERE username = :username", Map.of("username", username),
-                    userJdbcMapper::fromRow)
+                    this.userJdbcMapper::fromRow)
             .stream()
             .findFirst();
     }

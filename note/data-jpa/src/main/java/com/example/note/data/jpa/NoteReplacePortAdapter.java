@@ -1,11 +1,12 @@
 package com.example.note.data.jpa;
 
+import java.util.UUID;
+
 import com.example.note.domain.NoteReplacePort;
 import com.example.note.domain.NoteRequest;
 import com.example.note.domain.NoteResponse;
-import org.springframework.stereotype.Repository;
 
-import java.util.UUID;
+import org.springframework.stereotype.Repository;
 
 @Repository
 class NoteReplacePortAdapter implements NoteReplacePort {
@@ -21,8 +22,8 @@ class NoteReplacePortAdapter implements NoteReplacePort {
 
     @Override
     public NoteResponse replace(UUID id, NoteRequest request) {
-        NoteEntity saved = noteJpaRepository.save(noteJpaMapper.toExistingEntity(id, request));
-        return noteJpaMapper.toResponse(saved);
+        NoteEntity saved = this.noteJpaRepository.save(this.noteJpaMapper.toExistingEntity(id, request));
+        return this.noteJpaMapper.toResponse(saved);
     }
 
 }

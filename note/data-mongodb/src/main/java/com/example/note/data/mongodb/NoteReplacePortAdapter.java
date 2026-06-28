@@ -1,12 +1,13 @@
 package com.example.note.data.mongodb;
 
+import java.util.UUID;
+
 import com.example.note.domain.NoteReplacePort;
 import com.example.note.domain.NoteRequest;
 import com.example.note.domain.NoteResponse;
+
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Repository;
-
-import java.util.UUID;
 
 @Repository
 class NoteReplacePortAdapter implements NoteReplacePort {
@@ -22,9 +23,9 @@ class NoteReplacePortAdapter implements NoteReplacePort {
 
     @Override
     public NoteResponse replace(UUID id, NoteRequest request) {
-        NoteDocument document = noteMongoMapper.toExistingDocument(id, request);
-        mongoTemplate.save(document);
-        return noteMongoMapper.toResponse(document);
+        NoteDocument document = this.noteMongoMapper.toExistingDocument(id, request);
+        this.mongoTemplate.save(document);
+        return this.noteMongoMapper.toResponse(document);
     }
 
 }

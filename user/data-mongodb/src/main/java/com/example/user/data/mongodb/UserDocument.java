@@ -1,10 +1,10 @@
 package com.example.user.data.mongodb;
 
+import java.util.UUID;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.util.UUID;
 
 @Document(collection = "users")
 class UserDocument {
@@ -30,15 +30,15 @@ class UserDocument {
     }
 
     UUID getId() {
-        return id;
+        return this.id;
     }
 
     String getUsername() {
-        return username;
+        return this.username;
     }
 
     String getEmail() {
-        return email;
+        return this.email;
     }
 
 }

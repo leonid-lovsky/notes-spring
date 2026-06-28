@@ -1,6 +1,7 @@
 package com.example.note.webmvc;
 
 import com.example.note.domain.NoteNotFoundException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ControllerAdvice;

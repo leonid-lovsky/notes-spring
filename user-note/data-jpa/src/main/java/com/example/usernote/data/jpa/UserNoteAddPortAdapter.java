@@ -3,6 +3,7 @@ package com.example.usernote.data.jpa;
 import com.example.usernote.domain.UserNoteAddPort;
 import com.example.usernote.domain.UserNoteRequest;
 import com.example.usernote.domain.UserNoteResponse;
+
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -19,8 +20,8 @@ class UserNoteAddPortAdapter implements UserNoteAddPort {
 
     @Override
     public UserNoteResponse add(UserNoteRequest request) {
-        UserNoteEntity saved = userNoteJpaRepository.save(userNoteJpaMapper.toEntity(request));
-        return userNoteJpaMapper.toResponse(saved);
+        UserNoteEntity saved = this.userNoteJpaRepository.save(this.userNoteJpaMapper.toEntity(request));
+        return this.userNoteJpaMapper.toResponse(saved);
     }
 
 }

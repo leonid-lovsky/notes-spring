@@ -2,6 +2,7 @@ package com.example.usernote.data.mongodb;
 
 import com.example.usernote.domain.UserNoteRequest;
 import com.example.usernote.domain.UserNoteResponse;
+
 import org.springframework.stereotype.Component;
 
 @Component

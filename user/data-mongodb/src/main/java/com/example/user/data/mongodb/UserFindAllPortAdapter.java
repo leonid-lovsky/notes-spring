@@ -1,10 +1,11 @@
 package com.example.user.data.mongodb;
 
+import java.util.List;
+
 import com.example.user.domain.UserFindAllPort;
 import com.example.user.domain.UserResponse;
-import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import org.springframework.stereotype.Repository;
 
 @Repository
 class UserFindAllPortAdapter implements UserFindAllPort {
@@ -20,7 +21,7 @@ class UserFindAllPortAdapter implements UserFindAllPort {
 
     @Override
     public List<UserResponse> findAll() {
-        return userMongoRepository.findAll().stream().map(userMongoMapper::toResponse).toList();
+        return this.userMongoRepository.findAll().stream().map(this.userMongoMapper::toResponse).toList();
     }
 
 }

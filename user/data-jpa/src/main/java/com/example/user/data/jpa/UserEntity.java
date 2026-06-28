@@ -1,9 +1,14 @@
 package com.example.user.data.jpa;
 
-import jakarta.persistence.*;
-import org.jspecify.annotations.Nullable;
-
 import java.util.UUID;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import org.jspecify.annotations.Nullable;
 
 @Entity
 @Table(name = "users")
@@ -36,15 +41,15 @@ class UserEntity {
     }
 
     @Nullable UUID getId() {
-        return id;
+        return this.id;
     }
 
     String getUsername() {
-        return username;
+        return this.username;
     }
 
     String getEmail() {
-        return email;
+        return this.email;
     }
 
 }

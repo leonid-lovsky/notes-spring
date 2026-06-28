@@ -1,9 +1,10 @@
 package com.example.note.data.jpa;
 
-import com.example.note.domain.NoteRemovePort;
-import org.springframework.stereotype.Repository;
-
 import java.util.UUID;
+
+import com.example.note.domain.NoteRemovePort;
+
+import org.springframework.stereotype.Repository;
 
 @Repository
 class NoteRemovePortAdapter implements NoteRemovePort {
@@ -16,7 +17,7 @@ class NoteRemovePortAdapter implements NoteRemovePort {
 
     @Override
     public void remove(UUID id) {
-        noteJpaRepository.deleteById(id);
+        this.noteJpaRepository.deleteById(id);
     }
 
 }

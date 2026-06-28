@@ -1,6 +1,7 @@
 package com.example.user.webmvc;
 
 import com.example.user.domain.UserNotFoundException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ControllerAdvice;

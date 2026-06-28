@@ -1,9 +1,9 @@
 package com.example.user.data.mongodb;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
-
 import java.util.Optional;
 import java.util.UUID;
+
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 interface UserMongoRepository extends MongoRepository<UserDocument, UUID> {
 

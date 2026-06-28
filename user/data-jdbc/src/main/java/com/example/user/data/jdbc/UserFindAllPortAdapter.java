@@ -1,12 +1,13 @@
 package com.example.user.data.jdbc;
 
-import com.example.user.domain.UserFindAllPort;
-import com.example.user.domain.UserResponse;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Repository;
-
 import java.util.List;
 import java.util.Map;
+
+import com.example.user.domain.UserFindAllPort;
+import com.example.user.domain.UserResponse;
+
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 @Repository
 class UserFindAllPortAdapter implements UserFindAllPort {
@@ -22,7 +23,7 @@ class UserFindAllPortAdapter implements UserFindAllPort {
 
     @Override
     public List<UserResponse> findAll() {
-        return jdbc.query("SELECT id, username, email FROM users", Map.of(), userJdbcMapper::fromRow);
+        return this.jdbc.query("SELECT id, username, email FROM users", Map.of(), this.userJdbcMapper::fromRow);
     }
 
 }

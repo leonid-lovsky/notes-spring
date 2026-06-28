@@ -1,10 +1,11 @@
 package com.example.user.data.mongodb;
 
+import java.util.Optional;
+
 import com.example.user.domain.UserFindByEmailPort;
 import com.example.user.domain.UserResponse;
-import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import org.springframework.stereotype.Repository;
 
 @Repository
 class UserFindByEmailPortAdapter implements UserFindByEmailPort {
@@ -20,7 +21,7 @@ class UserFindByEmailPortAdapter implements UserFindByEmailPort {
 
     @Override
     public Optional<UserResponse> findByEmail(String email) {
-        return userMongoRepository.findByEmail(email).map(userMongoMapper::toResponse);
+        return this.userMongoRepository.findByEmail(email).map(this.userMongoMapper::toResponse);
     }
 
 }

@@ -1,11 +1,20 @@
 package com.example.user.webmvc;
 
-import com.example.user.domain.*;
+import java.util.UUID;
+
+import com.example.user.domain.UserExistsByIdPort;
+import com.example.user.domain.UserNotFoundException;
+import com.example.user.domain.UserReplacePort;
+import com.example.user.domain.UserRequest;
+import com.example.user.domain.UserResponse;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/users")
@@ -22,10 +31,10 @@ class UserUpdateController {
 
     @PutMapping("/{id}")
     ResponseEntity<UserResponse> update(@PathVariable UUID id, @RequestBody UserRequest request) {
-        if (!userExistsByIdPort.existsById(id)) {
+        if (!this.userExistsByIdPort.existsById(id)) {
             throw new UserNotFoundException(id);
         }
-        UserResponse updated = userReplacePort.replace(id, request);
+        UserResponse updated = this.userReplacePort.replace(id, request);
         return ResponseEntity.status(HttpStatus.OK).body(updated);
     }
 

@@ -1,11 +1,12 @@
 package com.example.note.data.jpa;
 
-import com.example.note.domain.NoteFindByIdPort;
-import com.example.note.domain.NoteResponse;
-import org.springframework.stereotype.Repository;
-
 import java.util.Optional;
 import java.util.UUID;
+
+import com.example.note.domain.NoteFindByIdPort;
+import com.example.note.domain.NoteResponse;
+
+import org.springframework.stereotype.Repository;
 
 @Repository
 class NoteFindByIdPortAdapter implements NoteFindByIdPort {
@@ -21,7 +22,7 @@ class NoteFindByIdPortAdapter implements NoteFindByIdPort {
 
     @Override
     public Optional<NoteResponse> findById(UUID id) {
-        return noteJpaRepository.findById(id).map(noteJpaMapper::toResponse);
+        return this.noteJpaRepository.findById(id).map(this.noteJpaMapper::toResponse);
     }
 
 }

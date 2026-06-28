@@ -3,6 +3,7 @@ package com.example.user.webmvc;
 import com.example.user.domain.UserAddPort;
 import com.example.user.domain.UserRequest;
 import com.example.user.domain.UserResponse;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +23,7 @@ class UserCreateController {
 
     @PostMapping
     ResponseEntity<UserResponse> create(@RequestBody UserRequest request) {
-        UserResponse user = userAddPort.add(request);
+        UserResponse user = this.userAddPort.add(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 

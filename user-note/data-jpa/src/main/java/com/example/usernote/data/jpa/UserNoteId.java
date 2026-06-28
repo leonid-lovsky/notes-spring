@@ -1,10 +1,10 @@
 package com.example.usernote.data.jpa;
 
-import jakarta.persistence.Embeddable;
-
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
+
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 class UserNoteId implements Serializable {
@@ -26,25 +26,27 @@ class UserNoteId implements Serializable {
     }
 
     UUID getUserId() {
-        return userId;
+        return this.userId;
     }
 
     UUID getNoteId() {
-        return noteId;
+        return this.noteId;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (!(o instanceof UserNoteId that))
+        }
+        if (!(o instanceof UserNoteId that)) {
             return false;
-        return Objects.equals(userId, that.userId) && Objects.equals(noteId, that.noteId);
+        }
+        return Objects.equals(this.userId, that.userId) && Objects.equals(this.noteId, that.noteId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, noteId);
+        return Objects.hash(this.userId, this.noteId);
     }
 
 }

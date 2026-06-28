@@ -1,12 +1,13 @@
 package com.example.user.data.mongodb;
 
+import java.util.UUID;
+
 import com.example.user.domain.UserReplacePort;
 import com.example.user.domain.UserRequest;
 import com.example.user.domain.UserResponse;
+
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Repository;
-
-import java.util.UUID;
 
 @Repository
 class UserReplacePortAdapter implements UserReplacePort {
@@ -22,9 +23,9 @@ class UserReplacePortAdapter implements UserReplacePort {
 
     @Override
     public UserResponse replace(UUID id, UserRequest request) {
-        UserDocument document = userMongoMapper.toExistingDocument(id, request);
-        mongoTemplate.save(document);
-        return userMongoMapper.toResponse(document);
+        UserDocument document = this.userMongoMapper.toExistingDocument(id, request);
+        this.mongoTemplate.save(document);
+        return this.userMongoMapper.toResponse(document);
     }
 
 }

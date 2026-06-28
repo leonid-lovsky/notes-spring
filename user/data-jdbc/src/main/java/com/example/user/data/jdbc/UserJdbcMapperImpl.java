@@ -1,11 +1,12 @@
 package com.example.user.data.jdbc;
 
-import com.example.user.domain.UserResponse;
-import org.springframework.stereotype.Component;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
+
+import com.example.user.domain.UserResponse;
+
+import org.springframework.stereotype.Component;
 
 @Component
 class UserJdbcMapperImpl implements UserJdbcMapper {

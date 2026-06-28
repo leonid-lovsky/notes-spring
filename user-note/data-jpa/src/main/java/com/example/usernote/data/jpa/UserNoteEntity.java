@@ -1,7 +1,12 @@
 package com.example.usernote.data.jpa;
 
 import com.example.usernote.domain.UserNoteRole;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "user_notes")
@@ -25,11 +30,11 @@ class UserNoteEntity {
     }
 
     UserNoteId getId() {
-        return id;
+        return this.id;
     }
 
     UserNoteRole getRole() {
-        return role;
+        return this.role;
     }
 
 }

@@ -1,12 +1,13 @@
 package com.example.usernote.data.jdbc;
 
-import com.example.usernote.domain.UserNoteResponse;
-import com.example.usernote.domain.UserNoteRole;
-import org.springframework.stereotype.Component;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
+
+import com.example.usernote.domain.UserNoteResponse;
+import com.example.usernote.domain.UserNoteRole;
+
+import org.springframework.stereotype.Component;
 
 @Component
 class UserNoteJdbcMapperImpl implements UserNoteJdbcMapper {

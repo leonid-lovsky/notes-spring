@@ -3,6 +3,7 @@ package com.example.user.data.jpa;
 import com.example.user.domain.UserAddPort;
 import com.example.user.domain.UserRequest;
 import com.example.user.domain.UserResponse;
+
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -19,8 +20,8 @@ class UserAddPortAdapter implements UserAddPort {
 
     @Override
     public UserResponse add(UserRequest request) {
-        UserEntity saved = userJpaRepository.save(userJpaMapper.toNewEntity(request));
-        return userJpaMapper.toResponse(saved);
+        UserEntity saved = this.userJpaRepository.save(this.userJpaMapper.toNewEntity(request));
+        return this.userJpaMapper.toResponse(saved);
     }
 
 }

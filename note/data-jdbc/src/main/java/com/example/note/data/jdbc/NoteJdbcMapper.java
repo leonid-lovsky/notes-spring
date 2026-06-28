@@ -1,9 +1,9 @@
 package com.example.note.data.jdbc;
 
-import com.example.note.domain.NoteResponse;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import com.example.note.domain.NoteResponse;
 
 interface NoteJdbcMapper {
 

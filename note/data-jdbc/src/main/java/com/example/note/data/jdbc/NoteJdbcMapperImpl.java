@@ -1,11 +1,12 @@
 package com.example.note.data.jdbc;
 
-import com.example.note.domain.NoteResponse;
-import org.springframework.stereotype.Component;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
+
+import com.example.note.domain.NoteResponse;
+
+import org.springframework.stereotype.Component;
 
 @Component
 class NoteJdbcMapperImpl implements NoteJdbcMapper {

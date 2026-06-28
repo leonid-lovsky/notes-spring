@@ -1,10 +1,11 @@
 package com.example.user.data.jpa;
 
+import java.util.Optional;
+
 import com.example.user.domain.UserFindByEmailPort;
 import com.example.user.domain.UserResponse;
-import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import org.springframework.stereotype.Repository;
 
 @Repository
 class UserFindByEmailPortAdapter implements UserFindByEmailPort {
@@ -20,7 +21,7 @@ class UserFindByEmailPortAdapter implements UserFindByEmailPort {
 
     @Override
     public Optional<UserResponse> findByEmail(String email) {
-        return userJpaRepository.findByEmail(email).map(userJpaMapper::toResponse);
+        return this.userJpaRepository.findByEmail(email).map(this.userJpaMapper::toResponse);
     }
 
 }

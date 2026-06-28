@@ -1,9 +1,9 @@
 package com.example.user.data.jpa;
 
+import java.util.UUID;
+
 import com.example.user.domain.UserRequest;
 import com.example.user.domain.UserResponse;
-
-import java.util.UUID;
 
 interface UserJpaMapper {
 

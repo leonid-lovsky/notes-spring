@@ -1,9 +1,9 @@
 package com.example.note.data.jpa;
 
+import java.util.UUID;
+
 import com.example.note.domain.NoteRequest;
 import com.example.note.domain.NoteResponse;
-
-import java.util.UUID;
 
 interface NoteJpaMapper {
 

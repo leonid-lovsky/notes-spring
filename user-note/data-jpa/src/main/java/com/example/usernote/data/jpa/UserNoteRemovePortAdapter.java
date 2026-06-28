@@ -1,9 +1,10 @@
 package com.example.usernote.data.jpa;
 
-import com.example.usernote.domain.UserNoteRemovePort;
-import org.springframework.stereotype.Repository;
-
 import java.util.UUID;
+
+import com.example.usernote.domain.UserNoteRemovePort;
+
+import org.springframework.stereotype.Repository;
 
 @Repository
 class UserNoteRemovePortAdapter implements UserNoteRemovePort {
@@ -16,7 +17,7 @@ class UserNoteRemovePortAdapter implements UserNoteRemovePort {
 
     @Override
     public void remove(UUID userId, UUID noteId) {
-        userNoteJpaRepository.deleteById(new UserNoteId(userId, noteId));
+        this.userNoteJpaRepository.deleteById(new UserNoteId(userId, noteId));
     }
 
 }

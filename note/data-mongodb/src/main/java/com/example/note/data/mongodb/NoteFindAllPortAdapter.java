@@ -1,10 +1,11 @@
 package com.example.note.data.mongodb;
 
+import java.util.List;
+
 import com.example.note.domain.NoteFindAllPort;
 import com.example.note.domain.NoteResponse;
-import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import org.springframework.stereotype.Repository;
 
 @Repository
 class NoteFindAllPortAdapter implements NoteFindAllPort {
@@ -20,7 +21,7 @@ class NoteFindAllPortAdapter implements NoteFindAllPort {
 
     @Override
     public List<NoteResponse> findAll() {
-        return noteMongoRepository.findAll().stream().map(noteMongoMapper::toResponse).toList();
+        return this.noteMongoRepository.findAll().stream().map(this.noteMongoMapper::toResponse).toList();
     }
 
 }

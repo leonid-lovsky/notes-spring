@@ -1,9 +1,10 @@
 package com.example.user.data.mongodb;
 
-import com.example.user.domain.UserExistsByIdPort;
-import org.springframework.stereotype.Repository;
-
 import java.util.UUID;
+
+import com.example.user.domain.UserExistsByIdPort;
+
+import org.springframework.stereotype.Repository;
 
 @Repository
 class UserExistsByIdPortAdapter implements UserExistsByIdPort {
@@ -16,7 +17,7 @@ class UserExistsByIdPortAdapter implements UserExistsByIdPort {
 
     @Override
     public boolean existsById(UUID id) {
-        return userMongoRepository.existsById(id);
+        return this.userMongoRepository.existsById(id);
     }
 
 }

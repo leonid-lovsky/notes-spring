@@ -1,10 +1,11 @@
 package com.example.user.data.mongodb;
 
+import java.util.UUID;
+
 import com.example.user.domain.UserRequest;
 import com.example.user.domain.UserResponse;
-import org.springframework.stereotype.Component;
 
-import java.util.UUID;
+import org.springframework.stereotype.Component;
 
 @Component
 class UserMongoMapperImpl implements UserMongoMapper {
