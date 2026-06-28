@@ -27,6 +27,44 @@
 
 ---
 
+## Навигация по проекту
+
+**Физическая структура:**
+```
+buildSrc/src/main/groovy/   convention plugins (Groovy DSL, не Kotlin)
+{service}/settings.gradle   объявляет subprojects сервиса
+{service}/{module}/build.gradle  применяет plugin через id '...'
+```
+
+**Пакеты по сервисам:**
+```
+note/       → com.example.note
+user/       → com.example.user
+user-note/  → com.example.usernote   (не user.note!)
+```
+
+**Текущее состояние `domain/` (до рефакторинга):**
+```
+domain/ содержит СЕЙЧАС:
+  NoteAddPort, NoteFindByIdPort, NoteFindAllPort,    ← port interfaces (переименовать в *Contract)
+  NoteReplacePort, NoteRemovePort, NoteExistsByIdPort
+  NoteRequest, NoteResponse                          ← records (оставить в domain/)
+  NoteNotFoundException                              ← exception (оставить в domain/)
+```
+Задача: вынести `*Port` → `contract/` как `*Contract`; `domain/` оставить только с records + exceptions.
+
+**Существующие адаптеры (до рефакторинга):**
+```
+data-jpa/   NoteAddPortAdapter, NoteJpaMapper/NoteJpaMapperImpl, NoteJpaRepository, NoteEntity
+            — все в одном пакете com.example.note.data.jpa (плоско)
+data-mongodb/ аналогично: NoteMongoMapper/Impl, NoteMongoRepository, NoteDocument
+data-jdbc/  аналогично: NoteJdbcMapper/Impl (нет репозитория — NamedParameterJdbcTemplate)
+webmvc/     NoteCreateController, NoteFindByIdController, ... — плоско, оставить так
+```
+Задача: переименовать классы + разложить по подпакетам + переключить зависимость на `contract/`.
+
+---
+
 ## ⚡ Задачи
 
 ```
