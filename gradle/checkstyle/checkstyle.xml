@@ -6,14 +6,11 @@
     <module name="io.spring.javaformat.checkstyle.SpringChecks">
         <property name="excludes"
             value="io.spring.javaformat.checkstyle.check.SpringHeaderCheck,
-			       com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocPackageCheck,
-			       com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTypeCheck,
-			       com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocMethodCheck,
-			       com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocVariableCheck,
-			       com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocStyleCheck,
-			       com.puppycrawl.tools.checkstyle.checks.javadoc.NonEmptyAtclauseDescriptionCheck,
-			       com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTagContinuationIndentationCheck,
-			       com.puppycrawl.tools.checkstyle.checks.javadoc.AtclauseOrderCheck,
-			       io.spring.javaformat.checkstyle.check.SpringJavadocCheck"/>
+                   com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocPackageCheck,
+                   com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTypeCheck,
+                   com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocMethodCheck,
+                   com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocVariableCheck,
+                   com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocStyleCheck,
+                   io.spring.javaformat.checkstyle.check.SpringJavadocCheck"/>
     </module>
 </module>
