@@ -93,12 +93,22 @@ com.example.note.data.jpa.repository   NoteJpaRepository
 
 ## Стек
 
-| Инструмент    | Версия  |
-|---------------|---------|
-| Java          | 21      |
-| Gradle        | 9.5.1   |
-| Spring Boot   | 4.0.6   |
-| Spring Cloud  | 2025.1.1|
+| Инструмент    | Версия   |
+|---------------|----------|
+| Java          | 21       |
+| Gradle        | 9.5.1    |
+| Spring Boot   | 4.0.6    |
+| Spring Cloud  | 2025.1.1 |
+
+**Spring Boot 4 — критичные отличия от Boot 3 (источник: существующие `build.gradle` в проекте):**
+- `starter-web` → `starter-webmvc`; `starter-aop` → `starter-aspectj`
+- `@MockBean`/`@SpyBean` → `@MockitoBean`/`@MockitoSpyBean`
+- OAuth2 стартеры: `oauth2-resource-server` → `security-oauth2-resource-server`; аналогично для `client` и `authorization-server`
+- Spring Authorization Server — часть Spring Security 7; отдельной версии нет
+- `@WebMvcTest`, `@DataJpaTest` — в отдельных `*-test` стартерах, не в `starter-test`
+- `@SpringBootTest` не даёт MockMvc/WebClient автоматически — нужен `@AutoConfigureMockMvc`
+- Jackson 3: пакет `tools.jackson` (кроме `jackson-annotations` — остался на `com.fasterxml`)
+- Документация Spring (docs.spring.io) местами показывает Boot 3 — не доверять; смотреть в существующих файлах проекта
 
 ---
 
