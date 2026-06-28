@@ -4,10 +4,9 @@ import com.example.note.contract.reactive.NoteFindAllContractReactive;
 import com.example.note.data.r2dbc.mapper.NoteR2dbcMapperContract;
 import com.example.note.data.r2dbc.repository.NoteR2dbcRepository;
 import com.example.note.domain.NoteResponse;
+import reactor.core.publisher.Flux;
 
 import org.springframework.stereotype.Repository;
-
-import reactor.core.publisher.Flux;
 
 @Repository
 class NoteFindAllR2dbcAdapter implements NoteFindAllContractReactive {

@@ -4,10 +4,9 @@ import java.util.UUID;
 
 import com.example.note.contract.reactive.NoteExistsByIdContractReactive;
 import com.example.note.data.r2dbc.repository.NoteR2dbcRepository;
+import reactor.core.publisher.Mono;
 
 import org.springframework.stereotype.Repository;
-
-import reactor.core.publisher.Mono;
 
 @Repository
 class NoteExistsByIdR2dbcAdapter implements NoteExistsByIdContractReactive {

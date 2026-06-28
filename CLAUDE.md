@@ -1,6 +1,6 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: 2026-06-28T16:39Z
+> Последнее обновление: 2026-06-28T22:19Z
 > **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 ---
@@ -58,31 +58,25 @@ MongoDB: `document/` вместо `entity/`. Driving адаптеры (`webmvc/`
 ## ⚡ Задачи
 
 ```
-ГОТОВО   note/  — domain · contract · contract-reactive · webmvc · webflux
+ГОТОВО   note/  — domain · data-contract · data-contract-reactive · webmvc · webflux
                   data-jpa · data-mongodb · data-jdbc · data-r2dbc · data-mongodb-reactive
-ГОТОВО   user/  — domain · contract · contract-reactive · webmvc · webflux
+ГОТОВО   user/  — domain · data-contract · data-contract-reactive · webmvc · webflux
                   data-jpa · data-mongodb · data-jdbc
-ГОТОВО   user-note/ — domain · contract · contract-reactive · webmvc · webflux
+ГОТОВО   user-note/ — domain · data-contract · data-contract-reactive · webmvc · webflux
                       data-jpa · data-mongodb · data-jdbc
-ТЕКУЩИЙ ⚡ исправить checkstyle (reactor.* import order) в note/data-r2dbc/ и
-           note/data-mongodb-reactive/ → добиться BUILD SUCCESS
-СЛЕДУЮЩИЙ  user/ и user-note/: реализовать data-r2dbc/ и data-mongodb-reactive/
+ТЕКУЩИЙ ⚡ user/ и user-note/: реализовать data-r2dbc/ и data-mongodb-reactive/
 ОТЛОЖЕНО   graphql/ · инфраструктура · auth/
 НЕ СОЗДАНО bff/ · thymeleaf/ · sharing/ · crud/
 ```
 
-**Checkstyle — порядок импортов `reactor.*`:**
+**Checkstyle — порядок импортов:**
 ```
-// ПРАВИЛЬНО — reactor.* в группе * (перед org.springframework)
+// Группы: java.* → javax.* → * → org.springframework.*; пустая строка между группами
+// jakarta.*, com.example.*, reactor.*, org.jspecify.* — все в группе *; без пустых строк внутри
 import com.example.note.domain.NoteResponse;
 import reactor.core.publisher.Mono;
 
 import org.springframework.stereotype.Repository;
-
-// НЕПРАВИЛЬНО — reactor.* после org.springframework
-import org.springframework.stereotype.Repository;
-
-import reactor.core.publisher.Mono;
 ```
 
 ---

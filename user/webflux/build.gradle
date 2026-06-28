@@ -3,5 +3,5 @@ plugins {
 }
 
 dependencies {
-    implementation project(':user:contract-reactive')
+    implementation project(':user:data-contract-reactive')
 }

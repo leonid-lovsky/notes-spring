@@ -3,5 +3,5 @@ plugins {
 }
 
 dependencies {
-    implementation project(':user-note:contract')
+    implementation project(':user-note:data-contract')
 }

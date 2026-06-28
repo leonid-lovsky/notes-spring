@@ -5,10 +5,9 @@ import com.example.note.data.r2dbc.mapper.NoteR2dbcMapperContract;
 import com.example.note.data.r2dbc.repository.NoteR2dbcRepository;
 import com.example.note.domain.NoteRequest;
 import com.example.note.domain.NoteResponse;
+import reactor.core.publisher.Mono;
 
 import org.springframework.stereotype.Repository;
-
-import reactor.core.publisher.Mono;
 
 @Repository
 class NoteAddR2dbcAdapter implements NoteAddContractReactive {

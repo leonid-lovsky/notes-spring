@@ -2,12 +2,11 @@ package com.example.user.webflux;
 
 import com.example.user.contract.reactive.UserFindAllContractReactive;
 import com.example.user.domain.UserResponse;
+import reactor.core.publisher.Flux;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import reactor.core.publisher.Flux;
 
 @RestController
 @RequestMapping("/users")

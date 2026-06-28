@@ -1,7 +1,6 @@
 package com.example.usernote.data.jpa.entity;
 
 import com.example.usernote.domain.UserNoteRole;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;

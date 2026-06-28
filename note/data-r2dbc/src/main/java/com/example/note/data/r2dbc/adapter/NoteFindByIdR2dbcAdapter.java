@@ -6,10 +6,9 @@ import com.example.note.contract.reactive.NoteFindByIdContractReactive;
 import com.example.note.data.r2dbc.mapper.NoteR2dbcMapperContract;
 import com.example.note.data.r2dbc.repository.NoteR2dbcRepository;
 import com.example.note.domain.NoteResponse;
+import reactor.core.publisher.Mono;
 
 import org.springframework.stereotype.Repository;
-
-import reactor.core.publisher.Mono;
 
 @Repository
 class NoteFindByIdR2dbcAdapter implements NoteFindByIdContractReactive {

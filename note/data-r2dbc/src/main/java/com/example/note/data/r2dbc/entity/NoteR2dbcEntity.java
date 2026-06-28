@@ -3,6 +3,7 @@ package com.example.note.data.r2dbc.entity;
 import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
