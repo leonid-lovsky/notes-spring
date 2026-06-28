@@ -1,6 +1,6 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: 2026-06-28T16:35Z
+> Последнее обновление: 2026-06-28T16:39Z
 > **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 ---
@@ -24,6 +24,7 @@
 - **Таблицы** — все строки одинаковой длины в Unicode-символах
 - **Архитектурные решения** — изложить варианты + плюсы/минусы + склонение, дождаться выбора; не реализовывать до явного решения
 - **Build** — после каждого логического шага: `./gradlew clean build` → CLAUDE.md → коммит → пуш
+- **Подзадачи** — крупные задачи разбивать на подзадачи; коммитить+пушить после каждой выполненной подзадачи во избежание потерь при обрыве сессии
 
 ---
 
@@ -31,8 +32,8 @@
 
 **Физическая структура:**
 ```
-buildSrc/src/main/groovy/   convention plugins (Groovy DSL, не Kotlin)
-{service}/settings.gradle   объявляет subprojects сервиса
+buildSrc/src/main/groovy/        convention plugins (Groovy DSL, не Kotlin)
+{service}/settings.gradle        объявляет subprojects сервиса
 {service}/{module}/build.gradle  применяет plugin через id '...'
 ```
 
@@ -43,45 +44,46 @@ user/       → com.example.user
 user-note/  → com.example.usernote   (не user.note!)
 ```
 
-**Текущее состояние `domain/` (до рефакторинга):**
+**Структура driven адаптера (пример data-jpa/):**
 ```
-domain/ содержит СЕЙЧАС:
-  NoteAddPort, NoteFindByIdPort, NoteFindAllPort,    ← port interfaces (переименовать в *Contract)
-  NoteReplacePort, NoteRemovePort, NoteExistsByIdPort
-  NoteRequest, NoteResponse                          ← records (оставить в domain/)
-  NoteNotFoundException                              ← exception (оставить в domain/)
+com.example.note.data.jpa.adapter      NoteAddJpaAdapter, ...
+com.example.note.data.jpa.entity       NoteEntity
+com.example.note.data.jpa.mapper       NoteEntityMapperContract, NoteEntityMapper
+com.example.note.data.jpa.repository   NoteJpaRepository
 ```
-Задача: вынести `*Port` → `contract/` как `*Contract`; `domain/` оставить только с records + exceptions.
-
-**Существующие адаптеры (до рефакторинга):**
-```
-data-jpa/   NoteAddPortAdapter, NoteJpaMapper/NoteJpaMapperImpl, NoteJpaRepository, NoteEntity
-            — все в одном пакете com.example.note.data.jpa (плоско)
-data-mongodb/ аналогично: NoteMongoMapper/Impl, NoteMongoRepository, NoteDocument
-data-jdbc/  аналогично: NoteJdbcMapper/Impl (нет репозитория — NamedParameterJdbcTemplate)
-webmvc/     NoteCreateController, NoteFindByIdController, ... — плоско, оставить так
-```
-Задача: переименовать классы + разложить по подпакетам + переключить зависимость на `contract/`.
+MongoDB: `document/` вместо `entity/`. Driving адаптеры (`webmvc/`, `webflux/`) — плоско.
 
 ---
 
 ## ⚡ Задачи
 
 ```
-ГОТОВО      user/ · note/ · user-note/ — domain · webmvc · data-jpa · data-mongodb · data-jdbc
-ТЕКУЩИЙ  ⚡  рефакторинг domain/ + реализация contract/ · contract-reactive/ · data-r2dbc/
-            data-mongodb-reactive/ · webflux/ — для всех трёх сервисов
-ОТЛОЖЕНО    graphql/ · инфраструктура · auth/
-НЕ СОЗДАНО  bff/ · thymeleaf/ · sharing/ · crud/
+ГОТОВО   note/  — domain · contract · contract-reactive · webmvc · webflux
+                  data-jpa · data-mongodb · data-jdbc · data-r2dbc · data-mongodb-reactive
+ГОТОВО   user/  — domain · contract · contract-reactive · webmvc · webflux
+                  data-jpa · data-mongodb · data-jdbc
+ГОТОВО   user-note/ — domain · contract · contract-reactive · webmvc · webflux
+                      data-jpa · data-mongodb · data-jdbc
+ТЕКУЩИЙ ⚡ исправить checkstyle (reactor.* import order) в note/data-r2dbc/ и
+           note/data-mongodb-reactive/ → добиться BUILD SUCCESS
+СЛЕДУЮЩИЙ  user/ и user-note/: реализовать data-r2dbc/ и data-mongodb-reactive/
+ОТЛОЖЕНО   graphql/ · инфраструктура · auth/
+НЕ СОЗДАНО bff/ · thymeleaf/ · sharing/ · crud/
 ```
 
-**Порядок для каждого сервиса:**
-1. Убрать port interfaces из `domain/` → оставить только records, enums, exceptions
-2. Создать `contract/` — sync ports; `build.gradle`: `api project(':svc:domain')`
-3. Создать `contract-reactive/` — reactive ports; `build.gradle`: `api project(':svc:domain')`
-4. Обновить `data-jpa/`, `data-mongodb/`, `data-jdbc/`, `webmvc/` — новые имена, подпакеты, зависимость на `contract/`
-5. Реализовать `data-r2dbc/`, `data-mongodb-reactive/` — зависимость на `contract-reactive/`
-6. Реализовать `webflux/` — зависимость на `contract-reactive/`
+**Checkstyle — порядок импортов `reactor.*`:**
+```
+// ПРАВИЛЬНО — reactor.* в группе * (перед org.springframework)
+import com.example.note.domain.NoteResponse;
+import reactor.core.publisher.Mono;
+
+import org.springframework.stereotype.Repository;
+
+// НЕПРАВИЛЬНО — reactor.* после org.springframework
+import org.springframework.stereotype.Repository;
+
+import reactor.core.publisher.Mono;
+```
 
 ---
 
@@ -117,15 +119,6 @@ application/         composition root             → все модули
 | MongoDB document              | `{Entity}Document`             | `NoteDocument`                 |
 
 **Tech**: `Jpa` · `Mongo` · `Jdbc` · `R2dbc` · `MongoReactive`
-
-**Пакеты driven адаптеров** (подпакеты — осознанное решение):
-```
-com.example.note.data.jpa.adapter      NoteAddJpaAdapter
-com.example.note.data.jpa.entity       NoteEntity
-com.example.note.data.jpa.mapper       NoteEntityMapperContract · NoteEntityMapper
-com.example.note.data.jpa.repository   NoteJpaRepository
-```
-`document/` вместо `entity/` в MongoDB-адаптерах. Driving адаптеры (`webmvc/`, `webflux/`) — плоско.
 
 ---
 
