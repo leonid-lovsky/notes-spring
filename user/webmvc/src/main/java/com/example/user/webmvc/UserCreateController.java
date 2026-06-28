@@ -1,6 +1,6 @@
 package com.example.user.webmvc;
 
-import com.example.user.domain.UserAddPort;
+import com.example.user.contract.UserAddContract;
 import com.example.user.domain.UserRequest;
 import com.example.user.domain.UserResponse;
 
@@ -15,15 +15,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/users")
 class UserCreateController {
 
-    private final UserAddPort userAddPort;
+    private final UserAddContract userAddContract;
 
-    UserCreateController(UserAddPort userAddPort) {
-        this.userAddPort = userAddPort;
+    UserCreateController(UserAddContract userAddContract) {
+        this.userAddContract = userAddContract;
     }
 
     @PostMapping
     ResponseEntity<UserResponse> create(@RequestBody UserRequest request) {
-        UserResponse user = this.userAddPort.add(request);
+        UserResponse user = this.userAddContract.add(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 

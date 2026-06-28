@@ -2,7 +2,7 @@ package com.example.note.webmvc;
 
 import java.util.List;
 
-import com.example.note.domain.NoteFindAllPort;
+import com.example.note.contract.NoteFindAllContract;
 import com.example.note.domain.NoteResponse;
 
 import org.springframework.http.HttpStatus;
@@ -15,15 +15,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/notes")
 class NoteFindAllController {
 
-    private final NoteFindAllPort noteFindAllPort;
+    private final NoteFindAllContract noteFindAllContract;
 
-    NoteFindAllController(NoteFindAllPort noteFindAllPort) {
-        this.noteFindAllPort = noteFindAllPort;
+    NoteFindAllController(NoteFindAllContract noteFindAllContract) {
+        this.noteFindAllContract = noteFindAllContract;
     }
 
     @GetMapping
     ResponseEntity<List<NoteResponse>> findAll() {
-        List<NoteResponse> notes = this.noteFindAllPort.findAll();
+        List<NoteResponse> notes = this.noteFindAllContract.findAll();
         return ResponseEntity.status(HttpStatus.OK).body(notes);
     }
 

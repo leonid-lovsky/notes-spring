@@ -3,5 +3,5 @@ plugins {
 }
 
 dependencies {
-    implementation project(':note:domain')
+    implementation project(':note:contract')
 }

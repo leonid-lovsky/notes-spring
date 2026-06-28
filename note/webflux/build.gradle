@@ -1,0 +1,7 @@
+plugins {
+    id 'spring-boot-webflux-adapter-conventions'
+}
+
+dependencies {
+    implementation project(':note:contract-reactive')
+}

@@ -2,9 +2,9 @@ package com.example.user.webmvc;
 
 import java.util.UUID;
 
-import com.example.user.domain.UserExistsByIdPort;
+import com.example.user.contract.UserExistsByIdContract;
+import com.example.user.contract.UserRemoveContract;
 import com.example.user.domain.UserNotFoundException;
-import com.example.user.domain.UserRemovePort;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,21 +17,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/users")
 class UserDeleteController {
 
-    private final UserExistsByIdPort userExistsByIdPort;
+    private final UserExistsByIdContract userExistsByIdContract;
 
-    private final UserRemovePort userRemovePort;
+    private final UserRemoveContract userRemoveContract;
 
-    UserDeleteController(UserExistsByIdPort userExistsByIdPort, UserRemovePort userRemovePort) {
-        this.userExistsByIdPort = userExistsByIdPort;
-        this.userRemovePort = userRemovePort;
+    UserDeleteController(UserExistsByIdContract userExistsByIdContract, UserRemoveContract userRemoveContract) {
+        this.userExistsByIdContract = userExistsByIdContract;
+        this.userRemoveContract = userRemoveContract;
     }
 
     @DeleteMapping("/{id}")
     ResponseEntity<Void> delete(@PathVariable UUID id) {
-        if (!this.userExistsByIdPort.existsById(id)) {
+        if (!this.userExistsByIdContract.existsById(id)) {
             throw new UserNotFoundException(id);
         }
-        this.userRemovePort.remove(id);
+        this.userRemoveContract.remove(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

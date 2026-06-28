@@ -1,0 +1,16 @@
+package com.example.user.data.mongodb.repository;
+
+import java.util.Optional;
+import java.util.UUID;
+
+import com.example.user.data.mongodb.document.UserDocument;
+
+import org.springframework.data.mongodb.repository.MongoRepository;
+
+public interface UserMongoRepository extends MongoRepository<UserDocument, UUID> {
+
+    Optional<UserDocument> findByUsername(String username);
+
+    Optional<UserDocument> findByEmail(String email);
+
+}

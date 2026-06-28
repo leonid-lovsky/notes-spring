@@ -2,9 +2,9 @@ package com.example.usernote.webmvc;
 
 import java.util.UUID;
 
-import com.example.usernote.domain.UserNoteExistsByUserIdAndNoteIdPort;
+import com.example.usernote.contract.UserNoteExistsByUserIdAndNoteIdContract;
+import com.example.usernote.contract.UserNoteReplaceContract;
 import com.example.usernote.domain.UserNoteNotFoundException;
-import com.example.usernote.domain.UserNoteReplacePort;
 import com.example.usernote.domain.UserNoteRequest;
 import com.example.usernote.domain.UserNoteResponse;
 
@@ -20,23 +20,23 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/user-notes")
 class UserNoteUpdateController {
 
-    private final UserNoteExistsByUserIdAndNoteIdPort userNoteExistsByUserIdAndNoteIdPort;
+    private final UserNoteExistsByUserIdAndNoteIdContract userNoteExistsByUserIdAndNoteIdContract;
 
-    private final UserNoteReplacePort userNoteReplacePort;
+    private final UserNoteReplaceContract userNoteReplaceContract;
 
-    UserNoteUpdateController(UserNoteExistsByUserIdAndNoteIdPort userNoteExistsByUserIdAndNoteIdPort,
-            UserNoteReplacePort userNoteReplacePort) {
-        this.userNoteExistsByUserIdAndNoteIdPort = userNoteExistsByUserIdAndNoteIdPort;
-        this.userNoteReplacePort = userNoteReplacePort;
+    UserNoteUpdateController(UserNoteExistsByUserIdAndNoteIdContract userNoteExistsByUserIdAndNoteIdContract,
+            UserNoteReplaceContract userNoteReplaceContract) {
+        this.userNoteExistsByUserIdAndNoteIdContract = userNoteExistsByUserIdAndNoteIdContract;
+        this.userNoteReplaceContract = userNoteReplaceContract;
     }
 
     @PutMapping("/{userId}/{noteId}")
     ResponseEntity<UserNoteResponse> update(@PathVariable UUID userId, @PathVariable UUID noteId,
             @RequestBody UserNoteRequest request) {
-        if (!this.userNoteExistsByUserIdAndNoteIdPort.existsByUserIdAndNoteId(userId, noteId)) {
+        if (!this.userNoteExistsByUserIdAndNoteIdContract.existsByUserIdAndNoteId(userId, noteId)) {
             throw new UserNoteNotFoundException(userId, noteId);
         }
-        UserNoteResponse updated = this.userNoteReplacePort.replace(userId, noteId, request);
+        UserNoteResponse updated = this.userNoteReplaceContract.replace(userId, noteId, request);
         return ResponseEntity.status(HttpStatus.OK).body(updated);
     }
 

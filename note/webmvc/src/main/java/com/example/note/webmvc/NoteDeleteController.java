@@ -2,9 +2,9 @@ package com.example.note.webmvc;
 
 import java.util.UUID;
 
-import com.example.note.domain.NoteExistsByIdPort;
+import com.example.note.contract.NoteExistsByIdContract;
+import com.example.note.contract.NoteRemoveContract;
 import com.example.note.domain.NoteNotFoundException;
-import com.example.note.domain.NoteRemovePort;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,21 +17,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/notes")
 class NoteDeleteController {
 
-    private final NoteExistsByIdPort noteExistsByIdPort;
+    private final NoteExistsByIdContract noteExistsByIdContract;
 
-    private final NoteRemovePort noteRemovePort;
+    private final NoteRemoveContract noteRemoveContract;
 
-    NoteDeleteController(NoteExistsByIdPort noteExistsByIdPort, NoteRemovePort noteRemovePort) {
-        this.noteExistsByIdPort = noteExistsByIdPort;
-        this.noteRemovePort = noteRemovePort;
+    NoteDeleteController(NoteExistsByIdContract noteExistsByIdContract, NoteRemoveContract noteRemoveContract) {
+        this.noteExistsByIdContract = noteExistsByIdContract;
+        this.noteRemoveContract = noteRemoveContract;
     }
 
     @DeleteMapping("/{id}")
     ResponseEntity<Void> delete(@PathVariable UUID id) {
-        if (!this.noteExistsByIdPort.existsById(id)) {
+        if (!this.noteExistsByIdContract.existsById(id)) {
             throw new NoteNotFoundException(id);
         }
-        this.noteRemovePort.remove(id);
+        this.noteRemoveContract.remove(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

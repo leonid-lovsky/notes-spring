@@ -2,9 +2,9 @@ package com.example.user.webmvc;
 
 import java.util.UUID;
 
-import com.example.user.domain.UserExistsByIdPort;
+import com.example.user.contract.UserExistsByIdContract;
+import com.example.user.contract.UserReplaceContract;
 import com.example.user.domain.UserNotFoundException;
-import com.example.user.domain.UserReplacePort;
 import com.example.user.domain.UserRequest;
 import com.example.user.domain.UserResponse;
 
@@ -20,21 +20,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/users")
 class UserUpdateController {
 
-    private final UserExistsByIdPort userExistsByIdPort;
+    private final UserExistsByIdContract userExistsByIdContract;
 
-    private final UserReplacePort userReplacePort;
+    private final UserReplaceContract userReplaceContract;
 
-    UserUpdateController(UserExistsByIdPort userExistsByIdPort, UserReplacePort userReplacePort) {
-        this.userExistsByIdPort = userExistsByIdPort;
-        this.userReplacePort = userReplacePort;
+    UserUpdateController(UserExistsByIdContract userExistsByIdContract, UserReplaceContract userReplaceContract) {
+        this.userExistsByIdContract = userExistsByIdContract;
+        this.userReplaceContract = userReplaceContract;
     }
 
     @PutMapping("/{id}")
     ResponseEntity<UserResponse> update(@PathVariable UUID id, @RequestBody UserRequest request) {
-        if (!this.userExistsByIdPort.existsById(id)) {
+        if (!this.userExistsByIdContract.existsById(id)) {
             throw new UserNotFoundException(id);
         }
-        UserResponse updated = this.userReplacePort.replace(id, request);
+        UserResponse updated = this.userReplaceContract.replace(id, request);
         return ResponseEntity.status(HttpStatus.OK).body(updated);
     }
 

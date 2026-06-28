@@ -2,9 +2,9 @@ package com.example.usernote.webmvc;
 
 import java.util.UUID;
 
-import com.example.usernote.domain.UserNoteExistsByUserIdAndNoteIdPort;
+import com.example.usernote.contract.UserNoteExistsByUserIdAndNoteIdContract;
+import com.example.usernote.contract.UserNoteRemoveContract;
 import com.example.usernote.domain.UserNoteNotFoundException;
-import com.example.usernote.domain.UserNoteRemovePort;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,22 +17,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/user-notes")
 class UserNoteDeleteController {
 
-    private final UserNoteExistsByUserIdAndNoteIdPort userNoteExistsByUserIdAndNoteIdPort;
+    private final UserNoteExistsByUserIdAndNoteIdContract userNoteExistsByUserIdAndNoteIdContract;
 
-    private final UserNoteRemovePort userNoteRemovePort;
+    private final UserNoteRemoveContract userNoteRemoveContract;
 
-    UserNoteDeleteController(UserNoteExistsByUserIdAndNoteIdPort userNoteExistsByUserIdAndNoteIdPort,
-            UserNoteRemovePort userNoteRemovePort) {
-        this.userNoteExistsByUserIdAndNoteIdPort = userNoteExistsByUserIdAndNoteIdPort;
-        this.userNoteRemovePort = userNoteRemovePort;
+    UserNoteDeleteController(UserNoteExistsByUserIdAndNoteIdContract userNoteExistsByUserIdAndNoteIdContract,
+            UserNoteRemoveContract userNoteRemoveContract) {
+        this.userNoteExistsByUserIdAndNoteIdContract = userNoteExistsByUserIdAndNoteIdContract;
+        this.userNoteRemoveContract = userNoteRemoveContract;
     }
 
     @DeleteMapping("/{userId}/{noteId}")
     ResponseEntity<Void> delete(@PathVariable UUID userId, @PathVariable UUID noteId) {
-        if (!this.userNoteExistsByUserIdAndNoteIdPort.existsByUserIdAndNoteId(userId, noteId)) {
+        if (!this.userNoteExistsByUserIdAndNoteIdContract.existsByUserIdAndNoteId(userId, noteId)) {
             throw new UserNoteNotFoundException(userId, noteId);
         }
-        this.userNoteRemovePort.remove(userId, noteId);
+        this.userNoteRemoveContract.remove(userId, noteId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

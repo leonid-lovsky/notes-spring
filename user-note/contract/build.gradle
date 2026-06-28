@@ -1,0 +1,7 @@
+plugins {
+    id 'java-contract-conventions'
+}
+
+dependencies {
+    api project(':user-note:domain')
+}

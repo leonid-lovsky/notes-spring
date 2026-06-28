@@ -1,6 +1,6 @@
 package com.example.note.webmvc;
 
-import com.example.note.domain.NoteAddPort;
+import com.example.note.contract.NoteAddContract;
 import com.example.note.domain.NoteRequest;
 import com.example.note.domain.NoteResponse;
 
@@ -15,15 +15,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/notes")
 class NoteCreateController {
 
-    private final NoteAddPort noteAddPort;
+    private final NoteAddContract noteAddContract;
 
-    NoteCreateController(NoteAddPort noteAddPort) {
-        this.noteAddPort = noteAddPort;
+    NoteCreateController(NoteAddContract noteAddContract) {
+        this.noteAddContract = noteAddContract;
     }
 
     @PostMapping
     ResponseEntity<NoteResponse> create(@RequestBody NoteRequest request) {
-        NoteResponse note = this.noteAddPort.add(request);
+        NoteResponse note = this.noteAddContract.add(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(note);
     }
 

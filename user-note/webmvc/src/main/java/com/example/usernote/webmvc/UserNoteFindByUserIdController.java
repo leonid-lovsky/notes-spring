@@ -3,7 +3,7 @@ package com.example.usernote.webmvc;
 import java.util.List;
 import java.util.UUID;
 
-import com.example.usernote.domain.UserNoteFindByUserIdPort;
+import com.example.usernote.contract.UserNoteFindByUserIdContract;
 import com.example.usernote.domain.UserNoteResponse;
 
 import org.springframework.http.HttpStatus;
@@ -17,15 +17,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/user-notes")
 class UserNoteFindByUserIdController {
 
-    private final UserNoteFindByUserIdPort userNoteFindByUserIdPort;
+    private final UserNoteFindByUserIdContract userNoteFindByUserIdContract;
 
-    UserNoteFindByUserIdController(UserNoteFindByUserIdPort userNoteFindByUserIdPort) {
-        this.userNoteFindByUserIdPort = userNoteFindByUserIdPort;
+    UserNoteFindByUserIdController(UserNoteFindByUserIdContract userNoteFindByUserIdContract) {
+        this.userNoteFindByUserIdContract = userNoteFindByUserIdContract;
     }
 
     @GetMapping("/user/{userId}")
     ResponseEntity<List<UserNoteResponse>> findByUserId(@PathVariable UUID userId) {
-        List<UserNoteResponse> userNotes = this.userNoteFindByUserIdPort.findByUserId(userId);
+        List<UserNoteResponse> userNotes = this.userNoteFindByUserIdContract.findByUserId(userId);
         return ResponseEntity.status(HttpStatus.OK).body(userNotes);
     }
 

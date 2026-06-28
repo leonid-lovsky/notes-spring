@@ -2,7 +2,7 @@ package com.example.user.webmvc;
 
 import java.util.UUID;
 
-import com.example.user.domain.UserFindByIdPort;
+import com.example.user.contract.UserFindByIdContract;
 import com.example.user.domain.UserNotFoundException;
 import com.example.user.domain.UserResponse;
 
@@ -17,15 +17,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/users")
 class UserFindByIdController {
 
-    private final UserFindByIdPort userFindByIdPort;
+    private final UserFindByIdContract userFindByIdContract;
 
-    UserFindByIdController(UserFindByIdPort userFindByIdPort) {
-        this.userFindByIdPort = userFindByIdPort;
+    UserFindByIdController(UserFindByIdContract userFindByIdContract) {
+        this.userFindByIdContract = userFindByIdContract;
     }
 
     @GetMapping("/{id}")
     ResponseEntity<UserResponse> findById(@PathVariable UUID id) {
-        UserResponse user = this.userFindByIdPort.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+        UserResponse user = this.userFindByIdContract.findById(id).orElseThrow(() -> new UserNotFoundException(id));
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 

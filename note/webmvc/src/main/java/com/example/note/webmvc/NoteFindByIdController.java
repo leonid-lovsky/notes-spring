@@ -2,7 +2,7 @@ package com.example.note.webmvc;
 
 import java.util.UUID;
 
-import com.example.note.domain.NoteFindByIdPort;
+import com.example.note.contract.NoteFindByIdContract;
 import com.example.note.domain.NoteNotFoundException;
 import com.example.note.domain.NoteResponse;
 
@@ -17,15 +17,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/notes")
 class NoteFindByIdController {
 
-    private final NoteFindByIdPort noteFindByIdPort;
+    private final NoteFindByIdContract noteFindByIdContract;
 
-    NoteFindByIdController(NoteFindByIdPort noteFindByIdPort) {
-        this.noteFindByIdPort = noteFindByIdPort;
+    NoteFindByIdController(NoteFindByIdContract noteFindByIdContract) {
+        this.noteFindByIdContract = noteFindByIdContract;
     }
 
     @GetMapping("/{id}")
     ResponseEntity<NoteResponse> findById(@PathVariable UUID id) {
-        NoteResponse note = this.noteFindByIdPort.findById(id).orElseThrow(() -> new NoteNotFoundException(id));
+        NoteResponse note = this.noteFindByIdContract.findById(id).orElseThrow(() -> new NoteNotFoundException(id));
         return ResponseEntity.status(HttpStatus.OK).body(note);
     }
 
