@@ -140,7 +140,7 @@
 
 **Единый принцип декомпозиции — Single Data Flow:** каждый класс — только то, что нужно для одного потока данных:
 - **Контракт** — один интерфейс, один метод (`NoteAddContract`, `NoteFindByIdContract`)
-- **Адаптер** — один bean, один контракт (`NoteAddContractAdapter implements NoteAddContract`)
+- **Адаптер** — один bean, один контракт (`NoteAddJpaAdapter implements NoteAddContract`)
 - **Контроллер** — один bean, одна операция (`NoteCreateController` → `POST /notes`)
 
 Любой компромисс требует явного обоснования и фиксации в этом файле.
@@ -301,7 +301,7 @@ Mono<Boolean>          existsById(UUID id);
 - **Port interfaces в `contract/`** — отделены от domain data; `contract/` зависит от `domain/` как `api`
 - **Reactive port interfaces в `contract-reactive/`** — `Mono`/`Flux` не входят в `domain/`; `contract-reactive/` зависит от `domain/` + `reactor-core` как `api`
 - **Reactive/sync impedance решён через параллельные контракты** — `contract/` (sync) и `contract-reactive/` (reactive) — независимые модули, оба зависят от общего `domain/`; webmvc/data-jpa/data-jdbc/data-mongodb → `contract/`; webflux/data-r2dbc/data-mongodb-reactive → `contract-reactive/`
-- **Именование контрактов** — `NoteAddContract` (sync), `NoteAddContractReactive` (reactive); реализация: `NoteAddContractAdapter`
+- **Именование контрактов** — `NoteAddContract` (sync), `NoteAddContractReactive` (reactive); реализация: `NoteAdd[Tech]Adapter` — `NoteAddJpaAdapter` · `NoteAddMongoAdapter` · `NoteAddJdbcAdapter` · `NoteAddR2dbcAdapter` · `NoteAddMongoReactiveAdapter`
 - **Именование маппера** — interface: `NoteEntityMapperContract` (JPA), `NoteDocumentMapperContract` (MongoDB); impl: `NoteEntityMapper`, `NoteDocumentMapper`
 - **Spring Data репозиторий** — `NoteJpaRepository`, `NoteMongoRepository`, `NoteR2dbcRepository`, `NoteMongoReactiveRepository`
 - **Подпакеты в driven адаптерах** — `adapter/` · `entity/`/`document/` · `mapper/` · `repository/`; driving адаптеры — плоско
