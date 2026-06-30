@@ -3,7 +3,7 @@ package com.example.usernote.data.mongodb.reactive.adapter;
 import java.util.UUID;
 
 import com.example.usernote.contract.reactive.UserNoteFindByUserIdAndNoteIdContractReactive;
-import com.example.usernote.data.mongodb.reactive.mapper.UserNoteReactiveDocumentMapperContract;
+import com.example.usernote.data.mongodb.reactive.mapper.UserNoteMongoReactiveMapperContract;
 import com.example.usernote.data.mongodb.reactive.model.UserNoteReactiveKey;
 import com.example.usernote.data.mongodb.reactive.repository.UserNoteMongoReactiveRepository;
 import com.example.usernote.domain.UserNoteResponse;
@@ -16,18 +16,18 @@ class UserNoteFindByUserIdAndNoteIdMongoReactiveAdapter implements UserNoteFindB
 
     private final UserNoteMongoReactiveRepository userNoteMongoReactiveRepository;
 
-    private final UserNoteReactiveDocumentMapperContract userNoteReactiveDocumentMapper;
+    private final UserNoteMongoReactiveMapperContract userNoteMongoReactiveMapper;
 
     UserNoteFindByUserIdAndNoteIdMongoReactiveAdapter(UserNoteMongoReactiveRepository userNoteMongoReactiveRepository,
-            UserNoteReactiveDocumentMapperContract userNoteReactiveDocumentMapper) {
+            UserNoteMongoReactiveMapperContract userNoteMongoReactiveMapper) {
         this.userNoteMongoReactiveRepository = userNoteMongoReactiveRepository;
-        this.userNoteReactiveDocumentMapper = userNoteReactiveDocumentMapper;
+        this.userNoteMongoReactiveMapper = userNoteMongoReactiveMapper;
     }
 
     @Override
     public Mono<UserNoteResponse> findByUserIdAndNoteId(UUID userId, UUID noteId) {
         return this.userNoteMongoReactiveRepository.findById(new UserNoteReactiveKey(userId, noteId))
-            .map(this.userNoteReactiveDocumentMapper::toResponse);
+            .map(this.userNoteMongoReactiveMapper::toResponse);
     }
 
 }

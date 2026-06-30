@@ -1,7 +1,7 @@
 package com.example.usernote.data.mongodb.reactive.adapter;
 
 import com.example.usernote.contract.reactive.UserNoteAddContractReactive;
-import com.example.usernote.data.mongodb.reactive.mapper.UserNoteReactiveDocumentMapperContract;
+import com.example.usernote.data.mongodb.reactive.mapper.UserNoteMongoReactiveMapperContract;
 import com.example.usernote.data.mongodb.reactive.repository.UserNoteMongoReactiveRepository;
 import com.example.usernote.domain.UserNoteRequest;
 import com.example.usernote.domain.UserNoteResponse;
@@ -14,18 +14,18 @@ class UserNoteAddMongoReactiveAdapter implements UserNoteAddContractReactive {
 
     private final UserNoteMongoReactiveRepository userNoteMongoReactiveRepository;
 
-    private final UserNoteReactiveDocumentMapperContract userNoteReactiveDocumentMapper;
+    private final UserNoteMongoReactiveMapperContract userNoteMongoReactiveMapper;
 
     UserNoteAddMongoReactiveAdapter(UserNoteMongoReactiveRepository userNoteMongoReactiveRepository,
-            UserNoteReactiveDocumentMapperContract userNoteReactiveDocumentMapper) {
+            UserNoteMongoReactiveMapperContract userNoteMongoReactiveMapper) {
         this.userNoteMongoReactiveRepository = userNoteMongoReactiveRepository;
-        this.userNoteReactiveDocumentMapper = userNoteReactiveDocumentMapper;
+        this.userNoteMongoReactiveMapper = userNoteMongoReactiveMapper;
     }
 
     @Override
     public Mono<UserNoteResponse> add(UserNoteRequest request) {
-        return this.userNoteMongoReactiveRepository.insert(this.userNoteReactiveDocumentMapper.toDocument(request))
-            .map(this.userNoteReactiveDocumentMapper::toResponse);
+        return this.userNoteMongoReactiveRepository.insert(this.userNoteMongoReactiveMapper.toDocument(request))
+            .map(this.userNoteMongoReactiveMapper::toResponse);
     }
 
 }

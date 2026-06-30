@@ -3,7 +3,7 @@ package com.example.user.data.mongodb.reactive.adapter;
 import java.util.UUID;
 
 import com.example.user.contract.reactive.UserReplaceContractReactive;
-import com.example.user.data.mongodb.reactive.mapper.UserReactiveDocumentMapperContract;
+import com.example.user.data.mongodb.reactive.mapper.UserMongoReactiveMapperContract;
 import com.example.user.data.mongodb.reactive.model.UserReactiveDocument;
 import com.example.user.data.mongodb.reactive.repository.UserMongoReactiveRepository;
 import com.example.user.domain.UserRequest;
@@ -17,18 +17,18 @@ class UserReplaceMongoReactiveAdapter implements UserReplaceContractReactive {
 
     private final UserMongoReactiveRepository userMongoReactiveRepository;
 
-    private final UserReactiveDocumentMapperContract userReactiveDocumentMapper;
+    private final UserMongoReactiveMapperContract userMongoReactiveMapper;
 
     UserReplaceMongoReactiveAdapter(UserMongoReactiveRepository userMongoReactiveRepository,
-            UserReactiveDocumentMapperContract userReactiveDocumentMapper) {
+            UserMongoReactiveMapperContract userMongoReactiveMapper) {
         this.userMongoReactiveRepository = userMongoReactiveRepository;
-        this.userReactiveDocumentMapper = userReactiveDocumentMapper;
+        this.userMongoReactiveMapper = userMongoReactiveMapper;
     }
 
     @Override
     public Mono<UserResponse> replace(UUID id, UserRequest request) {
-        UserReactiveDocument document = this.userReactiveDocumentMapper.toExistingDocument(id, request);
-        return this.userMongoReactiveRepository.save(document).map(this.userReactiveDocumentMapper::toResponse);
+        UserReactiveDocument document = this.userMongoReactiveMapper.toExistingDocument(id, request);
+        return this.userMongoReactiveRepository.save(document).map(this.userMongoReactiveMapper::toResponse);
     }
 
 }

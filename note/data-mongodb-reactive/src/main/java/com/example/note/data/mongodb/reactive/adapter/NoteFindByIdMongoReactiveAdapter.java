@@ -3,7 +3,7 @@ package com.example.note.data.mongodb.reactive.adapter;
 import java.util.UUID;
 
 import com.example.note.contract.reactive.NoteFindByIdContractReactive;
-import com.example.note.data.mongodb.reactive.mapper.NoteReactiveDocumentMapperContract;
+import com.example.note.data.mongodb.reactive.mapper.NoteMongoReactiveMapperContract;
 import com.example.note.data.mongodb.reactive.repository.NoteMongoReactiveRepository;
 import com.example.note.domain.NoteResponse;
 import reactor.core.publisher.Mono;
@@ -15,17 +15,17 @@ class NoteFindByIdMongoReactiveAdapter implements NoteFindByIdContractReactive {
 
     private final NoteMongoReactiveRepository noteMongoReactiveRepository;
 
-    private final NoteReactiveDocumentMapperContract noteReactiveDocumentMapper;
+    private final NoteMongoReactiveMapperContract noteMongoReactiveMapper;
 
     NoteFindByIdMongoReactiveAdapter(NoteMongoReactiveRepository noteMongoReactiveRepository,
-            NoteReactiveDocumentMapperContract noteReactiveDocumentMapper) {
+            NoteMongoReactiveMapperContract noteMongoReactiveMapper) {
         this.noteMongoReactiveRepository = noteMongoReactiveRepository;
-        this.noteReactiveDocumentMapper = noteReactiveDocumentMapper;
+        this.noteMongoReactiveMapper = noteMongoReactiveMapper;
     }
 
     @Override
     public Mono<NoteResponse> findById(UUID id) {
-        return this.noteMongoReactiveRepository.findById(id).map(this.noteReactiveDocumentMapper::toResponse);
+        return this.noteMongoReactiveRepository.findById(id).map(this.noteMongoReactiveMapper::toResponse);
     }
 
 }

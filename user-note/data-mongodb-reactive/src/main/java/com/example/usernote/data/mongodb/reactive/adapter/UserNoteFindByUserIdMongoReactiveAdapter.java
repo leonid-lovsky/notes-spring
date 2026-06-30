@@ -3,7 +3,7 @@ package com.example.usernote.data.mongodb.reactive.adapter;
 import java.util.UUID;
 
 import com.example.usernote.contract.reactive.UserNoteFindByUserIdContractReactive;
-import com.example.usernote.data.mongodb.reactive.mapper.UserNoteReactiveDocumentMapperContract;
+import com.example.usernote.data.mongodb.reactive.mapper.UserNoteMongoReactiveMapperContract;
 import com.example.usernote.data.mongodb.reactive.repository.UserNoteMongoReactiveRepository;
 import com.example.usernote.domain.UserNoteResponse;
 import reactor.core.publisher.Flux;
@@ -15,18 +15,18 @@ class UserNoteFindByUserIdMongoReactiveAdapter implements UserNoteFindByUserIdCo
 
     private final UserNoteMongoReactiveRepository userNoteMongoReactiveRepository;
 
-    private final UserNoteReactiveDocumentMapperContract userNoteReactiveDocumentMapper;
+    private final UserNoteMongoReactiveMapperContract userNoteMongoReactiveMapper;
 
     UserNoteFindByUserIdMongoReactiveAdapter(UserNoteMongoReactiveRepository userNoteMongoReactiveRepository,
-            UserNoteReactiveDocumentMapperContract userNoteReactiveDocumentMapper) {
+            UserNoteMongoReactiveMapperContract userNoteMongoReactiveMapper) {
         this.userNoteMongoReactiveRepository = userNoteMongoReactiveRepository;
-        this.userNoteReactiveDocumentMapper = userNoteReactiveDocumentMapper;
+        this.userNoteMongoReactiveMapper = userNoteMongoReactiveMapper;
     }
 
     @Override
     public Flux<UserNoteResponse> findByUserId(UUID userId) {
         return this.userNoteMongoReactiveRepository.findByIdUserId(userId)
-            .map(this.userNoteReactiveDocumentMapper::toResponse);
+            .map(this.userNoteMongoReactiveMapper::toResponse);
     }
 
 }

@@ -1,7 +1,7 @@
 package com.example.user.data.mongodb.reactive.adapter;
 
 import com.example.user.contract.reactive.UserFindByUsernameContractReactive;
-import com.example.user.data.mongodb.reactive.mapper.UserReactiveDocumentMapperContract;
+import com.example.user.data.mongodb.reactive.mapper.UserMongoReactiveMapperContract;
 import com.example.user.data.mongodb.reactive.repository.UserMongoReactiveRepository;
 import com.example.user.domain.UserResponse;
 import reactor.core.publisher.Mono;
@@ -13,18 +13,17 @@ class UserFindByUsernameMongoReactiveAdapter implements UserFindByUsernameContra
 
     private final UserMongoReactiveRepository userMongoReactiveRepository;
 
-    private final UserReactiveDocumentMapperContract userReactiveDocumentMapper;
+    private final UserMongoReactiveMapperContract userMongoReactiveMapper;
 
     UserFindByUsernameMongoReactiveAdapter(UserMongoReactiveRepository userMongoReactiveRepository,
-            UserReactiveDocumentMapperContract userReactiveDocumentMapper) {
+            UserMongoReactiveMapperContract userMongoReactiveMapper) {
         this.userMongoReactiveRepository = userMongoReactiveRepository;
-        this.userReactiveDocumentMapper = userReactiveDocumentMapper;
+        this.userMongoReactiveMapper = userMongoReactiveMapper;
     }
 
     @Override
     public Mono<UserResponse> findByUsername(String username) {
-        return this.userMongoReactiveRepository.findByUsername(username)
-            .map(this.userReactiveDocumentMapper::toResponse);
+        return this.userMongoReactiveRepository.findByUsername(username).map(this.userMongoReactiveMapper::toResponse);
     }
 
 }

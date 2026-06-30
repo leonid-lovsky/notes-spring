@@ -3,7 +3,7 @@ package com.example.usernote.data.r2dbc.adapter;
 import java.util.UUID;
 
 import com.example.usernote.contract.reactive.UserNoteFindByUserIdAndNoteIdContractReactive;
-import com.example.usernote.data.r2dbc.mapper.UserNoteRowMapperContract;
+import com.example.usernote.data.r2dbc.mapper.UserNoteR2dbcMapperContract;
 import com.example.usernote.domain.UserNoteResponse;
 import reactor.core.publisher.Mono;
 
@@ -15,12 +15,12 @@ class UserNoteFindByUserIdAndNoteIdR2dbcAdapter implements UserNoteFindByUserIdA
 
     private final DatabaseClient databaseClient;
 
-    private final UserNoteRowMapperContract userNoteRowMapper;
+    private final UserNoteR2dbcMapperContract userNoteR2dbcMapper;
 
     UserNoteFindByUserIdAndNoteIdR2dbcAdapter(DatabaseClient databaseClient,
-            UserNoteRowMapperContract userNoteRowMapper) {
+            UserNoteR2dbcMapperContract userNoteR2dbcMapper) {
         this.databaseClient = databaseClient;
-        this.userNoteRowMapper = userNoteRowMapper;
+        this.userNoteR2dbcMapper = userNoteR2dbcMapper;
     }
 
     @Override
@@ -29,7 +29,7 @@ class UserNoteFindByUserIdAndNoteIdR2dbcAdapter implements UserNoteFindByUserIdA
             .sql("SELECT user_id, note_id, role FROM user_notes WHERE user_id = :userId AND note_id = :noteId")
             .bind("userId", userId)
             .bind("noteId", noteId)
-            .map(this.userNoteRowMapper::fromRow)
+            .map(this.userNoteR2dbcMapper::fromRow)
             .first();
     }
 

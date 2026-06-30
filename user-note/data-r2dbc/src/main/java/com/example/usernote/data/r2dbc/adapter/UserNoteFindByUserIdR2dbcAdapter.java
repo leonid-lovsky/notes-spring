@@ -3,7 +3,7 @@ package com.example.usernote.data.r2dbc.adapter;
 import java.util.UUID;
 
 import com.example.usernote.contract.reactive.UserNoteFindByUserIdContractReactive;
-import com.example.usernote.data.r2dbc.mapper.UserNoteRowMapperContract;
+import com.example.usernote.data.r2dbc.mapper.UserNoteR2dbcMapperContract;
 import com.example.usernote.domain.UserNoteResponse;
 import reactor.core.publisher.Flux;
 
@@ -15,18 +15,18 @@ class UserNoteFindByUserIdR2dbcAdapter implements UserNoteFindByUserIdContractRe
 
     private final DatabaseClient databaseClient;
 
-    private final UserNoteRowMapperContract userNoteRowMapper;
+    private final UserNoteR2dbcMapperContract userNoteR2dbcMapper;
 
-    UserNoteFindByUserIdR2dbcAdapter(DatabaseClient databaseClient, UserNoteRowMapperContract userNoteRowMapper) {
+    UserNoteFindByUserIdR2dbcAdapter(DatabaseClient databaseClient, UserNoteR2dbcMapperContract userNoteR2dbcMapper) {
         this.databaseClient = databaseClient;
-        this.userNoteRowMapper = userNoteRowMapper;
+        this.userNoteR2dbcMapper = userNoteR2dbcMapper;
     }
 
     @Override
     public Flux<UserNoteResponse> findByUserId(UUID userId) {
         return this.databaseClient.sql("SELECT user_id, note_id, role FROM user_notes WHERE user_id = :userId")
             .bind("userId", userId)
-            .map(this.userNoteRowMapper::fromRow)
+            .map(this.userNoteR2dbcMapper::fromRow)
             .all();
     }
 

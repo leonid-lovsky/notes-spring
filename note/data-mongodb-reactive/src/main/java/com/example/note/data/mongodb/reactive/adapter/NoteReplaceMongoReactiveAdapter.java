@@ -3,7 +3,7 @@ package com.example.note.data.mongodb.reactive.adapter;
 import java.util.UUID;
 
 import com.example.note.contract.reactive.NoteReplaceContractReactive;
-import com.example.note.data.mongodb.reactive.mapper.NoteReactiveDocumentMapperContract;
+import com.example.note.data.mongodb.reactive.mapper.NoteMongoReactiveMapperContract;
 import com.example.note.data.mongodb.reactive.model.NoteReactiveDocument;
 import com.example.note.data.mongodb.reactive.repository.NoteMongoReactiveRepository;
 import com.example.note.domain.NoteRequest;
@@ -17,18 +17,18 @@ class NoteReplaceMongoReactiveAdapter implements NoteReplaceContractReactive {
 
     private final NoteMongoReactiveRepository noteMongoReactiveRepository;
 
-    private final NoteReactiveDocumentMapperContract noteReactiveDocumentMapper;
+    private final NoteMongoReactiveMapperContract noteMongoReactiveMapper;
 
     NoteReplaceMongoReactiveAdapter(NoteMongoReactiveRepository noteMongoReactiveRepository,
-            NoteReactiveDocumentMapperContract noteReactiveDocumentMapper) {
+            NoteMongoReactiveMapperContract noteMongoReactiveMapper) {
         this.noteMongoReactiveRepository = noteMongoReactiveRepository;
-        this.noteReactiveDocumentMapper = noteReactiveDocumentMapper;
+        this.noteMongoReactiveMapper = noteMongoReactiveMapper;
     }
 
     @Override
     public Mono<NoteResponse> replace(UUID id, NoteRequest request) {
-        NoteReactiveDocument document = this.noteReactiveDocumentMapper.toExistingDocument(id, request);
-        return this.noteMongoReactiveRepository.save(document).map(this.noteReactiveDocumentMapper::toResponse);
+        NoteReactiveDocument document = this.noteMongoReactiveMapper.toExistingDocument(id, request);
+        return this.noteMongoReactiveRepository.save(document).map(this.noteMongoReactiveMapper::toResponse);
     }
 
 }

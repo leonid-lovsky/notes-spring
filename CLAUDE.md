@@ -1,6 +1,6 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: 2026-06-30T19:30Z
+> Последнее обновление: 2026-06-30T19:42Z
 > **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 ---
@@ -48,7 +48,7 @@ user-note/  → com.example.usernote   (не user.note!)
 ```
 com.example.note.data.jpa.adapter      NoteAddJpaAdapter, ...
 com.example.note.data.jpa.model        NoteEntity
-com.example.note.data.jpa.mapper       NoteEntityMapperContract, NoteEntityMapper
+com.example.note.data.jpa.mapper       NoteJpaMapperContract, NoteJpaMapper
 com.example.note.data.jpa.repository   NoteJpaRepository
 ```
 Все технологии используют `model/` (entity/document — внутренние имена классов). Driving адаптеры (`webmvc/`, `webflux/`) — плоско.
@@ -67,6 +67,9 @@ com.example.note.data.jpa.repository   NoteJpaRepository
 ОТЛОЖЕНО   graphql/ · инфраструктура · auth/
 НЕ СОЗДАНО bff/ · thymeleaf/ · sharing/ · crud/
 ```
+
+**Spring JavaFormat** (`io.spring.javaformat`): таски `format`/`checkFormat`; `checkFormat` автоматически выполняется при стандартном `check`.
+После правок импортов/форматирования — гонять `./gradlew format`, не чинить руками.
 
 **Checkstyle — порядок импортов:**
 ```
@@ -105,8 +108,8 @@ application/            composition root             → все модули
 | Sync port interface           | `{Entity}{Op}Contract`         | `NoteAddContract`              |
 | Reactive port interface       | `{Entity}{Op}ContractReactive` | `NoteAddContractReactive`      |
 | Adapter impl                  | `{Entity}{Op}{Tech}Adapter`    | `NoteAddJpaAdapter`            |
-| Mapper interface              | `{Entity}{Tech}MapperContract` | `NoteEntityMapperContract`     |
-| Mapper impl                   | `{Entity}{Tech}Mapper`         | `NoteEntityMapper`             |
+| Mapper interface              | `{Entity}{Tech}MapperContract` | `NoteJpaMapperContract`        |
+| Mapper impl                   | `{Entity}{Tech}Mapper`         | `NoteJpaMapper`                |
 | Spring Data repo              | `{Entity}{Tech}Repository`     | `NoteJpaRepository`            |
 | JPA / R2DBC model class       | `{Entity}Entity`               | `NoteEntity`                   |
 | MongoDB model class           | `{Entity}Document`             | `NoteDocument`                 |
