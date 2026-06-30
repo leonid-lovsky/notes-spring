@@ -1,6 +1,6 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: 2026-06-30T20:15Z
+> Последнее обновление: 2026-06-30T20:25Z
 > **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 ---
@@ -149,10 +149,16 @@ application/            composition root             → все модули
 - `@Transactional` на методах адаптера
 - `add` ≠ `replace`: JPA — `save(null id)` vs `save(id)`; MongoDB — `insert()` vs `save()`
 - `user-note/`: суррогатный `UUID id` (а не составной `userId+noteId` как PK) во всех технологиях, кроме `data-jdbc/`
-  (там нет model/repository в принципе). `userId+noteId` — unique constraint/index, не PK:
-  JPA — `@Table(uniqueConstraints=...)`; MongoDB — `@CompoundIndex(unique=true)`; R2DBC — constraint на уровне схемы.
-  `id` выставлен в `domain/`/контрактах (`UserNoteResponse.id`, `UserNoteFindByIdContract`). Это сняло ограничение
-  Spring Data R2DBC (нет `@EmbeddedId`) — `data-r2dbc/` теперь полноценный model+repository, без `DatabaseClient`
+  (там нет model/repository в принципе). `userId+noteId` — unique constraint/index, не PK. `id` выставлен в
+  `domain/`/контрактах (`UserNoteResponse.id`, `UserNoteFindByIdContract`). Это сняло ограничение Spring Data R2DBC
+  (нет `@EmbeddedId`) — `data-r2dbc/` теперь полноценный model+repository, без `DatabaseClient`
+- Unique constraint `userId+noteId` по технологиям: JPA — `@Table(uniqueConstraints=...)` (работает, Hibernate
+  создаёт схему); MongoDB — `@CompoundIndex(unique=true)` (работает); **Spring Data R2DBC enforces unique composite
+  constraints at the database level rather than through entity annotations** — у `Table`/`Column`
+  (`spring-data-relational`) нет атрибутов unique/constraints вообще (проверено декомпиляцией), и в проекте пока нет
+  ни `schema.sql`, ни Flyway/Liquibase, ни подключения `data-r2dbc`/`data-jdbc` к `application/` — поэтому для
+  R2DBC/JDBC constraint сейчас не создаётся нигде. Это открытый вопрос, решается вместе со
+  «Стратегией активации адаптеров» ниже
 - `data-jdbc/` (все сервисы) — намеренно без `model/`/`repository/`: `NamedParameterJdbcTemplate` + сырой SQL,
   `RowMapper` мапит `ResultSet` сразу в `*Response`
 
@@ -188,6 +194,8 @@ application/            composition root             → все модули
 ## Открытые решения
 
 - **Стратегия активации адаптеров** — `@Profile("jpa")` _(склонение)_ vs отдельные `application-jpa/`
+- **Управление схемой для R2DBC/JDBC** — `schema.sql` vs Flyway/Liquibase; нужно для unique constraint
+  `userId+noteId` в `user-note/data-r2dbc`/`data-jdbc` (сейчас не создаётся нигде, см. «Принятые решения»)
 - **Регистрация auth/ ↔ user/** — Lazy / Sync / Events (Kafka)
 - **Возврат мутирующего use case** — DTO _(склонение)_ vs `void`
 - **PATCH** — поддерживать или нет
