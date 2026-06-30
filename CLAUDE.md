@@ -1,6 +1,6 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: 2026-06-30T18:57Z
+> Последнее обновление: 2026-06-30T19:27Z
 > **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 ---
@@ -61,10 +61,9 @@ com.example.note.data.jpa.repository   NoteJpaRepository
 ГОТОВО   note/  — domain · data-contract · data-contract-reactive · webmvc · webflux
                   data-jpa · data-mongodb · data-jdbc · data-r2dbc · data-mongodb-reactive
 ГОТОВО   user/  — domain · data-contract · data-contract-reactive · webmvc · webflux
-                  data-jpa · data-mongodb · data-jdbc
+                  data-jpa · data-mongodb · data-jdbc · data-r2dbc · data-mongodb-reactive
 ГОТОВО   user-note/ — domain · data-contract · data-contract-reactive · webmvc · webflux
-                      data-jpa · data-mongodb · data-jdbc
-ТЕКУЩИЙ ⚡ user/ и user-note/: реализовать data-r2dbc/ и data-mongodb-reactive/
+                      data-jpa · data-mongodb · data-jdbc · data-r2dbc · data-mongodb-reactive
 ОТЛОЖЕНО   graphql/ · инфраструктура · auth/
 НЕ СОЗДАНО bff/ · thymeleaf/ · sharing/ · crud/
 ```
@@ -146,6 +145,9 @@ application/         composition root             → все модули
 - `existsById` в контракте — валидный паттерн, не заменять на `findById`
 - `@Transactional` на методах адаптера
 - `add` ≠ `replace`: JPA — `save(null id)` vs `save(id)`; MongoDB — `insert()` vs `save()`
+- Составной ключ (`user-note/`) в R2DBC: Spring Data R2DBC не поддерживает `@EmbeddedId` — адаптеры используют
+  `DatabaseClient` напрямую (без `model/`/`repository/`), как в `data-jdbc/`; MongoDB составной ключ
+  поддерживает нативно (`UserNoteKey`/`UserNoteReactiveKey` как `_id`)
 
 **HTTP / Ошибки:**
 - `ResponseEntity<T>` в контроллерах

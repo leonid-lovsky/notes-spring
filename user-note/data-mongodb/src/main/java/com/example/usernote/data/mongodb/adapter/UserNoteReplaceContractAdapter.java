@@ -3,8 +3,8 @@ package com.example.usernote.data.mongodb.adapter;
 import java.util.UUID;
 
 import com.example.usernote.contract.UserNoteReplaceContract;
-import com.example.usernote.data.mongodb.model.UserNoteDocument;
 import com.example.usernote.data.mongodb.mapper.UserNoteDocumentMapperContract;
+import com.example.usernote.data.mongodb.model.UserNoteDocument;
 import com.example.usernote.domain.UserNoteRequest;
 import com.example.usernote.domain.UserNoteResponse;
 

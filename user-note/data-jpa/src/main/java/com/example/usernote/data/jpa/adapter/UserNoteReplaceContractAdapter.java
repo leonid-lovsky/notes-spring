@@ -3,8 +3,8 @@ package com.example.usernote.data.jpa.adapter;
 import java.util.UUID;
 
 import com.example.usernote.contract.UserNoteReplaceContract;
-import com.example.usernote.data.jpa.model.UserNoteEntity;
 import com.example.usernote.data.jpa.mapper.UserNoteEntityMapperContract;
+import com.example.usernote.data.jpa.model.UserNoteEntity;
 import com.example.usernote.data.jpa.repository.UserNoteJpaRepository;
 import com.example.usernote.domain.UserNoteRequest;
 import com.example.usernote.domain.UserNoteResponse;

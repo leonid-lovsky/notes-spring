@@ -1,8 +1,8 @@
 package com.example.user.data.jpa.adapter;
 
 import com.example.user.contract.UserAddContract;
-import com.example.user.data.jpa.model.UserEntity;
 import com.example.user.data.jpa.mapper.UserEntityMapperContract;
+import com.example.user.data.jpa.model.UserEntity;
 import com.example.user.data.jpa.repository.UserJpaRepository;
 import com.example.user.domain.UserRequest;
 import com.example.user.domain.UserResponse;

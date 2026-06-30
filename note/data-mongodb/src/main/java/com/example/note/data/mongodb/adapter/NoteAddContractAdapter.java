@@ -1,8 +1,8 @@
 package com.example.note.data.mongodb.adapter;
 
 import com.example.note.contract.NoteAddContract;
-import com.example.note.data.mongodb.model.NoteDocument;
 import com.example.note.data.mongodb.mapper.NoteDocumentMapperContract;
+import com.example.note.data.mongodb.model.NoteDocument;
 import com.example.note.domain.NoteRequest;
 import com.example.note.domain.NoteResponse;
 
