@@ -1,4 +1,4 @@
 @NullMarked
-package com.example.note.data.mongodb.reactive.document;
+package com.example.usernote.data.jpa.model;
 
 import org.jspecify.annotations.NullMarked;

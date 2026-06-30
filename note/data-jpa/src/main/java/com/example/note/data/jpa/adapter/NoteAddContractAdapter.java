@@ -1,7 +1,7 @@
 package com.example.note.data.jpa.adapter;
 
 import com.example.note.contract.NoteAddContract;
-import com.example.note.data.jpa.entity.NoteEntity;
+import com.example.note.data.jpa.model.NoteEntity;
 import com.example.note.data.jpa.mapper.NoteEntityMapperContract;
 import com.example.note.data.jpa.repository.NoteJpaRepository;
 import com.example.note.domain.NoteRequest;

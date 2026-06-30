@@ -1,4 +1,4 @@
-package com.example.user.data.mongodb.document;
+package com.example.user.data.mongodb.model;
 
 import java.util.UUID;
 

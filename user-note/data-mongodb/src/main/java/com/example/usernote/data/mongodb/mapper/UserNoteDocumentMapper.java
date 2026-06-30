@@ -1,7 +1,7 @@
 package com.example.usernote.data.mongodb.mapper;
 
-import com.example.usernote.data.mongodb.document.UserNoteDocument;
-import com.example.usernote.data.mongodb.document.UserNoteKey;
+import com.example.usernote.data.mongodb.model.UserNoteDocument;
+import com.example.usernote.data.mongodb.model.UserNoteKey;
 import com.example.usernote.domain.UserNoteRequest;
 import com.example.usernote.domain.UserNoteResponse;
 

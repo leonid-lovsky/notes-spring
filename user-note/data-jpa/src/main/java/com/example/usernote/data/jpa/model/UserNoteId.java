@@ -1,4 +1,4 @@
-package com.example.usernote.data.jpa.entity;
+package com.example.usernote.data.jpa.model;
 
 import java.io.Serializable;
 import java.util.Objects;

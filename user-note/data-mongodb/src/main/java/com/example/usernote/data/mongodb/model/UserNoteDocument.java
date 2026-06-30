@@ -1,4 +1,4 @@
-package com.example.usernote.data.mongodb.document;
+package com.example.usernote.data.mongodb.model;
 
 import com.example.usernote.domain.UserNoteRole;
 

@@ -1,4 +1,4 @@
-package com.example.note.data.mongodb.reactive.document;
+package com.example.note.data.mongodb.model;
 
 import java.util.UUID;
 
@@ -6,7 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "notes")
-public class NoteReactiveDocument {
+public class NoteDocument {
 
     @Id
     private UUID id;
@@ -14,11 +14,11 @@ public class NoteReactiveDocument {
     private String content;
 
     @SuppressWarnings("NullAway.Init")
-    protected NoteReactiveDocument() {
+    protected NoteDocument() {
 
     }
 
-    public NoteReactiveDocument(UUID id, String content) {
+    public NoteDocument(UUID id, String content) {
         this.id = id;
         this.content = content;
     }

@@ -1,4 +1,4 @@
-package com.example.note.data.jpa.entity;
+package com.example.note.data.jpa.model;
 
 import java.util.UUID;
 

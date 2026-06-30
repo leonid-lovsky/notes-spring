@@ -4,7 +4,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.example.usernote.contract.UserNoteFindByUserIdAndNoteIdContract;
-import com.example.usernote.data.jpa.entity.UserNoteId;
+import com.example.usernote.data.jpa.model.UserNoteId;
 import com.example.usernote.data.jpa.mapper.UserNoteEntityMapperContract;
 import com.example.usernote.data.jpa.repository.UserNoteJpaRepository;
 import com.example.usernote.domain.UserNoteResponse;

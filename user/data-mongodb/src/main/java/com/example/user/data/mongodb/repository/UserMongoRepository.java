@@ -3,7 +3,7 @@ package com.example.user.data.mongodb.repository;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.example.user.data.mongodb.document.UserDocument;
+import com.example.user.data.mongodb.model.UserDocument;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 

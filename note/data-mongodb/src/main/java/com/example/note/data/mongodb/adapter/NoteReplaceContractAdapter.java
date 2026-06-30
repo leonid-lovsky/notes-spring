@@ -3,7 +3,7 @@ package com.example.note.data.mongodb.adapter;
 import java.util.UUID;
 
 import com.example.note.contract.NoteReplaceContract;
-import com.example.note.data.mongodb.document.NoteDocument;
+import com.example.note.data.mongodb.model.NoteDocument;
 import com.example.note.data.mongodb.mapper.NoteDocumentMapperContract;
 import com.example.note.domain.NoteRequest;
 import com.example.note.domain.NoteResponse;

@@ -1,7 +1,7 @@
 package com.example.user.data.mongodb.adapter;
 
 import com.example.user.contract.UserAddContract;
-import com.example.user.data.mongodb.document.UserDocument;
+import com.example.user.data.mongodb.model.UserDocument;
 import com.example.user.data.mongodb.mapper.UserDocumentMapperContract;
 import com.example.user.domain.UserRequest;
 import com.example.user.domain.UserResponse;

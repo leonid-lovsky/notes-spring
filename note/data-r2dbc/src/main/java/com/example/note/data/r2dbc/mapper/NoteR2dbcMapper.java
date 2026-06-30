@@ -3,7 +3,7 @@ package com.example.note.data.r2dbc.mapper;
 import java.util.Objects;
 import java.util.UUID;
 
-import com.example.note.data.r2dbc.entity.NoteR2dbcEntity;
+import com.example.note.data.r2dbc.model.NoteR2dbcEntity;
 import com.example.note.domain.NoteRequest;
 import com.example.note.domain.NoteResponse;
 

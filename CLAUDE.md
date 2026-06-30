@@ -1,6 +1,6 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: 2026-06-28T22:19Z
+> Последнее обновление: 2026-06-30T18:57Z
 > **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 ---
@@ -47,11 +47,11 @@ user-note/  → com.example.usernote   (не user.note!)
 **Структура driven адаптера (пример data-jpa/):**
 ```
 com.example.note.data.jpa.adapter      NoteAddJpaAdapter, ...
-com.example.note.data.jpa.entity       NoteEntity
+com.example.note.data.jpa.model        NoteEntity
 com.example.note.data.jpa.mapper       NoteEntityMapperContract, NoteEntityMapper
 com.example.note.data.jpa.repository   NoteJpaRepository
 ```
-MongoDB: `document/` вместо `entity/`. Driving адаптеры (`webmvc/`, `webflux/`) — плоско.
+Все технологии используют `model/` (entity/document — внутренние имена классов). Driving адаптеры (`webmvc/`, `webflux/`) — плоско.
 
 ---
 
@@ -109,8 +109,8 @@ application/         composition root             → все модули
 | Mapper interface              | `{Entity}{Tech}MapperContract` | `NoteEntityMapperContract`     |
 | Mapper impl                   | `{Entity}{Tech}Mapper`         | `NoteEntityMapper`             |
 | Spring Data repo              | `{Entity}{Tech}Repository`     | `NoteJpaRepository`            |
-| JPA entity                    | `{Entity}Entity`               | `NoteEntity`                   |
-| MongoDB document              | `{Entity}Document`             | `NoteDocument`                 |
+| JPA / R2DBC model class       | `{Entity}Entity`               | `NoteEntity`                   |
+| MongoDB model class           | `{Entity}Document`             | `NoteDocument`                 |
 
 **Tech**: `Jpa` · `Mongo` · `Jdbc` · `R2dbc` · `MongoReactive`
 

@@ -1,7 +1,7 @@
 package com.example.usernote.data.jpa.mapper;
 
-import com.example.usernote.data.jpa.entity.UserNoteEntity;
-import com.example.usernote.data.jpa.entity.UserNoteId;
+import com.example.usernote.data.jpa.model.UserNoteEntity;
+import com.example.usernote.data.jpa.model.UserNoteId;
 import com.example.usernote.domain.UserNoteRequest;
 import com.example.usernote.domain.UserNoteResponse;
 

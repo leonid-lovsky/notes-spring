@@ -3,7 +3,7 @@ package com.example.usernote.data.jpa.adapter;
 import java.util.UUID;
 
 import com.example.usernote.contract.UserNoteExistsByUserIdAndNoteIdContract;
-import com.example.usernote.data.jpa.entity.UserNoteId;
+import com.example.usernote.data.jpa.model.UserNoteId;
 import com.example.usernote.data.jpa.repository.UserNoteJpaRepository;
 
 import org.springframework.stereotype.Repository;

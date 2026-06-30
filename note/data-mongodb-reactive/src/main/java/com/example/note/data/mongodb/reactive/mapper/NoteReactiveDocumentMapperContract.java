@@ -2,7 +2,7 @@ package com.example.note.data.mongodb.reactive.mapper;
 
 import java.util.UUID;
 
-import com.example.note.data.mongodb.reactive.document.NoteReactiveDocument;
+import com.example.note.data.mongodb.reactive.model.NoteReactiveDocument;
 import com.example.note.domain.NoteRequest;
 import com.example.note.domain.NoteResponse;
 

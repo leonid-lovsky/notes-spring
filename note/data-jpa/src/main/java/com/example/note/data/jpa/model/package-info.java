@@ -1,4 +1,4 @@
 @NullMarked
-package com.example.usernote.data.jpa.entity;
+package com.example.note.data.jpa.model;
 
 import org.jspecify.annotations.NullMarked;

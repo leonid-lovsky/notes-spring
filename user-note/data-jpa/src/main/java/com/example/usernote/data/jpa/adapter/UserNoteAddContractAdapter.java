@@ -1,7 +1,7 @@
 package com.example.usernote.data.jpa.adapter;
 
 import com.example.usernote.contract.UserNoteAddContract;
-import com.example.usernote.data.jpa.entity.UserNoteEntity;
+import com.example.usernote.data.jpa.model.UserNoteEntity;
 import com.example.usernote.data.jpa.mapper.UserNoteEntityMapperContract;
 import com.example.usernote.data.jpa.repository.UserNoteJpaRepository;
 import com.example.usernote.domain.UserNoteRequest;

@@ -3,7 +3,7 @@ package com.example.note.data.jpa.adapter;
 import java.util.UUID;
 
 import com.example.note.contract.NoteReplaceContract;
-import com.example.note.data.jpa.entity.NoteEntity;
+import com.example.note.data.jpa.model.NoteEntity;
 import com.example.note.data.jpa.mapper.NoteEntityMapperContract;
 import com.example.note.data.jpa.repository.NoteJpaRepository;
 import com.example.note.domain.NoteRequest;

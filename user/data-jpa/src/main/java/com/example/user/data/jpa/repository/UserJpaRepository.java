@@ -3,7 +3,7 @@ package com.example.user.data.jpa.repository;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.example.user.data.jpa.entity.UserEntity;
+import com.example.user.data.jpa.model.UserEntity;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

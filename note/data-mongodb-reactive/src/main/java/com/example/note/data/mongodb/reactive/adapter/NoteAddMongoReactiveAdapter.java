@@ -1,7 +1,7 @@
 package com.example.note.data.mongodb.reactive.adapter;
 
 import com.example.note.contract.reactive.NoteAddContractReactive;
-import com.example.note.data.mongodb.reactive.document.NoteReactiveDocument;
+import com.example.note.data.mongodb.reactive.model.NoteReactiveDocument;
 import com.example.note.data.mongodb.reactive.mapper.NoteReactiveDocumentMapperContract;
 import com.example.note.data.mongodb.reactive.repository.NoteMongoReactiveRepository;
 import com.example.note.domain.NoteRequest;
