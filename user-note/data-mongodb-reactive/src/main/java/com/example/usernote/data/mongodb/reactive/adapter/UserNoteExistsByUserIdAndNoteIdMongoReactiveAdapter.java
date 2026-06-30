@@ -3,7 +3,6 @@ package com.example.usernote.data.mongodb.reactive.adapter;
 import java.util.UUID;
 
 import com.example.usernote.contract.reactive.UserNoteExistsByUserIdAndNoteIdContractReactive;
-import com.example.usernote.data.mongodb.reactive.model.UserNoteReactiveKey;
 import com.example.usernote.data.mongodb.reactive.repository.UserNoteMongoReactiveRepository;
 import reactor.core.publisher.Mono;
 
@@ -21,7 +20,7 @@ class UserNoteExistsByUserIdAndNoteIdMongoReactiveAdapter implements UserNoteExi
 
     @Override
     public Mono<Boolean> existsByUserIdAndNoteId(UUID userId, UUID noteId) {
-        return this.userNoteMongoReactiveRepository.existsById(new UserNoteReactiveKey(userId, noteId));
+        return this.userNoteMongoReactiveRepository.existsByUserIdAndNoteId(userId, noteId);
     }
 
 }

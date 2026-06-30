@@ -25,7 +25,7 @@ class UserNoteFindByUserIdMongoAdapter implements UserNoteFindByUserIdContract {
 
     @Override
     public List<UserNoteResponse> findByUserId(UUID userId) {
-        return this.userNoteMongoRepository.findByIdUserId(userId)
+        return this.userNoteMongoRepository.findByUserId(userId)
             .stream()
             .map(this.userNoteMongoMapper::toResponse)
             .toList();

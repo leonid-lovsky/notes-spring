@@ -2,30 +2,30 @@ package com.example.usernote.data.r2dbc.adapter;
 
 import java.util.UUID;
 
-import com.example.usernote.contract.reactive.UserNoteFindByNoteIdContractReactive;
+import com.example.usernote.contract.reactive.UserNoteFindByIdContractReactive;
 import com.example.usernote.data.r2dbc.mapper.UserNoteR2dbcMapperContract;
 import com.example.usernote.data.r2dbc.repository.UserNoteR2dbcRepository;
 import com.example.usernote.domain.UserNoteResponse;
-import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import org.springframework.stereotype.Repository;
 
 @Repository
-class UserNoteFindByNoteIdR2dbcAdapter implements UserNoteFindByNoteIdContractReactive {
+class UserNoteFindByIdR2dbcAdapter implements UserNoteFindByIdContractReactive {
 
     private final UserNoteR2dbcRepository userNoteR2dbcRepository;
 
     private final UserNoteR2dbcMapperContract userNoteR2dbcMapper;
 
-    UserNoteFindByNoteIdR2dbcAdapter(UserNoteR2dbcRepository userNoteR2dbcRepository,
+    UserNoteFindByIdR2dbcAdapter(UserNoteR2dbcRepository userNoteR2dbcRepository,
             UserNoteR2dbcMapperContract userNoteR2dbcMapper) {
         this.userNoteR2dbcRepository = userNoteR2dbcRepository;
         this.userNoteR2dbcMapper = userNoteR2dbcMapper;
     }
 
     @Override
-    public Flux<UserNoteResponse> findByNoteId(UUID noteId) {
-        return this.userNoteR2dbcRepository.findByNoteId(noteId).map(this.userNoteR2dbcMapper::toResponse);
+    public Mono<UserNoteResponse> findById(UUID id) {
+        return this.userNoteR2dbcRepository.findById(id).map(this.userNoteR2dbcMapper::toResponse);
     }
 
 }

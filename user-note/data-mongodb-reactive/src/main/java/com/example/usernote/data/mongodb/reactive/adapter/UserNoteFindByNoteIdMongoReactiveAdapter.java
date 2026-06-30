@@ -25,7 +25,7 @@ class UserNoteFindByNoteIdMongoReactiveAdapter implements UserNoteFindByNoteIdCo
 
     @Override
     public Flux<UserNoteResponse> findByNoteId(UUID noteId) {
-        return this.userNoteMongoReactiveRepository.findByIdNoteId(noteId)
+        return this.userNoteMongoReactiveRepository.findByNoteId(noteId)
             .map(this.userNoteMongoReactiveMapper::toResponse);
     }
 

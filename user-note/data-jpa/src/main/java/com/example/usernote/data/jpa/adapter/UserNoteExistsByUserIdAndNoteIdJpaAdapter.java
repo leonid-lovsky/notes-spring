@@ -3,7 +3,6 @@ package com.example.usernote.data.jpa.adapter;
 import java.util.UUID;
 
 import com.example.usernote.contract.UserNoteExistsByUserIdAndNoteIdContract;
-import com.example.usernote.data.jpa.model.UserNoteId;
 import com.example.usernote.data.jpa.repository.UserNoteJpaRepository;
 
 import org.springframework.stereotype.Repository;
@@ -19,7 +18,7 @@ class UserNoteExistsByUserIdAndNoteIdJpaAdapter implements UserNoteExistsByUserI
 
     @Override
     public boolean existsByUserIdAndNoteId(UUID userId, UUID noteId) {
-        return this.userNoteJpaRepository.existsById(new UserNoteId(userId, noteId));
+        return this.userNoteJpaRepository.existsByUserIdAndNoteId(userId, noteId);
     }
 
 }

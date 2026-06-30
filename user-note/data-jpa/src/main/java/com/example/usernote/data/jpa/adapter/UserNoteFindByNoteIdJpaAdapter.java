@@ -25,7 +25,7 @@ class UserNoteFindByNoteIdJpaAdapter implements UserNoteFindByNoteIdContract {
 
     @Override
     public List<UserNoteResponse> findByNoteId(UUID noteId) {
-        return this.userNoteJpaRepository.findByIdNoteId(noteId)
+        return this.userNoteJpaRepository.findByNoteId(noteId)
             .stream()
             .map(this.userNoteJpaMapper::toResponse)
             .toList();

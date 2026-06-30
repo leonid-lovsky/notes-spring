@@ -4,7 +4,6 @@ import java.util.UUID;
 
 import com.example.usernote.contract.reactive.UserNoteFindByUserIdAndNoteIdContractReactive;
 import com.example.usernote.data.mongodb.reactive.mapper.UserNoteMongoReactiveMapperContract;
-import com.example.usernote.data.mongodb.reactive.model.UserNoteReactiveKey;
 import com.example.usernote.data.mongodb.reactive.repository.UserNoteMongoReactiveRepository;
 import com.example.usernote.domain.UserNoteResponse;
 import reactor.core.publisher.Mono;
@@ -26,7 +25,7 @@ class UserNoteFindByUserIdAndNoteIdMongoReactiveAdapter implements UserNoteFindB
 
     @Override
     public Mono<UserNoteResponse> findByUserIdAndNoteId(UUID userId, UUID noteId) {
-        return this.userNoteMongoReactiveRepository.findById(new UserNoteReactiveKey(userId, noteId))
+        return this.userNoteMongoReactiveRepository.findByUserIdAndNoteId(userId, noteId)
             .map(this.userNoteMongoReactiveMapper::toResponse);
     }
 

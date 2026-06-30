@@ -24,7 +24,7 @@ class UserNoteAddMongoReactiveAdapter implements UserNoteAddContractReactive {
 
     @Override
     public Mono<UserNoteResponse> add(UserNoteRequest request) {
-        return this.userNoteMongoReactiveRepository.insert(this.userNoteMongoReactiveMapper.toDocument(request))
+        return this.userNoteMongoReactiveRepository.insert(this.userNoteMongoReactiveMapper.toNewDocument(request))
             .map(this.userNoteMongoReactiveMapper::toResponse);
     }
 

@@ -1,6 +1,6 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: 2026-06-30T19:42Z
+> Последнее обновление: 2026-06-30T20:15Z
 > **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 ---
@@ -148,9 +148,13 @@ application/            composition root             → все модули
 - `existsById` в контракте — валидный паттерн, не заменять на `findById`
 - `@Transactional` на методах адаптера
 - `add` ≠ `replace`: JPA — `save(null id)` vs `save(id)`; MongoDB — `insert()` vs `save()`
-- Составной ключ (`user-note/`) в R2DBC: Spring Data R2DBC не поддерживает `@EmbeddedId` — адаптеры используют
-  `DatabaseClient` напрямую (без `model/`/`repository/`), как в `data-jdbc/`; MongoDB составной ключ
-  поддерживает нативно (`UserNoteKey`/`UserNoteReactiveKey` как `_id`)
+- `user-note/`: суррогатный `UUID id` (а не составной `userId+noteId` как PK) во всех технологиях, кроме `data-jdbc/`
+  (там нет model/repository в принципе). `userId+noteId` — unique constraint/index, не PK:
+  JPA — `@Table(uniqueConstraints=...)`; MongoDB — `@CompoundIndex(unique=true)`; R2DBC — constraint на уровне схемы.
+  `id` выставлен в `domain/`/контрактах (`UserNoteResponse.id`, `UserNoteFindByIdContract`). Это сняло ограничение
+  Spring Data R2DBC (нет `@EmbeddedId`) — `data-r2dbc/` теперь полноценный model+repository, без `DatabaseClient`
+- `data-jdbc/` (все сервисы) — намеренно без `model/`/`repository/`: `NamedParameterJdbcTemplate` + сырой SQL,
+  `RowMapper` мапит `ResultSet` сразу в `*Response`
 
 **HTTP / Ошибки:**
 - `ResponseEntity<T>` в контроллерах

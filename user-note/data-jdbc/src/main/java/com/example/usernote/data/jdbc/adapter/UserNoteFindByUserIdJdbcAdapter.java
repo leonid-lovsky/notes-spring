@@ -25,7 +25,7 @@ class UserNoteFindByUserIdJdbcAdapter implements UserNoteFindByUserIdContract {
 
     @Override
     public List<UserNoteResponse> findByUserId(UUID userId) {
-        return this.jdbc.query("SELECT user_id, note_id, role FROM user_notes WHERE user_id = :userId",
+        return this.jdbc.query("SELECT id, user_id, note_id, role FROM user_notes WHERE user_id = :userId",
                 Map.of("userId", userId), this.userNoteJdbcMapper::fromRow);
     }
 

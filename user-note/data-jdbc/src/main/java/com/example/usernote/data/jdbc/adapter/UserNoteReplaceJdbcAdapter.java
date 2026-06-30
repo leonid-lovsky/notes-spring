@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.example.usernote.contract.UserNoteReplaceContract;
+import com.example.usernote.domain.UserNoteNotFoundException;
 import com.example.usernote.domain.UserNoteRequest;
 import com.example.usernote.domain.UserNoteResponse;
 
@@ -21,9 +22,15 @@ class UserNoteReplaceJdbcAdapter implements UserNoteReplaceContract {
 
     @Override
     public UserNoteResponse replace(UUID userId, UUID noteId, UserNoteRequest request) {
-        this.jdbc.update("UPDATE user_notes SET role = :role WHERE user_id = :userId AND note_id = :noteId",
-                Map.of("userId", userId, "noteId", noteId, "role", request.role().name()));
-        return new UserNoteResponse(userId, noteId, request.role());
+        UUID id = this.jdbc
+            .query("SELECT id FROM user_notes WHERE user_id = :userId AND note_id = :noteId",
+                    Map.of("userId", userId, "noteId", noteId), (rs, rowNum) -> rs.getObject("id", UUID.class))
+            .stream()
+            .findFirst()
+            .orElseThrow(() -> new UserNoteNotFoundException(userId, noteId));
+        this.jdbc.update("UPDATE user_notes SET role = :role WHERE id = :id",
+                Map.of("id", id, "role", request.role().name()));
+        return new UserNoteResponse(id, userId, noteId, request.role());
     }
 
 }

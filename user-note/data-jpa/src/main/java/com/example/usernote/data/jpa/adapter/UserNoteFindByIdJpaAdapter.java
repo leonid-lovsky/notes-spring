@@ -1,30 +1,31 @@
 package com.example.usernote.data.jpa.adapter;
 
-import com.example.usernote.contract.UserNoteAddContract;
+import java.util.Optional;
+import java.util.UUID;
+
+import com.example.usernote.contract.UserNoteFindByIdContract;
 import com.example.usernote.data.jpa.mapper.UserNoteJpaMapperContract;
-import com.example.usernote.data.jpa.model.UserNoteEntity;
 import com.example.usernote.data.jpa.repository.UserNoteJpaRepository;
-import com.example.usernote.domain.UserNoteRequest;
 import com.example.usernote.domain.UserNoteResponse;
 
 import org.springframework.stereotype.Repository;
 
 @Repository
-class UserNoteAddJpaAdapter implements UserNoteAddContract {
+class UserNoteFindByIdJpaAdapter implements UserNoteFindByIdContract {
 
     private final UserNoteJpaRepository userNoteJpaRepository;
 
     private final UserNoteJpaMapperContract userNoteJpaMapper;
 
-    UserNoteAddJpaAdapter(UserNoteJpaRepository userNoteJpaRepository, UserNoteJpaMapperContract userNoteJpaMapper) {
+    UserNoteFindByIdJpaAdapter(UserNoteJpaRepository userNoteJpaRepository,
+            UserNoteJpaMapperContract userNoteJpaMapper) {
         this.userNoteJpaRepository = userNoteJpaRepository;
         this.userNoteJpaMapper = userNoteJpaMapper;
     }
 
     @Override
-    public UserNoteResponse add(UserNoteRequest request) {
-        UserNoteEntity saved = this.userNoteJpaRepository.save(this.userNoteJpaMapper.toNewEntity(request));
-        return this.userNoteJpaMapper.toResponse(saved);
+    public Optional<UserNoteResponse> findById(UUID id) {
+        return this.userNoteJpaRepository.findById(id).map(this.userNoteJpaMapper::toResponse);
     }
 
 }

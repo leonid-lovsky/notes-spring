@@ -1,11 +1,13 @@
 package com.example.usernote.data.jpa.adapter;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import com.example.usernote.contract.UserNoteReplaceContract;
 import com.example.usernote.data.jpa.mapper.UserNoteJpaMapperContract;
 import com.example.usernote.data.jpa.model.UserNoteEntity;
 import com.example.usernote.data.jpa.repository.UserNoteJpaRepository;
+import com.example.usernote.domain.UserNoteNotFoundException;
 import com.example.usernote.domain.UserNoteRequest;
 import com.example.usernote.domain.UserNoteResponse;
 
@@ -26,8 +28,10 @@ class UserNoteReplaceJpaAdapter implements UserNoteReplaceContract {
 
     @Override
     public UserNoteResponse replace(UUID userId, UUID noteId, UserNoteRequest request) {
-        UserNoteRequest normalized = new UserNoteRequest(userId, noteId, request.role());
-        UserNoteEntity saved = this.userNoteJpaRepository.save(this.userNoteJpaMapper.toEntity(normalized));
+        UserNoteEntity existing = this.userNoteJpaRepository.findByUserIdAndNoteId(userId, noteId)
+            .orElseThrow(() -> new UserNoteNotFoundException(userId, noteId));
+        UserNoteEntity saved = this.userNoteJpaRepository
+            .save(this.userNoteJpaMapper.toExistingEntity(Objects.requireNonNull(existing.getId()), request));
         return this.userNoteJpaMapper.toResponse(saved);
     }
 

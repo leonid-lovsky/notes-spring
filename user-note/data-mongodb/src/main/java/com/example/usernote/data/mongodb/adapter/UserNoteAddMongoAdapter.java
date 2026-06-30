@@ -23,7 +23,7 @@ class UserNoteAddMongoAdapter implements UserNoteAddContract {
 
     @Override
     public UserNoteResponse add(UserNoteRequest request) {
-        UserNoteDocument document = this.mongoTemplate.insert(this.userNoteMongoMapper.toDocument(request));
+        UserNoteDocument document = this.mongoTemplate.insert(this.userNoteMongoMapper.toNewDocument(request));
         return this.userNoteMongoMapper.toResponse(document);
     }
 

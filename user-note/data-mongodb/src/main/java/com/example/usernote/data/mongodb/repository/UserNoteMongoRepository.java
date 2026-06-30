@@ -1,17 +1,23 @@
 package com.example.usernote.data.mongodb.repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import com.example.usernote.data.mongodb.model.UserNoteDocument;
-import com.example.usernote.data.mongodb.model.UserNoteKey;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface UserNoteMongoRepository extends MongoRepository<UserNoteDocument, UserNoteKey> {
+public interface UserNoteMongoRepository extends MongoRepository<UserNoteDocument, UUID> {
 
-    List<UserNoteDocument> findByIdUserId(UUID userId);
+    List<UserNoteDocument> findByUserId(UUID userId);
 
-    List<UserNoteDocument> findByIdNoteId(UUID noteId);
+    List<UserNoteDocument> findByNoteId(UUID noteId);
+
+    Optional<UserNoteDocument> findByUserIdAndNoteId(UUID userId, UUID noteId);
+
+    boolean existsByUserIdAndNoteId(UUID userId, UUID noteId);
+
+    void deleteByUserIdAndNoteId(UUID userId, UUID noteId);
 
 }

@@ -5,6 +5,7 @@ import java.util.UUID;
 import com.example.usernote.contract.reactive.UserNoteReplaceContractReactive;
 import com.example.usernote.data.mongodb.reactive.mapper.UserNoteMongoReactiveMapperContract;
 import com.example.usernote.data.mongodb.reactive.repository.UserNoteMongoReactiveRepository;
+import com.example.usernote.domain.UserNoteNotFoundException;
 import com.example.usernote.domain.UserNoteRequest;
 import com.example.usernote.domain.UserNoteResponse;
 import reactor.core.publisher.Mono;
@@ -26,8 +27,10 @@ class UserNoteReplaceMongoReactiveAdapter implements UserNoteReplaceContractReac
 
     @Override
     public Mono<UserNoteResponse> replace(UUID userId, UUID noteId, UserNoteRequest request) {
-        UserNoteRequest normalized = new UserNoteRequest(userId, noteId, request.role());
-        return this.userNoteMongoReactiveRepository.save(this.userNoteMongoReactiveMapper.toDocument(normalized))
+        return this.userNoteMongoReactiveRepository.findByUserIdAndNoteId(userId, noteId)
+            .switchIfEmpty(Mono.error(new UserNoteNotFoundException(userId, noteId)))
+            .flatMap((existing) -> this.userNoteMongoReactiveRepository
+                .save(this.userNoteMongoReactiveMapper.toExistingDocument(existing.getId(), request)))
             .map(this.userNoteMongoReactiveMapper::toResponse);
     }
 

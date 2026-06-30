@@ -2,31 +2,30 @@ package com.example.usernote.data.mongodb.reactive.adapter;
 
 import java.util.UUID;
 
-import com.example.usernote.contract.reactive.UserNoteFindByUserIdContractReactive;
+import com.example.usernote.contract.reactive.UserNoteFindByIdContractReactive;
 import com.example.usernote.data.mongodb.reactive.mapper.UserNoteMongoReactiveMapperContract;
 import com.example.usernote.data.mongodb.reactive.repository.UserNoteMongoReactiveRepository;
 import com.example.usernote.domain.UserNoteResponse;
-import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import org.springframework.stereotype.Repository;
 
 @Repository
-class UserNoteFindByUserIdMongoReactiveAdapter implements UserNoteFindByUserIdContractReactive {
+class UserNoteFindByIdMongoReactiveAdapter implements UserNoteFindByIdContractReactive {
 
     private final UserNoteMongoReactiveRepository userNoteMongoReactiveRepository;
 
     private final UserNoteMongoReactiveMapperContract userNoteMongoReactiveMapper;
 
-    UserNoteFindByUserIdMongoReactiveAdapter(UserNoteMongoReactiveRepository userNoteMongoReactiveRepository,
+    UserNoteFindByIdMongoReactiveAdapter(UserNoteMongoReactiveRepository userNoteMongoReactiveRepository,
             UserNoteMongoReactiveMapperContract userNoteMongoReactiveMapper) {
         this.userNoteMongoReactiveRepository = userNoteMongoReactiveRepository;
         this.userNoteMongoReactiveMapper = userNoteMongoReactiveMapper;
     }
 
     @Override
-    public Flux<UserNoteResponse> findByUserId(UUID userId) {
-        return this.userNoteMongoReactiveRepository.findByUserId(userId)
-            .map(this.userNoteMongoReactiveMapper::toResponse);
+    public Mono<UserNoteResponse> findById(UUID id) {
+        return this.userNoteMongoReactiveRepository.findById(id).map(this.userNoteMongoReactiveMapper::toResponse);
     }
 
 }

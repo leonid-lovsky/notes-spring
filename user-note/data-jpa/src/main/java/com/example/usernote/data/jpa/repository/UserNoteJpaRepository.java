@@ -1,17 +1,23 @@
 package com.example.usernote.data.jpa.repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import com.example.usernote.data.jpa.model.UserNoteEntity;
-import com.example.usernote.data.jpa.model.UserNoteId;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserNoteJpaRepository extends JpaRepository<UserNoteEntity, UserNoteId> {
+public interface UserNoteJpaRepository extends JpaRepository<UserNoteEntity, UUID> {
 
-    List<UserNoteEntity> findByIdUserId(UUID userId);
+    List<UserNoteEntity> findByUserId(UUID userId);
 
-    List<UserNoteEntity> findByIdNoteId(UUID noteId);
+    List<UserNoteEntity> findByNoteId(UUID noteId);
+
+    Optional<UserNoteEntity> findByUserIdAndNoteId(UUID userId, UUID noteId);
+
+    boolean existsByUserIdAndNoteId(UUID userId, UUID noteId);
+
+    void deleteByUserIdAndNoteId(UUID userId, UUID noteId);
 
 }

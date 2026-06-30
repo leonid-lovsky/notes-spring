@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import com.example.usernote.contract.UserNoteFindByUserIdAndNoteIdContract;
 import com.example.usernote.data.jpa.mapper.UserNoteJpaMapperContract;
-import com.example.usernote.data.jpa.model.UserNoteId;
 import com.example.usernote.data.jpa.repository.UserNoteJpaRepository;
 import com.example.usernote.domain.UserNoteResponse;
 
@@ -26,8 +25,7 @@ class UserNoteFindByUserIdAndNoteIdJpaAdapter implements UserNoteFindByUserIdAnd
 
     @Override
     public Optional<UserNoteResponse> findByUserIdAndNoteId(UUID userId, UUID noteId) {
-        return this.userNoteJpaRepository.findById(new UserNoteId(userId, noteId))
-            .map(this.userNoteJpaMapper::toResponse);
+        return this.userNoteJpaRepository.findByUserIdAndNoteId(userId, noteId).map(this.userNoteJpaMapper::toResponse);
     }
 
 }

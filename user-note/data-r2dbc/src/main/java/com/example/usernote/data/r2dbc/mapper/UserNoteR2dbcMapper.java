@@ -1,11 +1,12 @@
 package com.example.usernote.data.r2dbc.mapper;
 
+import java.util.Objects;
 import java.util.UUID;
 
+import com.example.usernote.data.r2dbc.model.UserNoteR2dbcEntity;
+import com.example.usernote.domain.UserNoteRequest;
 import com.example.usernote.domain.UserNoteResponse;
 import com.example.usernote.domain.UserNoteRole;
-import io.r2dbc.spi.Row;
-import io.r2dbc.spi.RowMetadata;
 
 import org.springframework.stereotype.Component;
 
@@ -13,11 +14,19 @@ import org.springframework.stereotype.Component;
 class UserNoteR2dbcMapper implements UserNoteR2dbcMapperContract {
 
     @Override
-    public UserNoteResponse fromRow(Row row, RowMetadata rowMetadata) {
-        UUID userId = row.get("user_id", UUID.class);
-        UUID noteId = row.get("note_id", UUID.class);
-        String role = row.get("role", String.class);
-        return new UserNoteResponse(userId, noteId, UserNoteRole.valueOf(role));
+    public UserNoteR2dbcEntity toNewEntity(UserNoteRequest request) {
+        return new UserNoteR2dbcEntity(request.userId(), request.noteId(), request.role().name());
+    }
+
+    @Override
+    public UserNoteR2dbcEntity toExistingEntity(UUID id, UserNoteRequest request) {
+        return new UserNoteR2dbcEntity(id, request.userId(), request.noteId(), request.role().name());
+    }
+
+    @Override
+    public UserNoteResponse toResponse(UserNoteR2dbcEntity entity) {
+        return new UserNoteResponse(Objects.requireNonNull(entity.getId()), entity.getUserId(), entity.getNoteId(),
+                UserNoteRole.valueOf(entity.getRole()));
     }
 
 }
