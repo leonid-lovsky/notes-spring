@@ -1,6 +1,6 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: 2026-06-30T19:27Z
+> Последнее обновление: 2026-06-30T19:30Z
 > **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 ---
@@ -83,17 +83,17 @@ import org.springframework.stereotype.Repository;
 ## Структура модулей
 
 ```
-domain/              records · enums · exceptions — чистая Java
-contract/            sync port interfaces         → domain/ (api)
-contract-reactive/   reactive port interfaces     → domain/ (api) · reactor-core (api)
-webmvc/              driving adapter sync         → contract/
-webflux/             driving adapter reactive     → contract-reactive/
-data-jpa/            driven adapter JPA           → contract/
-data-jdbc/           driven adapter JDBC          → contract/
-data-r2dbc/          driven adapter R2DBC         → contract-reactive/
-data-mongodb/        driven adapter MongoDB       → contract/
-data-mongodb-reactive/ driven adapter Mongo rx   → contract-reactive/
-application/         composition root             → все модули
+domain/                 records · enums · exceptions — чистая Java
+data-contract/          sync port interfaces         → domain/ (api)
+data-contract-reactive/ reactive port interfaces     → domain/ (api) · reactor-core (api)
+webmvc/                 driving adapter sync         → data-contract/
+webflux/                driving adapter reactive     → data-contract-reactive/
+data-jpa/               driven adapter JPA           → data-contract/
+data-jdbc/              driven adapter JDBC          → data-contract/
+data-r2dbc/             driven adapter R2DBC         → data-contract-reactive/
+data-mongodb/           driven adapter MongoDB       → data-contract/
+data-mongodb-reactive/  driven adapter Mongo rx      → data-contract-reactive/
+application/            composition root             → все модули
 ```
 
 ---
@@ -139,7 +139,7 @@ application/         composition root             → все модули
 ## Принятые решения
 
 **Архитектура:**
-- Hexagonal: `domain/` не знает о JPA/MongoDB/Spring; адаптеры знают только `contract/`
+- Hexagonal: `domain/` не знает о JPA/MongoDB/Spring; адаптеры знают только `data-contract/`
 - Один контроллер на операцию (`NoteCreateController` → `POST /notes`)
 - `service/` только при координации нескольких портов; для CRUD не нужен
 - `existsById` в контракте — валидный паттерн, не заменять на `findById`
@@ -165,8 +165,8 @@ application/         composition root             → все модули
 - `existsById` → `Mono<Boolean>`
 
 **Convention plugins** (добавлены новые):
-- `java-contract-conventions` — для `contract/`
-- `java-contract-reactive-conventions` — для `contract-reactive/` (включает `reactor-core` как `api`)
+- `java-contract-conventions` — для `data-contract/`
+- `java-contract-reactive-conventions` — для `data-contract-reactive/` (включает `reactor-core` как `api`)
 
 **Стиль кода:**
 - Импорты: `java.*` → `javax.*` → `*` → `org.springframework.*`; пустая строка между группами
