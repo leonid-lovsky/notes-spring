@@ -1,5 +1,5 @@
 plugins {
-    id 'com.example.spring-boot-webmvc-adapter'
+    id 'com.example.spring-boot-webmvc'
 }
 
 dependencies {

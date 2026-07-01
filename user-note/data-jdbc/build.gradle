@@ -1,5 +1,5 @@
 plugins {
-    id 'com.example.spring-boot-data-jdbc-adapter'
+    id 'com.example.spring-boot-data-jdbc'
 }
 
 dependencies {
