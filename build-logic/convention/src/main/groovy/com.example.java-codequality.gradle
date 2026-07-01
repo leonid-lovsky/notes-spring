@@ -1,0 +1,12 @@
+plugins {
+	id 'com.example.java-javaformat'
+	id 'com.example.java-errorprone'
+	id 'com.example.java-jacoco'
+	id 'com.example.java-jacoco-report-aggregation'
+}
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(rootProject.file('.java-version').text.trim().toInteger())
+	}
+}

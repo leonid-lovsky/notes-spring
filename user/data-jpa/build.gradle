@@ -1,5 +1,5 @@
 plugins {
-    id 'spring-boot-data-jpa-adapter-conventions'
+    id 'com.example.spring-boot-data-jpa-adapter'
 }
 
 dependencies {

@@ -1,6 +1,6 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: 2026-07-01T10:38Z
+> Последнее обновление: 2026-07-01T11:16Z
 > **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 Многомодульный Spring Boot 4 проект (`note/`, `user/`, `user-note/`, ...), реализующий hexagonal
@@ -30,7 +30,10 @@ architecture единообразно во всех сервисах через 
 - **Таблицы** — во всех markdown-таблицах строки одинаковой длины в Unicode-символах
 - **Архитектурные решения** — сначала варианты с плюсами/минусами и рекомендацией, дождаться
   выбора пользователя; не реализовывать до явного решения
-- **Build** — после каждого логического шага: `./gradlew clean build` → обновить CLAUDE.md → коммит → пуш
+- **Build** — после каждого логического шага: `./gradlew clean check` (быстрее `build`: без
+  `assemble`/`bootJar`) → обновить CLAUDE.md → коммит → пуш; перед коммитом дополнительно
+  `./gradlew clean build` (проверяет и паковку — `bootJar`/`resolveMainClassName`, что `check`
+  не покрывает)
 - **Подзадачи** — крупную задачу разбивать на подзадачи; коммитить и пушить после каждой
   завершённой подзадачи, чтобы не терять прогресс при обрыве сессии
 
@@ -52,11 +55,11 @@ architecture единообразно во всех сервисах через 
          стартуют и проходят contextLoads, но без routes/config-репозитория и без
          реальной регистрации note/ · user/ · user-note/ (эти сервисы пока не знают
          про eureka-client/config-client)
-СКЕЛЕТ   auth/ — модуль создан (spring-boot-application-conventions), логики нет
+СКЕЛЕТ   auth/ — модуль создан (com.example.spring-boot-application), логики нет
 ОТЛОЖЕНО   graphql/
 ОТЛОЖЕНО   Spring Cache · Spring OAuth2 · Spring OpenFeign · Spring Cloud LoadBalancer ·
                             Spring Cloud Circuit Breaker — convention plugins подготовлены
-                            в buildSrc, но не применены ни в одном модуле
+                            в build-logic, но не применены ни в одном модуле
 НЕ СОЗДАНО bff/ · thymeleaf/ · sharing/ · crud/
 ```
 
@@ -96,9 +99,16 @@ import org.springframework.stereotype.Repository;
 
 **Многомодульная сборка (Gradle):**
 ```
-buildSrc/src/main/groovy/        convention plugins (Groovy DSL, не Kotlin)
-{service}/settings.gradle        объявляет subprojects сервиса
-{service}/{module}/build.gradle  применяет plugin через id '...'
+build-logic/settings.gradle                     include ':convention'; included build,
+                                                 подключён через pluginManagement { includeBuild(...) }
+                                                 в корневом settings.gradle
+build-logic/convention/src/main/groovy/         convention plugins (Groovy DSL, не Kotlin),
+com.example.{name}.gradle                       namespaced id, без суффикса -conventions: слово
+                                                 "convention" — только в пути (build-logic/convention/),
+                                                 не в id (com.example.java-domain, не -conventions)
+settings.gradle                                 единственный, в корне репозитория; include ':...' на
+                                                 все subprojects всех сервисов (per-service нет)
+{service}/{module}/build.gradle                 применяет plugin через id 'com.example.{name}'
 ```
 
 **Пакеты по сервисам:**
@@ -180,6 +190,15 @@ com.example.note.data.jpa.repository   NoteJpaRepository
 
 ### Архитектура
 
+- Convention plugins — `build-logic/convention/` (included build), не `buildSrc/`: единственный
+  `settings.gradle` в репозитории делает шаринг между несколькими `settings.gradle` неактуальным, но
+  `build-logic` лучше по инкрементальности (правка одного convention-плагина не инвалидирует весь
+  билд, как `buildSrc`) и ближе к текущей рекомендованной практике Gradle. `./gradlew clean build` из
+  корня остаётся одной командой — `includeBuild` прозрачен для пересборки всего проекта целиком.
+  Вложенный `convention/` (а не плагины прямо в `build-logic/`) — задел на будущие под-билды внутри
+  `build-logic/`. Id namespaced (`com.example.{name}`, по аналогии с пакетами `com.example.*`),
+  а не плоские — стандартная практика для precompiled script plugins, снимает конфликт имён с
+  плагинами из внешних репозиториев
 - Hexagonal: `domain/` не знает о JPA/MongoDB/Spring; адаптеры знают только `data-contract/`
 - Один контроллер на операцию (`NoteCreateController` → `POST /notes`)
 - `service/` — только при координации нескольких портов; для простого CRUD не нужен
@@ -221,15 +240,16 @@ com.example.note.data.jpa.repository   NoteJpaRepository
 
 ### Convention plugins (добавленные новые)
 
-- `java-contract-conventions` — для `data-contract/`
-- `java-contract-reactive-conventions` — для `data-contract-reactive/` (включает `reactor-core` как `api`)
+- `com.example.java-contract` — для `data-contract/`
+- `com.example.java-contract-reactive` — для `data-contract-reactive/` (включает `reactor-core`
+  как `api`)
 
 ### Синхронизация версий
 
 - **Spring-экосистема** (Spring Boot, Spring Cloud, dependency-management, spring-javaformat,
   errorprone-plugin) — единый источник `gradle/libs.versions.toml` (Gradle Version Catalog).
-  `buildSrc` — отдельный Gradle-билд и не видит корневой `gradle.properties`/каталог автоматически,
-  поэтому `buildSrc/settings.gradle` подключает тот же `.toml`-файл отдельно
+  `build-logic` — отдельный included build и не видит корневой `gradle.properties`/каталог
+  автоматически, поэтому `build-logic/settings.gradle` подключает тот же `.toml`-файл отдельно
   (`dependencyResolutionManagement.versionCatalogs.libs.from(files('../gradle/libs.versions.toml'))`).
   Ключи с дефисом (`spring-boot`, `spring-cloud`, ...) дают вложенные аксессоры:
   `libs.versions.spring.boot.get()`, `libs.versions.spring.cloud.get()`,
@@ -239,7 +259,7 @@ com.example.note.data.jpa.repository   NoteJpaRepository
   наследует её автоматически, отдельной синхронизации не требует
 - **Java** — единственный источник `.java-version` (корень репозитория): CI читает его через
   `actions/setup-java@v4` (`java-version-file`), Gradle — через `toolchain` в
-  `java-codequality-conventions` (`JavaLanguageVersion.of(rootProject.file('.java-version').text.
+  `com.example.java-codequality` (`JavaLanguageVersion.of(rootProject.file('.java-version').text.
   trim().toInteger())`), применяется почти во всех модулях транзитивно
 
 ### Стиль кода

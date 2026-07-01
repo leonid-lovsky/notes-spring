@@ -1,5 +1,5 @@
 plugins {
-    id 'java-contract-conventions'
+    id 'com.example.java-contract'
 }
 
 dependencies {

@@ -1,8 +1,0 @@
-plugins {
-	id 'java-library'
-	id 'java-codequality-conventions'
-}
-
-repositories {
-	mavenCentral()
-}

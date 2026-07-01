@@ -1,5 +1,5 @@
 plugins {
-    id 'spring-boot-data-r2dbc-adapter-conventions'
+    id 'com.example.spring-boot-data-r2dbc-adapter'
 }
 
 dependencies {

@@ -1,4 +1,4 @@
 plugins {
-    id 'spring-cloud-config-server-conventions'
-    id 'spring-boot-actuator-conventions'
+    id 'com.example.spring-cloud-config-server'
+    id 'com.example.spring-boot-actuator'
 }

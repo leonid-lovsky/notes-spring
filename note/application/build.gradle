@@ -1,6 +1,6 @@
 plugins {
-    id 'spring-boot-application-conventions'
-    id 'spring-boot-h2-database-conventions'
+    id 'com.example.spring-boot-application'
+    id 'com.example.spring-boot-h2-database'
 }
 
 dependencies {
