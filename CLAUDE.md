@@ -1,6 +1,6 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: 2026-07-01T10:35Z
+> Последнее обновление: 2026-07-01T10:38Z
 > **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 Многомодульный Spring Boot 4 проект (`note/`, `user/`, `user-note/`, ...), реализующий hexagonal
@@ -47,9 +47,16 @@ architecture единообразно во всех сервисах через 
                   data-jpa · data-mongodb · data-jdbc · data-r2dbc · data-mongodb-reactive
 ГОТОВО   user-note/ — domain · data-contract · data-contract-reactive · webmvc · webflux
                       data-jpa · data-mongodb · data-jdbc · data-r2dbc · data-mongodb-reactive
-ОТЛОЖЕНО   graphql/ · auth/
-ОТЛОЖЕНО   инфраструктура — Spring Config · Spring Eureka · Spring Actuator · Spring Cache ·
-                            Spring OAuth2 · Spring OpenFeign · Spring Gateway (и другие)
+СКЕЛЕТ   registry/ · config/ · gateway/ — Eureka server/client, Config server/client,
+         Gateway (webflux) + Actuator подключены через convention plugins; сервисы
+         стартуют и проходят contextLoads, но без routes/config-репозитория и без
+         реальной регистрации note/ · user/ · user-note/ (эти сервисы пока не знают
+         про eureka-client/config-client)
+СКЕЛЕТ   auth/ — модуль создан (spring-boot-application-conventions), логики нет
+ОТЛОЖЕНО   graphql/
+ОТЛОЖЕНО   Spring Cache · Spring OAuth2 · Spring OpenFeign · Spring Cloud LoadBalancer ·
+                            Spring Cloud Circuit Breaker — convention plugins подготовлены
+                            в buildSrc, но не применены ни в одном модуле
 НЕ СОЗДАНО bff/ · thymeleaf/ · sharing/ · crud/
 ```
 
