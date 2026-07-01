@@ -1,6 +1,6 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: 2026-07-01T08:49Z
+> Последнее обновление: 2026-07-01T09:12Z
 > **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 Многомодульный Spring Boot 4 проект (`note/`, `user/`, `user-note/`, ...), реализующий hexagonal
@@ -60,6 +60,8 @@ architecture единообразно во всех сервисах через 
 - **testcontainers** — интеграционные тесты в реальных Docker-контейнерах
 - **Docker Compose** — локальный оркестратор dev/test окружения
 - **Kubernetes** — production-оркестрация контейнеров
+- **Terraform** — infrastructure as code: декларативное provisioning облачных ресурсов, кластеров,
+  а также platform-независимая настройка репозитория (branch protection и т. п.)
 - **Jenkins** — CI/CD pipeline
 - **Amazon Web Services** — целевая cloud-платформа
 - **Kafka / RabbitMQ** — message broker (см. открытое решение «Регистрация auth/ ↔ user/»)
