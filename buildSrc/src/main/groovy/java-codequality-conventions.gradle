@@ -4,3 +4,9 @@ plugins {
 	id 'java-jacoco-conventions'
 	id 'java-jacoco-report-aggregation-conventions'
 }
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(rootProject.file('.java-version').text.trim().toInteger())
+	}
+}

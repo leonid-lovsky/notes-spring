@@ -1,6 +1,6 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: 2026-07-01T09:12Z
+> Последнее обновление: 2026-07-01T10:35Z
 > **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 Многомодульный Spring Boot 4 проект (`note/`, `user/`, `user-note/`, ...), реализующий hexagonal
@@ -151,9 +151,9 @@ com.example.note.data.jpa.repository   NoteJpaRepository
 | Инструмент    | Версия   |
 |---------------|----------|
 | Java          | 21       |
-| Gradle        | 9.5.1    |
+| Gradle        | 9.6.0    |
 | Spring Boot   | 4.0.6    |
-| Spring Cloud  | 2025.1.1 |
+| Spring Cloud  | 2025.1.2 |
 
 **Spring Boot 4 — критичные отличия от Boot 3** (источник: существующие `build.gradle` в проекте;
 документация docs.spring.io местами показывает Boot 3 и не заслуживает доверия — сверяться с
@@ -216,6 +216,24 @@ com.example.note.data.jpa.repository   NoteJpaRepository
 
 - `java-contract-conventions` — для `data-contract/`
 - `java-contract-reactive-conventions` — для `data-contract-reactive/` (включает `reactor-core` как `api`)
+
+### Синхронизация версий
+
+- **Spring-экосистема** (Spring Boot, Spring Cloud, dependency-management, spring-javaformat,
+  errorprone-plugin) — единый источник `gradle/libs.versions.toml` (Gradle Version Catalog).
+  `buildSrc` — отдельный Gradle-билд и не видит корневой `gradle.properties`/каталог автоматически,
+  поэтому `buildSrc/settings.gradle` подключает тот же `.toml`-файл отдельно
+  (`dependencyResolutionManagement.versionCatalogs.libs.from(files('../gradle/libs.versions.toml'))`).
+  Ключи с дефисом (`spring-boot`, `spring-cloud`, ...) дают вложенные аксессоры:
+  `libs.versions.spring.boot.get()`, `libs.versions.spring.cloud.get()`,
+  `libs.versions.spring.dependency.management.get()`, `libs.versions.spring.javaformat.get()`,
+  `libs.versions.errorprone.plugin.get()`
+- **Gradle** — версия зафиксирована в `gradle/wrapper/gradle-wrapper.properties`; CI (`./gradlew`)
+  наследует её автоматически, отдельной синхронизации не требует
+- **Java** — единственный источник `.java-version` (корень репозитория): CI читает его через
+  `actions/setup-java@v4` (`java-version-file`), Gradle — через `toolchain` в
+  `java-codequality-conventions` (`JavaLanguageVersion.of(rootProject.file('.java-version').text.
+  trim().toInteger())`), применяется почти во всех модулях транзитивно
 
 ### Стиль кода
 

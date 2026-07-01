@@ -9,13 +9,13 @@ repositories {
 }
 
 checkstyle {
-    toolVersion = "9.3"
+    toolVersion = '9.3'
     configFile = rootProject.file('gradle/checkstyle/checkstyle.xml')
     configProperties = ['projectRootPackage': 'com.example']
 }
 
 dependencies {
-    checkstyle "io.spring.javaformat:spring-javaformat-checkstyle:${project.property('springJavaformatVersion')}"
+    checkstyle "io.spring.javaformat:spring-javaformat-checkstyle:${libs.versions.spring.javaformat.get()}"
 }
 
 //applyDefaultConfig() added in 0.0.48 — not available on Maven Central; keep commented

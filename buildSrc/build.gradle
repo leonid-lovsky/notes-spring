@@ -7,15 +7,9 @@ repositories {
 	mavenCentral()
 }
 
-// versions here must be kept in sync with gradle.properties (buildSrc is a separate build)
-def springBootVersion = '4.0.6'
-def dependencyManagementVersion = '1.1.7'
-def springJavaformatVersion = '0.0.47'
-def errorpronePluginVersion = '5.1.0'
-
 dependencies {
-	implementation "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
-	implementation "io.spring.gradle:dependency-management-plugin:$dependencyManagementVersion"
-	implementation "io.spring.javaformat:spring-javaformat-gradle-plugin:$springJavaformatVersion"
-	implementation "net.ltgt.gradle:gradle-errorprone-plugin:$errorpronePluginVersion"
+	implementation "org.springframework.boot:spring-boot-gradle-plugin:${libs.versions.spring.boot.get()}"
+	implementation "io.spring.gradle:dependency-management-plugin:${libs.versions.spring.dependency.management.get()}"
+	implementation "io.spring.javaformat:spring-javaformat-gradle-plugin:${libs.versions.spring.javaformat.get()}"
+	implementation "net.ltgt.gradle:gradle-errorprone-plugin:${libs.versions.errorprone.plugin.get()}"
 }
