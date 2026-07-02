@@ -1,0 +1,8 @@
+plugins {
+    id("com.example.spring-boot")
+}
+
+dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-security-oauth2-client")
+    testImplementation("org.springframework.boot:spring-boot-starter-security-oauth2-client-test")
+}

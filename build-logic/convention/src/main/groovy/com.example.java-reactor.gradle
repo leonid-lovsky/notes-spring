@@ -1,7 +1,0 @@
-plugins {
-	id 'com.example.java-library'
-}
-
-dependencies {
-	implementation "io.projectreactor:reactor-core:${libs.versions.reactor.core.get()}"
-}

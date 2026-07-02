@@ -1,0 +1,8 @@
+plugins {
+    id("com.example.spring-boot")
+}
+
+dependencies {
+    implementation("org.springframework.boot:spring-boot-h2console")
+    runtimeOnly("com.h2database:h2")
+}

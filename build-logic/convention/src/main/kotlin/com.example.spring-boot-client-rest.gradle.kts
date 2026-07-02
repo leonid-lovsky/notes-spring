@@ -1,0 +1,8 @@
+plugins {
+    id("com.example.spring-boot")
+}
+
+dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-restclient")
+    testImplementation("org.springframework.boot:spring-boot-starter-restclient-test")
+}
