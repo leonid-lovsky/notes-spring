@@ -1,6 +1,6 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: 2026-07-02T11:32Z
+> Последнее обновление: 2026-07-02T11:33Z
 > **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 Многомодульный Spring Boot 4 проект (`note/`, `user/`, `user-note/`, ...), реализующий hexagonal
@@ -122,7 +122,7 @@ user-note/  → com.example.usernote   (не user.note!)
 ```
 domain/                 records · enums · exceptions — чистая Java, без зависимостей на инфраструктуру
 data-contract/          sync port interfaces         → domain/ (api)
-data-contract-reactive/ reactive port interfaces     → domain/ (api) · reactor-core (api)
+data-contract-reactive/ reactive port interfaces     → domain/ (api) · reactor-core (implementation)
 webmvc/                 driving adapter sync         → data-contract/
 webflux/                driving adapter reactive     → data-contract-reactive/
 data-jpa/               driven adapter JPA           → data-contract/
@@ -207,9 +207,11 @@ com.example.note.data.jpa.repository   NoteJpaRepository
 - Naming: id не привязанных к папке модуля плагинов (`spring-boot-client-rest`/`-client-web`,
   а не `restclient`/`webclient`) подбирается по смысловой роли, а не только по алфавиту — иначе
   риск ложной группировки (`webclient` рядом с `webflux`/`webmvc`, хотя это разные вещи: исходящий
-  клиент vs driving-адаптер). Id плагинов, 1:1 соответствующих папке модуля (`webmvc`, `data-jpa`,
-  `domain`, ...), никогда не переименовываются в отрыве от папки — совпадение имени плагина и
-  папки модуля важнее любой алфавитной оптимизации
+  клиент vs driving-адаптер). Id плагинов, 1:1 соответствующих папке модуля и реальному Spring Boot
+  starter (`webmvc`, `webflux`, `data-jpa`, `data-jdbc`, `data-r2dbc`, `data-mongodb`,
+  `data-mongodb-reactive`), никогда не переименовываются в отрыве от папки. `domain/` и
+  `data-contract*/` в это правило не попадают — их плагины (`java`, `java-library`, `java-reactor`)
+  называются по зависимости, а не по слою, и папке уже не соответствуют
 - Общий boilerplate convention-плагинов вынесен в `spring-boot-base`/`spring-cloud-base` (2 уровня
   иерархии), но не в третий уровень для `org.springframework.boot` + `spring-boot-starter-test`
   (нужны только 5 файлам, ~2 строки) — по принципу «три похожих строки лучше преждевременной
@@ -265,9 +267,10 @@ com.example.note.data.jpa.repository   NoteJpaRepository
 ### Convention plugins — принцип именования и структура
 
 Id называется по подключаемой зависимости/технологии, а не по имени использующего модуля/слоя
-(исключение — 10 плагинов, 1:1 соответствующих папке модуля: `webmvc`, `webflux`, `data-jpa`,
-`data-jdbc`, `data-r2dbc`, `data-mongodb`, `data-mongodb-reactive` — тут имя папки важнее алфавита,
-не переименовывать в отрыве от неё). Плоская структура каталога (без подпапок по категориям) —
+(исключение — 7 плагинов, 1:1 соответствующих папке модуля и реальному Spring Boot starter:
+`webmvc`, `webflux`, `data-jpa`, `data-jdbc`, `data-r2dbc`, `data-mongodb`, `data-mongodb-reactive`
+— тут имя папки важнее алфавита, не переименовывать в отрыве от неё). Плоская структура каталога
+(без подпапок по категориям) —
 каталог не влияет на id precompiled script plugin (проверено эмпирически), а сам naming уже даёт
 алфавитную группировку.
 
