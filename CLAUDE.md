@@ -1,6 +1,6 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: 2026-07-02T22:33Z
+> Последнее обновление: 2026-07-02T22:54Z
 > **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 Многомодульный Spring Boot 4 проект (`note/`, `user/`, `user-note/`, ...), реализующий hexagonal
@@ -247,20 +247,21 @@ com.example.note.data.jpa.repository   NoteJpaRepository
   `.springjavaformatconfig` (`indentation-style=spaces`) — источник истины по стилю для всего
   репозитория, а `build-logic/` изначально не форматировался этим правилом (Spring JavaFormat
   форматирует Java, не Groovy build-скрипты) и разошёлся на табы. Плагин `idea` (был в бывшем
-  `java-domain`, контент которого сейчас — часть `com.example.java`) — удалён: deprecated
+  `java-domain`, контент которого сейчас — часть `com.example.base`) — удалён: deprecated
   в Gradle, будет убран в Gradle 10, и был применён только в `domain/`-модулях (несогласованно,
   больше нигде в плагинах)
 - Иерархия convention-плагинов — максимум один родительский `com.example.*`-плагин, кроме
-  агрегирующего `com.example.codequality` (собирает 4 плагина, единственное исключение). Корень —
-  `com.example.java`: `java` + toolchain + `com.example.codequality` + `junit-jupiter` слиты
+  агрегирующего `com.example.codequality` (собирает 4 плагина) и `spring-boot-client-web`
+  (см. ниже, по прямому запросу). Корень —
+  `com.example.base`: `java` + toolchain + `com.example.codequality` + `junit-jupiter` слиты
   в одном плагине (были раздельными — `java-codequality` и `com.example.junit-jupiter`).
   `codequality`-плагины (`errorprone`, `jacoco`, `jacoco-report-aggregation`, `javaformat`)
-  сами применяют голый `id("java")` (Gradle core), не `com.example.java` — иначе цикл
-  `java → codequality → errorprone → java → ...`. От `com.example.java` линейно строятся
+  сами применяют голый `id("java")` (Gradle core), не `com.example.base` — иначе цикл
+  `base → codequality → errorprone → base → ...`. От `com.example.base` линейно строятся
   `library` → `reactor` и `spring-boot` → `spring-cloud` → технологические листья. Раньше
   каждый технологический плагин (и даже сами codequality-плагины) независимо применяли голый
   `id("java")` без общего корня — теперь все они (кроме самих codequality-детей) трассируются
-  к одному `com.example.java`. `jacoco-report-aggregation` — без родителя вообще: плагину не
+  к одному `com.example.base`. `jacoco-report-aggregation` — без родителя вообще: плагину не
   нужен `java` функционально, лишнее не настраивается (autoconfiguration/defaults — не
   подгонять структуру под единообразие там, где это не даёт реальной пользы)
 - Type-safe project accessors (`projects.note.domain` вместо `project(':note:domain')`) —
@@ -329,16 +330,17 @@ Id называется по подключаемой зависимости/т�
 (`errorprone`, `jacoco`, `library`, `reactor`, ...).
 
 **Иерархия** — максимум 1 родительский `com.example.*`-плагин на плагин, кроме агрегирующего
-`codequality` (собирает 4 плагина, единственное исключение):
+`codequality` (собирает 4 плагина) и `spring-boot-client-web` (2 родителя по прямому запросу,
+см. «Принятые решения» → «Архитектура»):
 ```
 codequality-{errorprone,jacoco,javaformat} — родитель голый id("java") (Gradle core), НЕ
-                                              com.example.java: иначе цикл java → codequality →
-                                              errorprone → java → ...
+                                              com.example.base: иначе цикл base → codequality →
+                                              errorprone → base → ...
 jacoco-report-aggregation                  — вообще без родителя: плагину не нужен java
                                               функционально, лишнее не настраиваем (autoconfig)
 codequality                                — агрегатор 4 плагинов выше
 
-com.example.java (root)  — java + toolchain + junit-jupiter + codequality (1 родитель: codequality)
+com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 родитель: codequality)
 ├── library                — java-library (Gradle core), без Spring
 │   └── reactor             — reactor-core + reactor-test, явная версия, без Spring BOM
 └── spring-boot             — io.spring.dependency-management + Spring Boot BOM
@@ -347,31 +349,34 @@ com.example.java (root)  — java + toolchain + junit-jupiter + codequality (1 �
         └── spring-cloud-*    (9 технологических плагинов)
 ```
 
-- `com.example.java` — корень: `java` + toolchain (версия из `.java-version`, читается через
+- `com.example.base` — корень: `java` + toolchain (версия из `.java-version`, читается через
   `providers.fileContents(...).asText` — Provider API, а не `file.text` напрямую: корректно
   отслеживается configuration cache без дополнительных костылей) + `com.example.codequality`
   + `junit-jupiter`/`junit-platform-launcher` (testImplementation/testRuntimeOnly, обе версии
   из каталога) + `useJUnitPlatform()`. Раньше codequality и junit жили в отдельных плагинах
-  (`java-codequality`, `com.example.junit-jupiter`) — теперь всё стянуто в один базовый `java`,
-  и `domain/` (плоские Java-модули) применяет `com.example.java` напрямую, без отдельного
+  (`java-codequality`, `com.example.junit-jupiter`) — теперь всё стянуто в один базовый
+  `com.example.base`, и `domain/` (плоские Java-модули) применяет его напрямую, без отдельного
   identity для junit
 - `com.example.codequality-{errorprone,jacoco,jacoco-report-aggregation,javaformat}` переименованы
   в `com.example.{errorprone,jacoco,jacoco-report-aggregation,javaformat}` — без префиксов
   `java-`/`codequality-` вообще. Каждый (кроме jacoco-report-aggregation) сам объявляет голый
-  `id("java")` + `repositories { mavenCentral() }` — не наследует их от `com.example.java` (иначе
+  `id("java")` + `repositories { mavenCentral() }` — не наследует их от `com.example.base` (иначе
   цикл, см. иерархию выше)
-- `com.example.library` (был `java-contract`, затем `java-library`) — 1 родитель `com.example.java`;
+- `com.example.library` (был `java-contract`, затем `java-library`) — 1 родитель `com.example.base`;
   добавляет Gradle-плагин `java-library`, без Spring
 - `com.example.reactor` (был `java-contract-reactive`, затем `java-reactor`) — 1 родитель `library`;
   `reactor-core` (`implementation`, не `api` — см. «Принятые решения» → «Архитектура») + теперь
-  также `reactor-test` (`testImplementation`), обе версии — явные, из `libs.versions.reactor.core`
-  (синхронизирована с тем, что резолвит Spring Boot BOM — см. «Синхронизация версий»), без
-  `io.spring.dependency-management`/BOM — `domain`/`data-contract*` полностью свободны от Spring
-- `com.example.spring-boot` / `com.example.spring-cloud` — 1 родитель `com.example.java`/
+  также `reactor-tools` (`implementation`) и `reactor-test` (`testImplementation`), версии — явные,
+  из `libs.versions.reactor.core` (синхронизирована с тем, что резолвит Spring Boot BOM — см.
+  «Синхронизация версий»), без `io.spring.dependency-management`/BOM — `domain`/`data-contract*`
+  полностью свободны от Spring. `reactor-tools` сам по себе не активен — нужен явный вызов
+  `ReactorDebugAgent.init()` в коде (обычно в `main()`) или `-javaagent`, просто наличие jar'а
+  в classpath ничего не делает
+- `com.example.spring-boot` / `com.example.spring-cloud` — 1 родитель `com.example.base`/
   `spring-boot` соответственно (`spring-cloud` применяет `spring-boot` и добавляет BOM
   `spring-cloud-dependencies`) — `io.spring.dependency-management` + Spring Boot BOM; свой
   junit-platform-launcher/`useJUnitPlatform()` убран как дублирующий то, что уже даёт родитель
-  `com.example.java`. Были `spring-boot-base`/`spring-cloud-base` — суффикс `-base` убран, как
+  `com.example.base`. Были `spring-boot-base`/`spring-cloud-base` — суффикс `-base` убран, как
   и `-conventions` ранее. Плагины, требующие `bootJar` (`spring-boot-application`,
   `spring-cloud-config-server`, `spring-cloud-eureka-server`, `spring-cloud-gateway-webflux`,
   `spring-cloud-gateway-webmvc`) добавляют `id("org.springframework.boot")` +
@@ -379,7 +384,13 @@ com.example.java (root)  — java + toolchain + junit-jupiter + codequality (1 �
   (см. «Принятые решения» → «Архитектура»)
 - `com.example.spring-boot-client-rest` / `com.example.spring-boot-client-web` (были `restclient`/
   `webclient`) — переименованы, чтобы не смешиваться алфавитно и по смыслу с `webflux`/`webmvc`
-  (это server-side driving-адаптеры, а `client-*` — исходящие HTTP-клиенты, разные вещи)
+  (это server-side driving-адаптеры, а `client-*` — исходящие HTTP-клиенты, разные вещи).
+  `spring-boot-client-web` — единственное исключение из правила «1 родитель»: применяет и
+  `spring-boot`, и `reactor` (по прямому запросу, а не автономным решением) — `reactor-test`
+  для `spring-boot-starter-webclient` теперь приходит из `com.example.reactor`, а не отдельной
+  версией из Spring Boot BOM. Риск тот же, что описан для `reactor-core`/`junit` выше
+  («Синхронизация версий») — два независимых источника версии для одного артефакта; пока не
+  проявлялся, но не исключён при апгрейде Spring Boot
 
 ### Синхронизация версий
 
@@ -399,7 +410,7 @@ com.example.java (root)  — java + toolchain + junit-jupiter + codequality (1 �
 - **Инструменты codequality** (`jspecify`, `errorprone-core`, `nullaway`, `jacoco`) — тоже через
   каталог (`libs.versions.jspecify.get()` и т. д.), не зашиты текстом в `com.example.errorprone`/
   `-jacoco` — раньше были разбросаны по файлам как строковые литералы
-- **junit-jupiter / junit-platform** — оба явно из каталога в `com.example.java`. Реальный баг,
+- **junit-jupiter / junit-platform** — оба явно из каталога в `com.example.base`. Реальный баг,
   найденный при объединении `java` с codequality/junit (см. «Принятые решения» → «Архитектура»):
   каталог был запинен на `junit-jupiter = "5.12.2"` (унаследовано от домена, где Spring не
   участвовал), но Spring Boot 4.0.6 фактически управляет **JUnit 6** (`junit-bom:6.0.3`) —
@@ -422,7 +433,7 @@ com.example.java (root)  — java + toolchain + junit-jupiter + codequality (1 �
 - **Gradle** — версия зафиксирована в `gradle/wrapper/gradle-wrapper.properties`; CI (`./gradlew`)
   наследует её автоматически, отдельной синхронизации не требует
 - **Java** — единственный источник `.java-version` (корень репозитория): CI читает его через
-  `actions/setup-java@v4` (`java-version-file`), Gradle — через `toolchain` в `com.example.java`.
+  `actions/setup-java@v4` (`java-version-file`), Gradle — через `toolchain` в `com.example.base`.
   Читается через `providers.fileContents(rootProject.layout.projectDirectory.file('.java-version'))
   .asText.get().trim().toInteger()` (Provider API), не `rootProject.file(...).text` напрямую —
   корректно отслеживается configuration cache; применяется почти во всех модулях транзитивно
