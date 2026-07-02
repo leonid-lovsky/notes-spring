@@ -1,27 +1,8 @@
-import org.springframework.boot.gradle.plugin.SpringBootPlugin
-
 plugins {
-	id 'java'
-	id 'io.spring.dependency-management'
-	id 'com.example.java-codequality'
-}
-
-repositories {
-	mavenCentral()
-}
-
-dependencyManagement {
-	imports {
-		mavenBom(SpringBootPlugin.BOM_COORDINATES)
-	}
+	id 'com.example.spring-boot'
 }
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
 	testImplementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-}
-
-tasks.named('test', Test) {
-	useJUnitPlatform()
 }

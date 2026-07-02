@@ -1,8 +1,8 @@
 plugins {
-	id 'com.example.java-javaformat'
-	id 'com.example.java-errorprone'
-	id 'com.example.java-jacoco'
-	id 'com.example.java-jacoco-report-aggregation'
+	id 'com.example.java-codequality-javaformat'
+	id 'com.example.java-codequality-errorprone'
+	id 'com.example.java-codequality-jacoco'
+	id 'com.example.java-codequality-jacoco-report-aggregation'
 }
 
 java {

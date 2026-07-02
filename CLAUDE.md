@@ -1,6 +1,6 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: 2026-07-01T11:27Z
+> Последнее обновление: 2026-07-02T11:32Z
 > **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 Многомодульный Spring Boot 4 проект (`note/`, `user/`, `user-note/`, ...), реализующий hexagonal
@@ -105,7 +105,7 @@ build-logic/settings.gradle                     include ':convention'; included 
 build-logic/convention/src/main/groovy/         convention plugins (Groovy DSL, не Kotlin),
 com.example.{name}.gradle                       namespaced id, без суффикса -conventions: слово
                                                  "convention" — только в пути (build-logic/convention/),
-                                                 не в id (com.example.java-domain, не -conventions)
+                                                 не в id (com.example.java-library, не -conventions)
 settings.gradle                                 единственный, в корне репозитория; include ':...' на
                                                  все subprojects всех сервисов (per-service нет)
 {service}/{module}/build.gradle                 применяет plugin через id 'com.example.{name}'
@@ -199,6 +199,30 @@ com.example.note.data.jpa.repository   NoteJpaRepository
   `build-logic/`. Id namespaced (`com.example.{name}`, по аналогии с пакетами `com.example.*`),
   а не плоские — стандартная практика для precompiled script plugins, снимает конфликт имён с
   плагинами из внешних репозиториев
+- Convention-плагины organized плоско в одном каталоге (`build-logic/convention/src/main/groovy/`),
+  без подпапок по категориям — проверено эмпирически: каталог не влияет на id precompiled script
+  plugin (Gradle берёт id только из имени файла), но у референсов (Now in Android) плагины лежат
+  плоско, а сам naming (`spring-boot-*`, `spring-cloud-*`, `java-*`) уже даёт естественную
+  алфавитную группировку без лишнего уровня вложенности
+- Naming: id не привязанных к папке модуля плагинов (`spring-boot-client-rest`/`-client-web`,
+  а не `restclient`/`webclient`) подбирается по смысловой роли, а не только по алфавиту — иначе
+  риск ложной группировки (`webclient` рядом с `webflux`/`webmvc`, хотя это разные вещи: исходящий
+  клиент vs driving-адаптер). Id плагинов, 1:1 соответствующих папке модуля (`webmvc`, `data-jpa`,
+  `domain`, ...), никогда не переименовываются в отрыве от папки — совпадение имени плагина и
+  папки модуля важнее любой алфавитной оптимизации
+- Общий boilerplate convention-плагинов вынесен в `spring-boot-base`/`spring-cloud-base` (2 уровня
+  иерархии), но не в третий уровень для `org.springframework.boot` + `spring-boot-starter-test`
+  (нужны только 5 файлам, ~2 строки) — по принципу «три похожих строки лучше преждевременной
+  абстракции», лишний уровень наследования не оправдан такой экономией
+- `api` в `dependencies {}` — только когда тип зависимости используется в собственной публичной
+  сигнатуре модуля (параметр/возврат публичного метода), иначе `implementation`; не полагаться на
+  то, что тип и так транзитивно придёт потребителю другим путём. Проверено эмпирически на
+  `reactor-core` в `com.example.java-reactor`: `webflux`/`data-r2dbc`/`data-mongodb-reactive`
+  собираются с ним и как с `implementation` — `Mono`/`Flux` на их classpath приходят от
+  собственных Spring-стартеров через BOM, а не транзитивно от `data-contract-reactive`, поэтому
+  `api` там был не нужен (`./gradlew clean check` по всем сервисам подтвердил). `api project(':
+  ...:domain')` в `data-contract*/build.gradle` — осознанное исключение: `NoteResponse` и т. п.
+  больше неоткуда получить, это единственный путь
 - Hexagonal: `domain/` не знает о JPA/MongoDB/Spring; адаптеры знают только `data-contract/`
 - Один контроллер на операцию (`NoteCreateController` → `POST /notes`)
 - `service/` — только при координации нескольких портов; для простого CRUD не нужен
@@ -238,11 +262,42 @@ com.example.note.data.jpa.repository   NoteJpaRepository
 - `remove` → `Mono<Void>`
 - `existsById` → `Mono<Boolean>`
 
-### Convention plugins (добавленные новые)
+### Convention plugins — принцип именования и структура
 
-- `com.example.java-contract` — для `data-contract/`
-- `com.example.java-contract-reactive` — для `data-contract-reactive/` (включает `reactor-core`
-  как `api`)
+Id называется по подключаемой зависимости/технологии, а не по имени использующего модуля/слоя
+(исключение — 10 плагинов, 1:1 соответствующих папке модуля: `webmvc`, `webflux`, `data-jpa`,
+`data-jdbc`, `data-r2dbc`, `data-mongodb`, `data-mongodb-reactive` — тут имя папки важнее алфавита,
+не переименовывать в отрыве от неё). Плоская структура каталога (без подпапок по категориям) —
+каталог не влияет на id precompiled script plugin (проверено эмпирически), а сам naming уже даёт
+алфавитную группировку.
+
+- `com.example.java` — минимальный: `java` + `java-codequality` + `junit-jupiter`. Было
+  `java-domain`; переименовано — «domain» было именем архитектурного слоя, а не зависимости
+- `com.example.java-library` — минимальный: `java-library` + `java-codequality`, без Spring.
+  Было `java-contract`
+- `com.example.java-reactor` — `com.example.java-library` + `reactor-core` (`implementation`, не
+  `api` — см. «Принятые решения» → «Архитектура») с явной версией (`libs.versions.reactor.core`,
+  синхронизирована с тем, что резолвит Spring Boot BOM — см. «Синхронизация версий»), без
+  `io.spring.dependency-management`/BOM. Было `java-contract-reactive`, которая тянула Spring
+  Boot BOM ради версии `reactor-core` — теперь `domain`/`data-contract*` полностью свободны от
+  Spring
+- `com.example.java-codequality` — агрегирует `com.example.java-codequality-{errorprone,jacoco,
+  jacoco-report-aggregation,javaformat}` (переименованы с префиксом `java-codequality-`, были
+  `java-errorprone` и т. д., без префикса)
+- `com.example.spring-boot` / `com.example.spring-cloud` (`spring-cloud` применяет `spring-boot`
+  и добавляет BOM `spring-cloud-dependencies`) — общий boilerplate (`java` +
+  `io.spring.dependency-management` + `java-codequality` + `repositories` + BOM-импорт +
+  `junit-platform-launcher` + `useJUnitPlatform()`), который раньше дублировался в 29 из 34
+  файлов; остальные convention-плагины применяют один из этих двух базовых и добавляют только
+  свой `dependencies {}`. Были `spring-boot-base`/`spring-cloud-base` — суффикс `-base` убран,
+  как и `-conventions` ранее. Плагины, требующие `bootJar` (`spring-boot-application`,
+  `spring-cloud-config-server`, `spring-cloud-eureka-server`, `spring-cloud-gateway-webflux`,
+  `spring-cloud-gateway-webmvc`) добавляют `id 'org.springframework.boot'` +
+  `spring-boot-starter-test` сами — 5 файлов × 2 строки не выносились в третий базовый плагин
+  (см. «Принятые решения» → «Архитектура»)
+- `com.example.spring-boot-client-rest` / `com.example.spring-boot-client-web` (были `restclient`/
+  `webclient`) — переименованы, чтобы не смешиваться алфавитно и по смыслу с `webflux`/`webmvc`
+  (это server-side driving-адаптеры, а `client-*` — исходящие HTTP-клиенты, разные вещи)
 
 ### Синхронизация версий
 
@@ -255,6 +310,16 @@ com.example.note.data.jpa.repository   NoteJpaRepository
   `libs.versions.spring.boot.get()`, `libs.versions.spring.cloud.get()`,
   `libs.versions.spring.dependency.management.get()`, `libs.versions.spring.javaformat.get()`,
   `libs.versions.errorprone.plugin.get()`
+- **reactor-core** (`libs.versions.reactor.core`, сейчас `3.8.5`) — `com.example.java-reactor`
+  (используется в `domain`/`data-contract*`, без Spring) пинит версию явно, а Spring-адаптеры
+  (`webflux`, `data-r2dbc`, `data-mongodb-reactive`, `spring-cloud-gateway-webflux`) получают
+  `reactor-core` через `mavenBom(SpringBootPlugin.BOM_COORDINATES)`. Gradle не конфликтует —
+  при расхождении версий побеждает старшая (resolution strategy «newest wins»), но конфликта
+  без ручной синхронизации не избежать: при апгрейде Spring Boot нужно вручную свериться, какую
+  версию `reactor-core` резолвит новый BOM (`./gradlew :note:webflux:dependencies --configuration
+  compileClasspath | grep reactor-core`), и обновить `libs.versions.toml`, иначе pinned-версия в
+  `domain`/`data-contract*` молча устареет и будет переопределена BOM только за счёт того, что он
+  окажется новее
 - **Gradle** — версия зафиксирована в `gradle/wrapper/gradle-wrapper.properties`; CI (`./gradlew`)
   наследует её автоматически, отдельной синхронизации не требует
 - **Java** — единственный источник `.java-version` (корень репозитория): CI читает его через
