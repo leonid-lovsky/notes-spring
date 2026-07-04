@@ -1,6 +1,6 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: 2026-07-04T09:31Z
+> Последнее обновление: 2026-07-04T09:42Z
 > **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 Многомодульный Spring Boot 4 проект (`note/`, `user/`, `user-note/`, ...), реализующий hexagonal
@@ -364,10 +364,11 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
   `com.example.base`, и `domain/` (плоские Java-модули) применяет его напрямую, без отдельного
   identity для junit
 - `com.example.codequality-{errorprone,jacoco,jacoco-report-aggregation,javaformat}` переименованы
-  в `com.example.{nullaway,jacoco,jacoco-report-aggregation,javaformat,checkstyle}` — без префиксов
-  `java-`/`codequality-` вообще. `nullaway` (был `errorprone`) использует `id("java-library")`
-  для доступа к `api(...)` по документации NullAway; остальные не объявляют java-плагин — он
-  приходит от `base` раньше по цепочке применения
+  в `com.example.{errorprone,jacoco,jacoco-report-aggregation,javaformat}` — без префиксов
+  `java-`/`codequality-` вообще; затем `errorprone` → `nullaway` (отражает основную роль плагина),
+  добавлен новый `checkstyle`. `nullaway` использует `id("java-library")` для доступа к `api(...)`
+  по документации NullAway; остальные не объявляют java-плагин — он приходит от `base` раньше
+  по цепочке применения
 - `com.example.library` (был `java-contract`, затем `java-library`) — 1 родитель `com.example.base`;
   добавляет Gradle-плагин `java-library`, без Spring
 - `com.example.reactor` (был `java-contract-reactive`, затем `java-reactor`) — родитель сменён
