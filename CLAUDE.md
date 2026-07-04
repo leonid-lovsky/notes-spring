@@ -1,6 +1,6 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: 2026-07-04T21:30Z
+> Последнее обновление: 2026-07-04T21:37Z
 > **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 Многомодульный Spring Boot 4 проект (`note/`, `user/`, `user-note/`, ...), реализующий hexagonal
@@ -68,19 +68,40 @@ architecture единообразно во всех сервисах через 
 НЕ СОЗДАНО bff/ · thymeleaf/ · sharing/ · crud/
 ```
 
+**OAuth2** — протокол авторизации: делегирует выдачу access-токена внешнему серверу авторизации
+(Authorization Server) вместо того, чтобы приложение само проверяло логин/пароль пользователя.
+Роли: Resource Server (API, проверяет токен), Client (запрашивает токен от имени пользователя),
+Authorization Server (выдаёт токены). В Spring Boot 4 — три отдельных стартера
+(`security-oauth2-resource-server`/`-client`/`-authorization-server`, префикс `security-`, см.
+«Стек» → «Spring Boot 4 — критичные отличия»); convention-плагины для всех трёх уже подготовлены
+в `build-logic`, но не применены ни в одном модуле (см. статус ОТЛОЖЕНО выше).
+
 Технологии за пределами Spring-стека, отложенные на будущее (без привязки к конкретному модулю),
 в логичном порядке освоения — от инструментов разработки к production-инфраструктуре и архитектурным
 паттернам:
 
-- **testcontainers** — интеграционные тесты в реальных Docker-контейнерах
-- **Docker Compose** — локальный оркестратор dev/test окружения
-- **Kubernetes** — production-оркестрация контейнеров
+- **testcontainers** — библиотека для интеграционных тестов: поднимает реальные зависимости
+  (БД, брокеры и т. д.) в Docker-контейнерах прямо из теста через JUnit-расширение, вместо моков
+- **Docker Compose** — один YAML-файл описывает и запускает несколько контейнеров как одно
+  окружение (общая сеть, `depends_on`); локальный оркестратор dev/test окружения, однохостовый
+  предшественник Kubernetes
+- **Kubernetes** — production-оркестратор контейнеров: реплики, self-healing, rolling update,
+  сервис-дискавери поверх кластера машин (Pod/Deployment/Service/ConfigMap)
 - **Terraform** — infrastructure as code: декларативное provisioning облачных ресурсов, кластеров,
   а также platform-независимая настройка репозитория (branch protection и т. п.)
-- **Jenkins** — CI/CD pipeline
-- **Amazon Web Services** — целевая cloud-платформа
+- **Jenkins** — сервер автоматизации CI/CD: по триггеру (пуш, PR, расписание) гоняет пайплайн
+  (build → test → deploy), описанный в `Jenkinsfile`
+- **SonarQube** — платформа статического анализа кода: баги, уязвимости, code smells, покрытие
+  (агрегирует отчёты JaCoCo) в общем дашборде с историей по коммитам/веткам и quality gate поверх
+  PR; дополняет, не заменяет уже используемые в проекте Checkstyle/NullAway/JaCoCo — типичный шаг
+  внутри Jenkins-пайплайна
+- **Amazon Web Services** — целевая cloud-платформа (EC2, S3, RDS, EKS, Lambda и т. д.), обычно
+  провижинится тем же Terraform
+- **Redis** — in-memory key-value хранилище: кэш, сессии, rate-limiting, pub/sub; кандидат
+  на роль провайдера под Spring Cache (см. «Задачи», статус ОТЛОЖЕНО)
 - **Kafka / RabbitMQ** — message broker (см. открытое решение «Регистрация auth/ ↔ user/»)
-- **Elastic Stack** — логирование и поиск (альтернатива Loki)
+- **Elastic Stack** — Elasticsearch (полнотекстовый поиск и хранение документов) + Logstash/Beats
+  (сбор логов) + Kibana (визуализация); логирование и поиск, альтернатива Loki
 - **jMolecules** — явная разметка DDD/hexagonal-концепций в коде
 - **Axon Framework** — CQRS/Event Sourcing, следующий уровень после текущей hexagonal-архитектуры
 
