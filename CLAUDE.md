@@ -1,12 +1,17 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: 2026-07-04T09:42Z
+> Последнее обновление: 2026-07-04T21:30Z
 > **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 Многомодульный Spring Boot 4 проект (`note/`, `user/`, `user-note/`, ...), реализующий hexagonal
 architecture единообразно во всех сервисах через Gradle convention plugins. Этот файл — единственный
 источник истины по конвенциям, статусу и решениям проекта; вся необходимая для работы над проектом
 информация должна быть здесь, без обращения к внешним источникам.
+
+**Оглавление:** [Начало сессии](#начало-каждой-сессии) · [Правила](#правила) ·
+[Задачи](#-задачи) · [Архитектура и структура](#архитектура-и-структура-проекта) ·
+[Именование](#именование) · [Стек](#стек) · [Принятые решения](#принятые-решения) ·
+[Открытые решения](#открытые-решения)
 
 ---
 
@@ -199,38 +204,39 @@ com.example.note.data.jpa.repository   NoteJpaRepository
 
 ### Архитектура
 
-- Convention plugins — `build-logic/convention/` (included build), не `buildSrc/`: единственный
-  `settings.gradle.kts` в репозитории делает шаринг между несколькими `settings.gradle.kts`
-  неактуальным, но
-  `build-logic` лучше по инкрементальности (правка одного convention-плагина не инвалидирует весь
-  билд, как `buildSrc`) и ближе к текущей рекомендованной практике Gradle. `./gradlew clean build` из
-  корня остаётся одной командой — `includeBuild` прозрачен для пересборки всего проекта целиком.
-  Вложенный `convention/` (а не плагины прямо в `build-logic/`) — задел на будущие под-билды внутри
-  `build-logic/`. Id namespaced (`com.example.{name}`, по аналогии с пакетами `com.example.*`),
-  а не плоские — стандартная практика для precompiled script plugins, снимает конфликт имён с
-  плагинами из внешних репозиториев
+- **Convention plugins — `build-logic/convention/`** (included build), не `buildSrc/`:
+  - шаринг между несколькими `settings.gradle.kts` неактуален (в репозитории он один), но
+    `build-logic` лучше по инкрементальности (правка одного convention-плагина не инвалидирует
+    весь билд, как `buildSrc`) и ближе к текущей рекомендованной практике Gradle
+  - `./gradlew clean build` из корня остаётся одной командой — `includeBuild` прозрачен для
+    пересборки всего проекта целиком
+  - вложенный `convention/` (а не плагины прямо в `build-logic/`) — задел на будущие под-билды
+    внутри `build-logic/`
+  - id namespaced (`com.example.{name}`, по аналогии с пакетами `com.example.*`), а не плоские —
+    стандартная практика для precompiled script plugins, снимает конфликт имён с плагинами из
+    внешних репозиториев
 - Convention-плагины organized плоско в одном каталоге (`build-logic/convention/src/main/kotlin/`),
   без подпапок по категориям — проверено эмпирически: каталог не влияет на id precompiled script
   plugin (Gradle берёт id только из имени файла), но у референсов (Now in Android) плагины лежат
   плоско, а сам naming (`spring-boot-*`, `spring-cloud-*`, ...) уже даёт естественную алфавитную
   группировку без лишнего уровня вложенности
-- Вся Gradle-конфигурация (convention-плагины, `settings.gradle.kts`, все `build.gradle.kts`
-  модулей) — на Kotlin DSL, было Groovy. Рабочий код сервисов остаётся на Java — миграция затронула
-  только build-скрипты. Мигрировали пошагово (сначала `build-logic`, потом внешний слой), проверяя
-  `./gradlew clean build` на каждом шаге — обошлось без костылей, кроме одного легитимного
-  (не костыль, а официально документированное ограничение Gradle, см. docs.gradle.org →
-  Version Catalogs): precompiled script plugins не видят typed-accessor каталога
-  (`libs.versions.x.get()`) тем же способом, что обычные build-скрипты — версии читаются через
-  локальную `val libs = extensions.getByType(VersionCatalogsExtension::class.java).named("libs")`
-  в начале каждого нуждающегося в версиях плагина + `libs.findVersion("key").get()
-  .requiredVersion` — ровно паттерн из официальной документации, без отдельного shared-файла
-  (пробовали `Catalogs.kt` с shared extension property — работало, но не соответствовало
-  документации и добавляло лишний файл не туда, куда нужно; сошлись на локальном объявлении
-  в каждом файле). На время миграции `build-logic/convention/build.gradle.kts`
-  временно применял оба плагина (`kotlin-dsl` + `groovy-gradle-plugin`), чтобы старые
-  (`src/main/groovy/`) и новые (`src/main/kotlin/`) precompiled-плагины сосуществовали в одном
-  модуле `convention` — подтверждено эмпирически, оба source set компилируются независимо
-  без конфликтов
+- **Вся Gradle-конфигурация — на Kotlin DSL** (было Groovy): convention-плагины,
+  `settings.gradle.kts`, все `build.gradle.kts` модулей. Рабочий код сервисов остаётся на Java —
+  миграция затронула только build-скрипты
+  - мигрировали пошагово (сначала `build-logic`, потом внешний слой), проверяя
+    `./gradlew clean build` на каждом шаге — обошлось без костылей, кроме одного легитимного
+    ограничения (официально документированного, см. docs.gradle.org → Version Catalogs):
+    precompiled script plugins не видят typed-accessor каталога (`libs.versions.x.get()`) тем же
+    способом, что обычные build-скрипты
+  - решение: локальная `val libs = extensions.getByType(VersionCatalogsExtension::class.java)
+    .named("libs")` в начале каждого нуждающегося в версиях плагина +
+    `libs.findVersion("key").get().requiredVersion` — ровно паттерн из официальной документации,
+    без отдельного shared-файла (пробовали `Catalogs.kt` с shared extension property — работало,
+    но не соответствовало документации; сошлись на локальном объявлении в каждом файле)
+  - на время миграции `build-logic/convention/build.gradle.kts` временно применял оба плагина
+    (`kotlin-dsl` + `groovy-gradle-plugin`), чтобы старые (`src/main/groovy/`) и новые
+    (`src/main/kotlin/`) precompiled-плагины сосуществовали в одном модуле `convention` —
+    подтверждено эмпирически, оба source set компилируются независимо без конфликтов
 - Naming: id не привязанных к папке модуля плагинов (`spring-boot-client-rest`/`-client-web`,
   а не `restclient`/`webclient`) подбирается по смысловой роли, а не только по алфавиту — иначе
   риск ложной группировки (`webclient` рядом с `webflux`/`webmvc`, хотя это разные вещи: исходящий
@@ -243,30 +249,22 @@ com.example.note.data.jpa.repository   NoteJpaRepository
   иерархии), но не в третий уровень для `org.springframework.boot` + `spring-boot-starter-test`
   (нужны только 5 файлам, ~2 строки) — по принципу «три похожих строки лучше преждевременной
   абстракции», лишний уровень наследования не оправдан такой экономией
-- Convention-плагины (`build-logic/`) и оба `settings.gradle.kts` — отступ 4 пробела, не табы:
-  `.springjavaformatconfig` (`indentation-style=spaces`) — источник истины по стилю для всего
-  репозитория, а `build-logic/` изначально не форматировался этим правилом (Spring JavaFormat
-  форматирует Java, не Groovy build-скрипты) и разошёлся на табы. Плагин `idea` (был в бывшем
-  `java-domain`, контент которого сейчас — часть `com.example.base`) — удалён: deprecated
-  в Gradle, будет убран в Gradle 10, и был применён только в `domain/`-модулях (несогласованно,
-  больше нигде в плагинах)
-- Иерархия convention-плагинов — максимум один родительский `com.example.*`-плагин, кроме
-  агрегирующего `com.example.codequality` (собирает 5 плагинов) и `spring-boot-client-web`
-  (см. ниже, по прямому запросу). Корень —
-  `com.example.base`: `java` + toolchain + `com.example.codequality` + `junit-jupiter` слиты
-  в одном плагине (были раздельными — `java-codequality` и `com.example.junit-jupiter`).
-  `codequality`-плагины не объявляют `id("java")` сами — `id("java")` объявлять нужно только
-  там, где есть java-specific dep-конфигурации (`implementation`, `compileOnly`, `api` и т. д.);
-  если плагин использует только plugin-specific конфигурации (`checkstyle`, `errorprone`,
-  `jacoco` и т. д.) — `id("java")` не нужен. `com.example.nullaway` — исключение: применяет
-  `id("java-library")` (не `id("java")`) чтобы получить доступ к `api(...)` для jspecify
-  согласно документации NullAway; следствие — все модули транзитивно получают `java-library`
-  через `base → codequality → nullaway`. Цикл по-прежнему не возникает: codequality-плагины
-  не применяют `com.example.base`. От `com.example.base` линейно строятся `library`, `reactor`
-  и `spring-boot` → `spring-cloud` → технологические листья. `jacoco-report-aggregation` — без
-  родителя вообще: плагину не нужен `java` функционально, лишнее не настраивается
-  (autoconfiguration/defaults — не подгонять структуру под единообразие там, где это не даёт
-  реальной пользы)
+- **Отступ 4 пробела, не табы** — в convention-плагинах (`build-logic/`) и обоих
+  `settings.gradle.kts`: `.springjavaformatconfig` (`indentation-style=spaces`) — источник истины
+  по стилю для всего репозитория, а `build-logic/` изначально не форматировался этим правилом
+  (Spring JavaFormat форматирует Java, не Groovy build-скрипты) и разошёлся на табы
+- **Плагин `idea` — удалён** (был в бывшем `java-domain`, контент которого сейчас — часть
+  `com.example.base`): deprecated в Gradle, будет убран в Gradle 10, и был применён только
+  в `domain/`-модулях (несогласованно, больше нигде в плагинах)
+- **Иерархия convention-плагинов** — правила и диаграмма: см. «Convention plugins — принцип
+  именования и структура» ниже. Дополнительно (не показано на диаграмме): `codequality`-плагины
+  не объявляют `id("java")` сами — он нужен только там, где есть java-specific dep-конфигурации
+  (`implementation`, `compileOnly`, `api` и т. д.); если плагин использует только
+  plugin-specific конфигурации (`checkstyle`, `errorprone`, `jacoco` и т. д.) — `id("java")` не
+  нужен (исключение — `com.example.nullaway`, см. ниже). Цикла не возникает: codequality-плагины
+  не применяют `com.example.base`. `jacoco-report-aggregation` — без родителя вообще: плагину не
+  нужен `java` функционально, лишнее не настраивается (autoconfiguration/defaults — не подгонять
+  структуру под единообразие там, где это не даёт реальной пользы)
 - Type-safe project accessors (`projects.note.domain` вместо `project(':note:domain')`) —
   включены через `enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")` в корневом `settings.gradle.kts`;
   требуют явного `rootProject.name` в обоих `settings.gradle.kts` (иначе Gradle предупреждает о
@@ -326,9 +324,8 @@ com.example.note.data.jpa.repository   NoteJpaRepository
 Id называется по подключаемой зависимости/технологии, а не по имени использующего модуля/слоя
 (исключение — 7 плагинов, 1:1 соответствующих папке модуля и реальному Spring Boot starter:
 `webmvc`, `webflux`, `data-jpa`, `data-jdbc`, `data-r2dbc`, `data-mongodb`, `data-mongodb-reactive`
-— тут имя папки важнее алфавита, не переименовывать в отрыве от неё). Плоская структура каталога
-(без подпапок по категориям) — каталог не влияет на id precompiled script plugin (проверено
-эмпирически), а сам naming уже даёт алфавитную группировку. Префиксы убраны везде, кроме семей
+— тут имя папки важнее алфавита, не переименовывать в отрыве от неё). Плоская структура каталога —
+см. «Принятые решения» → «Архитектура» выше. Префиксы убраны везде, кроме семей
 `spring-boot-*`/`spring-cloud-*` — остальные плагины называются голым именем зависимости/инструмента
 (`checkstyle`, `nullaway`, `jacoco`, `library`, `reactor`, ...).
 
@@ -415,6 +412,21 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
   (`com.example.{name}.gradle.kts`) этот typed-аксессор недоступен (ограничение Gradle) — там
   `libs.findVersion("spring-cloud").get().requiredVersion` (см. «Принятые решения» →
   «Архитектура»)
+- **`com.example.spring-boot`** берёт BOM через константу `SpringBootPlugin.BOM_COORDINATES`
+  (класс из `spring-boot-gradle-plugin`, версия которого — `libs.versions.spring.boot` — уже
+  на classpath `build-logic/convention/build.gradle.kts`) — версия BOM автоматически совпадает
+  с версией плагина, каталог внутри precompiled-плагина не нужен. **`com.example.spring-cloud`**
+  собирает координаты BOM вручную (`libs.findVersion("spring-cloud")...`) не по недосмотру:
+  у Spring Cloud, в отличие от Spring Boot, нет собственного Gradle-плагина —
+  `spring-cloud-dependencies` публикуется как обычный Maven BOM, аналога
+  `SpringCloudPlugin.BOM_COORDINATES` не существует. Литеральная строка с версией из каталога
+  (как у `spring-cloud`) технически сработала бы и для `spring-boot` — сейчас обе версии берутся
+  из одного ключа `spring-boot` в каталоге, — но это заново вводит риск «два независимых
+  источника одной версии», уже описанный ниже для `reactor-core`/`junit-jupiter`: разойдись
+  однажды каталог и classpath-зависимость плагина, `BOM_COORDINATES` продолжит совпадать
+  с реально применённым плагином по построению (версия читается из его собственного jar'а),
+  а литеральная строка — нет. Для `spring-cloud` этот риск неизбежен (плагина, а значит и
+  константы, не существует), для `spring-boot` — устранён сознательно
 - **Инструменты codequality** (`jspecify`, `errorprone-core`, `nullaway`, `jacoco`, `checkstyle`) —
   тоже через каталог (`libs.versions.jspecify.get()` и т. д.), не зашиты текстом в
   `com.example.nullaway`/`-jacoco`/`-checkstyle` — раньше были разбросаны по файлам как
@@ -428,17 +440,18 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
   'junit-jupiter' failed to discover tests` из-за рассинхрона `junit-platform-launcher`/
   `-engine`. Исправлено: `junit-jupiter = "6.0.3"`, `junit-platform = "6.0.3"` — в JUnit 6
   Platform/Jupiter унифицировали нумерацию версий (раньше Platform жил на отдельной ветке `1.x`)
-- **reactor-core** (`libs.versions.reactor.core`, сейчас `3.8.5`) — `com.example.reactor`
-  (используется в `domain`/`data-contract*`, без Spring) фиксирует версию явно, а Spring-адаптеры
-  (`webflux`, `data-r2dbc`, `data-mongodb-reactive`, `spring-cloud-gateway-webflux`) получают
-  `reactor-core` через `mavenBom(SpringBootPlugin.BOM_COORDINATES)`. Gradle не конфликтует —
-  при расхождении версий побеждает старшая (resolution strategy «newest wins»), но конфликта
-  без ручной синхронизации не избежать: при апгрейде Spring Boot нужно вручную свериться, какую
-  версию `reactor-core` резолвит новый BOM (`./gradlew :note:webflux:dependencies --configuration
-  compileClasspath | grep reactor-core`), и обновить `libs.versions.toml`, иначе pinned-версия в
-  `domain`/`data-contract*` молча устареет и будет переопределена BOM только за счёт того, что он
-  окажется новее. Тот же риск актуален и для `junit-jupiter`/`junit-platform` выше — проверять
-  оба при каждом апгрейде Spring Boot
+- **reactor-core** (`libs.versions.reactor.core`, сейчас `3.8.5`) — два независимых источника
+  версии: `com.example.reactor` (используется в `domain`/`data-contract*`, без Spring) фиксирует
+  версию явно, а Spring-адаптеры (`webflux`, `data-r2dbc`, `data-mongodb-reactive`,
+  `spring-cloud-gateway-webflux`) получают `reactor-core` через
+  `mavenBom(SpringBootPlugin.BOM_COORDINATES)`. Gradle не конфликтует — при расхождении версий
+  побеждает старшая (resolution strategy «newest wins»), но синхронизация всё равно ручная:
+  - **при апгрейде Spring Boot** — свериться, какую версию `reactor-core` резолвит новый BOM
+    (`./gradlew :note:webflux:dependencies --configuration compileClasspath | grep reactor-core`)
+    и обновить `libs.versions.toml`, иначе pinned-версия в `domain`/`data-contract*` молча
+    устареет и будет переопределена BOM только за счёт того, что он окажется новее
+  - тот же риск — у `junit-jupiter`/`junit-platform` выше: проверять оба при каждом апгрейде
+    Spring Boot
 - **Gradle** — версия зафиксирована в `gradle/wrapper/gradle-wrapper.properties`; CI (`./gradlew`)
   наследует её автоматически, отдельной синхронизации не требует
 - **Java** — единственный источник `.java-version` (корень репозитория): CI читает его через
