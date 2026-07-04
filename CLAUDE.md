@@ -1,6 +1,6 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: 2026-07-02T22:54Z
+> Последнее обновление: 2026-07-04T09:31Z
 > **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 Многомодульный Spring Boot 4 проект (`note/`, `user/`, `user-note/`, ...), реализующий hexagonal
@@ -251,19 +251,22 @@ com.example.note.data.jpa.repository   NoteJpaRepository
   в Gradle, будет убран в Gradle 10, и был применён только в `domain/`-модулях (несогласованно,
   больше нигде в плагинах)
 - Иерархия convention-плагинов — максимум один родительский `com.example.*`-плагин, кроме
-  агрегирующего `com.example.codequality` (собирает 4 плагина) и `spring-boot-client-web`
+  агрегирующего `com.example.codequality` (собирает 5 плагинов) и `spring-boot-client-web`
   (см. ниже, по прямому запросу). Корень —
   `com.example.base`: `java` + toolchain + `com.example.codequality` + `junit-jupiter` слиты
   в одном плагине (были раздельными — `java-codequality` и `com.example.junit-jupiter`).
-  `codequality`-плагины (`errorprone`, `jacoco`, `jacoco-report-aggregation`, `javaformat`)
-  сами применяют голый `id("java")` (Gradle core), не `com.example.base` — иначе цикл
-  `base → codequality → errorprone → base → ...`. От `com.example.base` линейно строятся
-  `library` → `reactor` и `spring-boot` → `spring-cloud` → технологические листья. Раньше
-  каждый технологический плагин (и даже сами codequality-плагины) независимо применяли голый
-  `id("java")` без общего корня — теперь все они (кроме самих codequality-детей) трассируются
-  к одному `com.example.base`. `jacoco-report-aggregation` — без родителя вообще: плагину не
-  нужен `java` функционально, лишнее не настраивается (autoconfiguration/defaults — не
-  подгонять структуру под единообразие там, где это не даёт реальной пользы)
+  `codequality`-плагины не объявляют `id("java")` сами — `id("java")` объявлять нужно только
+  там, где есть java-specific dep-конфигурации (`implementation`, `compileOnly`, `api` и т. д.);
+  если плагин использует только plugin-specific конфигурации (`checkstyle`, `errorprone`,
+  `jacoco` и т. д.) — `id("java")` не нужен. `com.example.nullaway` — исключение: применяет
+  `id("java-library")` (не `id("java")`) чтобы получить доступ к `api(...)` для jspecify
+  согласно документации NullAway; следствие — все модули транзитивно получают `java-library`
+  через `base → codequality → nullaway`. Цикл по-прежнему не возникает: codequality-плагины
+  не применяют `com.example.base`. От `com.example.base` линейно строятся `library`, `reactor`
+  и `spring-boot` → `spring-cloud` → технологические листья. `jacoco-report-aggregation` — без
+  родителя вообще: плагину не нужен `java` функционально, лишнее не настраивается
+  (autoconfiguration/defaults — не подгонять структуру под единообразие там, где это не даёт
+  реальной пользы)
 - Type-safe project accessors (`projects.note.domain` вместо `project(':note:domain')`) —
   включены через `enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")` в корневом `settings.gradle.kts`;
   требуют явного `rootProject.name` в обоих `settings.gradle.kts` (иначе Gradle предупреждает о
@@ -326,23 +329,26 @@ Id называется по подключаемой зависимости/т�
 — тут имя папки важнее алфавита, не переименовывать в отрыве от неё). Плоская структура каталога
 (без подпапок по категориям) — каталог не влияет на id precompiled script plugin (проверено
 эмпирически), а сам naming уже даёт алфавитную группировку. Префиксы убраны везде, кроме семей
-`spring-boot-*`/`spring-cloud-*` — остальные плагины называются голым именем зависимости
-(`errorprone`, `jacoco`, `library`, `reactor`, ...).
+`spring-boot-*`/`spring-cloud-*` — остальные плагины называются голым именем зависимости/инструмента
+(`checkstyle`, `nullaway`, `jacoco`, `library`, `reactor`, ...).
 
 **Иерархия** — максимум 1 родительский `com.example.*`-плагин на плагин, кроме агрегирующего
-`codequality` (собирает 4 плагина) и `spring-boot-client-web` (2 родителя по прямому запросу,
+`codequality` (собирает 5 плагинов) и `spring-boot-client-web` (2 родителя по прямому запросу,
 см. «Принятые решения» → «Архитектура»):
 ```
-codequality-{errorprone,jacoco,javaformat} — родитель голый id("java") (Gradle core), НЕ
-                                              com.example.base: иначе цикл base → codequality →
-                                              errorprone → base → ...
-jacoco-report-aggregation                  — вообще без родителя: плагину не нужен java
-                                              функционально, лишнее не настраиваем (autoconfig)
-codequality                                — агрегатор 4 плагинов выше
+checkstyle      — id("checkstyle"); без com.example.* родителя; id("java") не нужен
+javaformat      — id("io.spring.javaformat") + id("checkstyle"); id("java") не нужен
+nullaway        — id("java-library") + id("net.ltgt.errorprone"); java-library (не java):
+                  нужен api("org.jspecify") по документации NullAway; следствие: все модули
+                  транзитивно получают java-library через base → codequality → nullaway
+jacoco          — id("jacoco"); id("java") не нужен
+jacoco-report-aggregation — без родителя вообще (autoconfig)
+codequality     — агрегатор 5 плагинов выше
 
 com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 родитель: codequality)
 ├── library                — java-library (Gradle core), без Spring
-│   └── reactor             — reactor-core + reactor-test, явная версия, без Spring BOM
+├── reactor                — reactor-core + reactor-tools + reactor-test; родитель base (был library:
+│                            java-library теперь приходит транзитивно через nullaway)
 └── spring-boot             — io.spring.dependency-management + Spring Boot BOM
     ├── spring-boot-*        (17 технологических плагинов)
     └── spring-cloud         — + BOM spring-cloud-dependencies
@@ -358,16 +364,17 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
   `com.example.base`, и `domain/` (плоские Java-модули) применяет его напрямую, без отдельного
   identity для junit
 - `com.example.codequality-{errorprone,jacoco,jacoco-report-aggregation,javaformat}` переименованы
-  в `com.example.{errorprone,jacoco,jacoco-report-aggregation,javaformat}` — без префиксов
-  `java-`/`codequality-` вообще. Каждый (кроме jacoco-report-aggregation) сам объявляет голый
-  `id("java")` + `repositories { mavenCentral() }` — не наследует их от `com.example.base` (иначе
-  цикл, см. иерархию выше)
+  в `com.example.{nullaway,jacoco,jacoco-report-aggregation,javaformat,checkstyle}` — без префиксов
+  `java-`/`codequality-` вообще. `nullaway` (был `errorprone`) использует `id("java-library")`
+  для доступа к `api(...)` по документации NullAway; остальные не объявляют java-плагин — он
+  приходит от `base` раньше по цепочке применения
 - `com.example.library` (был `java-contract`, затем `java-library`) — 1 родитель `com.example.base`;
   добавляет Gradle-плагин `java-library`, без Spring
-- `com.example.reactor` (был `java-contract-reactive`, затем `java-reactor`) — 1 родитель `library`;
-  `reactor-core` (`implementation`, не `api` — см. «Принятые решения» → «Архитектура») + теперь
-  также `reactor-tools` (`implementation`) и `reactor-test` (`testImplementation`), версии — явные,
-  из `libs.versions.reactor.core` (синхронизирована с тем, что резолвит Spring Boot BOM — см.
+- `com.example.reactor` (был `java-contract-reactive`, затем `java-reactor`) — родитель сменён
+  с `library` на `base`: `java-library` теперь приходит транзитивно через `base → codequality →
+  nullaway`, поэтому явный `library`-родитель избыточен. `reactor-core` + `reactor-tools` +
+  `reactor-test` (`implementation`/`testImplementation`), версии — явные, из
+  `libs.versions.reactor.core` (синхронизирована с тем, что резолвит Spring Boot BOM — см.
   «Синхронизация версий»), без `io.spring.dependency-management`/BOM — `domain`/`data-contract*`
   полностью свободны от Spring. `reactor-tools` сам по себе не активен — нужен явный вызов
   `ReactorDebugAgent.init()` в коде (обычно в `main()`) или `-javaagent`, просто наличие jar'а
@@ -407,9 +414,10 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
   (`com.example.{name}.gradle.kts`) этот typed-аксессор недоступен (ограничение Gradle) — там
   `libs.findVersion("spring-cloud").get().requiredVersion` (см. «Принятые решения» →
   «Архитектура»)
-- **Инструменты codequality** (`jspecify`, `errorprone-core`, `nullaway`, `jacoco`) — тоже через
-  каталог (`libs.versions.jspecify.get()` и т. д.), не зашиты текстом в `com.example.errorprone`/
-  `-jacoco` — раньше были разбросаны по файлам как строковые литералы
+- **Инструменты codequality** (`jspecify`, `errorprone-core`, `nullaway`, `jacoco`, `checkstyle`) —
+  тоже через каталог (`libs.versions.jspecify.get()` и т. д.), не зашиты текстом в
+  `com.example.nullaway`/`-jacoco`/`-checkstyle` — раньше были разбросаны по файлам как
+  строковые литералы
 - **junit-jupiter / junit-platform** — оба явно из каталога в `com.example.base`. Реальный баг,
   найденный при объединении `java` с codequality/junit (см. «Принятые решения» → «Архитектура»):
   каталог был запинен на `junit-jupiter = "5.12.2"` (унаследовано от домена, где Spring не

@@ -1,7 +1,4 @@
-import org.gradle.api.artifacts.VersionCatalogsExtension
-
 plugins {
-    id("java")
     id("jacoco")
 }
 
