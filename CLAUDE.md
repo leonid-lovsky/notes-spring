@@ -1,6 +1,6 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: 2026-07-04T21:37Z
+> Последнее обновление: 2026-07-04T21:38Z
 > **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 Многомодульный Spring Boot 4 проект (`note/`, `user/`, `user-note/`, ...), реализующий hexagonal
@@ -99,7 +99,11 @@ Authorization Server (выдаёт токены). В Spring Boot 4 — три о
   провижинится тем же Terraform
 - **Redis** — in-memory key-value хранилище: кэш, сессии, rate-limiting, pub/sub; кандидат
   на роль провайдера под Spring Cache (см. «Задачи», статус ОТЛОЖЕНО)
-- **Kafka / RabbitMQ** — message broker (см. открытое решение «Регистрация auth/ ↔ user/»)
+- **Kafka / RabbitMQ** — message broker: в Kafka producers пишут в топики (партиционированные,
+  реплицируемые), consumers читают независимо через consumer groups, сообщение хранится по
+  retention-политике даже после доставки (может использоваться и как event-streaming платформа);
+  RabbitMQ — классическая очередь, удаляющая сообщение после подтверждения обработки
+  (см. открытое решение «Регистрация auth/ ↔ user/»)
 - **Elastic Stack** — Elasticsearch (полнотекстовый поиск и хранение документов) + Logstash/Beats
   (сбор логов) + Kibana (визуализация); логирование и поиск, альтернатива Loki
 - **jMolecules** — явная разметка DDD/hexagonal-концепций в коде
@@ -205,6 +209,11 @@ com.example.note.data.jpa.repository   NoteJpaRepository
 | Gradle       | 9.6.0    |
 | Spring Boot  | 4.0.6    |
 | Spring Cloud | 2025.1.2 |
+
+**Gradle** — система сборки для JVM-проектов: граф задач (`tasks`) с инкрементальным up-to-date
+tracking и build cache, зависимости — из Maven-репозиториев; в проекте — Kotlin DSL
+(`build.gradle.kts`), convention-плагины в `build-logic/convention/` (см. «Принятые решения» →
+«Архитектура»).
 
 **Spring Boot 4 — критичные отличия от Boot 3** (источник: существующие `build.gradle.kts` в проекте;
 документация docs.spring.io местами показывает Boot 3 и не заслуживает доверия — сверяться с
