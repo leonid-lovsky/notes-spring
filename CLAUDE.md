@@ -1,6 +1,6 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: 2026-07-04T21:52Z
+> Последнее обновление: 2026-07-04T21:53Z
 > **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 Многомодульный Spring Boot 4 проект (`note/`, `user/`, `user-note/`, ...), реализующий hexagonal
@@ -536,3 +536,13 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
 - **Правило «максимум 1 родитель» уже имеет 2 исключения** (агрегатор `codequality`,
   `spring-boot-client-web`) — при появлении третьего стоит пересмотреть само правило, а не
   продолжать множить исключения
+- **`spring-boot-client-web` как единственное исключение может быть не нужен**: соседние reactive
+  leaf-плагины (`spring-boot-webflux`, `spring-boot-data-r2dbc`, `spring-boot-data-mongodb-reactive`)
+  подключают `testImplementation("io.projectreactor:reactor-test")` без версии — она приходит из
+  Spring Boot BOM через единственного родителя `spring-boot`. `spring-boot-client-web` вместо этого
+  берёт `reactor-test` через второго родителя `com.example.reactor` с явным пином версии из
+  каталога — два разных механизма получения версии одного артефакта у соседних leaf-плагинов.
+  `spring-boot-starter-webclient` и так транзитивно тянет `reactor-core` через `spring-webflux`,
+  поэтому неясно, снимет ли переход на паттерн соседних плагинов (просто `reactor-test` без версии,
+  без второго родителя) необходимость в исключении вообще — стоит проверить перед следующим
+  пересмотром иерархии
