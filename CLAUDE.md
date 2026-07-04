@@ -1,6 +1,6 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: 2026-07-04T21:47Z
+> Последнее обновление: 2026-07-04T21:52Z
 > **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 Многомодульный Spring Boot 4 проект (`note/`, `user/`, `user-note/`, ...), реализующий hexagonal
@@ -443,7 +443,7 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
   `spring-boot-client-web` — единственное исключение из правила «1 родитель»: применяет и
   `spring-boot`, и `reactor` (по прямому запросу, а не автономным решением) — `reactor-test`
   для `spring-boot-starter-webclient` теперь приходит из `com.example.reactor`, а не отдельной
-  версией из Spring Boot BOM. Риск тот же, что описан для `reactor-core`/`junit` выше
+  версией из Spring Boot BOM. Риск тот же, что описан для `reactor-core`/`junit` ниже
   («Синхронизация версий») — два независимых источника версии для одного артефакта; пока не
   проявлялся, но не исключён при апгрейде Spring Boot
 
@@ -529,3 +529,10 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
 - **Регистрация auth/ ↔ user/** — Lazy / Sync / Events (Kafka)
 - **Возврат мутирующего use case** — DTO _(склонение)_ vs `void`
 - **PATCH** — поддерживать или нет
+- **Пересечение `com.example.checkstyle`/`com.example.javaformat`** — оба независимо конфигурируют
+  один и тот же extension `checkstyle {}` (toolVersion, зависимость `checkstyle(...)`), и `javaformat`
+  всегда применяется вместе с `checkstyle` через `codequality` — не найден сценарий, где нужен только
+  один из двух. Возможно, `com.example.checkstyle` избыточен как отдельный плагин
+- **Правило «максимум 1 родитель» уже имеет 2 исключения** (агрегатор `codequality`,
+  `spring-boot-client-web`) — при появлении третьего стоит пересмотреть само правило, а не
+  продолжать множить исключения
