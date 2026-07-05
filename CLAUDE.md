@@ -1,6 +1,6 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: 2026-07-05T14:56Z
+> Последнее обновление: 2026-07-05T15:21Z
 > **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 Многомодульный Spring Boot 4 проект (`note/`, `user/`, `user-note/`, ...), реализующий hexagonal
@@ -436,6 +436,11 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
   добавлен новый `checkstyle`. `nullaway` использует `id("java-library")` для доступа к `api(...)`
   по документации NullAway; остальные не объявляют java-плагин — он приходит от `base` раньше
   по цепочке применения
+- `com.example.checkstyle` остаётся отдельным плагином, хотя сейчас `javaformat` всегда
+  применяется вместе с ним и оба независимо конфигурируют один и тот же extension
+  `checkstyle {}` — раздельность держится на случай будущего отказа от `com.example.javaformat`:
+  тогда `checkstyle`-проверки должны продолжить работать сами по себе, без правки по всем
+  модулям заново
 - `com.example.library` (был `java-contract`, затем `java-library`) — 1 родитель `com.example.base`;
   добавляет Gradle-плагин `java-library`, без Spring
 - `com.example.reactor` (был `java-contract-reactive`, затем `java-reactor`) — родитель сменён
@@ -564,7 +569,10 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
 - **Регистрация auth/ ↔ user/** — Lazy / Sync / Events (Kafka)
 - **Возврат мутирующего use case** — DTO _(склонение)_ vs `void`
 - **PATCH** — поддерживать или нет
-- **Пересечение `com.example.checkstyle`/`com.example.javaformat`** — оба независимо конфигурируют
-  один и тот же extension `checkstyle {}` (toolVersion, зависимость `checkstyle(...)`), и `javaformat`
-  всегда применяется вместе с `checkstyle` через `codequality` — не найден сценарий, где нужен только
-  один из двух. Возможно, `com.example.checkstyle` избыточен как отдельный плагин
+- **Асимметрия `data-jdbc/`** — единственный driven-адаптер без `model/`/`repository/` вообще
+  (сырой `NamedParameterJdbcTemplate` + `RowMapper` прямо в `*Response`), тогда как все остальные
+  технологии (`data-jpa`, `data-r2dbc`, `data-mongodb`, `data-mongodb-reactive`) единообразны
+  и имеют `model/`/`repository/`/`mapper/`. Решение принято намеренно (см. «Принятые решения» →
+  «Архитектура»), но пока ни один `data-jdbc/` не подключён к `application/` ни в одном сервисе —
+  стоит пересмотреть при первом реальном использовании: не всплывёт ли потребность в паттерне
+  ближе к остальным технологиям (например, ради тестируемости или переиспользования маппинга)
