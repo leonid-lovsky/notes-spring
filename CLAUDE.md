@@ -1,6 +1,6 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: 2026-07-05T15:24Z
+> Последнее обновление: 2026-07-05T15:34Z
 > **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 Многомодульный Spring Boot 4 проект (`note/`, `user/`, `user-note/`, ...), реализующий hexagonal
@@ -67,6 +67,11 @@ architecture единообразно во всех сервисах через 
                             в build-logic, но не применены ни в одном модуле
 НЕ СОЗДАНО bff/ · thymeleaf/ · sharing/ · crud/
 ```
+
+**Запланирован полный пересмотр CRUD-сервисов** (`note/`/`user/`/`user-note/`) — статус ГОТОВО
+не отменяется, но перед дальнейшим развитием (`registry/`/`config/`/`gateway/`, `auth/`) решено
+сначала перепроверить существующую реализацию во всех слоях/технологиях (см. «Открытые решения» →
+«Объём пересмотра CRUD-сервисов»).
 
 **Spring JavaFormat** (`io.spring.javaformat`): таски `format`/`checkFormat`; `checkFormat`
 автоматически выполняется при стандартном `check`. После правок импортов/форматирования — гонять
@@ -215,7 +220,7 @@ com.example.note.data.jpa.repository   NoteJpaRepository
   PR; дополняет, не заменяет уже используемые в проекте Checkstyle/NullAway/JaCoCo — типичный шаг
   внутри Jenkins-пайплайна
 - **Amazon Web Services** — целевая cloud-платформа (EC2, S3, RDS, EKS, Lambda и т. д.), обычно
-  провижинится тем же Terraform
+  тоже разворачивается через Terraform
 - **Redis** — in-memory key-value хранилище: кэш, сессии, rate-limiting, pub/sub; кандидат
   на роль провайдера под Spring Cache (см. «Задачи», статус ОТЛОЖЕНО)
 - **Kafka / RabbitMQ** — message broker: в Kafka producers пишут в топики (партиционированные,
@@ -255,7 +260,8 @@ Spring Cache, Spring OpenFeign, Spring Cloud LoadBalancer, Spring Cloud Circuit 
 ### Архитектура
 
 - **Convention plugins — `build-logic/convention/`** (included build), не `buildSrc/`:
-  - шаринг между несколькими `settings.gradle.kts` неактуален (в репозитории он один), но
+  - совместное использование между несколькими `settings.gradle.kts` неактуально (в репозитории
+    он один), но
     `build-logic` лучше по инкрементальности (правка одного convention-плагина не инвалидирует
     весь билд, как `buildSrc`) и ближе к текущей рекомендованной практике Gradle
   - `./gradlew clean build` из корня остаётся одной командой — `includeBuild` прозрачен для
@@ -265,7 +271,7 @@ Spring Cache, Spring OpenFeign, Spring Cloud LoadBalancer, Spring Cloud Circuit 
   - id namespaced (`com.example.{name}`, по аналогии с пакетами `com.example.*`), а не плоские —
     стандартная практика для precompiled script plugins, снимает конфликт имён с плагинами из
     внешних репозиториев
-- Convention-плагины organized плоско в одном каталоге (`build-logic/convention/src/main/kotlin/`),
+- Convention-плагины организованы плоско в одном каталоге (`build-logic/convention/src/main/kotlin/`),
   без подпапок по категориям — проверено эмпирически: каталог не влияет на id precompiled script
   plugin (Gradle берёт id только из имени файла), но у референсов (Now in Android) плагины лежат
   плоско, а сам naming (`spring-boot-*`, `spring-cloud-*`, ...) уже даёт естественную алфавитную
@@ -560,6 +566,10 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
 - **Регистрация auth/ ↔ user/** — Lazy / Sync / Events (Kafka)
 - **Возврат мутирующего use case** — DTO _(склонение)_ vs `void`
 - **PATCH** — поддерживать или нет
+- **Объём пересмотра CRUD-сервисов** (см. «Задачи») — что именно проверяется: единообразие
+  реализации между `note/`/`user/`/`user-note/` по всем технологиям, соответствие текущим
+  «Принятым решениям», покрытие тестами, актуальность именования — конкретный список ещё
+  не определён
 - **Асимметрия `data-jdbc/`** — единственный driven-адаптер без `model/`/`repository/`/`mapper/`,
   тогда как остальные технологии единообразны (решение принято намеренно, см. «Принятые решения» →
   «Архитектура» → `data-jdbc/`). Но пока ни один `data-jdbc/` не подключён к `application/` ни
