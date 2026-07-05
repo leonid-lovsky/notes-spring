@@ -1,6 +1,5 @@
 plugins {
     id("com.example.spring-boot")
-    id("com.example.reactor")
 }
 
 dependencies {

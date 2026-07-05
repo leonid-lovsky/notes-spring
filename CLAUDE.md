@@ -1,6 +1,6 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: 2026-07-04T21:53Z
+> Последнее обновление: 2026-07-05T14:56Z
 > **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 Многомодульный Spring Boot 4 проект (`note/`, `user/`, `user-note/`, ...), реализующий hexagonal
@@ -295,10 +295,20 @@ Spring Cache, Spring OpenFeign, Spring Cloud LoadBalancer, Spring Cloud Circuit 
   `data-mongodb-reactive`), никогда не переименовываются в отрыве от папки. `domain/` и
   `data-contract*/` в это правило не попадают — их плагины (`java`, `library`, `reactor`)
   называются по зависимости, а не по слою, и папке уже не соответствуют
-- Общий boilerplate convention-плагинов вынесен в `spring-boot`/`spring-cloud` (2 уровня
-  иерархии), но не в третий уровень для `org.springframework.boot` + `spring-boot-starter-test`
-  (нужны только 5 файлам, ~2 строки) — по принципу «три похожих строки лучше преждевременной
-  абстракции», лишний уровень наследования не оправдан такой экономией
+- `implementation("org.springframework.boot:spring-boot-starter")` +
+  `testImplementation("org.springframework.boot:spring-boot-starter-test")` — в `com.example.spring-boot`
+  (общий предок всех `spring-boot-*`/`spring-cloud-*`), не только в `spring-boot-application`: это
+  не специфика «приложения», а базовый набор для любого Spring Boot модуля, независимо от того,
+  bootable он или leaf-технология. `spring-boot-application` после этого добавляет только
+  `id("org.springframework.boot")` — чистое выражение «этому модулю нужен `bootJar`»
+- Bootable-возможность (`id("org.springframework.boot")`, нужна ради `bootJar`/
+  `resolveMainClassName`) нужна `spring-boot-application` и 4 standalone-сервисным
+  `spring-cloud-*`-плагинам (см. «Convention plugins — принцип именования и структура» →
+  «Иерархия») — решение пересмотрено: вместо дублирования строк или третьего базового плагина
+  4 `spring-cloud-*`-плагина применяют уже существующий `com.example.spring-boot-application`
+  вторым родителем. Работает потому, что это не часть BOM-цепочки наследования (там родитель
+  всегда один), а отдельная, ортогональная ей возможность; имя плагина само декларирует
+  требование, путаницы не возникает
 - **Отступ 4 пробела, не табы** — в convention-плагинах (`build-logic/`) и обоих
   `settings.gradle.kts`: `.springjavaformatconfig` (`indentation-style=spaces`) — источник истины
   по стилю для всего репозитория, а `build-logic/` изначально не форматировался этим правилом
@@ -379,9 +389,14 @@ Id называется по подключаемой зависимости/т�
 `spring-boot-*`/`spring-cloud-*` — остальные плагины называются голым именем зависимости/инструмента
 (`checkstyle`, `nullaway`, `jacoco`, `library`, `reactor`, ...).
 
-**Иерархия** — максимум 1 родительский `com.example.*`-плагин на плагин, кроме агрегирующего
-`codequality` (собирает 5 плагинов) и `spring-boot-client-web` (2 родителя по прямому запросу,
-см. «Принятые решения» → «Архитектура»):
+**Иерархия** — две независимые оси, не одна. Первая — BOM-цепочка наследования
+(`base → library/reactor/spring-boot → spring-cloud → tech-plugin`): тут родитель всегда один,
+без исключений. Вторая — «bootable»-возможность (`id("org.springframework.boot")`, нужна ради
+`bootJar`/`resolveMainClassName`; `spring-boot-starter`/`-test` сюда не относятся — они базовые
+для любого Spring Boot модуля и объявлены в `com.example.spring-boot`, см. «Принятые решения» →
+«Архитектура») — она ортогональна первой оси и подключается вторым `id(...)` там, где нужна; это
+не нарушение правила «1 родитель» по первой оси, а отдельное измерение. Кроме неё, есть
+агрегирующий `codequality` (собирает 5 плагинов):
 ```
 checkstyle      — id("checkstyle"); без com.example.* родителя; id("java") не нужен
 javaformat      — id("io.spring.javaformat") + id("checkstyle"); id("java") не нужен
@@ -401,6 +416,11 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
     └── spring-cloud         — + BOM spring-cloud-dependencies
         └── spring-cloud-*    (9 технологических плагинов)
 ```
+
+Дерево выше — только BOM-цепочка. Вторым родителем (bootable-ось, не показана на диаграмме)
+`spring-boot-application` (сам лежит внутри `spring-boot-*`) дополнительно подключён к 4 плагинам
+внутри `spring-cloud-*`: `spring-cloud-config-server`, `spring-cloud-eureka-server`,
+`spring-cloud-gateway-webflux`, `spring-cloud-gateway-webmvc`.
 
 - `com.example.base` — корень: `java` + toolchain (версия из `.java-version`, читается через
   `providers.fileContents(...).asText` — Provider API, а не `file.text` напрямую: корректно
@@ -432,20 +452,22 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
   `spring-cloud-dependencies`) — `io.spring.dependency-management` + Spring Boot BOM; свой
   junit-platform-launcher/`useJUnitPlatform()` убран как дублирующий то, что уже даёт родитель
   `com.example.base`. Были `spring-boot-base`/`spring-cloud-base` — суффикс `-base` убран, как
-  и `-conventions` ранее. Плагины, требующие `bootJar` (`spring-boot-application`,
-  `spring-cloud-config-server`, `spring-cloud-eureka-server`, `spring-cloud-gateway-webflux`,
-  `spring-cloud-gateway-webmvc`) добавляют `id("org.springframework.boot")` +
-  `spring-boot-starter-test` сами — 5 файлов × 2 строки не выносились в третий базовый плагин
-  (см. «Принятые решения» → «Архитектура»)
+  и `-conventions` ранее. Плагины, требующие `bootJar` — `spring-boot-application` (используют
+  `note/`, `user/`, `user-note/`, `auth/`) и 4 standalone-сервисных `spring-cloud-*`-плагина
+  (`spring-cloud-config-server`, `spring-cloud-eureka-server`, `spring-cloud-gateway-webflux`,
+  `spring-cloud-gateway-webmvc` — `registry/`/`config/`/`gateway/` тоже имеют собственный
+  `@SpringBootApplication`-класс, критерий тот же, что у обычных сервисов). `spring-boot-starter`/
+  `-test` у всех получателей и так есть транзитивно через родителя `spring-boot` (см. выше);
+  вторые 4 получают именно `id("org.springframework.boot")`, применяя вторым родителем уже
+  существующий `com.example.spring-boot-application` — не дублированием строк и не через третий
+  базовый плагин (см. «Принятые решения» → «Архитектура»)
 - `com.example.spring-boot-client-rest` / `com.example.spring-boot-client-web` (были `restclient`/
   `webclient`) — переименованы, чтобы не смешиваться алфавитно и по смыслу с `webflux`/`webmvc`
   (это server-side driving-адаптеры, а `client-*` — исходящие HTTP-клиенты, разные вещи).
-  `spring-boot-client-web` — единственное исключение из правила «1 родитель»: применяет и
-  `spring-boot`, и `reactor` (по прямому запросу, а не автономным решением) — `reactor-test`
-  для `spring-boot-starter-webclient` теперь приходит из `com.example.reactor`, а не отдельной
-  версией из Spring Boot BOM. Риск тот же, что описан для `reactor-core`/`junit` ниже
-  («Синхронизация версий») — два независимых источника версии для одного артефакта; пока не
-  проявлялся, но не исключён при апгрейде Spring Boot
+  `spring-boot-client-web` — 1 родитель (`spring-boot`), без явного `reactor-test`: подтверждено
+  через POM `spring-boot-starter-webclient-test` на Maven Central — `reactor-test:3.8.5` приходит
+  транзитивно (не универсально для всех `-test`-компаньонов Spring Boot 4 — см. «Синхронизация
+  версий» → `reactor-test`)
 
 ### Синхронизация версий
 
@@ -502,6 +524,19 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
     устареет и будет переопределена BOM только за счёт того, что он окажется новее
   - тот же риск — у `junit-jupiter`/`junit-platform` выше: проверять оба при каждом апгрейде
     Spring Boot
+- **reactor-test** — explicit `testImplementation("io.projectreactor:reactor-test")` убран из
+  `spring-boot-webflux`/`spring-boot-data-r2dbc`/`spring-boot-data-mongodb-reactive`/
+  `spring-cloud-gateway-webflux`: проверено эмпирически (`./gradlew :note:webflux:dependencies
+  --configuration testCompileClasspath`) — для первых трёх `reactor-test` приходит транзитивно
+  через `*-test`-компаньоны (`spring-boot-starter-webflux-test` и т. п., фича Spring Boot 4 «на
+  каждый стартер — свой `-test`-стартер»). Это не универсально: POM `spring-boot-starter-webclient-
+  test` на Maven Central содержит `reactor-test`, а `spring-boot-starter-graphql-test` — нет
+  (транзитивные зависимости каждого `-test`-компаньона нужно проверять отдельно, не
+  экстраполировать по аналогии). `spring-cloud-gateway-webflux` — плагин Spring Cloud, а не
+  Spring Boot, своего `-test`-компаньона не существует вообще, поэтому `reactor-test` там сейчас
+  ниоткуда не приходит; оставлено осознанно без замены — ни один тест в `gateway/` пока не
+  использует `Mono`/`Flux`/`StepVerifier`, добавлять зависимость превентивно не стали (см.
+  «Правила»); вернуть явной строкой, когда появится реальный реактивный тест
 - **Gradle** — версия зафиксирована в `gradle/wrapper/gradle-wrapper.properties`; CI (`./gradlew`)
   наследует её автоматически, отдельной синхронизации не требует
 - **Java** — единственный источник `.java-version` (корень репозитория): CI читает его через
@@ -533,16 +568,3 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
   один и тот же extension `checkstyle {}` (toolVersion, зависимость `checkstyle(...)`), и `javaformat`
   всегда применяется вместе с `checkstyle` через `codequality` — не найден сценарий, где нужен только
   один из двух. Возможно, `com.example.checkstyle` избыточен как отдельный плагин
-- **Правило «максимум 1 родитель» уже имеет 2 исключения** (агрегатор `codequality`,
-  `spring-boot-client-web`) — при появлении третьего стоит пересмотреть само правило, а не
-  продолжать множить исключения
-- **`spring-boot-client-web` как единственное исключение может быть не нужен**: соседние reactive
-  leaf-плагины (`spring-boot-webflux`, `spring-boot-data-r2dbc`, `spring-boot-data-mongodb-reactive`)
-  подключают `testImplementation("io.projectreactor:reactor-test")` без версии — она приходит из
-  Spring Boot BOM через единственного родителя `spring-boot`. `spring-boot-client-web` вместо этого
-  берёт `reactor-test` через второго родителя `com.example.reactor` с явным пином версии из
-  каталога — два разных механизма получения версии одного артефакта у соседних leaf-плагинов.
-  `spring-boot-starter-webclient` и так транзитивно тянет `reactor-core` через `spring-webflux`,
-  поэтому неясно, снимет ли переход на паттерн соседних плагинов (просто `reactor-test` без версии,
-  без второго родителя) необходимость в исключении вообще — стоит проверить перед следующим
-  пересмотром иерархии
