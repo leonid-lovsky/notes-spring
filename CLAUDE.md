@@ -1,6 +1,6 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: 2026-07-05T15:21Z
+> Последнее обновление: 2026-07-05T15:24Z
 > **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 Многомодульный Spring Boot 4 проект (`note/`, `user/`, `user-note/`, ...), реализующий hexagonal
@@ -295,20 +295,11 @@ Spring Cache, Spring OpenFeign, Spring Cloud LoadBalancer, Spring Cloud Circuit 
   `data-mongodb-reactive`), никогда не переименовываются в отрыве от папки. `domain/` и
   `data-contract*/` в это правило не попадают — их плагины (`java`, `library`, `reactor`)
   называются по зависимости, а не по слою, и папке уже не соответствуют
-- `implementation("org.springframework.boot:spring-boot-starter")` +
-  `testImplementation("org.springframework.boot:spring-boot-starter-test")` — в `com.example.spring-boot`
-  (общий предок всех `spring-boot-*`/`spring-cloud-*`), не только в `spring-boot-application`: это
-  не специфика «приложения», а базовый набор для любого Spring Boot модуля, независимо от того,
-  bootable он или leaf-технология. `spring-boot-application` после этого добавляет только
-  `id("org.springframework.boot")` — чистое выражение «этому модулю нужен `bootJar`»
-- Bootable-возможность (`id("org.springframework.boot")`, нужна ради `bootJar`/
-  `resolveMainClassName`) нужна `spring-boot-application` и 4 standalone-сервисным
-  `spring-cloud-*`-плагинам (см. «Convention plugins — принцип именования и структура» →
-  «Иерархия») — решение пересмотрено: вместо дублирования строк или третьего базового плагина
-  4 `spring-cloud-*`-плагина применяют уже существующий `com.example.spring-boot-application`
-  вторым родителем. Работает потому, что это не часть BOM-цепочки наследования (там родитель
-  всегда один), а отдельная, ортогональная ей возможность; имя плагина само декларирует
-  требование, путаницы не возникает
+- `spring-boot-starter`/`-test` — общий для любого Spring Boot модуля, объявлен в
+  `com.example.spring-boot`, не в `spring-boot-application`. Bootable-возможность
+  (`id("org.springframework.boot")`, нужна ради `bootJar`/`resolveMainClassName`) — вторая,
+  ортогональная BOM-цепочке ось иерархии convention-плагинов: см. «Convention plugins — принцип
+  именования и структура» → «Иерархия» ниже
 - **Отступ 4 пробела, не табы** — в convention-плагинах (`build-logic/`) и обоих
   `settings.gradle.kts`: `.springjavaformatconfig` (`indentation-style=spaces`) — источник истины
   по стилю для всего репозитория, а `build-logic/` изначально не форматировался этим правилом
@@ -465,7 +456,7 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
   `-test` у всех получателей и так есть транзитивно через родителя `spring-boot` (см. выше);
   вторые 4 получают именно `id("org.springframework.boot")`, применяя вторым родителем уже
   существующий `com.example.spring-boot-application` — не дублированием строк и не через третий
-  базовый плагин (см. «Принятые решения» → «Архитектура»)
+  базовый плагин
 - `com.example.spring-boot-client-rest` / `com.example.spring-boot-client-web` (были `restclient`/
   `webclient`) — переименованы, чтобы не смешиваться алфавитно и по смыслу с `webflux`/`webmvc`
   (это server-side driving-адаптеры, а `client-*` — исходящие HTTP-клиенты, разные вещи).
@@ -569,10 +560,9 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
 - **Регистрация auth/ ↔ user/** — Lazy / Sync / Events (Kafka)
 - **Возврат мутирующего use case** — DTO _(склонение)_ vs `void`
 - **PATCH** — поддерживать или нет
-- **Асимметрия `data-jdbc/`** — единственный driven-адаптер без `model/`/`repository/` вообще
-  (сырой `NamedParameterJdbcTemplate` + `RowMapper` прямо в `*Response`), тогда как все остальные
-  технологии (`data-jpa`, `data-r2dbc`, `data-mongodb`, `data-mongodb-reactive`) единообразны
-  и имеют `model/`/`repository/`/`mapper/`. Решение принято намеренно (см. «Принятые решения» →
-  «Архитектура»), но пока ни один `data-jdbc/` не подключён к `application/` ни в одном сервисе —
-  стоит пересмотреть при первом реальном использовании: не всплывёт ли потребность в паттерне
-  ближе к остальным технологиям (например, ради тестируемости или переиспользования маппинга)
+- **Асимметрия `data-jdbc/`** — единственный driven-адаптер без `model/`/`repository/`/`mapper/`,
+  тогда как остальные технологии единообразны (решение принято намеренно, см. «Принятые решения» →
+  «Архитектура» → `data-jdbc/`). Но пока ни один `data-jdbc/` не подключён к `application/` ни
+  в одном сервисе — пересмотреть при первом реальном использовании: не всплывёт ли потребность
+  в паттерне ближе к остальным технологиям (например, ради тестируемости или переиспользования
+  маппинга)
