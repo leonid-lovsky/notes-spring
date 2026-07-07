@@ -34,9 +34,10 @@ class NoteUpdateController {
     @PutMapping("/{id}")
     Mono<ResponseEntity<NoteResponse>> update(@PathVariable UUID id, @RequestBody NoteRequest request) {
         return this.noteExistsByIdContractReactive.existsById(id)
-            .flatMap((exists) -> exists ? this.noteReplaceContractReactive.replace(id, request)
-                    : Mono.error(new NoteNotFoundException(id)))
-            .map((updated) -> ResponseEntity.status(HttpStatus.OK).body(updated));
+            .flatMap((exists) -> exists
+                    ? this.noteReplaceContractReactive.replace(id, request)
+                        .map((updated) -> ResponseEntity.status(HttpStatus.OK).body(updated))
+                    : Mono.error(new NoteNotFoundException(id)));
     }
 
 }

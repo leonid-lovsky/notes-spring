@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 class NoteExceptionHandler {
 
     @ExceptionHandler(NoteNotFoundException.class)
-    ProblemDetail handleNotFound(NoteNotFoundException e) {
-        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
+    ProblemDetail handleNoteNotFound(NoteNotFoundException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+        problem.setTitle("Note Not Found");
+        return problem;
     }
 
 }

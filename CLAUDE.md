@@ -1,6 +1,6 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: 2026-07-07T11:18Z
+> Последнее обновление: 2026-07-07T11:45Z
 > **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 Многомодульный Spring Boot 4 проект (`note/`, `user/`, `user-note/`, ...), реализующий hexagonal
@@ -68,10 +68,12 @@ architecture единообразно во всех сервисах через 
 НЕ СОЗДАНО bff/ · thymeleaf/ · sharing/ · crud/
 ```
 
-**Запланирован полный пересмотр CRUD-сервисов** (`note/`/`user/`/`user-note/`) — статус ГОТОВО
-не отменяется, но перед дальнейшим развитием (`registry/`/`config/`/`gateway/`, `auth/`) решено
-сначала перепроверить существующую реализацию во всех слоях/технологиях (см. «Открытые решения» →
-«Объём пересмотра CRUD-сервисов»).
+**Пересмотр CRUD-сервисов завершён** (`note/`/`user/`/`user-note/`, 2026-07-07) — статус ГОТОВО
+подтверждён по всем 6 пунктам (единообразие между сервисами, соответствие принятым решениям,
+актуальность именования, hexagonal-изоляция, SRP, комбинации technology в `application/`).
+Найденные расхождения устранены (webflux exception handler и update-контроллер `note/`, порядок
+зависимостей `note/application/`, таблица «Именование»); нерешённые вопросы — см. «Открытые
+решения» → `@Transactional`, «Комбинации technology в `application/`».
 
 **Spring JavaFormat** (`io.spring.javaformat`): таски `format`/`checkFormat`; `checkFormat`
 автоматически выполняется при стандартном `check`. После правок импортов/форматирования — гонять
@@ -142,24 +144,26 @@ com.example.note.data.jpa.mapper       NoteJpaMapperContract, NoteJpaMapper
 com.example.note.data.jpa.repository   NoteJpaRepository
 ```
 
-Пакет `model/` используется во всех технологиях (внутреннее имя класса — `Entity` для JPA/R2DBC,
-`Document` для MongoDB). Driving-адаптеры (`webmvc/`, `webflux/`) организованы плоско, без вложенных
-пакетов.
+Пакет `model/` используется во всех технологиях (внутреннее имя класса — `Entity`/`{Tech}Entity` для
+JPA/R2DBC, `Document`/`ReactiveDocument` для MongoDB — см. «Именование»). Driving-адаптеры (`webmvc/`,
+`webflux/`) организованы плоско, без вложенных пакетов.
 
 ---
 
 ## Именование
 
-| Элемент                 | Паттерн                        | Пример                    |
-|-------------------------|--------------------------------|---------------------------|
-| Sync port interface     | `{Entity}{Op}Contract`         | `NoteAddContract`         |
-| Reactive port interface | `{Entity}{Op}ContractReactive` | `NoteAddContractReactive` |
-| Adapter impl            | `{Entity}{Op}{Tech}Adapter`    | `NoteAddJpaAdapter`       |
-| Mapper interface        | `{Entity}{Tech}MapperContract` | `NoteJpaMapperContract`   |
-| Mapper impl             | `{Entity}{Tech}Mapper`         | `NoteJpaMapper`           |
-| Spring Data repo        | `{Entity}{Tech}Repository`     | `NoteJpaRepository`       |
-| JPA / R2DBC model class | `{Entity}Entity`               | `NoteEntity`              |
-| MongoDB model class     | `{Entity}Document`             | `NoteDocument`            |
+| Элемент                      | Паттерн                        | Пример                    |
+|------------------------------|--------------------------------|---------------------------|
+| Sync port interface          | `{Entity}{Op}Contract`         | `NoteAddContract`         |
+| Reactive port interface      | `{Entity}{Op}ContractReactive` | `NoteAddContractReactive` |
+| Adapter impl                 | `{Entity}{Op}{Tech}Adapter`    | `NoteAddJpaAdapter`       |
+| Mapper interface             | `{Entity}{Tech}MapperContract` | `NoteJpaMapperContract`   |
+| Mapper impl                  | `{Entity}{Tech}Mapper`         | `NoteJpaMapper`           |
+| Spring Data repo             | `{Entity}{Tech}Repository`     | `NoteJpaRepository`       |
+| JPA model class              | `{Entity}Entity`               | `NoteEntity`              |
+| R2DBC model class            | `{Entity}{Tech}Entity`         | `NoteR2dbcEntity`         |
+| MongoDB model class          | `{Entity}Document`             | `NoteDocument`            |
+| MongoDB reactive model class | `{Entity}ReactiveDocument`     | `NoteReactiveDocument`    |
 
 **Tech**: `Jpa` · `Mongo` · `Jdbc` · `R2dbc` · `MongoReactive`
 
@@ -339,9 +343,15 @@ Spring Cache, Spring OpenFeign, Spring Cloud LoadBalancer, Spring Cloud Circuit 
   больше неоткуда получить, это единственный путь
 - Hexagonal: `domain/` не знает о JPA/MongoDB/Spring; адаптеры знают только `data-contract/`
 - Один контроллер на операцию (`NoteCreateController` → `POST /notes`)
+- **SRP: один класс/интерфейс — одна операция** — явно зафиксировано как принцип (не только
+  соглашение по неймингу) при пересмотре CRUD-сервисов (2026-07-07): проверено по всем контрактам,
+  адаптерам и контроллерам всех трёх сервисов — нарушений не найдено
+- `user/`: `findByEmail`/`findByUsername` доведены до всех driven-адаптеров (jpa/mongodb/
+  mongodb-reactive/r2dbc/jdbc), но намеренно не выведены в `webmvc`/`webflux` — задел под будущий
+  `auth/` (поиск пользователя при логине); выводить наружу отдельным контроллером только когда
+  появится реальный потребитель
 - `service/` — только при координации нескольких портов; для простого CRUD не нужен
 - `existsById` в контракте — валидный паттерн, не заменять на `findById`
-- `@Transactional` — на методах адаптера
 - `add` ≠ `replace`: JPA — `save(null id)` vs `save(id)`; MongoDB — `insert()` vs `save()`
 - `user-note/`: суррогатный `UUID id` (а не составной `userId+noteId` как PK) во всех технологиях,
   кроме `data-jdbc/` (там нет `model/`/`repository/` в принципе). `userId+noteId` — unique
@@ -357,6 +367,11 @@ Spring Cache, Spring OpenFeign, Spring Cloud LoadBalancer, Spring Cloud Circuit 
   не создаётся нигде. Решается вместе с открытым вопросом «Управление схемой для R2DBC/JDBC»
 - `data-jdbc/` (все сервисы) — намеренно без `model/`/`repository/`: `NamedParameterJdbcTemplate` +
   сырой SQL, `RowMapper` мапит `ResultSet` сразу в `*Response`
+- `user-note/`: поле `role` (enum `UserNoteRole`) — нативно в JPA (`@Enumerated(EnumType.STRING)`)
+  и MongoDB/MongoDB reactive (нативная сериализация enum в BSON); в R2DBC и JDBC — `String` с ручным
+  `.name()`/`valueOf()` в мэппере. Не расхождение по недосмотру: Spring Data R2DBC и сырой JDBC
+  (`ResultSet`/`RowMapper`) не поддерживают enum-колонки нативно без явного конвертера — текущий
+  ручной подход в мэппере осознан и не меняется
 
 ### HTTP / Ошибки
 
@@ -566,28 +581,14 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
 - **Регистрация auth/ ↔ user/** — Lazy / Sync / Events (Kafka)
 - **Возврат мутирующего use case** — DTO _(склонение)_ vs `void`
 - **PATCH** — поддерживать или нет
-- **Объём пересмотра CRUD-сервисов** (см. «Задачи») — покрытие тестами сознательно вне объёма
-  (тестовая стратегия — отдельный будущий вопрос), сам список:
-  1. **Единообразие между сервисами** — одна и та же технология/слой (например, все три
-     `data-jpa`) не должна расходиться в структуре, обработке ошибок, стиле между
-     `note`/`user`/`user-note`
-  2. **Соответствие «Принятым решениям»** — каждый модуль реально следует уже задокументированным
-     решениям (api vs implementation, `@Transactional`, add≠replace, `ProblemDetail`,
-     reactive-семантика Mono/Flux и т. д.), а не просто похож на соседей
-  3. **Актуальность именования** — сверка фактических имён классов/пакетов с таблицей
-     «Именование»: не осталось ли старых имён после прошлых переименований
-     (adapter/mapper/repository/contract)
-  4. **Строгость hexagonal-изоляции** — границы модулей/пакетов/классов: `domain/` не течёт
-     в инфраструктуру, адаптер знает только свой контракт, нет протечек `Pageable`/
-     `Specification` за пределы уже описанных исключений
-  5. **Гранулярность классов/интерфейсов (SRP)** — конвенция подразумевает «один класс/
-     интерфейс — одна операция» (`{Entity}{Op}Contract`, `{Entity}{Op}{Tech}Adapter`), но нигде
-     явно не зафиксирована как принцип; проверить, везде ли она реально соблюдается, и стоит
-     ли записать её явным решением
-  6. **Комбинации technology в `application/`** — сейчас у каждого сервиса ровно одна связка
-     (`webmvc`+`data-jpa`); решить, нужны ли доп. `application/`-модули (или профили) для
-     остальных технологий, чтобы webflux/r2dbc/mongo и т. д. были реально запускаемы, а не
-     только компилируемы
+- **`@Transactional` на методах адаптера** — решение было зафиксировано, но при пересмотре
+  CRUD-сервисов (2026-07-07) выяснилось, что оно не реализовано ни в одном адаптере ни одной
+  технологии ни одного сервиса. Решить: реализовать по всем адаптерам (~150 файлов) или снять
+  решение как устаревшее (Spring Data репозитории уже транзакционны на уровне отдельного метода)
+- **Комбинации technology в `application/`** — сейчас у каждого сервиса ровно одна связка
+  (`webmvc`+`data-jpa`); решить, нужны ли доп. `application/`-модули (или профили) для
+  остальных технологий, чтобы webflux/r2dbc/mongo и т. д. были реально запускаемы, а не
+  только компилируемы
 - **Асимметрия `data-jdbc/`** — единственный driven-адаптер без `model/`/`repository/`/`mapper/`,
   тогда как остальные технологии единообразны (решение принято намеренно, см. «Принятые решения» →
   «Архитектура» → `data-jdbc/`). Но пока ни один `data-jdbc/` не подключён к `application/` ни
