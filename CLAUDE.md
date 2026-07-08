@@ -1,6 +1,6 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: Wed Jul 08 20:27:04 IDT 2026 **Всё временно** — любое решение подлежит обсуждению и изменению.
+> Последнее обновление: Wed Jul 08 20:56:34 IDT 2026 **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 Многомодульный Spring Boot 4 проект (`note/`, `user/`, `user-note/`, ...), реализующий hexagonal architecture единообразно во всех сервисах через Gradle convention plugins. Этот файл — единственный источник истины по конвенциям, статусу и решениям проекта; вся необходимая для работы над проектом информация должна быть здесь, без обращения к внешним источникам.
 
@@ -327,9 +327,9 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
 ### Корень репозитория (9 файлов)
 
 - `settings.gradle.kts` — [DONE] — `includeBuild`, `TYPESAFE_PROJECT_ACCESSORS`, `rootProject.name`; состав `include(...)` совпадает со статусами в «Задачах»; порядок блоков — инфраструктурные сервисы (`auth`/`config`/`gateway`/`registry`) выше CRUD (`note`/`user`/`user-note`), прямой алфавит внутри каждой группы; дважды подтверждено `./gradlew clean check` (BUILD SUCCESSFUL)
-- `gradlew.bat` — [REVIEW] — стандартный сгенерированный wrapper-скрипт (пересобран при апгрейде Gradle до 9.6.1 в этой сессии, не редактировался руками); заголовочный комментарий внутри «gradlew startup script» вместо «Gradle startup script» — так генератор называет по имени исполняемого файла, не опечатка
-- `gradlew` — [REVIEW] — стандартный сгенерированный wrapper-скрипт
-- `gradle.properties` — [REVIEW] — `configuration-cache.problems=warn` — раз config cache уже подтверждена рабочей без костылей, не ужесточить ли до `fail`?
+- `gradlew.bat` — [DONE] — стандартный сгенерированный wrapper-скрипт (пересобран при апгрейде Gradle до 9.6.1 в этой сессии, не редактировался руками); заголовочный комментарий внутри «gradlew startup script» вместо «Gradle startup script» — так генератор называет по имени исполняемого файла, не опечатка
+- `gradlew` — [DONE] — стандартный сгенерированный wrapper-скрипт (пересобран при апгрейде до 9.6.1 в этой сессии); executable-бит `755` и LF-окончания подтверждены, соответствует `.gitattributes`
+- `gradle.properties` — [DONE] — `configuration-cache.problems=fail` (ужесточено с `warn` в этой сессии): `./gradlew clean check` и `./gradlew clean build` дважды каждый прошли чисто, без единого предупреждения о configuration cache, включая `bootJar` всех 7 `application/`-модулей; `parallel`/`caching`/`configureondemand`/`configuration-cache`/`configuration-cache.parallel` — разумный набор для мультимодульного проекта, замечаний нет
 - `CLAUDE.md` — [REVIEW] — сам документ
 - `.springjavaformatconfig` — [DONE] — `indentation-style=spaces` — источник истины по стилю (см. «Отступ 4 пробела»); поддерживает также `java-baseline` (V8/V17) — намеренно не задан
 - `.java-version` — [DONE] — `21`; единственный источник версии Java, читается через toolchain в `com.example.base` и `java-version-file` в CI (`.github/workflows/gradle.yml`); проверено по всему репозиторию — хардкода версии больше нигде нет, `.idea/` не отслеживается git
