@@ -1,6 +1,6 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: Wed Jul 08 21:54:36 IDT 2026 **Всё временно** — любое решение подлежит обсуждению и изменению.
+> Последнее обновление: Wed Jul 08 22:07:57 IDT 2026 **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 Многомодульный Spring Boot 4 проект (`note/`, `user/`, `user-note/`, ...), реализующий hexagonal architecture единообразно во всех сервисах через Gradle convention plugins. Этот файл — единственный источник истины по конвенциям, статусу и решениям проекта; вся необходимая для работы над проектом информация должна быть здесь, без обращения к внешним источникам.
 
@@ -322,20 +322,9 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
 
 > Составлено 2026-07-08: полный проход по всем 452 git-отслеживаемым файлам репозитория, папка за папкой, свежим взглядом и со сверкой с этим документом. Статус `[REVIEW]` — для каждого существующего файла по умолчанию (правило «Пересмотр решений»: ничего не считается окончательно принятым при первом просмотре); `[DONE]` проставляется только точечно, когда конкретный файл явно обсуждён и закрыт в разговоре. `[ADD]` — файла сейчас нет, но он нужен для реальной работоспособности/проверяемости сервиса (в основном — тесты, которых сейчас нет вообще ни в одном из трёх ГОТОВО-сервисов, и схема БД для R2DBC/JDBC).
 >
-> Порядок разделов — по каталогам верхнего уровня (`user-note/` → `user/` → `registry/` → `note/` → `gradle/` → `gateway/` → `config/` → `build-logic/` → `auth/` → `.github/`), внутри раздела — по модулям в алфавитном порядке. Ровно 2 уровня заголовков: `### сервис/` → `#### модуль/`; всё глубже — плоский список под заголовком модуля, без под-заголовков по подпакетам. Формат каждой строки: `путь-от-корня-репозитория` — статус — комментарий — путь всегда полный (не только имя файла), строка самодостаточна без чтения окружающих заголовков.
-
-### Корень репозитория (9 файлов)
-
-- `settings.gradle.kts` — [DONE] — `includeBuild`, `TYPESAFE_PROJECT_ACCESSORS`, `rootProject.name`; состав `include(...)` совпадает со статусами в «Задачах»; порядок блоков — инфраструктурные сервисы (`auth`/`config`/`gateway`/`registry`) выше CRUD (`note`/`user`/`user-note`), прямой алфавит внутри каждой группы; дважды подтверждено `./gradlew clean check` (BUILD SUCCESSFUL)
-- `gradlew.bat` — [DONE] — стандартный сгенерированный wrapper-скрипт (пересобран при апгрейде Gradle до 9.6.1 в этой сессии, не редактировался руками); заголовочный комментарий внутри «gradlew startup script» вместо «Gradle startup script» — так генератор называет по имени исполняемого файла, не опечатка
-- `gradlew` — [DONE] — стандартный сгенерированный wrapper-скрипт (пересобран при апгрейде до 9.6.1 в этой сессии); executable-бит `755` и LF-окончания подтверждены, соответствует `.gitattributes`
-- `gradle.properties` — [DONE] — `configuration-cache.problems=fail` (ужесточено с `warn` в этой сессии): `./gradlew clean check` и `./gradlew clean build` дважды каждый прошли чисто, без единого предупреждения о configuration cache, включая `bootJar` всех 7 `application/`-модулей; `parallel`/`caching`/`configureondemand`/`configuration-cache`/`configuration-cache.parallel` — разумный набор для мультимодульного проекта, замечаний нет
-- `CLAUDE.md` — [DONE] — сам документ; самореференциально по природе (см. «Всё временно» в шапке) — статус означает «строка каталога точна», не «содержимое неизменно»; записи `[DONE]` намеренно не удаляются после утверждения (см. «Пересмотр решений»)
-- `.springjavaformatconfig` — [DONE] — `indentation-style=spaces` — источник истины по стилю (см. «Отступ 4 пробела»); поддерживает также `java-baseline` (V8/V17) — намеренно не задан
-- `.java-version` — [DONE] — `21`; единственный источник версии Java, читается через toolchain в `com.example.base` и `java-version-file` в CI (`.github/workflows/gradle.yml`); проверено по всему репозиторию — хардкода версии больше нигде нет, `.idea/` не отслеживается git
-- `.gitignore` — [DONE] — стандартный Spring Initializr `.gitignore` (HELP.md, `.gradle`, `build/`, STS/IntelliJ/NetBeans/VS Code) + 2 добавленных вручную раздела под AI-инструменты (`.claude/`, `.junie/` — JetBrains AI); `.claude/` реально существует локально, `.junie/` пока не создавался — оба корректно не отслеживаются git
-- `.gitattributes` — [DONE] — LF для `gradlew`, CRLF для `*.bat`, binary для `*.jar`
-
+> Порядок — обратный алфавитный, папки сверху (2026-07-08): на верхнем уровне сначала все каталоги-сервисы (`user-note/` → `user/` → `registry/` → `note/` → `gradle/` → `gateway/` → `config/` → `build-logic/` → `auth/` → `.github/`), затем «Корень репозитория» (это файлы, не каталог, поэтому последний). Внутри сервиса — модули в том же обратном алфавитном порядке; находки/предлагаемые файлы — на своих местах (находки первыми, `[ADD]`-раздел последним). Внутри модуля — файлы тоже в обратном алфавитном порядке по полному пути. Ровно 2 уровня заголовков: `### сервис/` → `#### модуль/`; всё глубже — плоский список под заголовком модуля, без под-заголовков по подпакетам. Формат каждой строки: `путь-от-корня-репозитория` — статус — комментарий — путь всегда полный (не только имя файла), строка самодостаточна без чтения окружающих заголовков.
+>
+> **Продолжение пересмотра в новой сессии:** идёт построчный пересмотр каждого файла (обсудить с пользователем → `[REVIEW]` → `[DONE]`). Продолжать с первой встреченной сверху вниз строки `[REVIEW]` в этом разделе.
 
 ### user-note/ (72 файла + 18 предложенных)
 
@@ -349,132 +338,108 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
 4. **Реальное расхождение (стиль, не семантика)**: метод `add` в `UserNoteMongoAdapter` и `UserNoteMongoReactiveAdapter` строит/использует `document` иначе, чем аналогичный метод в `NoteMongoAdapter`/`UserMongoReactiveAdapter` — там паттерн «сначала `document = mapper.toNewDocument(request)`, потом `insert(document)`, в ответе — тот же `document`»; в `user-note` — `document`/ответ строится из значения, возвращённого `insert(...)`, с инлайновым вызовом маппера внутри `insert(...)`. Поведенчески идентично (id генерируется вручную до вставки), но стилистически не единообразно между тремя CRUD-сервисами.
 5. **Внутри самого `user-note`** все 5 driven-технологий (JPA/MongoDB/MongoDB reactive/R2DBC/JDBC) ведут себя единообразно по каждой из 8 операций (add/exists/findById/findByNoteId/ findByUserIdAndNoteId/findByUserId/remove/replace) — сигнатуры, обработка null/empty (`Optional`/`Mono`/`List`/`Flux`), порядок «проверить существование → бросить `NotFoundException` → обновить» в `replace` — везде одинаковы. Расхождений между технологиями не найдено.
 
-#### user-note/application/ (6 файлов)
-
-- `user-note/application/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW]
-- `user-note/application/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — `@NullMarked`
-- `user-note/application/build.gradle.kts` — [REVIEW] — Соответствует конвенции: `spring-boot-application` + `spring-boot-h2-database`, зависимости domain+data-contract+webmvc+data-jpa — единственная связка technology (см. открытый вопрос «Комбинации technology в application/»)
-- `user-note/application/src/main/resources/application.properties` — [REVIEW]
-- `user-note/application/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — Единственный тест во всём сервисе — тривиальный `contextLoads()`. См. «Главные находки» п. 1
-- `user-note/application/src/test/resources/application.properties` — [REVIEW] — Пустой файл (0 байт) — идентично `note/application/src/test/resources/application.properties`, не аномалия
-
-#### user-note/data-contract-reactive/ (3 файлов)
-
-- `user-note/data-contract-reactive/build.gradle.kts` — [REVIEW] — `com.example.reactor` + `api(projects.userNote.domain)`
-- `user-note/data-contract-reactive/src/main/java/com/example/usernote/contract/reactive/UserNoteContractReactive.java` — [REVIEW] — объединяет 8 reactive-методов одним интерфейсом — тот же пересмотр
-- `user-note/data-contract-reactive/src/main/java/com/example/usernote/contract/reactive/package-info.java` — [REVIEW] — `@NullMarked`
-
-#### user-note/data-contract/ (3 файлов)
-
-- `user-note/data-contract/build.gradle.kts` — [REVIEW] — `com.example.library` + `api(projects.userNote.domain)`
-- `user-note/data-contract/src/main/java/com/example/usernote/contract/UserNoteContract.java` — [REVIEW] — объединяет 8 методов одним интерфейсом (add/existsByUserIdAndNoteId/findById/findByNoteId/findByUserIdAndNoteId/findByUserId/remove/replace) — пересмотр 2026-07-08
-- `user-note/data-contract/src/main/java/com/example/usernote/contract/package-info.java` — [REVIEW] — `@NullMarked`
-
-#### user-note/data-jdbc/ (6 файлов)
-
-- `user-note/data-jdbc/build.gradle.kts` — [REVIEW] — `spring-boot-data-jdbc` + `implementation(dataContract)`
-- `user-note/data-jdbc/src/main/java/com/example/usernote/data/jdbc/adapter/UserNoteJdbcAdapter.java` — [REVIEW] — объединяет все 8 операций одним классом
-- `user-note/data-jdbc/src/main/java/com/example/usernote/data/jdbc/adapter/package-info.java` — [REVIEW] — `@NullMarked`
-- `user-note/data-jdbc/src/main/java/com/example/usernote/data/jdbc/mapper/UserNoteJdbcMapper.java` — [REVIEW] — `{Entity}{Tech}Mapper`, `fromRow(ResultSet, int)`, `UserNoteRole.valueOf(...)` — соответствует открытому вопросу «role как String в R2DBC/JDBC» (здесь маппинг вручную, ожидаемо)
-- `user-note/data-jdbc/src/main/java/com/example/usernote/data/jdbc/mapper/UserNoteJdbcMapperContract.java` — [REVIEW] — `{Entity}{Tech}MapperContract`
-- `user-note/data-jdbc/src/main/java/com/example/usernote/data/jdbc/mapper/package-info.java` — [REVIEW] — `@NullMarked`
-
-#### user-note/data-jpa/ (10 файлов)
-
-- `user-note/data-jpa/build.gradle.kts` — [REVIEW] — `spring-boot-data-jpa` + `implementation(dataContract)`
-- `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/adapter/UserNoteJpaAdapter.java` — [REVIEW] — объединяет все 8 операций одним классом
-- `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/adapter/package-info.java` — [REVIEW] — `@NullMarked`
-- `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/mapper/UserNoteJpaMapper.java` — [REVIEW] — `toNewEntity`/`toExistingEntity`/`toResponse`, ручной маппинг без MapStruct
-- `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/mapper/UserNoteJpaMapperContract.java` — [REVIEW]
-- `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/mapper/package-info.java` — [REVIEW] — `@NullMarked`
-- `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/model/UserNoteEntity.java` — [REVIEW] — `{Entity}Entity`, `@Table(uniqueConstraints = {user_id, note_id})`, `@Enumerated(EnumType.STRING)` для `role`, `@SuppressWarnings("NullAway.Init")` на protected no-arg конструкторе — соответствует принятым решениям
-- `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/model/package-info.java` — [REVIEW] — `@NullMarked`
-- `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/repository/UserNoteJpaRepository.java` — [REVIEW] — `JpaRepository<UserNoteEntity, UUID>` + derived queries (`findByUserId`, `findByNoteId`, `findByUserIdAndNoteId`, `existsByUserIdAndNoteId`, `deleteByUserIdAndNoteId`)
-- `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/repository/package-info.java` — [REVIEW] — `@NullMarked`
-
-#### user-note/data-mongodb-reactive/ (10 файлов)
-
-- `user-note/data-mongodb-reactive/build.gradle.kts` — [REVIEW] — `spring-boot-data-mongodb-reactive` + `implementation(dataContractReactive)`
-- `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/adapter/UserNoteMongoReactiveAdapter.java` — [REVIEW] — объединяет все 8 операций одним классом
-- `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/adapter/package-info.java` — [REVIEW] — `@NullMarked`
-- `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/mapper/UserNoteMongoReactiveMapper.java` — [REVIEW]
-- `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/mapper/UserNoteMongoReactiveMapperContract.java` — [REVIEW]
-- `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/mapper/package-info.java` — [REVIEW] — `@NullMarked`
-- `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/model/UserNoteReactiveDocument.java` — [REVIEW] — `{Entity}ReactiveDocument`, `@CompoundIndex(unique = true)` на `userId+noteId` — соответствует принятому решению
-- `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/model/package-info.java` — [REVIEW] — `@NullMarked`
-- `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/repository/UserNoteMongoReactiveRepository.java` — [REVIEW] — `ReactiveMongoRepository<UserNoteReactiveDocument, UUID>` + derived queries
-- `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/repository/package-info.java` — [REVIEW] — `@NullMarked`
-
-#### user-note/data-mongodb/ (10 файлов)
-
-- `user-note/data-mongodb/build.gradle.kts` — [REVIEW] — `spring-boot-data-mongodb` + `implementation(dataContract)`
-- `user-note/data-mongodb/src/main/java/com/example/usernote/data/mongodb/adapter/UserNoteMongoAdapter.java` — [REVIEW] — объединяет все 8 операций одним классом
-- `user-note/data-mongodb/src/main/java/com/example/usernote/data/mongodb/adapter/package-info.java` — [REVIEW] — `@NullMarked`
-- `user-note/data-mongodb/src/main/java/com/example/usernote/data/mongodb/mapper/UserNoteMongoMapper.java` — [REVIEW]
-- `user-note/data-mongodb/src/main/java/com/example/usernote/data/mongodb/mapper/UserNoteMongoMapperContract.java` — [REVIEW]
-- `user-note/data-mongodb/src/main/java/com/example/usernote/data/mongodb/mapper/package-info.java` — [REVIEW] — `@NullMarked`
-- `user-note/data-mongodb/src/main/java/com/example/usernote/data/mongodb/model/UserNoteDocument.java` — [REVIEW] — `{Entity}Document`, `@CompoundIndex(unique = true)` на `userId+noteId` — соответствует принятому решению
-- `user-note/data-mongodb/src/main/java/com/example/usernote/data/mongodb/model/package-info.java` — [REVIEW] — `@NullMarked`
-- `user-note/data-mongodb/src/main/java/com/example/usernote/data/mongodb/repository/UserNoteMongoRepository.java` — [REVIEW] — `MongoRepository<UserNoteDocument, UUID>` + derived queries
-- `user-note/data-mongodb/src/main/java/com/example/usernote/data/mongodb/repository/package-info.java` — [REVIEW] — `@NullMarked`
-
-#### user-note/data-r2dbc/ (10 файлов)
-
-- `user-note/data-r2dbc/build.gradle.kts` — [REVIEW] — `spring-boot-data-r2dbc` + `implementation(dataContractReactive)`
-- `user-note/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/adapter/UserNoteR2dbcAdapter.java` — [REVIEW] — объединяет все 8 операций одним классом
-- `user-note/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/adapter/package-info.java` — [REVIEW] — `@NullMarked`
-- `user-note/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/mapper/UserNoteR2dbcMapper.java` — [REVIEW] — `UserNoteRole.valueOf(entity.getRole())` / `request.role().name()` — ручная конвертация enum↔String, согласуется с открытым вопросом «role как String в R2DBC/JDBC»
-- `user-note/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/mapper/UserNoteR2dbcMapperContract.java` — [REVIEW]
-- `user-note/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/mapper/package-info.java` — [REVIEW] — `@NullMarked`
-- `user-note/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/model/UserNoteR2dbcEntity.java` — [REVIEW] — `{Entity}{Tech}Entity`, `@Column("role") private String role` — соответствует принятому решению (R2DBC без нативного enum); **нет unique-constraint на `user_id+note_id`** на уровне аннотаций — ожидаемо и задокументировано (`spring-data-relational` не поддерживает constraint-атрибуты у `@Table`/`@Column`), см. открытый вопрос «Управление схемой для R2DBC/JDBC»
-- `user-note/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/model/package-info.java` — [REVIEW] — `@NullMarked`
-- `user-note/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/repository/UserNoteR2dbcRepository.java` — [REVIEW] — `ReactiveCrudRepository<UserNoteR2dbcEntity, UUID>` + derived queries
-- `user-note/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/repository/package-info.java` — [REVIEW] — `@NullMarked`
-
-#### user-note/domain/ (6 файлов)
-
-- `user-note/domain/src/main/java/com/example/usernote/domain/UserNoteNotFoundException.java` — [REVIEW] — Два конструктора (`UUID id` и `UUID userId, UUID noteId`) — используются в webmvc/webflux/всех технологиях единообразно; чистая Java, без зависимостей на инфраструктуру — соответствует hexagonal-изоляции
-- `user-note/domain/src/main/java/com/example/usernote/domain/UserNoteRequest.java` — [REVIEW] — `record`, чистая Java
-- `user-note/domain/src/main/java/com/example/usernote/domain/UserNoteResponse.java` — [REVIEW] — `record UserNoteResponse(UUID id, UUID userId, UUID noteId, UserNoteRole role)` — `id` выставлен явно (суррогатный ключ), соответствует принятому решению
-- `user-note/domain/src/main/java/com/example/usernote/domain/UserNoteRole.java` — [REVIEW] — `enum UserNoteRole { OWNER, EDITOR, VIEWER }`
-- `user-note/domain/src/main/java/com/example/usernote/domain/package-info.java` — [REVIEW] — `@NullMarked`
-- `user-note/domain/build.gradle.kts` — [REVIEW] — `id("com.example.base")` — плоский Java-модуль, без Spring
-
-#### user-note/webflux/ (4 файлов)
-
-- `user-note/webflux/build.gradle.kts` — [REVIEW] — `spring-boot-webflux` + `implementation(dataContractReactive)`
-- `user-note/webflux/src/main/java/com/example/usernote/webflux/UserNoteController.java` — [REVIEW] — объединяет 7 HTTP-операций одним контроллером
-- `user-note/webflux/src/main/java/com/example/usernote/webflux/UserNoteExceptionHandler.java` — [REVIEW] — `@RestControllerAdvice` без наследования, `ProblemDetail` + `setTitle(...)` — идентично паттерну `NoteExceptionHandler`/`UserExceptionHandler` в webflux `note/`/`user/` (расхождение webmvc/webflux по стилю — общее для всех трёх сервисов, не находка user-note)
-- `user-note/webflux/src/main/java/com/example/usernote/webflux/package-info.java` — [REVIEW] — `@NullMarked`
-
 #### user-note/webmvc/ (4 файлов)
-
-- `user-note/webmvc/build.gradle.kts` — [REVIEW] — `spring-boot-webmvc` + `implementation(dataContract)`
-- `user-note/webmvc/src/main/java/com/example/usernote/webmvc/UserNoteController.java` — [REVIEW] — объединяет 7 HTTP-операций одним контроллером
-- `user-note/webmvc/src/main/java/com/example/usernote/webmvc/UserNoteExceptionHandler.java` — [REVIEW] — `@ControllerAdvice extends ResponseEntityExceptionHandler`, без `setTitle` — идентично `NoteExceptionHandler`/`UserExceptionHandler` в webmvc `note/`/`user/`; не находка user-note
 - `user-note/webmvc/src/main/java/com/example/usernote/webmvc/package-info.java` — [REVIEW] — `@NullMarked`
-
+- `user-note/webmvc/src/main/java/com/example/usernote/webmvc/UserNoteExceptionHandler.java` — [REVIEW] — `@ControllerAdvice extends ResponseEntityExceptionHandler`, без `setTitle` — идентично `NoteExceptionHandler`/`UserExceptionHandler` в webmvc `note/`/`user/`; не находка user-note
+- `user-note/webmvc/src/main/java/com/example/usernote/webmvc/UserNoteController.java` — [REVIEW] — объединяет 7 HTTP-операций одним контроллером
+- `user-note/webmvc/build.gradle.kts` — [REVIEW] — `spring-boot-webmvc` + `implementation(dataContract)`
+#### user-note/webflux/ (4 файлов)
+- `user-note/webflux/src/main/java/com/example/usernote/webflux/package-info.java` — [REVIEW] — `@NullMarked`
+- `user-note/webflux/src/main/java/com/example/usernote/webflux/UserNoteExceptionHandler.java` — [REVIEW] — `@RestControllerAdvice` без наследования, `ProblemDetail` + `setTitle(...)` — идентично паттерну `NoteExceptionHandler`/`UserExceptionHandler` в webflux `note/`/`user/` (расхождение webmvc/webflux по стилю — общее для всех трёх сервисов, не находка user-note)
+- `user-note/webflux/src/main/java/com/example/usernote/webflux/UserNoteController.java` — [REVIEW] — объединяет 7 HTTP-операций одним контроллером
+- `user-note/webflux/build.gradle.kts` — [REVIEW] — `spring-boot-webflux` + `implementation(dataContractReactive)`
+#### user-note/domain/ (6 файлов)
+- `user-note/domain/src/main/java/com/example/usernote/domain/package-info.java` — [REVIEW] — `@NullMarked`
+- `user-note/domain/src/main/java/com/example/usernote/domain/UserNoteRole.java` — [REVIEW] — `enum UserNoteRole { OWNER, EDITOR, VIEWER }`
+- `user-note/domain/src/main/java/com/example/usernote/domain/UserNoteResponse.java` — [REVIEW] — `record UserNoteResponse(UUID id, UUID userId, UUID noteId, UserNoteRole role)` — `id` выставлен явно (суррогатный ключ), соответствует принятому решению
+- `user-note/domain/src/main/java/com/example/usernote/domain/UserNoteRequest.java` — [REVIEW] — `record`, чистая Java
+- `user-note/domain/src/main/java/com/example/usernote/domain/UserNoteNotFoundException.java` — [REVIEW] — Два конструктора (`UUID id` и `UUID userId, UUID noteId`) — используются в webmvc/webflux/всех технологиях единообразно; чистая Java, без зависимостей на инфраструктуру — соответствует hexagonal-изоляции
+- `user-note/domain/build.gradle.kts` — [REVIEW] — `id("com.example.base")` — плоский Java-модуль, без Spring
+#### user-note/data-r2dbc/ (10 файлов)
+- `user-note/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/repository/package-info.java` — [REVIEW] — `@NullMarked`
+- `user-note/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/repository/UserNoteR2dbcRepository.java` — [REVIEW] — `ReactiveCrudRepository<UserNoteR2dbcEntity, UUID>` + derived queries
+- `user-note/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/model/package-info.java` — [REVIEW] — `@NullMarked`
+- `user-note/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/model/UserNoteR2dbcEntity.java` — [REVIEW] — `{Entity}{Tech}Entity`, `@Column("role") private String role` — соответствует принятому решению (R2DBC без нативного enum); **нет unique-constraint на `user_id+note_id`** на уровне аннотаций — ожидаемо и задокументировано (`spring-data-relational` не поддерживает constraint-атрибуты у `@Table`/`@Column`), см. открытый вопрос «Управление схемой для R2DBC/JDBC»
+- `user-note/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/mapper/package-info.java` — [REVIEW] — `@NullMarked`
+- `user-note/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/mapper/UserNoteR2dbcMapperContract.java` — [REVIEW]
+- `user-note/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/mapper/UserNoteR2dbcMapper.java` — [REVIEW] — `UserNoteRole.valueOf(entity.getRole())` / `request.role().name()` — ручная конвертация enum↔String, согласуется с открытым вопросом «role как String в R2DBC/JDBC»
+- `user-note/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/adapter/package-info.java` — [REVIEW] — `@NullMarked`
+- `user-note/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/adapter/UserNoteR2dbcAdapter.java` — [REVIEW] — объединяет все 8 операций одним классом
+- `user-note/data-r2dbc/build.gradle.kts` — [REVIEW] — `spring-boot-data-r2dbc` + `implementation(dataContractReactive)`
+#### user-note/data-mongodb-reactive/ (10 файлов)
+- `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/repository/package-info.java` — [REVIEW] — `@NullMarked`
+- `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/repository/UserNoteMongoReactiveRepository.java` — [REVIEW] — `ReactiveMongoRepository<UserNoteReactiveDocument, UUID>` + derived queries
+- `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/model/package-info.java` — [REVIEW] — `@NullMarked`
+- `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/model/UserNoteReactiveDocument.java` — [REVIEW] — `{Entity}ReactiveDocument`, `@CompoundIndex(unique = true)` на `userId+noteId` — соответствует принятому решению
+- `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/mapper/package-info.java` — [REVIEW] — `@NullMarked`
+- `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/mapper/UserNoteMongoReactiveMapperContract.java` — [REVIEW]
+- `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/mapper/UserNoteMongoReactiveMapper.java` — [REVIEW]
+- `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/adapter/package-info.java` — [REVIEW] — `@NullMarked`
+- `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/adapter/UserNoteMongoReactiveAdapter.java` — [REVIEW] — объединяет все 8 операций одним классом
+- `user-note/data-mongodb-reactive/build.gradle.kts` — [REVIEW] — `spring-boot-data-mongodb-reactive` + `implementation(dataContractReactive)`
+#### user-note/data-mongodb/ (10 файлов)
+- `user-note/data-mongodb/src/main/java/com/example/usernote/data/mongodb/repository/package-info.java` — [REVIEW] — `@NullMarked`
+- `user-note/data-mongodb/src/main/java/com/example/usernote/data/mongodb/repository/UserNoteMongoRepository.java` — [REVIEW] — `MongoRepository<UserNoteDocument, UUID>` + derived queries
+- `user-note/data-mongodb/src/main/java/com/example/usernote/data/mongodb/model/package-info.java` — [REVIEW] — `@NullMarked`
+- `user-note/data-mongodb/src/main/java/com/example/usernote/data/mongodb/model/UserNoteDocument.java` — [REVIEW] — `{Entity}Document`, `@CompoundIndex(unique = true)` на `userId+noteId` — соответствует принятому решению
+- `user-note/data-mongodb/src/main/java/com/example/usernote/data/mongodb/mapper/package-info.java` — [REVIEW] — `@NullMarked`
+- `user-note/data-mongodb/src/main/java/com/example/usernote/data/mongodb/mapper/UserNoteMongoMapperContract.java` — [REVIEW]
+- `user-note/data-mongodb/src/main/java/com/example/usernote/data/mongodb/mapper/UserNoteMongoMapper.java` — [REVIEW]
+- `user-note/data-mongodb/src/main/java/com/example/usernote/data/mongodb/adapter/package-info.java` — [REVIEW] — `@NullMarked`
+- `user-note/data-mongodb/src/main/java/com/example/usernote/data/mongodb/adapter/UserNoteMongoAdapter.java` — [REVIEW] — объединяет все 8 операций одним классом
+- `user-note/data-mongodb/build.gradle.kts` — [REVIEW] — `spring-boot-data-mongodb` + `implementation(dataContract)`
+#### user-note/data-jpa/ (10 файлов)
+- `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/repository/package-info.java` — [REVIEW] — `@NullMarked`
+- `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/repository/UserNoteJpaRepository.java` — [REVIEW] — `JpaRepository<UserNoteEntity, UUID>` + derived queries (`findByUserId`, `findByNoteId`, `findByUserIdAndNoteId`, `existsByUserIdAndNoteId`, `deleteByUserIdAndNoteId`)
+- `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/model/package-info.java` — [REVIEW] — `@NullMarked`
+- `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/model/UserNoteEntity.java` — [REVIEW] — `{Entity}Entity`, `@Table(uniqueConstraints = {user_id, note_id})`, `@Enumerated(EnumType.STRING)` для `role`, `@SuppressWarnings("NullAway.Init")` на protected no-arg конструкторе — соответствует принятым решениям
+- `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/mapper/package-info.java` — [REVIEW] — `@NullMarked`
+- `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/mapper/UserNoteJpaMapperContract.java` — [REVIEW]
+- `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/mapper/UserNoteJpaMapper.java` — [REVIEW] — `toNewEntity`/`toExistingEntity`/`toResponse`, ручной маппинг без MapStruct
+- `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/adapter/package-info.java` — [REVIEW] — `@NullMarked`
+- `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/adapter/UserNoteJpaAdapter.java` — [REVIEW] — объединяет все 8 операций одним классом
+- `user-note/data-jpa/build.gradle.kts` — [REVIEW] — `spring-boot-data-jpa` + `implementation(dataContract)`
+#### user-note/data-jdbc/ (6 файлов)
+- `user-note/data-jdbc/src/main/java/com/example/usernote/data/jdbc/mapper/package-info.java` — [REVIEW] — `@NullMarked`
+- `user-note/data-jdbc/src/main/java/com/example/usernote/data/jdbc/mapper/UserNoteJdbcMapperContract.java` — [REVIEW] — `{Entity}{Tech}MapperContract`
+- `user-note/data-jdbc/src/main/java/com/example/usernote/data/jdbc/mapper/UserNoteJdbcMapper.java` — [REVIEW] — `{Entity}{Tech}Mapper`, `fromRow(ResultSet, int)`, `UserNoteRole.valueOf(...)` — соответствует открытому вопросу «role как String в R2DBC/JDBC» (здесь маппинг вручную, ожидаемо)
+- `user-note/data-jdbc/src/main/java/com/example/usernote/data/jdbc/adapter/package-info.java` — [REVIEW] — `@NullMarked`
+- `user-note/data-jdbc/src/main/java/com/example/usernote/data/jdbc/adapter/UserNoteJdbcAdapter.java` — [REVIEW] — объединяет все 8 операций одним классом
+- `user-note/data-jdbc/build.gradle.kts` — [REVIEW] — `spring-boot-data-jdbc` + `implementation(dataContract)`
+#### user-note/data-contract-reactive/ (3 файлов)
+- `user-note/data-contract-reactive/src/main/java/com/example/usernote/contract/reactive/package-info.java` — [REVIEW] — `@NullMarked`
+- `user-note/data-contract-reactive/src/main/java/com/example/usernote/contract/reactive/UserNoteContractReactive.java` — [REVIEW] — объединяет 8 reactive-методов одним интерфейсом — тот же пересмотр
+- `user-note/data-contract-reactive/build.gradle.kts` — [REVIEW] — `com.example.reactor` + `api(projects.userNote.domain)`
+#### user-note/data-contract/ (3 файлов)
+- `user-note/data-contract/src/main/java/com/example/usernote/contract/package-info.java` — [REVIEW] — `@NullMarked`
+- `user-note/data-contract/src/main/java/com/example/usernote/contract/UserNoteContract.java` — [REVIEW] — объединяет 8 методов одним интерфейсом (add/existsByUserIdAndNoteId/findById/findByNoteId/findByUserIdAndNoteId/findByUserId/remove/replace) — пересмотр 2026-07-08
+- `user-note/data-contract/build.gradle.kts` — [REVIEW] — `com.example.library` + `api(projects.userNote.domain)`
+#### user-note/application/ (6 файлов)
+- `user-note/application/src/test/resources/application.properties` — [REVIEW] — Пустой файл (0 байт) — идентично `note/application/src/test/resources/application.properties`, не аномалия
+- `user-note/application/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — Единственный тест во всём сервисе — тривиальный `contextLoads()`. См. «Главные находки» п. 1
+- `user-note/application/src/main/resources/application.properties` — [REVIEW]
+- `user-note/application/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — `@NullMarked`
+- `user-note/application/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW]
+- `user-note/application/build.gradle.kts` — [REVIEW] — Соответствует конвенции: `spring-boot-application` + `spring-boot-h2-database`, зависимости domain+data-contract+webmvc+data-jpa — единственная связка technology (см. открытый вопрос «Комбинации technology в application/»)
 #### user-note/ — предлагаемые отсутствующие файлы (`[ADD]`, 18)
-
+- `user-note/webmvc/src/test/java/com/example/usernote/webmvc/UserNoteExceptionHandlerTest.java` — [ADD] — Проверка `ProblemDetail` (статус, detail) для `UserNoteNotFoundException`
+- `user-note/webmvc/src/test/java/com/example/usernote/webmvc/UserNoteControllerTest.java` — [ADD] — `@WebMvcTest` + `@MockitoBean` на контракт, все 7 HTTP-операций одним классом — после пересмотра 2026-07-08 контроллер один, не семь; включая кейсы 404 при `!exists`
+- `user-note/webflux/src/test/java/com/example/usernote/webflux/UserNoteExceptionHandlerTest.java` — [ADD] — Проверка `ProblemDetail` + `setTitle("UserNote Not Found")`
+- `user-note/webflux/src/test/java/com/example/usernote/webflux/UserNoteControllerTest.java` — [ADD] — `@WebFluxTest` + `WebTestClient`, все 7 HTTP-операций одним классом
 - `user-note/domain/src/test/java/com/example/usernote/domain/UserNoteNotFoundExceptionTest.java` — [ADD] — Unit-тест на оба конструктора исключения (по `id` и по `userId+noteId`) и текст сообщения
-- `user-note/data-jpa/src/test/java/com/example/usernote/data/jpa/mapper/UserNoteJpaMapperTest.java` — [ADD] — Unit-тест ручного маппинга `toNewEntity`/`toExistingEntity`/`toResponse`
-- `user-note/data-jpa/src/test/java/com/example/usernote/data/jpa/adapter/UserNoteJpaAdapterIT.java` — [ADD] — `@DataJpaTest`/testcontainers-тест на все 8 адаптеров JPA (add/exists/find*/remove/replace), включая проверку unique constraint `user_id+note_id` и `UserNoteNotFoundException` в `replace`
+- `user-note/data-r2dbc/src/test/java/com/example/usernote/data/r2dbc/mapper/UserNoteR2dbcMapperTest.java` — [ADD] — Unit-тест конвертации `role` enum↔String
+- `user-note/data-r2dbc/src/test/java/com/example/usernote/data/r2dbc/adapter/UserNoteR2dbcAdapterIT.java` — [ADD] — Testcontainers-тест на все 8 адаптеров; заблокирован открытым вопросом «Управление схемой для R2DBC/JDBC» — нужен `schema.sql` (см. ниже), иначе таблицы неоткуда взять
+- `user-note/data-r2dbc/src/main/resources/schema.sql` (или `application/src/main/resources/db/migration/...` при выборе Flyway/Liquibase) — [ADD] — Реализация открытого вопроса «Управление схемой для R2DBC/JDBC»: таблица `user_notes` + unique constraint `user_id, note_id`, которого сейчас нет ни в одной технологии, кроме JPA/MongoDB
 - `user-note/data-mongodb/src/test/java/com/example/usernote/data/mongodb/mapper/UserNoteMongoMapperTest.java` — [ADD] — Unit-тест маппера
 - `user-note/data-mongodb/src/test/java/com/example/usernote/data/mongodb/adapter/UserNoteMongoAdapterIT.java` — [ADD] — Testcontainers/embedded-Mongo тест на все 8 адаптеров, включая `@CompoundIndex(unique = true)`
 - `user-note/data-mongodb-reactive/src/test/java/com/example/usernote/data/mongodb/reactive/mapper/UserNoteMongoReactiveMapperTest.java` — [ADD] — Unit-тест маппера
 - `user-note/data-mongodb-reactive/src/test/java/com/example/usernote/data/mongodb/reactive/adapter/UserNoteMongoReactiveAdapterIT.java` — [ADD] — Testcontainers-тест с `StepVerifier` на все 8 reactive-адаптеров
-- `user-note/data-r2dbc/src/test/java/com/example/usernote/data/r2dbc/mapper/UserNoteR2dbcMapperTest.java` — [ADD] — Unit-тест конвертации `role` enum↔String
-- `user-note/data-r2dbc/src/test/java/com/example/usernote/data/r2dbc/adapter/UserNoteR2dbcAdapterIT.java` — [ADD] — Testcontainers-тест на все 8 адаптеров; заблокирован открытым вопросом «Управление схемой для R2DBC/JDBC» — нужен `schema.sql` (см. ниже), иначе таблицы неоткуда взять
-- `user-note/data-r2dbc/src/main/resources/schema.sql` (или `application/src/main/resources/db/migration/...` при выборе Flyway/Liquibase) — [ADD] — Реализация открытого вопроса «Управление схемой для R2DBC/JDBC»: таблица `user_notes` + unique constraint `user_id, note_id`, которого сейчас нет ни в одной технологии, кроме JPA/MongoDB
+- `user-note/data-jpa/src/test/java/com/example/usernote/data/jpa/mapper/UserNoteJpaMapperTest.java` — [ADD] — Unit-тест ручного маппинга `toNewEntity`/`toExistingEntity`/`toResponse`
+- `user-note/data-jpa/src/test/java/com/example/usernote/data/jpa/adapter/UserNoteJpaAdapterIT.java` — [ADD] — `@DataJpaTest`/testcontainers-тест на все 8 адаптеров JPA (add/exists/find*/remove/replace), включая проверку unique constraint `user_id+note_id` и `UserNoteNotFoundException` в `replace`
 - `user-note/data-jdbc/src/test/java/com/example/usernote/data/jdbc/mapper/UserNoteJdbcMapperTest.java` — [ADD] — Unit-тест `fromRow(ResultSet, int)` (мок `ResultSet`)
 - `user-note/data-jdbc/src/test/java/com/example/usernote/data/jdbc/adapter/UserNoteJdbcAdapterIT.java` — [ADD] — Testcontainers-тест на все 8 адаптеров; тот же блокер по схеме, что и у R2DBC
 - `user-note/data-jdbc/src/main/resources/schema.sql` (или общий с R2DBC) — [ADD] — Аналогично — для сырого SQL в `data-jdbc/`
-- `user-note/webmvc/src/test/java/com/example/usernote/webmvc/UserNoteControllerTest.java` — [ADD] — `@WebMvcTest` + `@MockitoBean` на контракт, все 7 HTTP-операций одним классом — после пересмотра 2026-07-08 контроллер один, не семь; включая кейсы 404 при `!exists`
-- `user-note/webmvc/src/test/java/com/example/usernote/webmvc/UserNoteExceptionHandlerTest.java` — [ADD] — Проверка `ProblemDetail` (статус, detail) для `UserNoteNotFoundException`
-- `user-note/webflux/src/test/java/com/example/usernote/webflux/UserNoteControllerTest.java` — [ADD] — `@WebFluxTest` + `WebTestClient`, все 7 HTTP-операций одним классом
-- `user-note/webflux/src/test/java/com/example/usernote/webflux/UserNoteExceptionHandlerTest.java` — [ADD] — Проверка `ProblemDetail` + `setTitle("UserNote Not Found")`
 - `user-note/application/src/test/java/com/example/usernote/UserNoteEndToEndIT.java` — [ADD] — Сквозной `@SpringBootTest` + `MockMvc`/testcontainers-БД, проверяющий реальную цепочку webmvc→data-jpa (единственная подключённая в `application/` связка)
-
 ### user/ (71 файл + 13 предложенных)
 
 #### Ключевые находки
@@ -487,139 +452,113 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
 
 Статус по умолчанию для каждого файла — `[REVIEW]` (правило «Пересмотр решений»: ничего не считается окончательно принятым при первом просмотре).
 
-#### user/application/ (6 файлов)
-
-- `user/application/src/main/java/com/example/user/UserApplication.java` — [REVIEW] — Стандартный `@SpringBootApplication`
-- `user/application/src/main/java/com/example/user/package-info.java` — [REVIEW] — `@NullMarked` присутствует
-- `user/application/build.gradle.kts` — [REVIEW] — Единственная technology-комбинация `webmvc`+`data-jpa`+`spring-boot-h2-database` — соответствует открытому решению «Комбинации technology в `application/`», замечаний по синтаксису нет
-- `user/application/src/main/resources/application.properties` — [REVIEW] — `spring.application.name`+`spring.mvc.problemdetails.enabled=true`, соответствует принятому решению «ProblemDetail»
-- `user/application/src/test/java/com/example/user/UserApplicationTests.java` — [REVIEW] — Единственный тест во всём сервисе — тривиальный `contextLoads()`; нет ни одного другого теста ни в одном модуле `user/`
-- `user/application/src/test/resources/application.properties` — [REVIEW] — Файл существует, но пуст (0 байт) — не переопределяет ничего для тестового профиля
-
-#### user/data-contract/ (3 файлов)
-
-- `user/data-contract/build.gradle.kts` — [REVIEW] — `id("com.example.library")` + `api(projects.user.domain)`, соответствует принятому решению об `api` только когда тип в публичной сигнатуре
-- `user/data-contract/src/main/java/com/example/user/contract/UserContract.java` — [REVIEW] — объединяет 8 методов одним интерфейсом (add/existsById/findAll/findByEmail/findById/findByUsername/remove/replace) — пересмотр 2026-07-08
-- `user/data-contract/src/main/java/com/example/user/contract/package-info.java` — [REVIEW] — `@NullMarked`
-
-#### user/data-contract-reactive/ (3 файлов)
-
-- `user/data-contract-reactive/build.gradle.kts` — [REVIEW] — `id("com.example.reactor")` + `api(projects.user.domain)`
-- `user/data-contract-reactive/src/main/java/com/example/user/contract/reactive/UserContractReactive.java` — [REVIEW] — объединяет 8 reactive-методов одним интерфейсом — тот же пересмотр
-- `user/data-contract-reactive/src/main/java/com/example/user/contract/reactive/package-info.java` — [REVIEW] — `@NullMarked`
-
-#### user/data-jdbc/ (6 файлов)
-
-- `user/data-jdbc/build.gradle.kts` — [REVIEW] — `id("com.example.spring-boot-data-jdbc")` + `implementation(projects.user.dataContract)`
-- `user/data-jdbc/src/main/java/com/example/user/data/jdbc/adapter/UserJdbcAdapter.java` — [REVIEW] — объединяет все 8 операций одним классом
-- `user/data-jdbc/src/main/java/com/example/user/data/jdbc/adapter/package-info.java` — [REVIEW] — `@NullMarked`
-- `user/data-jdbc/src/main/java/com/example/user/data/jdbc/mapper/UserJdbcMapper.java` — [REVIEW] — `RowMapper`-совместимая сигнатура `fromRow(ResultSet, int)`
-- `user/data-jdbc/src/main/java/com/example/user/data/jdbc/mapper/UserJdbcMapperContract.java` — [REVIEW] — `{Entity}{Tech}MapperContract`
-- `user/data-jdbc/src/main/java/com/example/user/data/jdbc/mapper/package-info.java` — [REVIEW] — `@NullMarked`
-
-#### user/data-jpa/ (10 файлов)
-
-- `user/data-jpa/build.gradle.kts` — [REVIEW] — `id("com.example.spring-boot-data-jpa")`
-- `user/data-jpa/src/main/java/com/example/user/data/jpa/adapter/UserJpaAdapter.java` — [REVIEW] — объединяет все 8 операций одним классом
-- `user/data-jpa/src/main/java/com/example/user/data/jpa/adapter/package-info.java` — [REVIEW] — `@NullMarked`
-- `user/data-jpa/src/main/java/com/example/user/data/jpa/mapper/UserJpaMapper.java` — [REVIEW] — Ручной маппинг, `Objects.requireNonNull(entity.getId())` в `toResponse` — корректная обработка `@Nullable UUID id`
-- `user/data-jpa/src/main/java/com/example/user/data/jpa/mapper/UserJpaMapperContract.java` — [REVIEW]
-- `user/data-jpa/src/main/java/com/example/user/data/jpa/mapper/package-info.java` — [REVIEW] — `@NullMarked`
-- `user/data-jpa/src/main/java/com/example/user/data/jpa/model/UserEntity.java` — [REVIEW] — `{Entity}Entity`, `@Id @GeneratedValue(UUID)`, `@Column(unique=true)` на `username`/`email` — unique constraint реально создаётся (в отличие от R2DBC/JDBC), `@SuppressWarnings("NullAway.Init")` на protected-конструкторе
-- `user/data-jpa/src/main/java/com/example/user/data/jpa/model/package-info.java` — [REVIEW] — `@NullMarked`
-- `user/data-jpa/src/main/java/com/example/user/data/jpa/repository/UserJpaRepository.java` — [REVIEW] — `JpaRepository<UserEntity, UUID>` + кастомные `findByUsername`/`findByEmail` — максимально использует Spring Data, соответствует памяти пользователя
-- `user/data-jpa/src/main/java/com/example/user/data/jpa/repository/package-info.java` — [REVIEW] — `@NullMarked`
-
-#### user/data-mongodb/ (10 файлов)
-
-- `user/data-mongodb/build.gradle.kts` — [REVIEW] — `id("com.example.spring-boot-data-mongodb")`
-- `user/data-mongodb/src/main/java/com/example/user/data/mongodb/adapter/UserMongoAdapter.java` — [REVIEW] — объединяет все 8 операций одним классом
-- `user/data-mongodb/src/main/java/com/example/user/data/mongodb/adapter/package-info.java` — [REVIEW] — `@NullMarked`
-- `user/data-mongodb/src/main/java/com/example/user/data/mongodb/mapper/UserMongoMapper.java` — [REVIEW] — ID генерируется мэппером (`UUID.randomUUID()`) для нового документа
-- `user/data-mongodb/src/main/java/com/example/user/data/mongodb/mapper/UserMongoMapperContract.java` — [REVIEW]
-- `user/data-mongodb/src/main/java/com/example/user/data/mongodb/mapper/package-info.java` — [REVIEW] — `@NullMarked`
-- `user/data-mongodb/src/main/java/com/example/user/data/mongodb/model/UserDocument.java` — [REVIEW] — `{Entity}Document`, `@Indexed(unique=true)` на `username`/`email` — unique constraint создаётся, `id` не `@Nullable` (в отличие от JPA/R2DBC) — корректно, т. к. ID присваивается вручную в мэппере ещё до вставки, не генерируется БД
-- `user/data-mongodb/src/main/java/com/example/user/data/mongodb/model/package-info.java` — [REVIEW] — `@NullMarked`
-- `user/data-mongodb/src/main/java/com/example/user/data/mongodb/repository/UserMongoRepository.java` — [REVIEW] — `MongoRepository<UserDocument, UUID>` + кастомные `findByUsername`/`findByEmail`
-- `user/data-mongodb/src/main/java/com/example/user/data/mongodb/repository/package-info.java` — [REVIEW] — `@NullMarked`
-
-#### user/data-mongodb-reactive/ (10 файлов)
-
-- `user/data-mongodb-reactive/build.gradle.kts` — [REVIEW] — `id("com.example.spring-boot-data-mongodb-reactive")`
-- `user/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/adapter/UserMongoReactiveAdapter.java` — [REVIEW] — объединяет все 8 операций одним классом
-- `user/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/adapter/package-info.java` — [REVIEW] — `@NullMarked`
-- `user/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/mapper/UserMongoReactiveMapper.java` — [REVIEW] — Соответствует конвенции, идентичен sync-версии по структуре
-- `user/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/mapper/UserMongoReactiveMapperContract.java` — [REVIEW]
-- `user/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/mapper/package-info.java` — [REVIEW] — `@NullMarked`
-- `user/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/model/UserReactiveDocument.java` — [REVIEW] — `{Entity}ReactiveDocument`, `@Indexed(unique=true)` на `username`/`email`
-- `user/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/model/package-info.java` — [REVIEW] — `@NullMarked`
-- `user/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/repository/UserMongoReactiveRepository.java` — [REVIEW] — `ReactiveMongoRepository<UserReactiveDocument, UUID>`
-- `user/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/repository/package-info.java` — [REVIEW] — `@NullMarked`
-
-#### user/data-r2dbc/ (10 файлов)
-
-- `user/data-r2dbc/build.gradle.kts` — [REVIEW] — `id("com.example.spring-boot-data-r2dbc")`
-- `user/data-r2dbc/src/main/java/com/example/user/data/r2dbc/adapter/UserR2dbcAdapter.java` — [REVIEW] — объединяет все 8 операций одним классом
-- `user/data-r2dbc/src/main/java/com/example/user/data/r2dbc/adapter/package-info.java` — [REVIEW] — `@NullMarked`
-- `user/data-r2dbc/src/main/java/com/example/user/data/r2dbc/mapper/UserR2dbcMapper.java` — [REVIEW] — `Objects.requireNonNull(entity.getId())` в `toResponse`, идентичен по структуре JPA-мэпперу
-- `user/data-r2dbc/src/main/java/com/example/user/data/r2dbc/mapper/UserR2dbcMapperContract.java` — [REVIEW]
-- `user/data-r2dbc/src/main/java/com/example/user/data/r2dbc/mapper/package-info.java` — [REVIEW] — `@NullMarked`
-- `user/data-r2dbc/src/main/java/com/example/user/data/r2dbc/model/UserR2dbcEntity.java` — [REVIEW] — `{Entity}{Tech}Entity`, `@Id private @Nullable UUID id`, но у `@Column("username")`/`@Column("email")` НЕТ атрибутов unique/constraints (у `spring-data-relational` их вообще нет) — unique constraint не создаётся нигде, соответствует открытому решению «Управление схемой для R2DBC/JDBC»
-- `user/data-r2dbc/src/main/java/com/example/user/data/r2dbc/model/package-info.java` — [REVIEW] — `@NullMarked`
-- `user/data-r2dbc/src/main/java/com/example/user/data/r2dbc/repository/UserR2dbcRepository.java` — [REVIEW] — `ReactiveCrudRepository<UserR2dbcEntity, UUID>` + кастомные `findByUsername`/`findByEmail`
-- `user/data-r2dbc/src/main/java/com/example/user/data/r2dbc/repository/package-info.java` — [REVIEW] — `@NullMarked`
-
-#### user/domain/ (5 файлов)
-
-- `user/domain/src/main/java/com/example/user/domain/UserNotFoundException.java` — [REVIEW] — Два конструктора (`UUID`/`String`) — используется и для поиска по id, и потенциально по email/username; доменное исключение, без зависимостей на инфраструктуру
-- `user/domain/src/main/java/com/example/user/domain/UserRequest.java` — [REVIEW] — `record(String username, String email)` — нет поля пароля/credentials; ожидаемо на текущем этапе, т. к. `auth/` — скелет без логики (открытое решение «Регистрация auth/ ↔ user/»)
-- `user/domain/src/main/java/com/example/user/domain/UserResponse.java` — [REVIEW] — `record(UUID id, String username, String email)`
-- `user/domain/src/main/java/com/example/user/domain/package-info.java` — [REVIEW] — `@NullMarked`
-- `user/domain/build.gradle.kts` — [REVIEW] — `id("com.example.base")`, соответствует конвенции чистого Java-модуля без инфраструктурных зависимостей
-
-#### user/webflux/ (4 файлов)
-
-- `user/webflux/build.gradle.kts` — [REVIEW] — `id("com.example.spring-boot-webflux")` + `implementation(projects.user.dataContractReactive)`
-- `user/webflux/src/main/java/com/example/user/webflux/UserController.java` — [REVIEW] — объединяет 5 HTTP-операций одним контроллером; findByEmail/findByUsername по-прежнему без HTTP-входа
-- `user/webflux/src/main/java/com/example/user/webflux/UserExceptionHandler.java` — [REVIEW] — `@RestControllerAdvice` без наследования (не `ResponseEntityExceptionHandler`, в отличие от `webmvc`-версии) — асимметрия оправдана: `ResponseEntityExceptionHandler` — MVC-специфичный класс, для WebFlux нет прямого аналога; уже выравнивалось при пересмотре CRUD-сервисов 2026-07-07
-- `user/webflux/src/main/java/com/example/user/webflux/package-info.java` — [REVIEW] — `@NullMarked`
-
 #### user/webmvc/ (4 файлов)
-
-- `user/webmvc/build.gradle.kts` — [REVIEW] — `id("com.example.spring-boot-webmvc")` + `implementation(projects.user.dataContract)`
-- `user/webmvc/src/main/java/com/example/user/webmvc/UserController.java` — [REVIEW] — объединяет 5 HTTP-операций одним контроллером; findByEmail/findByUsername по-прежнему без HTTP-входа
-- `user/webmvc/src/main/java/com/example/user/webmvc/UserExceptionHandler.java` — [REVIEW] — `@ControllerAdvice extends ResponseEntityExceptionHandler`, соответствует конвенции `webmvc` (см. комментарий к reactive-версии по асимметрии)
 - `user/webmvc/src/main/java/com/example/user/webmvc/package-info.java` — [REVIEW] — `@NullMarked`
-
+- `user/webmvc/src/main/java/com/example/user/webmvc/UserExceptionHandler.java` — [REVIEW] — `@ControllerAdvice extends ResponseEntityExceptionHandler`, соответствует конвенции `webmvc` (см. комментарий к reactive-версии по асимметрии)
+- `user/webmvc/src/main/java/com/example/user/webmvc/UserController.java` — [REVIEW] — объединяет 5 HTTP-операций одним контроллером; findByEmail/findByUsername по-прежнему без HTTP-входа
+- `user/webmvc/build.gradle.kts` — [REVIEW] — `id("com.example.spring-boot-webmvc")` + `implementation(projects.user.dataContract)`
+#### user/webflux/ (4 файлов)
+- `user/webflux/src/main/java/com/example/user/webflux/package-info.java` — [REVIEW] — `@NullMarked`
+- `user/webflux/src/main/java/com/example/user/webflux/UserExceptionHandler.java` — [REVIEW] — `@RestControllerAdvice` без наследования (не `ResponseEntityExceptionHandler`, в отличие от `webmvc`-версии) — асимметрия оправдана: `ResponseEntityExceptionHandler` — MVC-специфичный класс, для WebFlux нет прямого аналога; уже выравнивалось при пересмотре CRUD-сервисов 2026-07-07
+- `user/webflux/src/main/java/com/example/user/webflux/UserController.java` — [REVIEW] — объединяет 5 HTTP-операций одним контроллером; findByEmail/findByUsername по-прежнему без HTTP-входа
+- `user/webflux/build.gradle.kts` — [REVIEW] — `id("com.example.spring-boot-webflux")` + `implementation(projects.user.dataContractReactive)`
+#### user/domain/ (5 файлов)
+- `user/domain/src/main/java/com/example/user/domain/package-info.java` — [REVIEW] — `@NullMarked`
+- `user/domain/src/main/java/com/example/user/domain/UserResponse.java` — [REVIEW] — `record(UUID id, String username, String email)`
+- `user/domain/src/main/java/com/example/user/domain/UserRequest.java` — [REVIEW] — `record(String username, String email)` — нет поля пароля/credentials; ожидаемо на текущем этапе, т. к. `auth/` — скелет без логики (открытое решение «Регистрация auth/ ↔ user/»)
+- `user/domain/src/main/java/com/example/user/domain/UserNotFoundException.java` — [REVIEW] — Два конструктора (`UUID`/`String`) — используется и для поиска по id, и потенциально по email/username; доменное исключение, без зависимостей на инфраструктуру
+- `user/domain/build.gradle.kts` — [REVIEW] — `id("com.example.base")`, соответствует конвенции чистого Java-модуля без инфраструктурных зависимостей
+#### user/data-r2dbc/ (10 файлов)
+- `user/data-r2dbc/src/main/java/com/example/user/data/r2dbc/repository/package-info.java` — [REVIEW] — `@NullMarked`
+- `user/data-r2dbc/src/main/java/com/example/user/data/r2dbc/repository/UserR2dbcRepository.java` — [REVIEW] — `ReactiveCrudRepository<UserR2dbcEntity, UUID>` + кастомные `findByUsername`/`findByEmail`
+- `user/data-r2dbc/src/main/java/com/example/user/data/r2dbc/model/package-info.java` — [REVIEW] — `@NullMarked`
+- `user/data-r2dbc/src/main/java/com/example/user/data/r2dbc/model/UserR2dbcEntity.java` — [REVIEW] — `{Entity}{Tech}Entity`, `@Id private @Nullable UUID id`, но у `@Column("username")`/`@Column("email")` НЕТ атрибутов unique/constraints (у `spring-data-relational` их вообще нет) — unique constraint не создаётся нигде, соответствует открытому решению «Управление схемой для R2DBC/JDBC»
+- `user/data-r2dbc/src/main/java/com/example/user/data/r2dbc/mapper/package-info.java` — [REVIEW] — `@NullMarked`
+- `user/data-r2dbc/src/main/java/com/example/user/data/r2dbc/mapper/UserR2dbcMapperContract.java` — [REVIEW]
+- `user/data-r2dbc/src/main/java/com/example/user/data/r2dbc/mapper/UserR2dbcMapper.java` — [REVIEW] — `Objects.requireNonNull(entity.getId())` в `toResponse`, идентичен по структуре JPA-мэпперу
+- `user/data-r2dbc/src/main/java/com/example/user/data/r2dbc/adapter/package-info.java` — [REVIEW] — `@NullMarked`
+- `user/data-r2dbc/src/main/java/com/example/user/data/r2dbc/adapter/UserR2dbcAdapter.java` — [REVIEW] — объединяет все 8 операций одним классом
+- `user/data-r2dbc/build.gradle.kts` — [REVIEW] — `id("com.example.spring-boot-data-r2dbc")`
+#### user/data-mongodb-reactive/ (10 файлов)
+- `user/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/repository/package-info.java` — [REVIEW] — `@NullMarked`
+- `user/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/repository/UserMongoReactiveRepository.java` — [REVIEW] — `ReactiveMongoRepository<UserReactiveDocument, UUID>`
+- `user/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/model/package-info.java` — [REVIEW] — `@NullMarked`
+- `user/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/model/UserReactiveDocument.java` — [REVIEW] — `{Entity}ReactiveDocument`, `@Indexed(unique=true)` на `username`/`email`
+- `user/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/mapper/package-info.java` — [REVIEW] — `@NullMarked`
+- `user/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/mapper/UserMongoReactiveMapperContract.java` — [REVIEW]
+- `user/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/mapper/UserMongoReactiveMapper.java` — [REVIEW] — Соответствует конвенции, идентичен sync-версии по структуре
+- `user/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/adapter/package-info.java` — [REVIEW] — `@NullMarked`
+- `user/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/adapter/UserMongoReactiveAdapter.java` — [REVIEW] — объединяет все 8 операций одним классом
+- `user/data-mongodb-reactive/build.gradle.kts` — [REVIEW] — `id("com.example.spring-boot-data-mongodb-reactive")`
+#### user/data-mongodb/ (10 файлов)
+- `user/data-mongodb/src/main/java/com/example/user/data/mongodb/repository/package-info.java` — [REVIEW] — `@NullMarked`
+- `user/data-mongodb/src/main/java/com/example/user/data/mongodb/repository/UserMongoRepository.java` — [REVIEW] — `MongoRepository<UserDocument, UUID>` + кастомные `findByUsername`/`findByEmail`
+- `user/data-mongodb/src/main/java/com/example/user/data/mongodb/model/package-info.java` — [REVIEW] — `@NullMarked`
+- `user/data-mongodb/src/main/java/com/example/user/data/mongodb/model/UserDocument.java` — [REVIEW] — `{Entity}Document`, `@Indexed(unique=true)` на `username`/`email` — unique constraint создаётся, `id` не `@Nullable` (в отличие от JPA/R2DBC) — корректно, т. к. ID присваивается вручную в мэппере ещё до вставки, не генерируется БД
+- `user/data-mongodb/src/main/java/com/example/user/data/mongodb/mapper/package-info.java` — [REVIEW] — `@NullMarked`
+- `user/data-mongodb/src/main/java/com/example/user/data/mongodb/mapper/UserMongoMapperContract.java` — [REVIEW]
+- `user/data-mongodb/src/main/java/com/example/user/data/mongodb/mapper/UserMongoMapper.java` — [REVIEW] — ID генерируется мэппером (`UUID.randomUUID()`) для нового документа
+- `user/data-mongodb/src/main/java/com/example/user/data/mongodb/adapter/package-info.java` — [REVIEW] — `@NullMarked`
+- `user/data-mongodb/src/main/java/com/example/user/data/mongodb/adapter/UserMongoAdapter.java` — [REVIEW] — объединяет все 8 операций одним классом
+- `user/data-mongodb/build.gradle.kts` — [REVIEW] — `id("com.example.spring-boot-data-mongodb")`
+#### user/data-jpa/ (10 файлов)
+- `user/data-jpa/src/main/java/com/example/user/data/jpa/repository/package-info.java` — [REVIEW] — `@NullMarked`
+- `user/data-jpa/src/main/java/com/example/user/data/jpa/repository/UserJpaRepository.java` — [REVIEW] — `JpaRepository<UserEntity, UUID>` + кастомные `findByUsername`/`findByEmail` — максимально использует Spring Data, соответствует памяти пользователя
+- `user/data-jpa/src/main/java/com/example/user/data/jpa/model/package-info.java` — [REVIEW] — `@NullMarked`
+- `user/data-jpa/src/main/java/com/example/user/data/jpa/model/UserEntity.java` — [REVIEW] — `{Entity}Entity`, `@Id @GeneratedValue(UUID)`, `@Column(unique=true)` на `username`/`email` — unique constraint реально создаётся (в отличие от R2DBC/JDBC), `@SuppressWarnings("NullAway.Init")` на protected-конструкторе
+- `user/data-jpa/src/main/java/com/example/user/data/jpa/mapper/package-info.java` — [REVIEW] — `@NullMarked`
+- `user/data-jpa/src/main/java/com/example/user/data/jpa/mapper/UserJpaMapperContract.java` — [REVIEW]
+- `user/data-jpa/src/main/java/com/example/user/data/jpa/mapper/UserJpaMapper.java` — [REVIEW] — Ручной маппинг, `Objects.requireNonNull(entity.getId())` в `toResponse` — корректная обработка `@Nullable UUID id`
+- `user/data-jpa/src/main/java/com/example/user/data/jpa/adapter/package-info.java` — [REVIEW] — `@NullMarked`
+- `user/data-jpa/src/main/java/com/example/user/data/jpa/adapter/UserJpaAdapter.java` — [REVIEW] — объединяет все 8 операций одним классом
+- `user/data-jpa/build.gradle.kts` — [REVIEW] — `id("com.example.spring-boot-data-jpa")`
+#### user/data-jdbc/ (6 файлов)
+- `user/data-jdbc/src/main/java/com/example/user/data/jdbc/mapper/package-info.java` — [REVIEW] — `@NullMarked`
+- `user/data-jdbc/src/main/java/com/example/user/data/jdbc/mapper/UserJdbcMapperContract.java` — [REVIEW] — `{Entity}{Tech}MapperContract`
+- `user/data-jdbc/src/main/java/com/example/user/data/jdbc/mapper/UserJdbcMapper.java` — [REVIEW] — `RowMapper`-совместимая сигнатура `fromRow(ResultSet, int)`
+- `user/data-jdbc/src/main/java/com/example/user/data/jdbc/adapter/package-info.java` — [REVIEW] — `@NullMarked`
+- `user/data-jdbc/src/main/java/com/example/user/data/jdbc/adapter/UserJdbcAdapter.java` — [REVIEW] — объединяет все 8 операций одним классом
+- `user/data-jdbc/build.gradle.kts` — [REVIEW] — `id("com.example.spring-boot-data-jdbc")` + `implementation(projects.user.dataContract)`
+#### user/data-contract-reactive/ (3 файлов)
+- `user/data-contract-reactive/src/main/java/com/example/user/contract/reactive/package-info.java` — [REVIEW] — `@NullMarked`
+- `user/data-contract-reactive/src/main/java/com/example/user/contract/reactive/UserContractReactive.java` — [REVIEW] — объединяет 8 reactive-методов одним интерфейсом — тот же пересмотр
+- `user/data-contract-reactive/build.gradle.kts` — [REVIEW] — `id("com.example.reactor")` + `api(projects.user.domain)`
+#### user/data-contract/ (3 файлов)
+- `user/data-contract/src/main/java/com/example/user/contract/package-info.java` — [REVIEW] — `@NullMarked`
+- `user/data-contract/src/main/java/com/example/user/contract/UserContract.java` — [REVIEW] — объединяет 8 методов одним интерфейсом (add/existsById/findAll/findByEmail/findById/findByUsername/remove/replace) — пересмотр 2026-07-08
+- `user/data-contract/build.gradle.kts` — [REVIEW] — `id("com.example.library")` + `api(projects.user.domain)`, соответствует принятому решению об `api` только когда тип в публичной сигнатуре
+#### user/application/ (6 файлов)
+- `user/application/src/test/resources/application.properties` — [REVIEW] — Файл существует, но пуст (0 байт) — не переопределяет ничего для тестового профиля
+- `user/application/src/test/java/com/example/user/UserApplicationTests.java` — [REVIEW] — Единственный тест во всём сервисе — тривиальный `contextLoads()`; нет ни одного другого теста ни в одном модуле `user/`
+- `user/application/src/main/resources/application.properties` — [REVIEW] — `spring.application.name`+`spring.mvc.problemdetails.enabled=true`, соответствует принятому решению «ProblemDetail»
+- `user/application/src/main/java/com/example/user/package-info.java` — [REVIEW] — `@NullMarked` присутствует
+- `user/application/src/main/java/com/example/user/UserApplication.java` — [REVIEW] — Стандартный `@SpringBootApplication`
+- `user/application/build.gradle.kts` — [REVIEW] — Единственная technology-комбинация `webmvc`+`data-jpa`+`spring-boot-h2-database` — соответствует открытому решению «Комбинации technology в `application/`», замечаний по синтаксису нет
 #### user/ — предлагаемые отсутствующие файлы (`[ADD]`, 13)
-
+- `user/webmvc/src/test/java/com/example/user/webmvc/UserControllerTest.java` — [ADD] — Нет `@WebMvcTest`-покрытия контроллера `webmvc` вообще
+- `user/webmvc/src/main/java/com/example/user/webmvc/UserController.java` (доп. методы `findByEmail`/`findByUsername`) — [ADD] — Один из вариантов закрытия открытого вопроса «`findByEmail`/`findByUsername` без HTTP-входа» — добавить эндпоинты в уже существующий контроллер (альтернатива: оставить как задел под `auth/`, либо убрать как неиспользуемое)
+- `user/webflux/src/test/java/com/example/user/webflux/UserControllerTest.java` — [ADD] — Нет `@WebFluxTest`-покрытия контроллера `webflux` вообще
+- `user/webflux/src/main/java/com/example/user/webflux/UserController.java` (доп. методы `findByEmail`/`findByUsername`) — [ADD] — Reactive-аналог, тот же открытый вопрос
 - `user/domain/src/test/java/com/example/user/domain/UserNotFoundExceptionTest.java` — [ADD] — Нет ни одного unit-теста на domain-слой во всём сервисе
-- `user/data-jpa/src/test/java/com/example/user/data/jpa/adapter/UserJpaAdapterTest.java` — [ADD] — Нет integration-тестов адаптеров/mapper'а JPA (например, через `@DataJpaTest` или Testcontainers)
-- `user/data-mongodb/src/test/java/com/example/user/data/mongodb/adapter/UserMongoAdapterTest.java` — [ADD] — Нет тестов MongoDB-адаптеров (Testcontainers Mongo)
-- `user/data-mongodb-reactive/src/test/java/com/example/user/data/mongodb/reactive/adapter/UserMongoReactiveAdapterTest.java` — [ADD] — Нет тестов reactive Mongo-адаптеров (`StepVerifier` + Testcontainers)
-- `user/data-jdbc/src/test/java/com/example/user/data/jdbc/adapter/UserJdbcAdapterTest.java` — [ADD] — Нет тестов JDBC-адаптеров; потребует тестовую схему (см. следующую строку)
-- `user/data-jdbc/src/main/resources/schema.sql` — [ADD] — Нет схемы БД для JDBC вообще — `data-jdbc` не подключён ни к одному `application/`; нужна, чтобы включить unique constraint `username`/`email` (открытое решение «Управление схемой для R2DBC/JDBC»)
 - `user/data-r2dbc/src/test/java/com/example/user/data/r2dbc/adapter/UserR2dbcAdapterTest.java` — [ADD] — Нет тестов R2DBC-адаптеров; потребует тестовую схему
 - `user/data-r2dbc/src/main/resources/schema.sql` — [ADD] — Аналогично — `spring-data-relational` не поддерживает unique constraint через аннотации, нужна явная схема
-- `user/webmvc/src/main/java/com/example/user/webmvc/UserController.java` (доп. методы `findByEmail`/`findByUsername`) — [ADD] — Один из вариантов закрытия открытого вопроса «`findByEmail`/`findByUsername` без HTTP-входа» — добавить эндпоинты в уже существующий контроллер (альтернатива: оставить как задел под `auth/`, либо убрать как неиспользуемое)
-- `user/webmvc/src/test/java/com/example/user/webmvc/UserControllerTest.java` — [ADD] — Нет `@WebMvcTest`-покрытия контроллера `webmvc` вообще
-- `user/webflux/src/main/java/com/example/user/webflux/UserController.java` (доп. методы `findByEmail`/`findByUsername`) — [ADD] — Reactive-аналог, тот же открытый вопрос
-- `user/webflux/src/test/java/com/example/user/webflux/UserControllerTest.java` — [ADD] — Нет `@WebFluxTest`-покрытия контроллера `webflux` вообще
+- `user/data-mongodb/src/test/java/com/example/user/data/mongodb/adapter/UserMongoAdapterTest.java` — [ADD] — Нет тестов MongoDB-адаптеров (Testcontainers Mongo)
+- `user/data-mongodb-reactive/src/test/java/com/example/user/data/mongodb/reactive/adapter/UserMongoReactiveAdapterTest.java` — [ADD] — Нет тестов reactive Mongo-адаптеров (`StepVerifier` + Testcontainers)
+- `user/data-jpa/src/test/java/com/example/user/data/jpa/adapter/UserJpaAdapterTest.java` — [ADD] — Нет integration-тестов адаптеров/mapper'а JPA (например, через `@DataJpaTest` или Testcontainers)
+- `user/data-jdbc/src/test/java/com/example/user/data/jdbc/adapter/UserJdbcAdapterTest.java` — [ADD] — Нет тестов JDBC-адаптеров; потребует тестовую схему (см. следующую строку)
+- `user/data-jdbc/src/main/resources/schema.sql` — [ADD] — Нет схемы БД для JDBC вообще — `data-jdbc` не подключён ни к одному `application/`; нужна, чтобы включить unique constraint `username`/`email` (открытое решение «Управление схемой для R2DBC/JDBC»)
 - `user/application-webflux-r2dbc/build.gradle.kts` — [ADD] — Пример одного из вариантов закрытия открытого решения «Комбинации technology в `application/`» — сделать `webflux`+`data-r2dbc` реально запускаемой связкой, а не только компилируемой
-
 ### registry/ (6 файлов)
 
 Skeleton-сервис Eureka server. Структурно идентичен `gateway/`/`config/`/`auth/`: convention-плагины + Application-класс + package-info + application.properties (main/test) + тривиальный `contextLoads()`.
 
 #### registry/application/ (6 файлов)
-
-- `registry/application/src/main/java/com/example/registry/RegistryApplication.java` — [REVIEW] — `@EnableEurekaServer` + `@SpringBootApplication`, стандартно
-- `registry/application/src/main/java/com/example/registry/package-info.java` — [REVIEW] — `@NullMarked`
-- `registry/build.gradle.kts` — [REVIEW] — `spring-cloud-eureka-server` + `spring-boot-actuator` — совпадает со «Скелет»
-- `registry/src/main/resources/application.properties` — [REVIEW] — `register-with-eureka=false`, `fetch-registry=false` — сервер не регистрирует сам себя, ожидаемо
-- `registry/src/test/java/com/example/registry/RegistryApplicationTests.java` — [REVIEW] — только `contextLoads()`, других тестов нет
 - `registry/src/test/resources/application.properties` — [REVIEW] — дублирует eureka-флаги main-конфига под тестовый профиль
-
+- `registry/src/test/java/com/example/registry/RegistryApplicationTests.java` — [REVIEW] — только `contextLoads()`, других тестов нет
+- `registry/src/main/resources/application.properties` — [REVIEW] — `register-with-eureka=false`, `fetch-registry=false` — сервер не регистрирует сам себя, ожидаемо
+- `registry/build.gradle.kts` — [REVIEW] — `spring-cloud-eureka-server` + `spring-boot-actuator` — совпадает со «Скелет»
+- `registry/application/src/main/java/com/example/registry/package-info.java` — [REVIEW] — `@NullMarked`
+- `registry/application/src/main/java/com/example/registry/RegistryApplication.java` — [REVIEW] — `@EnableEurekaServer` + `@SpringBootApplication`, стандартно
 ### note/ (71 файл + 19 предложенных)
 
 Каждый файл прочитан целиком и сверен с CLAUDE.md (naming, слои, принятые решения). Статус `[REVIEW]` — по умолчанию для всех строк (в проекте ничего не считается окончательно принятым при первом просмотре, см. правило «Пересмотр решений»); `[DONE]` ставит только человек. `[ADD]` — файлов сейчас нет, предложены для реальной работоспособности сервиса.
@@ -632,175 +571,140 @@ Skeleton-сервис Eureka server. Структурно идентичен `ga
 4. **`data-mongodb` (sync) непоследователен внутри себя и относительно `data-mongodb-reactive`**: методы `add`/`replace` в `NoteMongoAdapter` обходят `NoteMongoRepository` и работают напрямую через `MongoTemplate`, тогда как остальные 4 метода того же класса и все 6 методов `NoteMongoReactiveAdapter` используют репозиторий. Подтверждено декомпиляцией (`spring-data-mongodb-5.0.5.jar`): `MongoRepository` (sync), как и `ReactiveMongoRepository`, имеет собственный `insert(S)` — технического ограничения для использования репозитория в sync `add`/`replace` нет, это чистая стилевая непоследовательность. После пересмотра 2026-07-08 расхождение — между методами одного класса, а не между отдельными файлами адаптеров, как было раньше.
 5. **Схема БД для `data-r2dbc`/`data-jdbc` по-прежнему не создаётся нигде** (соответствует открытому решению «Управление схемой для R2DBC/JDBC» в CLAUDE.md) — `note/application/` подключает только `webmvc`+`data-jpa`, эти два модуля даже не скомпонованы ни в один `application/`; `NoteR2dbcEntity` не имеет аналога `@GeneratedValue` (Spring Data R2DBC не поддерживает автогенерацию на уровне аннотаций), значит `INSERT` для новой записи полагается на `DEFAULT`/`GENERATED` в реальной схеме, которой в репозитории нет.
 
-#### note/application/ (6 файлов)
-
-- `note/application/src/main/java/com/example/note/NoteApplication.java` — [REVIEW]
-- `note/application/src/main/java/com/example/note/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
-- `note/application/build.gradle.kts` — [REVIEW] — `spring-boot-application` + `spring-boot-h2-database`; implementation на domain/dataContract/webmvc/dataJpa — единственная связка technology в проекте (см. открытое решение «Комбинации technology в application/»)
-- `note/application/src/main/resources/application.properties` — [REVIEW] — `spring.application.name` + `spring.mvc.problemdetails.enabled=true` — соответствует принятому решению по `ProblemDetail`; datasource не сконфигурирован явно (полагается на дефолты `spring-boot-h2-database`)
-- `note/application/src/test/java/com/example/note/NoteApplicationTests.java` — [REVIEW] — единственный тест во всём сервисе — только `contextLoads()`, см. находку №1
-- `note/application/src/test/resources/application.properties` — [REVIEW] — файл пуст (0 байт) — неясно, нужен ли вообще как заглушка
-
-#### note/data-contract/ (3 файлов)
-
-- `note/data-contract/build.gradle.kts` — [REVIEW] — `id("com.example.library")` + `api(projects.note.domain)` — соответствует
-- `note/data-contract/src/main/java/com/example/note/contract/NoteContract.java` — [REVIEW] — объединяет 6 методов одним интерфейсом (add/existsById/findAll/findById/remove/replace) — пересмотр 2026-07-08: контракт на сущность, не на операцию
-- `note/data-contract/src/main/java/com/example/note/contract/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
-
-#### note/data-contract-reactive/ (3 файлов)
-
-- `note/data-contract-reactive/build.gradle.kts` — [REVIEW] — `id("com.example.reactor")` + `api(projects.note.domain)` — соответствует
-- `note/data-contract-reactive/src/main/java/com/example/note/contract/reactive/NoteContractReactive.java` — [REVIEW] — объединяет 6 reactive-методов одним интерфейсом — тот же пересмотр 2026-07-08
-- `note/data-contract-reactive/src/main/java/com/example/note/contract/reactive/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
-
-#### note/data-jdbc/ (6 файлов)
-
-- `note/data-jdbc/build.gradle.kts` — [REVIEW] — `spring-boot-data-jdbc` + `implementation(projects.note.dataContract)` (sync-контракт, верно для JDBC) — соответствует
-- `note/data-jdbc/src/main/java/com/example/note/data/jdbc/adapter/NoteJdbcAdapter.java` — [REVIEW] — объединяет все 6 операций одним классом
-- `note/data-jdbc/src/main/java/com/example/note/data/jdbc/adapter/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
-- `note/data-jdbc/src/main/java/com/example/note/data/jdbc/mapper/NoteJdbcMapper.java` — [REVIEW] — реализует `RowMapper`-подобный `fromRow(ResultSet, rowNum)` — соответствует `{Entity}{Tech}Mapper`
-- `note/data-jdbc/src/main/java/com/example/note/data/jdbc/mapper/NoteJdbcMapperContract.java` — [REVIEW] — сигнатура специфична для JDBC (`fromRow`, а не `toNewX/toExistingX/toResponse` как у остальных технологий) — оправданная адаптация под `RowMapper`, не расхождение
-- `note/data-jdbc/src/main/java/com/example/note/data/jdbc/mapper/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
-
-#### note/data-jpa/ (10 файлов)
-
-- `note/data-jpa/build.gradle.kts` — [REVIEW] — `spring-boot-data-jpa` + `implementation(projects.note.dataContract)` — соответствует
-- `note/data-jpa/src/main/java/com/example/note/data/jpa/adapter/NoteJpaAdapter.java` — [REVIEW] — объединяет все 6 операций одним классом, реализующим `NoteContract` целиком
-- `note/data-jpa/src/main/java/com/example/note/data/jpa/adapter/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
-- `note/data-jpa/src/main/java/com/example/note/data/jpa/mapper/NoteJpaMapper.java` — [REVIEW] — `toNewEntity`/`toExistingEntity`/`toResponse`, `Objects.requireNonNull(entity.getId())` в `toResponse` — соответствует
-- `note/data-jpa/src/main/java/com/example/note/data/jpa/mapper/NoteJpaMapperContract.java` — [REVIEW] — соответствует `{Entity}{Tech}MapperContract`
-- `note/data-jpa/src/main/java/com/example/note/data/jpa/mapper/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
-- `note/data-jpa/src/main/java/com/example/note/data/jpa/model/NoteEntity.java` — [REVIEW] — `@Entity`/`@Table("notes")`, `@GeneratedValue(UUID)`, `@Nullable UUID id`, `protected` no-arg конструктор + `@SuppressWarnings("NullAway.Init")` — точно соответствует принятым решениям и стилю кода
-- `note/data-jpa/src/main/java/com/example/note/data/jpa/model/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
-- `note/data-jpa/src/main/java/com/example/note/data/jpa/repository/NoteJpaRepository.java` — [REVIEW] — пустой `extends JpaRepository<NoteEntity, UUID>` — максимально использует Spring Data, соответствует
-- `note/data-jpa/src/main/java/com/example/note/data/jpa/repository/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
-
-#### note/data-mongodb/ (10 файлов)
-
-- `note/data-mongodb/build.gradle.kts` — [REVIEW] — `spring-boot-data-mongodb` + `implementation(projects.note.dataContract)` — соответствует
-- `note/data-mongodb/src/main/java/com/example/note/data/mongodb/adapter/NoteMongoAdapter.java` — [REVIEW] — объединяет все 6 операций одним классом; расхождение MongoTemplate/repository между add/replace и остальными операциями (бывшая находка №4) сохраняется внутри класса
-- `note/data-mongodb/src/main/java/com/example/note/data/mongodb/adapter/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
-- `note/data-mongodb/src/main/java/com/example/note/data/mongodb/mapper/NoteMongoMapper.java` — [REVIEW] — `toNewDocument` сам генерирует `UUID.randomUUID()` — соответствует (симметрично reactive-версии)
-- `note/data-mongodb/src/main/java/com/example/note/data/mongodb/mapper/NoteMongoMapperContract.java` — [REVIEW] — соответствует
-- `note/data-mongodb/src/main/java/com/example/note/data/mongodb/mapper/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
-- `note/data-mongodb/src/main/java/com/example/note/data/mongodb/model/NoteDocument.java` — [REVIEW] — `@Document(collection="notes")`, `@Id UUID` (не `@Nullable` — id всегда задан мэппером до создания) — соответствует
-- `note/data-mongodb/src/main/java/com/example/note/data/mongodb/model/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
-- `note/data-mongodb/src/main/java/com/example/note/data/mongodb/repository/NoteMongoRepository.java` — [REVIEW] — `extends MongoRepository<NoteDocument, UUID>` — соответствует, но фактически недоиспользуется (см. находку выше — `insert`/`save` не вызываются через него для add/replace)
-- `note/data-mongodb/src/main/java/com/example/note/data/mongodb/repository/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
-
-#### note/data-mongodb-reactive/ (10 файлов)
-
-- `note/data-mongodb-reactive/build.gradle.kts` — [REVIEW] — `spring-boot-data-mongodb-reactive` + `implementation(projects.note.dataContractReactive)` — соответствует
-- `note/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/adapter/NoteMongoReactiveAdapter.java` — [REVIEW] — объединяет все 6 операций одним классом
-- `note/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/adapter/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
-- `note/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/mapper/NoteMongoReactiveMapper.java` — [REVIEW] — структурно идентична sync-мэпперу — соответствует
-- `note/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/mapper/NoteMongoReactiveMapperContract.java` — [REVIEW] — соответствует
-- `note/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/mapper/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
-- `note/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/model/NoteReactiveDocument.java` — [REVIEW] — идентична `NoteDocument` по структуре — оправданное дублирование между sync/reactive модулями по принятой архитектуре
-- `note/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/model/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
-- `note/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/repository/NoteMongoReactiveRepository.java` — [REVIEW] — `extends ReactiveMongoRepository<NoteReactiveDocument, UUID>` — соответствует
-- `note/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/repository/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
-
-#### note/data-r2dbc/ (10 файлов)
-
-- `note/data-r2dbc/build.gradle.kts` — [REVIEW] — `spring-boot-data-r2dbc` + `implementation(projects.note.dataContractReactive)` — соответствует (в отличие от `data-jdbc`, использующего sync-контракт, что верно, т. к. r2dbc реактивен)
-- `note/data-r2dbc/src/main/java/com/example/note/data/r2dbc/adapter/NoteR2dbcAdapter.java` — [REVIEW] — объединяет все 6 операций одним классом
-- `note/data-r2dbc/src/main/java/com/example/note/data/r2dbc/adapter/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
-- `note/data-r2dbc/src/main/java/com/example/note/data/r2dbc/mapper/NoteR2dbcMapper.java` — [REVIEW] — `Objects.requireNonNull(entity.getId())` в `toResponse` — структурно идентична `NoteJpaMapper` — соответствует
-- `note/data-r2dbc/src/main/java/com/example/note/data/r2dbc/mapper/NoteR2dbcMapperContract.java` — [REVIEW] — соответствует
-- `note/data-r2dbc/src/main/java/com/example/note/data/r2dbc/mapper/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
-- `note/data-r2dbc/src/main/java/com/example/note/data/r2dbc/model/NoteR2dbcEntity.java` — [REVIEW] — `@Table("notes")`, `@Id @Nullable UUID`, `@Column("content")` — структурно идентична `NoteEntity` (JPA), но без аналога `@GeneratedValue` (Spring Data R2DBC не поддерживает автогенерацию на уровне аннотаций) — `id` для новой записи остаётся `null` до присвоения в БД/схеме, которой сейчас нет (см. находку №5)
-- `note/data-r2dbc/src/main/java/com/example/note/data/r2dbc/model/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
-- `note/data-r2dbc/src/main/java/com/example/note/data/r2dbc/repository/NoteR2dbcRepository.java` — [REVIEW] — `extends ReactiveCrudRepository<NoteR2dbcEntity, UUID>`, а не технологически-специфичный `org.springframework.data.r2dbc.repository.R2dbcRepository` (единственный из технологий, чей репозиторий не расширяет tech-specific интерфейс — JPA/Mongo/MongoReactive все расширяют `JpaRepository`/`MongoRepository`/`ReactiveMongoRepository`). Функционально не расходится: декомпиляция `spring-data-r2dbc-4.0.5.jar` показала, что `R2dbcRepository` не добавляет собственных методов (в отличие от `MongoRepository`/`ReactiveMongoRepository`, у которых есть `insert()`) — но стилистическая непоследовательность в выборе базового интерфейса есть
-- `note/data-r2dbc/src/main/java/com/example/note/data/r2dbc/repository/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
-
-#### note/domain/ (5 файлов)
-
-- `note/domain/src/main/java/com/example/note/domain/NoteNotFoundException.java` — [REVIEW] — `extends RuntimeException`, конструктор от `UUID id` — чистое доменное исключение, без зависимостей на инфраструктуру — соответствует
-- `note/domain/src/main/java/com/example/note/domain/NoteRequest.java` — [REVIEW] — `record NoteRequest(String content)` — соответствует
-- `note/domain/src/main/java/com/example/note/domain/NoteResponse.java` — [REVIEW] — `record NoteResponse(UUID id, String content)` — соответствует
-- `note/domain/src/main/java/com/example/note/domain/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
-- `note/domain/build.gradle.kts` — [REVIEW] — `id("com.example.base")` — соответствует
-
-#### note/webflux/ (4 файлов)
-
-- `note/webflux/build.gradle.kts` — [REVIEW] — `spring-boot-webflux` + `implementation(projects.note.dataContractReactive)` — соответствует
-- `note/webflux/src/main/java/com/example/note/webflux/NoteController.java` — [REVIEW] — объединяет все 5 HTTP-операций одним контроллером; `findAll` по-прежнему без `ResponseEntity` (бывшая находка №2) — сохранено внутри метода
-- `note/webflux/src/main/java/com/example/note/webflux/NoteExceptionHandler.java` — [REVIEW] — **находка**: не наследует reactive-аналог `ResponseEntityExceptionHandler` (в отличие от `webmvc`), имя метода `handleNoteNotFound` (в `webmvc` — `handleNotFound`), дополнительно вызывает `problem.setTitle(...)`, чего нет в `webmvc` — см. находку №3, вопреки записи в CLAUDE.md о «выравнивании» при пересмотре 2026-07-07
-- `note/webflux/src/main/java/com/example/note/webflux/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
-
 #### note/webmvc/ (4 файлов)
-
-- `note/webmvc/build.gradle.kts` — [REVIEW] — `spring-boot-webmvc` + `implementation(projects.note.dataContract)` — соответствует
-- `note/webmvc/src/main/java/com/example/note/webmvc/NoteController.java` — [REVIEW] — объединяет все 5 HTTP-операций одним контроллером (create/findAll/findById/update/delete)
-- `note/webmvc/src/main/java/com/example/note/webmvc/NoteExceptionHandler.java` — [REVIEW] — наследует `ResponseEntityExceptionHandler` (servlet) — см. находку №3 (расхождение с `webflux`)
 - `note/webmvc/src/main/java/com/example/note/webmvc/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
-
+- `note/webmvc/src/main/java/com/example/note/webmvc/NoteExceptionHandler.java` — [REVIEW] — наследует `ResponseEntityExceptionHandler` (servlet) — см. находку №3 (расхождение с `webflux`)
+- `note/webmvc/src/main/java/com/example/note/webmvc/NoteController.java` — [REVIEW] — объединяет все 5 HTTP-операций одним контроллером (create/findAll/findById/update/delete)
+- `note/webmvc/build.gradle.kts` — [REVIEW] — `spring-boot-webmvc` + `implementation(projects.note.dataContract)` — соответствует
+#### note/webflux/ (4 файлов)
+- `note/webflux/src/main/java/com/example/note/webflux/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
+- `note/webflux/src/main/java/com/example/note/webflux/NoteExceptionHandler.java` — [REVIEW] — **находка**: не наследует reactive-аналог `ResponseEntityExceptionHandler` (в отличие от `webmvc`), имя метода `handleNoteNotFound` (в `webmvc` — `handleNotFound`), дополнительно вызывает `problem.setTitle(...)`, чего нет в `webmvc` — см. находку №3, вопреки записи в CLAUDE.md о «выравнивании» при пересмотре 2026-07-07
+- `note/webflux/src/main/java/com/example/note/webflux/NoteController.java` — [REVIEW] — объединяет все 5 HTTP-операций одним контроллером; `findAll` по-прежнему без `ResponseEntity` (бывшая находка №2) — сохранено внутри метода
+- `note/webflux/build.gradle.kts` — [REVIEW] — `spring-boot-webflux` + `implementation(projects.note.dataContractReactive)` — соответствует
+#### note/domain/ (5 файлов)
+- `note/domain/src/main/java/com/example/note/domain/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
+- `note/domain/src/main/java/com/example/note/domain/NoteResponse.java` — [REVIEW] — `record NoteResponse(UUID id, String content)` — соответствует
+- `note/domain/src/main/java/com/example/note/domain/NoteRequest.java` — [REVIEW] — `record NoteRequest(String content)` — соответствует
+- `note/domain/src/main/java/com/example/note/domain/NoteNotFoundException.java` — [REVIEW] — `extends RuntimeException`, конструктор от `UUID id` — чистое доменное исключение, без зависимостей на инфраструктуру — соответствует
+- `note/domain/build.gradle.kts` — [REVIEW] — `id("com.example.base")` — соответствует
+#### note/data-r2dbc/ (10 файлов)
+- `note/data-r2dbc/src/main/java/com/example/note/data/r2dbc/repository/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
+- `note/data-r2dbc/src/main/java/com/example/note/data/r2dbc/repository/NoteR2dbcRepository.java` — [REVIEW] — `extends ReactiveCrudRepository<NoteR2dbcEntity, UUID>`, а не технологически-специфичный `org.springframework.data.r2dbc.repository.R2dbcRepository` (единственный из технологий, чей репозиторий не расширяет tech-specific интерфейс — JPA/Mongo/MongoReactive все расширяют `JpaRepository`/`MongoRepository`/`ReactiveMongoRepository`). Функционально не расходится: декомпиляция `spring-data-r2dbc-4.0.5.jar` показала, что `R2dbcRepository` не добавляет собственных методов (в отличие от `MongoRepository`/`ReactiveMongoRepository`, у которых есть `insert()`) — но стилистическая непоследовательность в выборе базового интерфейса есть
+- `note/data-r2dbc/src/main/java/com/example/note/data/r2dbc/model/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
+- `note/data-r2dbc/src/main/java/com/example/note/data/r2dbc/model/NoteR2dbcEntity.java` — [REVIEW] — `@Table("notes")`, `@Id @Nullable UUID`, `@Column("content")` — структурно идентична `NoteEntity` (JPA), но без аналога `@GeneratedValue` (Spring Data R2DBC не поддерживает автогенерацию на уровне аннотаций) — `id` для новой записи остаётся `null` до присвоения в БД/схеме, которой сейчас нет (см. находку №5)
+- `note/data-r2dbc/src/main/java/com/example/note/data/r2dbc/mapper/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
+- `note/data-r2dbc/src/main/java/com/example/note/data/r2dbc/mapper/NoteR2dbcMapperContract.java` — [REVIEW] — соответствует
+- `note/data-r2dbc/src/main/java/com/example/note/data/r2dbc/mapper/NoteR2dbcMapper.java` — [REVIEW] — `Objects.requireNonNull(entity.getId())` в `toResponse` — структурно идентична `NoteJpaMapper` — соответствует
+- `note/data-r2dbc/src/main/java/com/example/note/data/r2dbc/adapter/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
+- `note/data-r2dbc/src/main/java/com/example/note/data/r2dbc/adapter/NoteR2dbcAdapter.java` — [REVIEW] — объединяет все 6 операций одним классом
+- `note/data-r2dbc/build.gradle.kts` — [REVIEW] — `spring-boot-data-r2dbc` + `implementation(projects.note.dataContractReactive)` — соответствует (в отличие от `data-jdbc`, использующего sync-контракт, что верно, т. к. r2dbc реактивен)
+#### note/data-mongodb-reactive/ (10 файлов)
+- `note/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/repository/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
+- `note/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/repository/NoteMongoReactiveRepository.java` — [REVIEW] — `extends ReactiveMongoRepository<NoteReactiveDocument, UUID>` — соответствует
+- `note/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/model/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
+- `note/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/model/NoteReactiveDocument.java` — [REVIEW] — идентична `NoteDocument` по структуре — оправданное дублирование между sync/reactive модулями по принятой архитектуре
+- `note/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/mapper/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
+- `note/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/mapper/NoteMongoReactiveMapperContract.java` — [REVIEW] — соответствует
+- `note/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/mapper/NoteMongoReactiveMapper.java` — [REVIEW] — структурно идентична sync-мэпперу — соответствует
+- `note/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/adapter/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
+- `note/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/adapter/NoteMongoReactiveAdapter.java` — [REVIEW] — объединяет все 6 операций одним классом
+- `note/data-mongodb-reactive/build.gradle.kts` — [REVIEW] — `spring-boot-data-mongodb-reactive` + `implementation(projects.note.dataContractReactive)` — соответствует
+#### note/data-mongodb/ (10 файлов)
+- `note/data-mongodb/src/main/java/com/example/note/data/mongodb/repository/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
+- `note/data-mongodb/src/main/java/com/example/note/data/mongodb/repository/NoteMongoRepository.java` — [REVIEW] — `extends MongoRepository<NoteDocument, UUID>` — соответствует, но фактически недоиспользуется (см. находку выше — `insert`/`save` не вызываются через него для add/replace)
+- `note/data-mongodb/src/main/java/com/example/note/data/mongodb/model/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
+- `note/data-mongodb/src/main/java/com/example/note/data/mongodb/model/NoteDocument.java` — [REVIEW] — `@Document(collection="notes")`, `@Id UUID` (не `@Nullable` — id всегда задан мэппером до создания) — соответствует
+- `note/data-mongodb/src/main/java/com/example/note/data/mongodb/mapper/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
+- `note/data-mongodb/src/main/java/com/example/note/data/mongodb/mapper/NoteMongoMapperContract.java` — [REVIEW] — соответствует
+- `note/data-mongodb/src/main/java/com/example/note/data/mongodb/mapper/NoteMongoMapper.java` — [REVIEW] — `toNewDocument` сам генерирует `UUID.randomUUID()` — соответствует (симметрично reactive-версии)
+- `note/data-mongodb/src/main/java/com/example/note/data/mongodb/adapter/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
+- `note/data-mongodb/src/main/java/com/example/note/data/mongodb/adapter/NoteMongoAdapter.java` — [REVIEW] — объединяет все 6 операций одним классом; расхождение MongoTemplate/repository между add/replace и остальными операциями (бывшая находка №4) сохраняется внутри класса
+- `note/data-mongodb/build.gradle.kts` — [REVIEW] — `spring-boot-data-mongodb` + `implementation(projects.note.dataContract)` — соответствует
+#### note/data-jpa/ (10 файлов)
+- `note/data-jpa/src/main/java/com/example/note/data/jpa/repository/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
+- `note/data-jpa/src/main/java/com/example/note/data/jpa/repository/NoteJpaRepository.java` — [REVIEW] — пустой `extends JpaRepository<NoteEntity, UUID>` — максимально использует Spring Data, соответствует
+- `note/data-jpa/src/main/java/com/example/note/data/jpa/model/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
+- `note/data-jpa/src/main/java/com/example/note/data/jpa/model/NoteEntity.java` — [REVIEW] — `@Entity`/`@Table("notes")`, `@GeneratedValue(UUID)`, `@Nullable UUID id`, `protected` no-arg конструктор + `@SuppressWarnings("NullAway.Init")` — точно соответствует принятым решениям и стилю кода
+- `note/data-jpa/src/main/java/com/example/note/data/jpa/mapper/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
+- `note/data-jpa/src/main/java/com/example/note/data/jpa/mapper/NoteJpaMapperContract.java` — [REVIEW] — соответствует `{Entity}{Tech}MapperContract`
+- `note/data-jpa/src/main/java/com/example/note/data/jpa/mapper/NoteJpaMapper.java` — [REVIEW] — `toNewEntity`/`toExistingEntity`/`toResponse`, `Objects.requireNonNull(entity.getId())` в `toResponse` — соответствует
+- `note/data-jpa/src/main/java/com/example/note/data/jpa/adapter/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
+- `note/data-jpa/src/main/java/com/example/note/data/jpa/adapter/NoteJpaAdapter.java` — [REVIEW] — объединяет все 6 операций одним классом, реализующим `NoteContract` целиком
+- `note/data-jpa/build.gradle.kts` — [REVIEW] — `spring-boot-data-jpa` + `implementation(projects.note.dataContract)` — соответствует
+#### note/data-jdbc/ (6 файлов)
+- `note/data-jdbc/src/main/java/com/example/note/data/jdbc/mapper/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
+- `note/data-jdbc/src/main/java/com/example/note/data/jdbc/mapper/NoteJdbcMapperContract.java` — [REVIEW] — сигнатура специфична для JDBC (`fromRow`, а не `toNewX/toExistingX/toResponse` как у остальных технологий) — оправданная адаптация под `RowMapper`, не расхождение
+- `note/data-jdbc/src/main/java/com/example/note/data/jdbc/mapper/NoteJdbcMapper.java` — [REVIEW] — реализует `RowMapper`-подобный `fromRow(ResultSet, rowNum)` — соответствует `{Entity}{Tech}Mapper`
+- `note/data-jdbc/src/main/java/com/example/note/data/jdbc/adapter/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
+- `note/data-jdbc/src/main/java/com/example/note/data/jdbc/adapter/NoteJdbcAdapter.java` — [REVIEW] — объединяет все 6 операций одним классом
+- `note/data-jdbc/build.gradle.kts` — [REVIEW] — `spring-boot-data-jdbc` + `implementation(projects.note.dataContract)` (sync-контракт, верно для JDBC) — соответствует
+#### note/data-contract-reactive/ (3 файлов)
+- `note/data-contract-reactive/src/main/java/com/example/note/contract/reactive/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
+- `note/data-contract-reactive/src/main/java/com/example/note/contract/reactive/NoteContractReactive.java` — [REVIEW] — объединяет 6 reactive-методов одним интерфейсом — тот же пересмотр 2026-07-08
+- `note/data-contract-reactive/build.gradle.kts` — [REVIEW] — `id("com.example.reactor")` + `api(projects.note.domain)` — соответствует
+#### note/data-contract/ (3 файлов)
+- `note/data-contract/src/main/java/com/example/note/contract/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
+- `note/data-contract/src/main/java/com/example/note/contract/NoteContract.java` — [REVIEW] — объединяет 6 методов одним интерфейсом (add/existsById/findAll/findById/remove/replace) — пересмотр 2026-07-08: контракт на сущность, не на операцию
+- `note/data-contract/build.gradle.kts` — [REVIEW] — `id("com.example.library")` + `api(projects.note.domain)` — соответствует
+#### note/application/ (6 файлов)
+- `note/application/src/test/resources/application.properties` — [REVIEW] — файл пуст (0 байт) — неясно, нужен ли вообще как заглушка
+- `note/application/src/test/java/com/example/note/NoteApplicationTests.java` — [REVIEW] — единственный тест во всём сервисе — только `contextLoads()`, см. находку №1
+- `note/application/src/main/resources/application.properties` — [REVIEW] — `spring.application.name` + `spring.mvc.problemdetails.enabled=true` — соответствует принятому решению по `ProblemDetail`; datasource не сконфигурирован явно (полагается на дефолты `spring-boot-h2-database`)
+- `note/application/src/main/java/com/example/note/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
+- `note/application/src/main/java/com/example/note/NoteApplication.java` — [REVIEW]
+- `note/application/build.gradle.kts` — [REVIEW] — `spring-boot-application` + `spring-boot-h2-database`; implementation на domain/dataContract/webmvc/dataJpa — единственная связка technology в проекте (см. открытое решение «Комбинации technology в application/»)
 #### note/ — предлагаемые отсутствующие файлы (`[ADD]`, 19)
-
+- `note/webmvc/src/test/java/com/example/note/webmvc/NoteExceptionHandlerTest.java` — [ADD] — тест `ProblemDetail`-ответа на `NoteNotFoundException`
+- `note/webmvc/src/test/java/com/example/note/webmvc/NoteControllerTest.java` — [ADD] — `@WebMvcTest` slice-тест на все 5 методов (create/findAll/findById/update/delete) одним классом — после пересмотра 2026-07-08 контроллер один, не пять
+- `note/webflux/src/test/java/com/example/note/webflux/NoteExceptionHandlerTest.java` — [ADD] — тест `ProblemDetail`-ответа, заодно проверит найденное расхождение с `webmvc`
+- `note/webflux/src/test/java/com/example/note/webflux/NoteControllerTest.java` — [ADD] — `@WebFluxTest` slice-тест на все 5 методов одним классом — заодно зафиксирует найденное расхождение `findAll()` по `ResponseEntity`
 - `note/domain/src/test/java/com/example/note/domain/NoteNotFoundExceptionTest.java` — [ADD] — простые `record`ы (`NoteRequest`/`NoteResponse`) тестов не требуют, но исключение стоит покрыть
-- `note/data-jpa/src/test/java/com/example/note/data/jpa/mapper/NoteJpaMapperTest.java` — [ADD] — unit-тест мэппера (toNewEntity/toExistingEntity/toResponse)
-- `note/data-jpa/src/test/java/com/example/note/data/jpa/adapter/NoteJpaAdapterIntegrationTest.java` — [ADD] — `@DataJpaTest` на все 6 операций — сейчас 0% покрытия по JPA-адаптерам
+- `note/data-r2dbc/src/test/java/com/example/note/data/r2dbc/mapper/NoteR2dbcMapperTest.java` — [ADD] — unit-тест мэппера
+- `note/data-r2dbc/src/test/java/com/example/note/data/r2dbc/adapter/NoteR2dbcAdapterIntegrationTest.java` — [ADD] — testcontainers Postgres/`@DataR2dbcTest` — потребует schema.sql (см. ниже)
+- `note/data-r2dbc/src/main/resources/schema.sql` — [ADD] — у `NoteR2dbcEntity` нет `@GeneratedValue`-аналога — без схемы с `DEFAULT`/`GENERATED` для `id` реальный `INSERT` не заработает; см. открытое решение «Управление схемой для R2DBC/JDBC»
 - `note/data-mongodb/src/test/java/com/example/note/data/mongodb/mapper/NoteMongoMapperTest.java` — [ADD] — unit-тест мэппера
 - `note/data-mongodb/src/test/java/com/example/note/data/mongodb/adapter/NoteMongoAdapterIntegrationTest.java` — [ADD] — testcontainers MongoDB — заодно проверит найденное расхождение insert()/save() через MongoTemplate vs repository
 - `note/data-mongodb-reactive/src/test/java/com/example/note/data/mongodb/reactive/mapper/NoteMongoReactiveMapperTest.java` — [ADD] — unit-тест мэппера
 - `note/data-mongodb-reactive/src/test/java/com/example/note/data/mongodb/reactive/adapter/NoteMongoReactiveAdapterIntegrationTest.java` — [ADD] — testcontainers MongoDB + `StepVerifier`
-- `note/data-r2dbc/src/test/java/com/example/note/data/r2dbc/mapper/NoteR2dbcMapperTest.java` — [ADD] — unit-тест мэппера
-- `note/data-r2dbc/src/test/java/com/example/note/data/r2dbc/adapter/NoteR2dbcAdapterIntegrationTest.java` — [ADD] — testcontainers Postgres/`@DataR2dbcTest` — потребует schema.sql (см. ниже)
-- `note/data-r2dbc/src/main/resources/schema.sql` — [ADD] — у `NoteR2dbcEntity` нет `@GeneratedValue`-аналога — без схемы с `DEFAULT`/`GENERATED` для `id` реальный `INSERT` не заработает; см. открытое решение «Управление схемой для R2DBC/JDBC»
+- `note/data-jpa/src/test/java/com/example/note/data/jpa/mapper/NoteJpaMapperTest.java` — [ADD] — unit-тест мэппера (toNewEntity/toExistingEntity/toResponse)
+- `note/data-jpa/src/test/java/com/example/note/data/jpa/adapter/NoteJpaAdapterIntegrationTest.java` — [ADD] — `@DataJpaTest` на все 6 операций — сейчас 0% покрытия по JPA-адаптерам
 - `note/data-jdbc/src/test/java/com/example/note/data/jdbc/mapper/NoteJdbcMapperTest.java` — [ADD] — unit-тест `fromRow(ResultSet, rowNum)`
 - `note/data-jdbc/src/test/java/com/example/note/data/jdbc/adapter/NoteJdbcAdapterIntegrationTest.java` — [ADD] — `@JdbcTest`/testcontainers — заодно проверит найденное поведение `NoteReplaceJdbcAdapter` при несуществующем id
 - `note/data-jdbc/src/main/resources/schema.sql` — [ADD] — `NamedParameterJdbcTemplate` не создаёт схему сам — нужна явная схема таблицы `notes`
-- `note/webmvc/src/test/java/com/example/note/webmvc/NoteControllerTest.java` — [ADD] — `@WebMvcTest` slice-тест на все 5 методов (create/findAll/findById/update/delete) одним классом — после пересмотра 2026-07-08 контроллер один, не пять
-- `note/webmvc/src/test/java/com/example/note/webmvc/NoteExceptionHandlerTest.java` — [ADD] — тест `ProblemDetail`-ответа на `NoteNotFoundException`
-- `note/webflux/src/test/java/com/example/note/webflux/NoteControllerTest.java` — [ADD] — `@WebFluxTest` slice-тест на все 5 методов одним классом — заодно зафиксирует найденное расхождение `findAll()` по `ResponseEntity`
-- `note/webflux/src/test/java/com/example/note/webflux/NoteExceptionHandlerTest.java` — [ADD] — тест `ProblemDetail`-ответа, заодно проверит найденное расхождение с `webmvc`
 - `note/application/src/test/java/com/example/note/NoteCreateEndpointIntegrationTest.java` — [ADD] — сквозной тест реального стека (`webmvc`+`data-jpa`+H2) через `MockMvc`, а не только `contextLoads()`
 - `note/application-webflux/build.gradle.kts` — [ADD] (концептуально) — вторая связка technology (`webflux`+`data-r2dbc` или `data-mongodb-reactive`), чтобы реактивный стек был реально запускаем и тестируем — см. открытое решение «Комбинации technology в `application/`»
-
 ### gradle/ (4 файла)
 
 `libs.versions.toml` и `gradle-wrapper.properties` — версии совпадают с «Стек»/«Синхронизация версий» (Gradle 9.6.1, Spring Boot 4.0.6, Spring Cloud 2025.1.2, JUnit 6.0.3). `checkstyle/checkstyle.xml` — `SpringChecks` + excludes javadoc-проверок, согласуется с memory-заметкой про версию spring-javaformat 0.0.47.
 
 #### gradle/wrapper/ (2 файлов)
-
-- `gradle/wrapper/gradle-wrapper.jar` — [REVIEW] — бинарный файл wrapper, не проверяется построчно
 - `gradle/wrapper/gradle-wrapper.properties` — [REVIEW] — Gradle 9.6.1, совпадает со «Стек»
-
-
+- `gradle/wrapper/gradle-wrapper.jar` — [REVIEW] — бинарный файл wrapper, не проверяется построчно
 #### gradle/ — отдельные файлы (2)
-
-- `gradle/checkstyle/checkstyle.xml` — [REVIEW] — `SpringChecks` + excludes javadoc-проверок, согласуется с memory-заметкой про версию 0.0.47
 - `gradle/libs.versions.toml` — [REVIEW] — версии совпадают со «Стек»/«Синхронизация версий»
-
-
-
+- `gradle/checkstyle/checkstyle.xml` — [REVIEW] — `SpringChecks` + excludes javadoc-проверок, согласуется с memory-заметкой про версию 0.0.47
 ### gateway/ (6 файлов)
 
 Skeleton-сервис Spring Cloud Gateway (webflux). `spring.config.import=optional:configserver:` — опциональный импорт, не сломает старт без config-сервера. Без routes — соответствует статусу СКЕЛЕТ в «Задачах».
 
 #### gateway/application/ (6 файлов)
-
-- `gateway/application/src/main/java/com/example/gateway/GatewayApplication.java` — [REVIEW] — стандартный `@SpringBootApplication`, без routes-класса
-- `gateway/application/src/main/java/com/example/gateway/package-info.java` — [REVIEW] — `@NullMarked`
-- `gateway/build.gradle.kts` — [REVIEW] — `spring-cloud-gateway-webflux` + `spring-boot-actuator` + `spring-cloud-eureka-client` + `spring-cloud-config-client`
-- `gateway/src/main/resources/application.properties` — [REVIEW] — `spring.config.import=optional:configserver:` — опциональный импорт, не сломает старт без config-сервера
-- `gateway/src/test/java/com/example/gateway/GatewayApplicationTests.java` — [REVIEW] — только `contextLoads()`
 - `gateway/src/test/resources/application.properties` — [REVIEW] — `spring.cloud.config.enabled=false`, `spring.cloud.discovery.enabled=false` — тест изолирован от registry/config
-
+- `gateway/src/test/java/com/example/gateway/GatewayApplicationTests.java` — [REVIEW] — только `contextLoads()`
+- `gateway/src/main/resources/application.properties` — [REVIEW] — `spring.config.import=optional:configserver:` — опциональный импорт, не сломает старт без config-сервера
+- `gateway/build.gradle.kts` — [REVIEW] — `spring-cloud-gateway-webflux` + `spring-boot-actuator` + `spring-cloud-eureka-client` + `spring-cloud-config-client`
+- `gateway/application/src/main/java/com/example/gateway/package-info.java` — [REVIEW] — `@NullMarked`
+- `gateway/application/src/main/java/com/example/gateway/GatewayApplication.java` — [REVIEW] — стандартный `@SpringBootApplication`, без routes-класса
 ### config/ (6 файлов)
 
 Skeleton Config Server. `spring.profiles.active=native`, но `search-locations` не задан — сервер стартует, но конфигурацию пока не отдаст (соответствует «без config-репозитория» в «Задачах»).
 
 #### config/application/ (6 файлов)
-
-- `config/application/src/main/java/com/example/config/ConfigApplication.java` — [REVIEW] — `@EnableConfigServer` + `@SpringBootApplication`
-- `config/application/src/main/java/com/example/config/package-info.java` — [REVIEW] — `@NullMarked`
-- `config/build.gradle.kts` — [REVIEW] — `spring-cloud-config-server` + `spring-boot-actuator`
-- `config/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.active=native`, но `search-locations` не задан — реальную конфигурацию пока не отдаст
-- `config/src/test/java/com/example/config/ConfigApplicationTests.java` — [REVIEW] — только `contextLoads()`
 - `config/src/test/resources/application.properties` — [REVIEW] — `spring.profiles.active=native`, дублирует main
-
+- `config/src/test/java/com/example/config/ConfigApplicationTests.java` — [REVIEW] — только `contextLoads()`
+- `config/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.active=native`, но `search-locations` не задан — реальную конфигурацию пока не отдаст
+- `config/build.gradle.kts` — [REVIEW] — `spring-cloud-config-server` + `spring-boot-actuator`
+- `config/application/src/main/java/com/example/config/package-info.java` — [REVIEW] — `@NullMarked`
+- `config/application/src/main/java/com/example/config/ConfigApplication.java` — [REVIEW] — `@EnableConfigServer` + `@SpringBootApplication`
 ### build-logic/ (39 файлов)
 
 **Главные находки:**
@@ -813,67 +717,67 @@ Skeleton Config Server. `spring.profiles.active=native`, но `search-locations`
 
 Единственная тонкость, которая на первый взгляд похожа на нестыковку, но по факту — подтверждение уже задокументированного намеренного решения: `com.example.checkstyle` и `com.example.javaformat` независимо конфигурируют один и тот же extension `checkstyle {}` (оба выставляют `toolVersion`, `javaformat` — ещё и `configFile`/`configProperties`) — ровно так, как описано в «`com.example. checkstyle` остаётся отдельным плагином...».
 
-#### build-logic/ — корневые файлы (2 файла)
-
-- `build-logic/convention/build.gradle.kts` — [REVIEW] — `kotlin-dsl` + classpath-зависимости (`spring-boot-gradle-plugin`, `dependency-management-plugin`, `spring-javaformat-gradle-plugin`, `gradle-errorprone-plugin`) через **typed-аксессоры** (`libs.versions.spring.boot.get()` и т. п.) — совпадает с «Синхронизация версий»: typed-аксессоры доступны именно в обычных build-скриптах, не в precompiled-плагинах. Отступ 4 пробела, без табов.
-- `build-logic/settings.gradle.kts` — [REVIEW] — `rootProject.name = "build-logic"`, `versionCatalogs { create("libs") { from(files("../gradle/libs.versions.toml")) } }` — совпадает с «Синхронизация версий»: «build-logic — отдельный included build и не видит корневой gradle.properties/каталог автоматически, поэтому build-logic/settings.gradle.kts подключает тот же .toml-файл отдельно». `include(":convention")` совпадает с «Convention plugins — build-logic/convention/» и деревом `build-logic/settings.gradle.kts include(":convention")`.
-
-
 #### build-logic/convention/src/main/kotlin/ — precompiled script plugins (37 файлов)
-
-- `build-logic/com.example.base.gradle.kts` — [REVIEW] — `id("java")` + `id("com.example.codequality")`, toolchain через `providers.fileContents(...).asText` (Provider API) из `.java-version`, `junit-jupiter`/`junit-platform-launcher` из каталога (`testImplementation`/`testRuntimeOnly`), `useJUnitPlatform()` — дословно совпадает с «Иерархия» (единственный родитель — `codequality`) и «Синхронизация версий» → Java/junit-jupiter. Версии в каталоге (6.0.3/6.0.3) совпадают с зафиксированным фактом «Spring Boot 4.0.6 управляет JUnit 6».
-- `build-logic/com.example.checkstyle.gradle.kts` — [REVIEW] — `id("checkstyle")` без `com.example.*`-родителя, `id("java")` не подключается — совпадает с «checkstyle — id("checkstyle"); без com.example.* родителя; id("java") не нужен». `toolVersion` + `checkstyle`-зависимость (puppycrawl) из `libs.findVersion("checkstyle")` = 9.3 — через каталог, как описано в «Синхронизация версий».
-- `build-logic/com.example.codequality.gradle.kts` — [REVIEW] — Агрегирует ровно 5 плагинов (`checkstyle`, `javaformat`, `nullaway`, `jacoco`, `jacoco-report-aggregation`) — совпадает с «агрегатор 5 плагинов выше»; не применяет `com.example.base` — подтверждает «цикла не возникает: codequality-плагины не применяют com.example.base».
-- `build-logic/com.example.jacoco-report-aggregation.gradle.kts` — [REVIEW] — `id("jacoco-report-aggregation")`, вообще без родителя и без доп. конфигурации — совпадает с «jacoco-report-aggregation — без родителя вообще (autoconfig)».
-- `build-logic/com.example.jacoco.gradle.kts` — [REVIEW] — `id("jacoco")` без `com.example`-родителя, `toolVersion` из `libs.findVersion("jacoco")` = 0.8.14 через каталог — совпадает с «jacoco — id("jacoco"); id("java") не нужен» и «Синхронизация версий».
-- `build-logic/com.example.javaformat.gradle.kts` — [REVIEW] — `id("io.spring.javaformat")` + `id("checkstyle")` (core-плагин, не `com.example.checkstyle`), независимо конфигурирует тот же extension `checkstyle {}` (`toolVersion`, `configFile`, `configProperties`) — ровно преднамеренное дублирование из «`com.example.checkstyle` остаётся отдельным плагином...». `checkstyle`-зависимость (`spring-javaformat-checkstyle`) добавлена вручную — версия каталога `spring-javaformat = 0.0.47` согласуется с memory-заметкой «checkstyle-зависимость обязательна вручную в 0.0.47».
-- `build-logic/com.example.library.gradle.kts` — [REVIEW] — `id("com.example.base")` + `id("java-library")` — 1 родитель `base`, без Spring — совпадает с «com.example.library — 1 родитель com.example.base; добавляет Gradle-плагин java-library, без Spring».
-- `build-logic/com.example.nullaway.gradle.kts` — [REVIEW] — `id("java-library")` + `id("net.ltgt.errorprone")`, без `com.example`-родителя (вне BOM-цепочки через `base`) — совпадает с «исключение — com.example.nullaway» и «следствие: все модули транзитивно получают java-library через base → codequality → nullaway». `jspecify`/`errorprone-core`/`nullaway` — из каталога, версии совпадают.
-- `build-logic/com.example.reactor.gradle.kts` — [REVIEW] — `id("com.example.base")` — родитель сменён с `library` на `base`, как задокументировано; `reactor-core`/`reactor-tools` (`implementation`) + `reactor-test` (`testImplementation`) из `libs.findVersion("reactor-core")` = 3.8.5, без `io.spring.dependency-management` — совпадает дословно с «com.example.reactor» и «Синхронизация версий» → reactor-core.
-- `build-logic/com.example.spring-boot-actuator.gradle.kts` — [REVIEW] — `id("com.example.spring-boot")` — обычный технологический плагин (без bootable-оси). Отдельно текстом в CLAUDE.md не описан (упомянут лишь как часть подключённого стека `registry/`/`config/`/`gateway/`), но соответствует общему паттерну `implementation`/`testImplementation` через `-test`-компаньон.
-- `build-logic/com.example.spring-boot-application.gradle.kts` — [REVIEW] — `id("com.example.spring-boot")` + `id("org.springframework.boot")` — ровно вторая (bootable) ось иерархии, как задокументировано в «Convention plugins — принцип именования и структура».
-- `build-logic/com.example.spring-boot-client-rest.gradle.kts` — [REVIEW] — `id("com.example.spring-boot")`, зависимость `spring-boot-starter-restclient`(`-test`) — имя плагина = переименованный `restclient`, как в «com.example.spring-boot-client-rest / com.example.spring-boot-client-web (были restclient/webclient) — переименованы».
-- `build-logic/com.example.spring-boot-client-web.gradle.kts` — [REVIEW] — `id("com.example.spring-boot")`, зависимость `spring-boot-starter-webclient`(`-test`), без явного `reactor-test` — совпадает с «spring-boot-client-web — 1 родитель (spring-boot), без явного reactor-test: ... reactor-test:3.8.5 приходит транзитивно».
-- `build-logic/com.example.spring-boot-data-elasticsearch.gradle.kts` — [REVIEW] — `id("com.example.spring-boot")`; отдельно текстом CLAUDE.md не описан, паттерн стандартный (`implementation`/`testImplementation` через `-test`-компаньон).
-- `build-logic/com.example.spring-boot-data-jdbc.gradle.kts` — [REVIEW] — `id("com.example.spring-boot")`; один из «7 плагинов 1:1 с папкой модуля» — id совпадает с именем папки/starter'а, как того требует правило именования.
-- `build-logic/com.example.spring-boot-data-jpa.gradle.kts` — [REVIEW] — `id("com.example.spring-boot")`; один из «7 плагинов 1:1 с папкой модуля» — id совпадает с именем папки/starter'а.
-- `build-logic/com.example.spring-boot-data-mongodb-reactive.gradle.kts` — [REVIEW] — `id("com.example.spring-boot")`; один из «7 плагинов 1:1 с папкой модуля» — id совпадает с именем папки/starter'а.
-- `build-logic/com.example.spring-boot-data-mongodb.gradle.kts` — [REVIEW] — `id("com.example.spring-boot")`; один из «7 плагинов 1:1 с папкой модуля» — id совпадает с именем папки/starter'а.
-- `build-logic/com.example.spring-boot-data-r2dbc.gradle.kts` — [REVIEW] — `id("com.example.spring-boot")`; один из «7 плагинов 1:1 с папкой модуля», без явного `reactor-test` — совпадает с «Синхронизация версий» → reactor-test (приходит транзитивно через `spring-boot-starter-data-r2dbc-test`).
-- `build-logic/com.example.spring-boot-graphql.gradle.kts` — [REVIEW] — `id("com.example.spring-boot")`; сам сервис `graphql/` — статус ОТЛОЖЕНО в «Задачи», но существование готового convention-плагина этому не противоречит: текст описывает именно «convention plugins подготовлены... но не применены ни в одном модуле». Упомянут в «Синхронизация версий» → reactor-test: `spring-boot-starter-graphql-test` не содержит `reactor-test` — файл его и не добавляет.
-- `build-logic/com.example.spring-boot-h2-database.gradle.kts` — [REVIEW] — `id("com.example.spring-boot")`, зависимости `spring-boot-h2console` (`implementation`) + `com.h2database:h2` (`runtimeOnly`); отдельно текстом CLAUDE.md не описан.
-- `build-logic/com.example.spring-boot-oauth2-authorization-server.gradle.kts` — [REVIEW] — Зависимость `spring-boot-starter-security-oauth2-authorization-server`(`-test`) — совпадает со «Стек» → «OAuth2-стартеры: ... аналогично для client и authorization-server» и «Spring Authorization Server — часть Spring Security 7, отдельной версии не имеет» (своей версии в каталоге нет — только Spring Boot BOM через родителя).
-- `build-logic/com.example.spring-boot-oauth2-client.gradle.kts` — [REVIEW] — Зависимость `spring-boot-starter-security-oauth2-client`(`-test`) — совпадает со «Стек» → «OAuth2-стартеры».
-- `build-logic/com.example.spring-boot-oauth2-resource-server.gradle.kts` — [REVIEW] — Зависимость `spring-boot-starter-security-oauth2-resource-server`(`-test`) — совпадает со «Стек» → «OAuth2-стартеры: oauth2-resource-server → security-oauth2-resource-server».
-- `build-logic/com.example.spring-boot-webflux.gradle.kts` — [REVIEW] — `id("com.example.spring-boot")`, зависимость `spring-boot-starter-webflux`(`-test`), без явного `reactor-test` — совпадает со «Стек» (не `starter-web`) и «Синхронизация версий» → reactor-test (транзитивно через `-webflux-test`).
-- `build-logic/com.example.spring-boot-webmvc.gradle.kts` — [REVIEW] — Зависимость `spring-boot-starter-webmvc`(`-test`) — совпадает со «Стек»: `starter-web` → `starter-webmvc`.
-- `build-logic/com.example.spring-boot.gradle.kts` — [REVIEW] — `id("com.example.base")` + `id("io.spring.dependency-management")`, BOM через `SpringBootPlugin.BOM_COORDINATES`, свой `spring-boot-starter`/`-test` — дословно совпадает с «Синхронизация версий» → com.example.spring-boot и «Архитектура» → «spring-boot-starter/-test — общий для любого Spring Boot модуля, объявлен в com.example.spring-boot».
-- `build-logic/com.example.spring-cloud-circuit-breaker.gradle.kts` — [REVIEW] — `id("com.example.spring-cloud")` только — один из 5 «нестандэлон» `spring-cloud-*`-плагинов без bootable-оси, совпадает с деревом иерархии.
-- `build-logic/com.example.spring-cloud-config-client.gradle.kts` — [REVIEW] — `id("com.example.spring-cloud")` только — не входит в список «4 standalone-сервисных spring-cloud-*», bootable-ось отсутствует, как и должно быть.
-- `build-logic/com.example.spring-cloud-config-server.gradle.kts` — [REVIEW] — `id("com.example.spring-cloud")` + `id("com.example.spring-boot-application")` — один из 4 standalone-сервисных плагинов с bootable-осью («Плагины, требующие bootJar — ... spring-cloud-config-server, ...»), совпадает дословно.
-- `build-logic/com.example.spring-cloud-eureka-client.gradle.kts` — [REVIEW] — `id("com.example.spring-cloud")` только — не входит в список 4 standalone-плагинов, bootable-ось отсутствует корректно.
-- `build-logic/com.example.spring-cloud-eureka-server.gradle.kts` — [REVIEW] — `id("com.example.spring-cloud")` + `id("com.example.spring-boot-application")` — один из 4 standalone-сервисных плагинов, совпадает дословно со списком в CLAUDE.md.
-- `build-logic/com.example.spring-cloud-gateway-webflux.gradle.kts` — [REVIEW] — `id("com.example.spring-cloud")` + `id("com.example.spring-boot-application")` — standalone, совпадает. Без `reactor-test` — совпадает с «Синхронизация версий» → reactor-test: «Spring Cloud gateway-webflux — плагин Spring Cloud, своего -test-компаньона не существует... оставлено осознанно без замены».
-- `build-logic/com.example.spring-cloud-gateway-webmvc.gradle.kts` — [REVIEW] — `id("com.example.spring-cloud")` + `id("com.example.spring-boot-application")` — один из 4 standalone-сервисных плагинов, совпадает дословно.
-- `build-logic/com.example.spring-cloud-loadbalancer.gradle.kts` — [REVIEW] — `id("com.example.spring-cloud")` только — не входит в список 4 standalone-плагинов, совпадает.
-- `build-logic/com.example.spring-cloud-openfeign.gradle.kts` — [REVIEW] — `id("com.example.spring-cloud")` только — не входит в список 4 standalone-плагинов, совпадает.
 - `build-logic/com.example.spring-cloud.gradle.kts` — [REVIEW] — `id("com.example.spring-boot")` + ручной BOM через `libs.findVersion("spring-cloud").get().requiredVersion` = 2025.1.2 (строка, не через плагин-константу) — дословно совпадает с обоснованием в «Синхронизация версий» → com.example.spring-cloud (у Spring Cloud нет своего Gradle-плагина/`BOM_COORDINATES`-аналога). Собственных `junit-platform-launcher`/`useJUnitPlatform()` нет — совпадает с «убран как дублирующий то, что уже даёт родитель com.example.base».
-
-
+- `build-logic/com.example.spring-cloud-openfeign.gradle.kts` — [REVIEW] — `id("com.example.spring-cloud")` только — не входит в список 4 standalone-плагинов, совпадает.
+- `build-logic/com.example.spring-cloud-loadbalancer.gradle.kts` — [REVIEW] — `id("com.example.spring-cloud")` только — не входит в список 4 standalone-плагинов, совпадает.
+- `build-logic/com.example.spring-cloud-gateway-webmvc.gradle.kts` — [REVIEW] — `id("com.example.spring-cloud")` + `id("com.example.spring-boot-application")` — один из 4 standalone-сервисных плагинов, совпадает дословно.
+- `build-logic/com.example.spring-cloud-gateway-webflux.gradle.kts` — [REVIEW] — `id("com.example.spring-cloud")` + `id("com.example.spring-boot-application")` — standalone, совпадает. Без `reactor-test` — совпадает с «Синхронизация версий» → reactor-test: «Spring Cloud gateway-webflux — плагин Spring Cloud, своего -test-компаньона не существует... оставлено осознанно без замены».
+- `build-logic/com.example.spring-cloud-eureka-server.gradle.kts` — [REVIEW] — `id("com.example.spring-cloud")` + `id("com.example.spring-boot-application")` — один из 4 standalone-сервисных плагинов, совпадает дословно со списком в CLAUDE.md.
+- `build-logic/com.example.spring-cloud-eureka-client.gradle.kts` — [REVIEW] — `id("com.example.spring-cloud")` только — не входит в список 4 standalone-плагинов, bootable-ось отсутствует корректно.
+- `build-logic/com.example.spring-cloud-config-server.gradle.kts` — [REVIEW] — `id("com.example.spring-cloud")` + `id("com.example.spring-boot-application")` — один из 4 standalone-сервисных плагинов с bootable-осью («Плагины, требующие bootJar — ... spring-cloud-config-server, ...»), совпадает дословно.
+- `build-logic/com.example.spring-cloud-config-client.gradle.kts` — [REVIEW] — `id("com.example.spring-cloud")` только — не входит в список «4 standalone-сервисных spring-cloud-*», bootable-ось отсутствует, как и должно быть.
+- `build-logic/com.example.spring-cloud-circuit-breaker.gradle.kts` — [REVIEW] — `id("com.example.spring-cloud")` только — один из 5 «нестандэлон» `spring-cloud-*`-плагинов без bootable-оси, совпадает с деревом иерархии.
+- `build-logic/com.example.spring-boot.gradle.kts` — [REVIEW] — `id("com.example.base")` + `id("io.spring.dependency-management")`, BOM через `SpringBootPlugin.BOM_COORDINATES`, свой `spring-boot-starter`/`-test` — дословно совпадает с «Синхронизация версий» → com.example.spring-boot и «Архитектура» → «spring-boot-starter/-test — общий для любого Spring Boot модуля, объявлен в com.example.spring-boot».
+- `build-logic/com.example.spring-boot-webmvc.gradle.kts` — [REVIEW] — Зависимость `spring-boot-starter-webmvc`(`-test`) — совпадает со «Стек»: `starter-web` → `starter-webmvc`.
+- `build-logic/com.example.spring-boot-webflux.gradle.kts` — [REVIEW] — `id("com.example.spring-boot")`, зависимость `spring-boot-starter-webflux`(`-test`), без явного `reactor-test` — совпадает со «Стек» (не `starter-web`) и «Синхронизация версий» → reactor-test (транзитивно через `-webflux-test`).
+- `build-logic/com.example.spring-boot-oauth2-resource-server.gradle.kts` — [REVIEW] — Зависимость `spring-boot-starter-security-oauth2-resource-server`(`-test`) — совпадает со «Стек» → «OAuth2-стартеры: oauth2-resource-server → security-oauth2-resource-server».
+- `build-logic/com.example.spring-boot-oauth2-client.gradle.kts` — [REVIEW] — Зависимость `spring-boot-starter-security-oauth2-client`(`-test`) — совпадает со «Стек» → «OAuth2-стартеры».
+- `build-logic/com.example.spring-boot-oauth2-authorization-server.gradle.kts` — [REVIEW] — Зависимость `spring-boot-starter-security-oauth2-authorization-server`(`-test`) — совпадает со «Стек» → «OAuth2-стартеры: ... аналогично для client и authorization-server» и «Spring Authorization Server — часть Spring Security 7, отдельной версии не имеет» (своей версии в каталоге нет — только Spring Boot BOM через родителя).
+- `build-logic/com.example.spring-boot-h2-database.gradle.kts` — [REVIEW] — `id("com.example.spring-boot")`, зависимости `spring-boot-h2console` (`implementation`) + `com.h2database:h2` (`runtimeOnly`); отдельно текстом CLAUDE.md не описан.
+- `build-logic/com.example.spring-boot-graphql.gradle.kts` — [REVIEW] — `id("com.example.spring-boot")`; сам сервис `graphql/` — статус ОТЛОЖЕНО в «Задачи», но существование готового convention-плагина этому не противоречит: текст описывает именно «convention plugins подготовлены... но не применены ни в одном модуле». Упомянут в «Синхронизация версий» → reactor-test: `spring-boot-starter-graphql-test` не содержит `reactor-test` — файл его и не добавляет.
+- `build-logic/com.example.spring-boot-data-r2dbc.gradle.kts` — [REVIEW] — `id("com.example.spring-boot")`; один из «7 плагинов 1:1 с папкой модуля», без явного `reactor-test` — совпадает с «Синхронизация версий» → reactor-test (приходит транзитивно через `spring-boot-starter-data-r2dbc-test`).
+- `build-logic/com.example.spring-boot-data-mongodb.gradle.kts` — [REVIEW] — `id("com.example.spring-boot")`; один из «7 плагинов 1:1 с папкой модуля» — id совпадает с именем папки/starter'а.
+- `build-logic/com.example.spring-boot-data-mongodb-reactive.gradle.kts` — [REVIEW] — `id("com.example.spring-boot")`; один из «7 плагинов 1:1 с папкой модуля» — id совпадает с именем папки/starter'а.
+- `build-logic/com.example.spring-boot-data-jpa.gradle.kts` — [REVIEW] — `id("com.example.spring-boot")`; один из «7 плагинов 1:1 с папкой модуля» — id совпадает с именем папки/starter'а.
+- `build-logic/com.example.spring-boot-data-jdbc.gradle.kts` — [REVIEW] — `id("com.example.spring-boot")`; один из «7 плагинов 1:1 с папкой модуля» — id совпадает с именем папки/starter'а, как того требует правило именования.
+- `build-logic/com.example.spring-boot-data-elasticsearch.gradle.kts` — [REVIEW] — `id("com.example.spring-boot")`; отдельно текстом CLAUDE.md не описан, паттерн стандартный (`implementation`/`testImplementation` через `-test`-компаньон).
+- `build-logic/com.example.spring-boot-client-web.gradle.kts` — [REVIEW] — `id("com.example.spring-boot")`, зависимость `spring-boot-starter-webclient`(`-test`), без явного `reactor-test` — совпадает с «spring-boot-client-web — 1 родитель (spring-boot), без явного reactor-test: ... reactor-test:3.8.5 приходит транзитивно».
+- `build-logic/com.example.spring-boot-client-rest.gradle.kts` — [REVIEW] — `id("com.example.spring-boot")`, зависимость `spring-boot-starter-restclient`(`-test`) — имя плагина = переименованный `restclient`, как в «com.example.spring-boot-client-rest / com.example.spring-boot-client-web (были restclient/webclient) — переименованы».
+- `build-logic/com.example.spring-boot-application.gradle.kts` — [REVIEW] — `id("com.example.spring-boot")` + `id("org.springframework.boot")` — ровно вторая (bootable) ось иерархии, как задокументировано в «Convention plugins — принцип именования и структура».
+- `build-logic/com.example.spring-boot-actuator.gradle.kts` — [REVIEW] — `id("com.example.spring-boot")` — обычный технологический плагин (без bootable-оси). Отдельно текстом в CLAUDE.md не описан (упомянут лишь как часть подключённого стека `registry/`/`config/`/`gateway/`), но соответствует общему паттерну `implementation`/`testImplementation` через `-test`-компаньон.
+- `build-logic/com.example.reactor.gradle.kts` — [REVIEW] — `id("com.example.base")` — родитель сменён с `library` на `base`, как задокументировано; `reactor-core`/`reactor-tools` (`implementation`) + `reactor-test` (`testImplementation`) из `libs.findVersion("reactor-core")` = 3.8.5, без `io.spring.dependency-management` — совпадает дословно с «com.example.reactor» и «Синхронизация версий» → reactor-core.
+- `build-logic/com.example.nullaway.gradle.kts` — [REVIEW] — `id("java-library")` + `id("net.ltgt.errorprone")`, без `com.example`-родителя (вне BOM-цепочки через `base`) — совпадает с «исключение — com.example.nullaway» и «следствие: все модули транзитивно получают java-library через base → codequality → nullaway». `jspecify`/`errorprone-core`/`nullaway` — из каталога, версии совпадают.
+- `build-logic/com.example.library.gradle.kts` — [REVIEW] — `id("com.example.base")` + `id("java-library")` — 1 родитель `base`, без Spring — совпадает с «com.example.library — 1 родитель com.example.base; добавляет Gradle-плагин java-library, без Spring».
+- `build-logic/com.example.javaformat.gradle.kts` — [REVIEW] — `id("io.spring.javaformat")` + `id("checkstyle")` (core-плагин, не `com.example.checkstyle`), независимо конфигурирует тот же extension `checkstyle {}` (`toolVersion`, `configFile`, `configProperties`) — ровно преднамеренное дублирование из «`com.example.checkstyle` остаётся отдельным плагином...». `checkstyle`-зависимость (`spring-javaformat-checkstyle`) добавлена вручную — версия каталога `spring-javaformat = 0.0.47` согласуется с memory-заметкой «checkstyle-зависимость обязательна вручную в 0.0.47».
+- `build-logic/com.example.jacoco.gradle.kts` — [REVIEW] — `id("jacoco")` без `com.example`-родителя, `toolVersion` из `libs.findVersion("jacoco")` = 0.8.14 через каталог — совпадает с «jacoco — id("jacoco"); id("java") не нужен» и «Синхронизация версий».
+- `build-logic/com.example.jacoco-report-aggregation.gradle.kts` — [REVIEW] — `id("jacoco-report-aggregation")`, вообще без родителя и без доп. конфигурации — совпадает с «jacoco-report-aggregation — без родителя вообще (autoconfig)».
+- `build-logic/com.example.codequality.gradle.kts` — [REVIEW] — Агрегирует ровно 5 плагинов (`checkstyle`, `javaformat`, `nullaway`, `jacoco`, `jacoco-report-aggregation`) — совпадает с «агрегатор 5 плагинов выше»; не применяет `com.example.base` — подтверждает «цикла не возникает: codequality-плагины не применяют com.example.base».
+- `build-logic/com.example.checkstyle.gradle.kts` — [REVIEW] — `id("checkstyle")` без `com.example.*`-родителя, `id("java")` не подключается — совпадает с «checkstyle — id("checkstyle"); без com.example.* родителя; id("java") не нужен». `toolVersion` + `checkstyle`-зависимость (puppycrawl) из `libs.findVersion("checkstyle")` = 9.3 — через каталог, как описано в «Синхронизация версий».
+- `build-logic/com.example.base.gradle.kts` — [REVIEW] — `id("java")` + `id("com.example.codequality")`, toolchain через `providers.fileContents(...).asText` (Provider API) из `.java-version`, `junit-jupiter`/`junit-platform-launcher` из каталога (`testImplementation`/`testRuntimeOnly`), `useJUnitPlatform()` — дословно совпадает с «Иерархия» (единственный родитель — `codequality`) и «Синхронизация версий» → Java/junit-jupiter. Версии в каталоге (6.0.3/6.0.3) совпадают с зафиксированным фактом «Spring Boot 4.0.6 управляет JUnit 6».
+#### build-logic/ — корневые файлы (2 файла)
+- `build-logic/settings.gradle.kts` — [REVIEW] — `rootProject.name = "build-logic"`, `versionCatalogs { create("libs") { from(files("../gradle/libs.versions.toml")) } }` — совпадает с «Синхронизация версий»: «build-logic — отдельный included build и не видит корневой gradle.properties/каталог автоматически, поэтому build-logic/settings.gradle.kts подключает тот же .toml-файл отдельно». `include(":convention")` совпадает с «Convention plugins — build-logic/convention/» и деревом `build-logic/settings.gradle.kts include(":convention")`.
+- `build-logic/convention/build.gradle.kts` — [REVIEW] — `kotlin-dsl` + classpath-зависимости (`spring-boot-gradle-plugin`, `dependency-management-plugin`, `spring-javaformat-gradle-plugin`, `gradle-errorprone-plugin`) через **typed-аксессоры** (`libs.versions.spring.boot.get()` и т. п.) — совпадает с «Синхронизация версий»: typed-аксессоры доступны именно в обычных build-скриптах, не в precompiled-плагинах. Отступ 4 пробела, без табов.
 ### auth/ (6 файлов)
 
 Skeleton-модуль (`com.example.spring-boot-application`, логики нет). `src/test/resources/application.properties` — пустой файл.
 
 #### auth/application/ (6 файлов)
-
-- `auth/application/src/main/java/com/example/auth/AuthApplication.java` — [REVIEW] — пустой `@SpringBootApplication`-класс без логики
-- `auth/application/src/main/java/com/example/auth/package-info.java` — [REVIEW] — `@NullMarked`
-- `auth/build.gradle.kts` — [REVIEW] — только `spring-boot-application` — соответствует статусу СКЕЛЕТ, логики нет
-- `auth/src/main/resources/application.properties` — [REVIEW] — только `spring.application.name`
-- `auth/src/test/java/com/example/auth/AuthApplicationTests.java` — [REVIEW] — только `contextLoads()`
 - `auth/src/test/resources/application.properties` — [REVIEW] — файл пустой — вероятно, задел на будущее
-
+- `auth/src/test/java/com/example/auth/AuthApplicationTests.java` — [REVIEW] — только `contextLoads()`
+- `auth/src/main/resources/application.properties` — [REVIEW] — только `spring.application.name`
+- `auth/build.gradle.kts` — [REVIEW] — только `spring-boot-application` — соответствует статусу СКЕЛЕТ, логики нет
+- `auth/application/src/main/java/com/example/auth/package-info.java` — [REVIEW] — `@NullMarked`
+- `auth/application/src/main/java/com/example/auth/AuthApplication.java` — [REVIEW] — пустой `@SpringBootApplication`-класс без логики
 ### .github/ (1 файл)
-
 - `.github/workflows/gradle.yml` — [REVIEW] — гоняет `./gradlew build` (без `clean`) на push/PR в `main`; не разведены `check`/`build`, в отличие от локального workflow из раздела «Правила». Править только по отдельному запросу (правило «CI»).
-
+### Корень репозитория (9 файлов)
+- `settings.gradle.kts` — [DONE] — `includeBuild`, `TYPESAFE_PROJECT_ACCESSORS`, `rootProject.name`; состав `include(...)` совпадает со статусами в «Задачах»; порядок блоков — инфраструктурные сервисы (`auth`/`config`/`gateway`/`registry`) выше CRUD (`note`/`user`/`user-note`), прямой алфавит внутри каждой группы; дважды подтверждено `./gradlew clean check` (BUILD SUCCESSFUL)
+- `gradlew.bat` — [DONE] — стандартный сгенерированный wrapper-скрипт (пересобран при апгрейде Gradle до 9.6.1 в этой сессии, не редактировался руками); заголовочный комментарий внутри «gradlew startup script» вместо «Gradle startup script» — так генератор называет по имени исполняемого файла, не опечатка
+- `gradlew` — [DONE] — стандартный сгенерированный wrapper-скрипт (пересобран при апгрейде до 9.6.1 в этой сессии); executable-бит `755` и LF-окончания подтверждены, соответствует `.gitattributes`
+- `gradle.properties` — [DONE] — `configuration-cache.problems=fail` (ужесточено с `warn` в этой сессии): `./gradlew clean check` и `./gradlew clean build` дважды каждый прошли чисто, без единого предупреждения о configuration cache, включая `bootJar` всех 7 `application/`-модулей; `parallel`/`caching`/`configureondemand`/`configuration-cache`/`configuration-cache.parallel` — разумный набор для мультимодульного проекта, замечаний нет
+- `CLAUDE.md` — [DONE] — сам документ; самореференциально по природе (см. «Всё временно» в шапке) — статус означает «строка каталога точна», не «содержимое неизменно»; записи `[DONE]` намеренно не удаляются после утверждения (см. «Пересмотр решений»)
+- `.springjavaformatconfig` — [DONE] — `indentation-style=spaces` — источник истины по стилю (см. «Отступ 4 пробела»); поддерживает также `java-baseline` (V8/V17) — намеренно не задан
+- `.java-version` — [DONE] — `21`; единственный источник версии Java, читается через toolchain в `com.example.base` и `java-version-file` в CI (`.github/workflows/gradle.yml`); проверено по всему репозиторию — хардкода версии больше нигде нет, `.idea/` не отслеживается git
+- `.gitignore` — [DONE] — стандартный Spring Initializr `.gitignore` (HELP.md, `.gradle`, `build/`, STS/IntelliJ/NetBeans/VS Code) + 2 добавленных вручную раздела под AI-инструменты (`.claude/`, `.junie/` — JetBrains AI); `.claude/` реально существует локально, `.junie/` пока не создавался — оба корректно не отслеживаются git
+- `.gitattributes` — [DONE] — LF для `gradlew`, CRLF для `*.bat`, binary для `*.jar`
