@@ -1,6 +1,6 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: Wed Jul 08 20:56:34 IDT 2026 **Всё временно** — любое решение подлежит обсуждению и изменению.
+> Последнее обновление: Wed Jul 08 21:36:17 IDT 2026 **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 Многомодульный Spring Boot 4 проект (`note/`, `user/`, `user-note/`, ...), реализующий hexagonal architecture единообразно во всех сервисах через Gradle convention plugins. Этот файл — единственный источник истины по конвенциям, статусу и решениям проекта; вся необходимая для работы над проектом информация должна быть здесь, без обращения к внешним источникам.
 
@@ -135,9 +135,10 @@ com.example.note.data.jpa.repository   NoteJpaRepository
 
 Формат каждой строки: **элемент** — паттерн — пример.
 
-- **Sync port interface** — `{Entity}{Op}Contract` — `NoteAddContract`
-- **Reactive port interface** — `{Entity}{Op}ContractReactive` — `NoteAddContractReactive`
-- **Adapter impl** — `{Entity}{Op}{Tech}Adapter` — `NoteAddJpaAdapter`
+- **Sync port interface** — `{Entity}Contract` — `NoteContract`
+- **Reactive port interface** — `{Entity}ContractReactive` — `NoteContractReactive`
+- **Adapter impl** — `{Entity}{Tech}Adapter` — `NoteJpaAdapter`
+- **Controller** — `{Entity}Controller` — `NoteController`
 - **Mapper interface** — `{Entity}{Tech}MapperContract` — `NoteJpaMapperContract`
 - **Mapper impl** — `{Entity}{Tech}Mapper` — `NoteJpaMapper`
 - **Spring Data repo** — `{Entity}{Tech}Repository` — `NoteJpaRepository`
@@ -216,7 +217,7 @@ Spring Cache, Spring OpenFeign, Spring Cloud LoadBalancer, Spring Cloud Circuit 
 - Type-safe project accessors (`projects.note.domain` вместо `project(':note:domain')`) — включены через `enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")` в корневом `settings.gradle.kts`; требуют явного `rootProject.name` в обоих `settings.gradle.kts` (иначе Gradle предупреждает о нестабильности между чекаутами — исправлено там же). Фича остаётся incubating в Gradle 9.6.1 (не graduated to stable с версии 7.0), но работает без единого костыля — проверено `./gradlew clean build` по всем сервисам
 - `api` в `dependencies {}` — только когда тип зависимости используется в собственной публичной сигнатуре модуля (параметр/возврат публичного метода), иначе `implementation`; не полагаться на то, что тип и так транзитивно придёт потребителю другим путём. Проверено эмпирически на `reactor-core` в `com.example.reactor`: `webflux`/`data-r2dbc`/`data-mongodb-reactive` собираются с ним и как с `implementation` — `Mono`/`Flux` на их classpath приходят от собственных Spring-стартеров через BOM, а не транзитивно от `data-contract-reactive`, поэтому `api` там был не нужен (`./gradlew clean check` по всем сервисам подтвердил). `api project(': ...:domain)` в `data-contract*/build.gradle.kts` — осознанное исключение: `NoteResponse` и т. п. больше неоткуда получить, это единственный путь
 - Hexagonal: `domain/` не знает о JPA/MongoDB/Spring; адаптеры знают только `data-contract/`
-- Один контроллер на операцию (`NoteCreateController` → `POST /notes`)
+- **Один контроллер/контракт/адаптер на сущность, не на операцию** (пересмотрено 2026-07-08, было «один класс — одна операция»): `NoteController` с 6 методами вместо `NoteCreateController`/`NoteFindAllController`/... по одному на каждый HTTP-метод; `NoteContract`/`NoteContractReactive` с 6-8 методами вместо отдельного интерфейса на операцию; `NoteJpaAdapter` (и аналогично для остальных 4 driven-технологий) реализует контракт целиком одним классом. Причина пересмотра — количество файлов (~450 в каталоге проекта) признано более серьёзной проблемой, чем размер отдельного класса; слои (`domain/`/`data-contract*/`/`webmvc/`/`webflux/`/`data-*/`) и сама гексагональная изоляция не затронуты — меняется только гранулярность внутри слоя. Применено по всем трём CRUD-сервисам (`note/`, `user/`, `user-note/`); `mapper/`/`model/`/`repository/` уже были объединены на сущность и не менялись. Проверено `./gradlew clean build` по каждому сервису и по всему проекту
 - `service/` — только при координации нескольких портов; для простого CRUD не нужен
 - `existsById` в контракте — валидный паттерн, не заменять на `findById`
 - `add` ≠ `replace`: JPA — `save(null id)` vs `save(id)`; MongoDB — `insert()` vs `save()`
@@ -310,7 +311,6 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
 - **PATCH** — поддерживать или нет
 - **`@Transactional` на методах адаптера** — решение было зафиксировано, но при пересмотре CRUD-сервисов (2026-07-07) выяснилось, что оно не реализовано ни в одном адаптере ни одной технологии ни одного сервиса. Решить: реализовать по всем адаптерам (~150 файлов) или снять решение как устаревшее (Spring Data репозитории уже транзакционны на уровне отдельного метода)
 - **Комбинации technology в `application/`** — сейчас у каждого сервиса ровно одна связка (`webmvc`+`data-jpa`); решить, нужны ли доп. `application/`-модули (или профили) для остальных технологий, чтобы webflux/r2dbc/mongo и т. д. были реально запускаемы, а не только компилируемы
-- **SRP: один класс/интерфейс — одна операция** — при пересмотре CRUD-сервисов (2026-07-07) подтверждено, что принцип соблюдается везде без нарушений; решить, стоит ли явно зафиксировать его как принятое архитектурное решение, или оставить неявным соглашением
 - **`user/`: `findByEmail`/`findByUsername` без HTTP-входа** — доведены до всех driven-адаптеров (jpa/mongodb/mongodb-reactive/r2dbc/jdbc), но не выведены в `webmvc`/`webflux`. Варианты: оставить как задел под будущий `auth/` (поиск пользователя при логине), добавить контроллеры уже сейчас, или убрать как неиспользуемое до появления реального потребителя
 - **`user-note/`: `role` — enum в JPA/MongoDB, но `String` в R2DBC/JDBC** — нативно в JPA (`@Enumerated(EnumType.STRING)`) и MongoDB/MongoDB reactive, но в R2DBC и JDBC — ручной `.name()`/`valueOf()` в мэппере, т. к. Spring Data R2DBC и сырой JDBC (`ResultSet`/`RowMapper`) не поддерживают enum-колонки нативно без конвертера. Обсудить: оставить ручной подход как оправданный технологическими ограничениями, или написать конвертер для R2DBC
 - **Асимметрия `data-jdbc/`** — единственный driven-адаптер без `model/`/`repository/`/`mapper/`, тогда как остальные технологии единообразны (решение принято намеренно, см. «Принятые решения» → «Архитектура» → `data-jdbc/`). Но пока ни один `data-jdbc/` не подключён к `application/` ни в одном сервисе — пересмотреть при первом реальном использовании: не всплывёт ли потребность в паттерне ближе к остальным технологиям (например, ради тестируемости или переиспользования маппинга)
