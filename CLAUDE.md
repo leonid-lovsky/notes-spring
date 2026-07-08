@@ -1,6 +1,6 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: Wed Jul 08 20:24:33 IDT 2026 **Всё временно** — любое решение подлежит обсуждению и изменению.
+> Последнее обновление: Wed Jul 08 20:27:04 IDT 2026 **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 Многомодульный Spring Boot 4 проект (`note/`, `user/`, `user-note/`, ...), реализующий hexagonal architecture единообразно во всех сервисах через Gradle convention plugins. Этот файл — единственный источник истины по конвенциям, статусу и решениям проекта; вся необходимая для работы над проектом информация должна быть здесь, без обращения к внешним источникам.
 
@@ -327,7 +327,7 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
 ### Корень репозитория (9 файлов)
 
 - `settings.gradle.kts` — [DONE] — `includeBuild`, `TYPESAFE_PROJECT_ACCESSORS`, `rootProject.name`; состав `include(...)` совпадает со статусами в «Задачах»; порядок блоков — инфраструктурные сервисы (`auth`/`config`/`gateway`/`registry`) выше CRUD (`note`/`user`/`user-note`), прямой алфавит внутри каждой группы; дважды подтверждено `./gradlew clean check` (BUILD SUCCESSFUL)
-- `gradlew.bat` — [REVIEW] — стандартный сгенерированный wrapper-скрипт
+- `gradlew.bat` — [REVIEW] — стандартный сгенерированный wrapper-скрипт (пересобран при апгрейде Gradle до 9.6.1 в этой сессии, не редактировался руками); заголовочный комментарий внутри «gradlew startup script» вместо «Gradle startup script» — так генератор называет по имени исполняемого файла, не опечатка
 - `gradlew` — [REVIEW] — стандартный сгенерированный wrapper-скрипт
 - `gradle.properties` — [REVIEW] — `configuration-cache.problems=warn` — раз config cache уже подтверждена рабочей без костылей, не ужесточить ли до `fail`?
 - `CLAUDE.md` — [REVIEW] — сам документ
