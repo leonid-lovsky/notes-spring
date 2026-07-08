@@ -1,6 +1,6 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: Wed Jul 08 19:29:37 IDT 2026 **Всё временно** — любое решение подлежит обсуждению и изменению.
+> Последнее обновление: Wed Jul 08 19:32:01 IDT 2026 **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 Многомодульный Spring Boot 4 проект (`note/`, `user/`, `user-note/`, ...), реализующий hexagonal architecture единообразно во всех сервисах через Gradle convention plugins. Этот файл — единственный источник истины по конвенциям, статусу и решениям проекта; вся необходимая для работы над проектом информация должна быть здесь, без обращения к внешним источникам.
 
@@ -155,7 +155,7 @@ com.example.note.data.jpa.repository   NoteJpaRepository
 Формат каждой строки: **инструмент** — версия.
 
 - **Java** — 21
-- **Gradle** — 9.6.0
+- **Gradle** — 9.6.1
 - **Spring Boot** — 4.0.6
 - **Spring Cloud** — 2025.1.2
 
@@ -213,7 +213,7 @@ Spring Cache, Spring OpenFeign, Spring Cloud LoadBalancer, Spring Cloud Circuit 
 - **Отступ 4 пробела, не табы** — в convention-плагинах (`build-logic/`) и обоих `settings.gradle.kts`: `.springjavaformatconfig` (`indentation-style=spaces`) — источник истины по стилю для всего репозитория, а `build-logic/` изначально не форматировался этим правилом (Spring JavaFormat форматирует Java, не Groovy build-скрипты) и разошёлся на табы
 - **Плагин `idea` — удалён** (был в бывшем `java-domain`, контент которого сейчас — часть `com.example.base`): deprecated в Gradle, будет убран в Gradle 10, и был применён только в `domain/`-модулях (несогласованно, больше нигде в плагинах)
 - **Иерархия convention-плагинов** — правила и диаграмма: см. «Convention plugins — принцип именования и структура» ниже. Дополнительно (не показано на диаграмме): `codequality`-плагины не объявляют `id("java")` сами — он нужен только там, где есть java-specific dep-конфигурации (`implementation`, `compileOnly`, `api` и т. д.); если плагин использует только plugin-specific конфигурации (`checkstyle`, `errorprone`, `jacoco` и т. д.) — `id("java")` не нужен (исключение — `com.example.nullaway`, см. ниже). Цикла не возникает: codequality-плагины не применяют `com.example.base`. `jacoco-report-aggregation` — без родителя вообще: плагину не нужен `java` функционально, лишнее не настраивается (autoconfiguration/defaults — не подгонять структуру под единообразие там, где это не даёт реальной пользы)
-- Type-safe project accessors (`projects.note.domain` вместо `project(':note:domain')`) — включены через `enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")` в корневом `settings.gradle.kts`; требуют явного `rootProject.name` в обоих `settings.gradle.kts` (иначе Gradle предупреждает о нестабильности между чекаутами — исправлено там же). Фича остаётся incubating в Gradle 9.6.0 (не graduated to stable с версии 7.0), но работает без единого костыля — проверено `./gradlew clean build` по всем сервисам
+- Type-safe project accessors (`projects.note.domain` вместо `project(':note:domain')`) — включены через `enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")` в корневом `settings.gradle.kts`; требуют явного `rootProject.name` в обоих `settings.gradle.kts` (иначе Gradle предупреждает о нестабильности между чекаутами — исправлено там же). Фича остаётся incubating в Gradle 9.6.1 (не graduated to stable с версии 7.0), но работает без единого костыля — проверено `./gradlew clean build` по всем сервисам
 - `api` в `dependencies {}` — только когда тип зависимости используется в собственной публичной сигнатуре модуля (параметр/возврат публичного метода), иначе `implementation`; не полагаться на то, что тип и так транзитивно придёт потребителю другим путём. Проверено эмпирически на `reactor-core` в `com.example.reactor`: `webflux`/`data-r2dbc`/`data-mongodb-reactive` собираются с ним и как с `implementation` — `Mono`/`Flux` на их classpath приходят от собственных Spring-стартеров через BOM, а не транзитивно от `data-contract-reactive`, поэтому `api` там был не нужен (`./gradlew clean check` по всем сервисам подтвердил). `api project(': ...:domain)` в `data-contract*/build.gradle.kts` — осознанное исключение: `NoteResponse` и т. п. больше неоткуда получить, это единственный путь
 - Hexagonal: `domain/` не знает о JPA/MongoDB/Spring; адаптеры знают только `data-contract/`
 - Один контроллер на операцию (`NoteCreateController` → `POST /notes`)
@@ -942,12 +942,12 @@ Skeleton-сервис Eureka server. Структурно идентичен `ga
 
 ### gradle/ (4 файла)
 
-`libs.versions.toml` и `gradle-wrapper.properties` — версии совпадают с «Стек»/«Синхронизация версий» (Gradle 9.6.0, Spring Boot 4.0.6, Spring Cloud 2025.1.2, JUnit 6.0.3). `checkstyle/checkstyle.xml` — `SpringChecks` + excludes javadoc-проверок, согласуется с memory-заметкой про версию spring-javaformat 0.0.47.
+`libs.versions.toml` и `gradle-wrapper.properties` — версии совпадают с «Стек»/«Синхронизация версий» (Gradle 9.6.1, Spring Boot 4.0.6, Spring Cloud 2025.1.2, JUnit 6.0.3). `checkstyle/checkstyle.xml` — `SpringChecks` + excludes javadoc-проверок, согласуется с memory-заметкой про версию spring-javaformat 0.0.47.
 
 #### gradle/wrapper/ (2 файлов)
 
 - `gradle/wrapper/gradle-wrapper.jar` — [REVIEW] — бинарный файл wrapper, не проверяется построчно
-- `gradle/wrapper/gradle-wrapper.properties` — [REVIEW] — Gradle 9.6.0, совпадает со «Стек»
+- `gradle/wrapper/gradle-wrapper.properties` — [REVIEW] — Gradle 9.6.1, совпадает со «Стек»
 
 
 #### gradle/ — отдельные файлы (2)
