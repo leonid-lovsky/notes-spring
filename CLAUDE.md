@@ -1,6 +1,6 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: Wed Jul 08 19:36:34 IDT 2026 **Всё временно** — любое решение подлежит обсуждению и изменению.
+> Последнее обновление: Wed Jul 08 20:24:33 IDT 2026 **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 Многомодульный Spring Boot 4 проект (`note/`, `user/`, `user-note/`, ...), реализующий hexagonal architecture единообразно во всех сервисах через Gradle convention plugins. Этот файл — единственный источник истины по конвенциям, статусу и решениям проекта; вся необходимая для работы над проектом информация должна быть здесь, без обращения к внешним источникам.
 
@@ -314,6 +314,7 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
 - **`user/`: `findByEmail`/`findByUsername` без HTTP-входа** — доведены до всех driven-адаптеров (jpa/mongodb/mongodb-reactive/r2dbc/jdbc), но не выведены в `webmvc`/`webflux`. Варианты: оставить как задел под будущий `auth/` (поиск пользователя при логине), добавить контроллеры уже сейчас, или убрать как неиспользуемое до появления реального потребителя
 - **`user-note/`: `role` — enum в JPA/MongoDB, но `String` в R2DBC/JDBC** — нативно в JPA (`@Enumerated(EnumType.STRING)`) и MongoDB/MongoDB reactive, но в R2DBC и JDBC — ручной `.name()`/`valueOf()` в мэппере, т. к. Spring Data R2DBC и сырой JDBC (`ResultSet`/`RowMapper`) не поддерживают enum-колонки нативно без конвертера. Обсудить: оставить ручной подход как оправданный технологическими ограничениями, или написать конвертер для R2DBC
 - **Асимметрия `data-jdbc/`** — единственный driven-адаптер без `model/`/`repository/`/`mapper/`, тогда как остальные технологии единообразны (решение принято намеренно, см. «Принятые решения» → «Архитектура» → `data-jdbc/`). Но пока ни один `data-jdbc/` не подключён к `application/` ни в одном сервисе — пересмотреть при первом реальном использовании: не всплывёт ли потребность в паттерне ближе к остальным технологиям (например, ради тестируемости или переиспользования маппинга)
+- **Composite build на границе сервисов** — обсуждалось при пересмотре `settings.gradle.kts` (2026-07-08): каждый сервис (`note/`, `user/`, `user-note/`, `auth/`, `config/`, `gateway/`, `registry/`) мог бы подключаться в корневой `settings.gradle.kts` через `includeBuild(...)` (composite build) вместо `include(...)`, оставляя `include(...)` для модулей внутри каждого сервиса без изменений. Проверено: ни один сервис сейчас не ссылается на модули другого (`grep` по `project(...)`/`projects.*` — пусто), значит typesafe-accessor'ы не пострадали бы. Цена: 7 новых `settings.gradle.kts` с дублированным `pluginManagement`/version-catalog boilerplate + ручная агрегация `build`/`check`/`clean` в корне вместо бесплатной от Gradle. Решено не делать сейчас — нет текущего драйвера (независимое CI/версionирование, план на разъезд по репозиториям), цена ощутимо больше выигрыша; пересмотреть, если такой драйвер появится
 
 ---
 
@@ -325,15 +326,15 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
 
 ### Корень репозитория (9 файлов)
 
-- `.springjavaformatconfig` — [DONE] — `indentation-style=spaces` — источник истины по стилю (см. «Отступ 4 пробела»); поддерживает также `java-baseline` (V8/V17) — намеренно не задан
-- `.java-version` — [REVIEW] — `21`; единственный источник версии Java, читается через toolchain в `com.example.base`
-- `.gitignore` — [REVIEW] — стандартный Spring/IDE boilerplate; `.claude/`, `.idea/`, `.gradle/`, `build/` корректно исключены
-- `.gitattributes` — [REVIEW] — LF для `gradlew`, CRLF для `*.bat`, binary для `*.jar`
-- `settings.gradle.kts` — [REVIEW] — `includeBuild`, `TYPESAFE_PROJECT_ACCESSORS`, `rootProject.name`; состав `include(...)` совпадает со статусами в «Задачах»
+- `settings.gradle.kts` — [DONE] — `includeBuild`, `TYPESAFE_PROJECT_ACCESSORS`, `rootProject.name`; состав `include(...)` совпадает со статусами в «Задачах»; порядок блоков — инфраструктурные сервисы (`auth`/`config`/`gateway`/`registry`) выше CRUD (`note`/`user`/`user-note`), прямой алфавит внутри каждой группы; дважды подтверждено `./gradlew clean check` (BUILD SUCCESSFUL)
 - `gradlew.bat` — [REVIEW] — стандартный сгенерированный wrapper-скрипт
 - `gradlew` — [REVIEW] — стандартный сгенерированный wrapper-скрипт
 - `gradle.properties` — [REVIEW] — `configuration-cache.problems=warn` — раз config cache уже подтверждена рабочей без костылей, не ужесточить ли до `fail`?
 - `CLAUDE.md` — [REVIEW] — сам документ
+- `.springjavaformatconfig` — [DONE] — `indentation-style=spaces` — источник истины по стилю (см. «Отступ 4 пробела»); поддерживает также `java-baseline` (V8/V17) — намеренно не задан
+- `.java-version` — [DONE] — `21`; единственный источник версии Java, читается через toolchain в `com.example.base` и `java-version-file` в CI (`.github/workflows/gradle.yml`); проверено по всему репозиторию — хардкода версии больше нигде нет, `.idea/` не отслеживается git
+- `.gitignore` — [DONE] — стандартный Spring Initializr `.gitignore` (HELP.md, `.gradle`, `build/`, STS/IntelliJ/NetBeans/VS Code) + 2 добавленных вручную раздела под AI-инструменты (`.claude/`, `.junie/` — JetBrains AI); `.claude/` реально существует локально, `.junie/` пока не создавался — оба корректно не отслеживаются git
+- `.gitattributes` — [DONE] — LF для `gradlew`, CRLF для `*.bat`, binary для `*.jar`
 
 
 ### user-note/ (133 файла + 30 предложенных)
