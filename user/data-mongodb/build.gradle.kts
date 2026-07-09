@@ -4,4 +4,5 @@ plugins {
 
 dependencies {
     implementation(projects.user.dataContract)
+    implementation(projects.user.domain)
 }
