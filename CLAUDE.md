@@ -1,6 +1,6 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: Thu Jul 09 23:30:44 IDT 2026 **Всё временно** — любое решение подлежит обсуждению и изменению.
+> Последнее обновление: Thu Jul 09 23:41:58 IDT 2026 **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 Многомодульный Spring Boot 4 проект (`note/`, `user/`, `user-note/`, ...), реализующий hexagonal architecture единообразно во всех сервисах через Gradle convention plugins. Этот файл — единственный источник истины по конвенциям, статусу и решениям проекта; вся необходимая для работы над проектом информация должна быть здесь, без обращения к внешним источникам.
 
@@ -352,13 +352,13 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
 5. **Внутри самого `user-note`** все 5 driven-технологий (JPA/MongoDB/MongoDB reactive/R2DBC/JDBC) ведут себя единообразно по каждой из 8 операций (add/exists/findById/findByNoteId/ findByUserIdAndNoteId/findByUserId/remove/replace) — сигнатуры, обработка null/empty (`Optional`/`Mono`/`List`/`Flux`), порядок «проверить существование → бросить `NotFoundException` → обновить» в `replace` — везде одинаковы. Расхождений между технологиями не найдено.
 
 #### user-note/webmvc/ (4 файлов)
-- `user-note/webmvc/build.gradle.kts` — [REVIEW] — `spring-boot-webmvc` + `implementation(dataContract)` + `implementation(domain)` (добавлено 2026-07-09: контроллер напрямую импортирует `UserNoteRequest`/`UserNoteResponse`/`UserNoteNotFoundException` из `domain/` — раньше это работало только транзитивно через `api(domain)` в `data-contract/build.gradle.kts`, неявно; см. «Принятые решения» → «Hexagonal» — пересмотрено)
+- `user-note/webmvc/build.gradle.kts` — [DONE] — `spring-boot-webmvc` + `implementation(dataContract)` + `implementation(domain)` (добавлено 2026-07-09: контроллер напрямую импортирует `UserNoteRequest`/`UserNoteResponse`/`UserNoteNotFoundException` из `domain/` — раньше это работало только транзитивно через `api(domain)` в `data-contract/build.gradle.kts`, неявно; см. «Принятые решения» → «Hexagonal» — пересмотрено)
 - `user-note/webmvc/src/main/java/com/example/usernote/webmvc/package-info.java` — [REVIEW] — `@NullMarked`
 - `user-note/webmvc/src/main/java/com/example/usernote/webmvc/UserNoteExceptionHandler.java` — [REVIEW] — `@ControllerAdvice extends ResponseEntityExceptionHandler`, без `setTitle` — идентично `NoteExceptionHandler`/`UserExceptionHandler` в webmvc `note/`/`user/`; не находка user-note
 - `user-note/webmvc/src/main/java/com/example/usernote/webmvc/UserNoteController.java` — [REVIEW] — объединяет 7 HTTP-операций одним контроллером
 
 #### user-note/webflux/ (4 файлов)
-- `user-note/webflux/build.gradle.kts` — [REVIEW] — `spring-boot-webflux` + `implementation(dataContractReactive)` + `implementation(domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal»)
+- `user-note/webflux/build.gradle.kts` — [DONE] — `spring-boot-webflux` + `implementation(dataContractReactive)` + `implementation(domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal»)
 - `user-note/webflux/src/main/java/com/example/usernote/webflux/package-info.java` — [REVIEW] — `@NullMarked`
 - `user-note/webflux/src/main/java/com/example/usernote/webflux/UserNoteExceptionHandler.java` — [REVIEW] — `@RestControllerAdvice` без наследования, `ProblemDetail` + `setTitle(...)` — идентично паттерну `NoteExceptionHandler`/`UserExceptionHandler` в webflux `note/`/`user/` (расхождение webmvc/webflux по стилю — общее для всех трёх сервисов, не находка user-note)
 - `user-note/webflux/src/main/java/com/example/usernote/webflux/UserNoteController.java` — [REVIEW] — объединяет 7 HTTP-операций одним контроллером
@@ -372,7 +372,7 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
 - `user-note/domain/src/main/java/com/example/usernote/domain/UserNoteNotFoundException.java` — [REVIEW] — Два конструктора (`UUID id` и `UUID userId, UUID noteId`) — используются в webmvc/webflux/всех технологиях единообразно; чистая Java, без зависимостей на инфраструктуру — соответствует hexagonal-изоляции
 
 #### user-note/data-r2dbc/ (10 файлов)
-- `user-note/data-r2dbc/build.gradle.kts` — [REVIEW] — `spring-boot-data-r2dbc` + `implementation(dataContractReactive)` + `implementation(domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal»)
+- `user-note/data-r2dbc/build.gradle.kts` — [DONE] — `spring-boot-data-r2dbc` + `implementation(dataContractReactive)` + `implementation(domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal»)
 - `user-note/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/repository/package-info.java` — [REVIEW] — `@NullMarked`
 - `user-note/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/repository/UserNoteR2dbcRepository.java` — [REVIEW] — `ReactiveCrudRepository<UserNoteR2dbcEntity, UUID>` + derived queries
 - `user-note/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/model/package-info.java` — [REVIEW] — `@NullMarked`
@@ -384,7 +384,7 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
 - `user-note/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/adapter/UserNoteR2dbcAdapter.java` — [REVIEW] — объединяет все 8 операций одним классом
 
 #### user-note/data-mongodb-reactive/ (10 файлов)
-- `user-note/data-mongodb-reactive/build.gradle.kts` — [REVIEW] — `spring-boot-data-mongodb-reactive` + `implementation(dataContractReactive)` + `implementation(domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal»)
+- `user-note/data-mongodb-reactive/build.gradle.kts` — [DONE] — `spring-boot-data-mongodb-reactive` + `implementation(dataContractReactive)` + `implementation(domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal»)
 - `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/repository/package-info.java` — [REVIEW] — `@NullMarked`
 - `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/repository/UserNoteMongoReactiveRepository.java` — [REVIEW] — `ReactiveMongoRepository<UserNoteReactiveDocument, UUID>` + derived queries
 - `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/model/package-info.java` — [REVIEW] — `@NullMarked`
@@ -396,7 +396,7 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
 - `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/adapter/UserNoteMongoReactiveAdapter.java` — [REVIEW] — объединяет все 8 операций одним классом
 
 #### user-note/data-mongodb/ (10 файлов)
-- `user-note/data-mongodb/build.gradle.kts` — [REVIEW] — `spring-boot-data-mongodb` + `implementation(dataContract)` + `implementation(domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal»)
+- `user-note/data-mongodb/build.gradle.kts` — [DONE] — `spring-boot-data-mongodb` + `implementation(dataContract)` + `implementation(domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal»)
 - `user-note/data-mongodb/src/main/java/com/example/usernote/data/mongodb/repository/package-info.java` — [REVIEW] — `@NullMarked`
 - `user-note/data-mongodb/src/main/java/com/example/usernote/data/mongodb/repository/UserNoteMongoRepository.java` — [REVIEW] — `MongoRepository<UserNoteDocument, UUID>` + derived queries
 - `user-note/data-mongodb/src/main/java/com/example/usernote/data/mongodb/model/package-info.java` — [REVIEW] — `@NullMarked`
@@ -408,7 +408,7 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
 - `user-note/data-mongodb/src/main/java/com/example/usernote/data/mongodb/adapter/UserNoteMongoAdapter.java` — [REVIEW] — объединяет все 8 операций одним классом
 
 #### user-note/data-jpa/ (10 файлов)
-- `user-note/data-jpa/build.gradle.kts` — [REVIEW] — `spring-boot-data-jpa` + `implementation(dataContract)` + `implementation(domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal»)
+- `user-note/data-jpa/build.gradle.kts` — [DONE] — `spring-boot-data-jpa` + `implementation(dataContract)` + `implementation(domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal»)
 - `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/repository/package-info.java` — [REVIEW] — `@NullMarked`
 - `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/repository/UserNoteJpaRepository.java` — [REVIEW] — `JpaRepository<UserNoteEntity, UUID>` + derived queries (`findByUserId`, `findByNoteId`, `findByUserIdAndNoteId`, `existsByUserIdAndNoteId`, `deleteByUserIdAndNoteId`)
 - `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/model/package-info.java` — [REVIEW] — `@NullMarked`
@@ -420,7 +420,7 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
 - `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/adapter/UserNoteJpaAdapter.java` — [REVIEW] — объединяет все 8 операций одним классом
 
 #### user-note/data-jdbc/ (6 файлов)
-- `user-note/data-jdbc/build.gradle.kts` — [REVIEW] — `spring-boot-data-jdbc` + `implementation(dataContract)` + `implementation(domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal»)
+- `user-note/data-jdbc/build.gradle.kts` — [DONE] — `spring-boot-data-jdbc` + `implementation(dataContract)` + `implementation(domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal»)
 - `user-note/data-jdbc/src/main/java/com/example/usernote/data/jdbc/mapper/package-info.java` — [REVIEW] — `@NullMarked`
 - `user-note/data-jdbc/src/main/java/com/example/usernote/data/jdbc/mapper/UserNoteJdbcMapperContract.java` — [REVIEW] — `{Entity}{Tech}MapperContract`
 - `user-note/data-jdbc/src/main/java/com/example/usernote/data/jdbc/mapper/UserNoteJdbcMapper.java` — [REVIEW] — `{Entity}{Tech}Mapper`, `fromRow(ResultSet, int)`, `UserNoteRole.valueOf(...)` — соответствует открытому вопросу «role как String в R2DBC/JDBC» (здесь маппинг вручную, ожидаемо)
@@ -478,13 +478,13 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
 Статус по умолчанию для каждого файла — `[REVIEW]` (правило «Пересмотр решений»: ничего не считается окончательно принятым при первом просмотре).
 
 #### user/webmvc/ (4 файлов)
-- `user/webmvc/build.gradle.kts` — [REVIEW] — `id("com.example.spring-boot-webmvc")` + `implementation(projects.user.dataContract)` + `implementation(projects.user.domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal»)
+- `user/webmvc/build.gradle.kts` — [DONE] — `id("com.example.spring-boot-webmvc")` + `implementation(projects.user.dataContract)` + `implementation(projects.user.domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal»)
 - `user/webmvc/src/main/java/com/example/user/webmvc/package-info.java` — [REVIEW] — `@NullMarked`
 - `user/webmvc/src/main/java/com/example/user/webmvc/UserExceptionHandler.java` — [REVIEW] — `@ControllerAdvice extends ResponseEntityExceptionHandler`, соответствует конвенции `webmvc` (см. комментарий к reactive-версии по асимметрии)
 - `user/webmvc/src/main/java/com/example/user/webmvc/UserController.java` — [REVIEW] — объединяет 5 HTTP-операций одним контроллером; findByEmail/findByUsername по-прежнему без HTTP-входа
 
 #### user/webflux/ (4 файлов)
-- `user/webflux/build.gradle.kts` — [REVIEW] — `id("com.example.spring-boot-webflux")` + `implementation(projects.user.dataContractReactive)` + `implementation(projects.user.domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal»)
+- `user/webflux/build.gradle.kts` — [DONE] — `id("com.example.spring-boot-webflux")` + `implementation(projects.user.dataContractReactive)` + `implementation(projects.user.domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal»)
 - `user/webflux/src/main/java/com/example/user/webflux/package-info.java` — [REVIEW] — `@NullMarked`
 - `user/webflux/src/main/java/com/example/user/webflux/UserExceptionHandler.java` — [REVIEW] — `@RestControllerAdvice` без наследования (не `ResponseEntityExceptionHandler`, в отличие от `webmvc`-версии) — асимметрия оправдана: `ResponseEntityExceptionHandler` — MVC-специфичный класс, для WebFlux нет прямого аналога; уже выравнивалось при пересмотре CRUD-сервисов 2026-07-07
 - `user/webflux/src/main/java/com/example/user/webflux/UserController.java` — [REVIEW] — объединяет 5 HTTP-операций одним контроллером; findByEmail/findByUsername по-прежнему без HTTP-входа
@@ -497,7 +497,7 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
 - `user/domain/src/main/java/com/example/user/domain/UserNotFoundException.java` — [REVIEW] — Два конструктора (`UUID`/`String`) — используется и для поиска по id, и потенциально по email/username; доменное исключение, без зависимостей на инфраструктуру
 
 #### user/data-r2dbc/ (10 файлов)
-- `user/data-r2dbc/build.gradle.kts` — [REVIEW] — `id("com.example.spring-boot-data-r2dbc")` + `implementation(projects.user.dataContractReactive)` + `implementation(projects.user.domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal»)
+- `user/data-r2dbc/build.gradle.kts` — [DONE] — `id("com.example.spring-boot-data-r2dbc")` + `implementation(projects.user.dataContractReactive)` + `implementation(projects.user.domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal»)
 - `user/data-r2dbc/src/main/java/com/example/user/data/r2dbc/repository/package-info.java` — [REVIEW] — `@NullMarked`
 - `user/data-r2dbc/src/main/java/com/example/user/data/r2dbc/repository/UserR2dbcRepository.java` — [REVIEW] — `ReactiveCrudRepository<UserR2dbcEntity, UUID>` + кастомные `findByUsername`/`findByEmail`
 - `user/data-r2dbc/src/main/java/com/example/user/data/r2dbc/model/package-info.java` — [REVIEW] — `@NullMarked`
@@ -509,7 +509,7 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
 - `user/data-r2dbc/src/main/java/com/example/user/data/r2dbc/adapter/UserR2dbcAdapter.java` — [REVIEW] — объединяет все 8 операций одним классом
 
 #### user/data-mongodb-reactive/ (10 файлов)
-- `user/data-mongodb-reactive/build.gradle.kts` — [REVIEW] — `id("com.example.spring-boot-data-mongodb-reactive")` + `implementation(projects.user.dataContractReactive)` + `implementation(projects.user.domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal»)
+- `user/data-mongodb-reactive/build.gradle.kts` — [DONE] — `id("com.example.spring-boot-data-mongodb-reactive")` + `implementation(projects.user.dataContractReactive)` + `implementation(projects.user.domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal»)
 - `user/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/repository/package-info.java` — [REVIEW] — `@NullMarked`
 - `user/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/repository/UserMongoReactiveRepository.java` — [REVIEW] — `ReactiveMongoRepository<UserReactiveDocument, UUID>`
 - `user/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/model/package-info.java` — [REVIEW] — `@NullMarked`
@@ -521,7 +521,7 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
 - `user/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/adapter/UserMongoReactiveAdapter.java` — [REVIEW] — объединяет все 8 операций одним классом
 
 #### user/data-mongodb/ (10 файлов)
-- `user/data-mongodb/build.gradle.kts` — [REVIEW] — `id("com.example.spring-boot-data-mongodb")` + `implementation(projects.user.dataContract)` + `implementation(projects.user.domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal»)
+- `user/data-mongodb/build.gradle.kts` — [DONE] — `id("com.example.spring-boot-data-mongodb")` + `implementation(projects.user.dataContract)` + `implementation(projects.user.domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal»)
 - `user/data-mongodb/src/main/java/com/example/user/data/mongodb/repository/package-info.java` — [REVIEW] — `@NullMarked`
 - `user/data-mongodb/src/main/java/com/example/user/data/mongodb/repository/UserMongoRepository.java` — [REVIEW] — `MongoRepository<UserDocument, UUID>` + кастомные `findByUsername`/`findByEmail`
 - `user/data-mongodb/src/main/java/com/example/user/data/mongodb/model/package-info.java` — [REVIEW] — `@NullMarked`
@@ -533,7 +533,7 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
 - `user/data-mongodb/src/main/java/com/example/user/data/mongodb/adapter/UserMongoAdapter.java` — [REVIEW] — объединяет все 8 операций одним классом
 
 #### user/data-jpa/ (10 файлов)
-- `user/data-jpa/build.gradle.kts` — [REVIEW] — `id("com.example.spring-boot-data-jpa")` + `implementation(projects.user.dataContract)` + `implementation(projects.user.domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal»)
+- `user/data-jpa/build.gradle.kts` — [DONE] — `id("com.example.spring-boot-data-jpa")` + `implementation(projects.user.dataContract)` + `implementation(projects.user.domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal»)
 - `user/data-jpa/src/main/java/com/example/user/data/jpa/repository/package-info.java` — [REVIEW] — `@NullMarked`
 - `user/data-jpa/src/main/java/com/example/user/data/jpa/repository/UserJpaRepository.java` — [REVIEW] — `JpaRepository<UserEntity, UUID>` + кастомные `findByUsername`/`findByEmail` — максимально использует Spring Data, соответствует памяти пользователя
 - `user/data-jpa/src/main/java/com/example/user/data/jpa/model/package-info.java` — [REVIEW] — `@NullMarked`
@@ -545,7 +545,7 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
 - `user/data-jpa/src/main/java/com/example/user/data/jpa/adapter/UserJpaAdapter.java` — [REVIEW] — объединяет все 8 операций одним классом
 
 #### user/data-jdbc/ (6 файлов)
-- `user/data-jdbc/build.gradle.kts` — [REVIEW] — `id("com.example.spring-boot-data-jdbc")` + `implementation(projects.user.dataContract)` + `implementation(projects.user.domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal»)
+- `user/data-jdbc/build.gradle.kts` — [DONE] — `id("com.example.spring-boot-data-jdbc")` + `implementation(projects.user.dataContract)` + `implementation(projects.user.domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal»)
 - `user/data-jdbc/src/main/java/com/example/user/data/jdbc/mapper/package-info.java` — [REVIEW] — `@NullMarked`
 - `user/data-jdbc/src/main/java/com/example/user/data/jdbc/mapper/UserJdbcMapperContract.java` — [REVIEW] — `{Entity}{Tech}MapperContract`
 - `user/data-jdbc/src/main/java/com/example/user/data/jdbc/mapper/UserJdbcMapper.java` — [REVIEW] — `RowMapper`-совместимая сигнатура `fromRow(ResultSet, int)`
@@ -610,13 +610,13 @@ Skeleton-сервис Eureka server. Структурно идентичен `ga
 5. **Схема БД для `data-r2dbc`/`data-jdbc` по-прежнему не создаётся нигде** (соответствует открытому решению «Управление схемой для R2DBC/JDBC» в CLAUDE.md) — `note/application/` подключает только `webmvc`+`data-jpa`, эти два модуля даже не скомпонованы ни в один `application/`; `NoteR2dbcEntity` не имеет аналога `@GeneratedValue` (Spring Data R2DBC не поддерживает автогенерацию на уровне аннотаций), значит `INSERT` для новой записи полагается на `DEFAULT`/`GENERATED` в реальной схеме, которой в репозитории нет.
 
 #### note/webmvc/ (4 файлов)
-- `note/webmvc/build.gradle.kts` — [REVIEW] — `spring-boot-webmvc` + `implementation(projects.note.dataContract)` + `implementation(projects.note.domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal») — соответствует
+- `note/webmvc/build.gradle.kts` — [DONE] — `spring-boot-webmvc` + `implementation(projects.note.dataContract)` + `implementation(projects.note.domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal») — соответствует
 - `note/webmvc/src/main/java/com/example/note/webmvc/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
 - `note/webmvc/src/main/java/com/example/note/webmvc/NoteExceptionHandler.java` — [REVIEW] — наследует `ResponseEntityExceptionHandler` (servlet) — см. находку №3 (расхождение с `webflux`)
 - `note/webmvc/src/main/java/com/example/note/webmvc/NoteController.java` — [REVIEW] — объединяет все 5 HTTP-операций одним контроллером (create/findAll/findById/update/delete)
 
 #### note/webflux/ (4 файлов)
-- `note/webflux/build.gradle.kts` — [REVIEW] — `spring-boot-webflux` + `implementation(projects.note.dataContractReactive)` + `implementation(projects.note.domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal») — соответствует
+- `note/webflux/build.gradle.kts` — [DONE] — `spring-boot-webflux` + `implementation(projects.note.dataContractReactive)` + `implementation(projects.note.domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal») — соответствует
 - `note/webflux/src/main/java/com/example/note/webflux/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
 - `note/webflux/src/main/java/com/example/note/webflux/NoteExceptionHandler.java` — [REVIEW] — **находка**: не наследует reactive-аналог `ResponseEntityExceptionHandler` (в отличие от `webmvc`), имя метода `handleNoteNotFound` (в `webmvc` — `handleNotFound`), дополнительно вызывает `problem.setTitle(...)`, чего нет в `webmvc` — см. находку №3, вопреки записи в CLAUDE.md о «выравнивании» при пересмотре 2026-07-07
 - `note/webflux/src/main/java/com/example/note/webflux/NoteController.java` — [REVIEW] — объединяет все 5 HTTP-операций одним контроллером; `findAll` по-прежнему без `ResponseEntity` (бывшая находка №2) — сохранено внутри метода
@@ -629,7 +629,7 @@ Skeleton-сервис Eureka server. Структурно идентичен `ga
 - `note/domain/src/main/java/com/example/note/domain/NoteNotFoundException.java` — [REVIEW] — `extends RuntimeException`, конструктор от `UUID id` — чистое доменное исключение, без зависимостей на инфраструктуру — соответствует
 
 #### note/data-r2dbc/ (10 файлов)
-- `note/data-r2dbc/build.gradle.kts` — [REVIEW] — `spring-boot-data-r2dbc` + `implementation(projects.note.dataContractReactive)` + `implementation(projects.note.domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal») — соответствует (в отличие от `data-jdbc`, использующего sync-контракт, что верно, т. к. r2dbc реактивен)
+- `note/data-r2dbc/build.gradle.kts` — [DONE] — `spring-boot-data-r2dbc` + `implementation(projects.note.dataContractReactive)` + `implementation(projects.note.domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal») — соответствует (в отличие от `data-jdbc`, использующего sync-контракт, что верно, т. к. r2dbc реактивен)
 - `note/data-r2dbc/src/main/java/com/example/note/data/r2dbc/repository/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
 - `note/data-r2dbc/src/main/java/com/example/note/data/r2dbc/repository/NoteR2dbcRepository.java` — [REVIEW] — `extends ReactiveCrudRepository<NoteR2dbcEntity, UUID>`, а не технологически-специфичный `org.springframework.data.r2dbc.repository.R2dbcRepository` (единственный из технологий, чей репозиторий не расширяет tech-specific интерфейс — JPA/Mongo/MongoReactive все расширяют `JpaRepository`/`MongoRepository`/`ReactiveMongoRepository`). Функционально не расходится: декомпиляция `spring-data-r2dbc-4.0.5.jar` показала, что `R2dbcRepository` не добавляет собственных методов (в отличие от `MongoRepository`/`ReactiveMongoRepository`, у которых есть `insert()`) — но стилистическая непоследовательность в выборе базового интерфейса есть
 - `note/data-r2dbc/src/main/java/com/example/note/data/r2dbc/model/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
@@ -641,7 +641,7 @@ Skeleton-сервис Eureka server. Структурно идентичен `ga
 - `note/data-r2dbc/src/main/java/com/example/note/data/r2dbc/adapter/NoteR2dbcAdapter.java` — [REVIEW] — объединяет все 6 операций одним классом
 
 #### note/data-mongodb-reactive/ (10 файлов)
-- `note/data-mongodb-reactive/build.gradle.kts` — [REVIEW] — `spring-boot-data-mongodb-reactive` + `implementation(projects.note.dataContractReactive)` + `implementation(projects.note.domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal») — соответствует
+- `note/data-mongodb-reactive/build.gradle.kts` — [DONE] — `spring-boot-data-mongodb-reactive` + `implementation(projects.note.dataContractReactive)` + `implementation(projects.note.domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal») — соответствует
 - `note/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/repository/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
 - `note/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/repository/NoteMongoReactiveRepository.java` — [REVIEW] — `extends ReactiveMongoRepository<NoteReactiveDocument, UUID>` — соответствует
 - `note/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/model/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
@@ -653,7 +653,7 @@ Skeleton-сервис Eureka server. Структурно идентичен `ga
 - `note/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/adapter/NoteMongoReactiveAdapter.java` — [REVIEW] — объединяет все 6 операций одним классом
 
 #### note/data-mongodb/ (10 файлов)
-- `note/data-mongodb/build.gradle.kts` — [REVIEW] — `spring-boot-data-mongodb` + `implementation(projects.note.dataContract)` + `implementation(projects.note.domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal») — соответствует
+- `note/data-mongodb/build.gradle.kts` — [DONE] — `spring-boot-data-mongodb` + `implementation(projects.note.dataContract)` + `implementation(projects.note.domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal») — соответствует
 - `note/data-mongodb/src/main/java/com/example/note/data/mongodb/repository/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
 - `note/data-mongodb/src/main/java/com/example/note/data/mongodb/repository/NoteMongoRepository.java` — [REVIEW] — `extends MongoRepository<NoteDocument, UUID>` — соответствует, но фактически недоиспользуется (см. находку выше — `insert`/`save` не вызываются через него для add/replace)
 - `note/data-mongodb/src/main/java/com/example/note/data/mongodb/model/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
@@ -665,7 +665,7 @@ Skeleton-сервис Eureka server. Структурно идентичен `ga
 - `note/data-mongodb/src/main/java/com/example/note/data/mongodb/adapter/NoteMongoAdapter.java` — [REVIEW] — объединяет все 6 операций одним классом; расхождение MongoTemplate/repository между add/replace и остальными операциями (бывшая находка №4) сохраняется внутри класса
 
 #### note/data-jpa/ (10 файлов)
-- `note/data-jpa/build.gradle.kts` — [REVIEW] — `spring-boot-data-jpa` + `implementation(projects.note.dataContract)` + `implementation(projects.note.domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal») — соответствует
+- `note/data-jpa/build.gradle.kts` — [DONE] — `spring-boot-data-jpa` + `implementation(projects.note.dataContract)` + `implementation(projects.note.domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal») — соответствует
 - `note/data-jpa/src/main/java/com/example/note/data/jpa/repository/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
 - `note/data-jpa/src/main/java/com/example/note/data/jpa/repository/NoteJpaRepository.java` — [REVIEW] — пустой `extends JpaRepository<NoteEntity, UUID>` — максимально использует Spring Data, соответствует
 - `note/data-jpa/src/main/java/com/example/note/data/jpa/model/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
@@ -677,7 +677,7 @@ Skeleton-сервис Eureka server. Структурно идентичен `ga
 - `note/data-jpa/src/main/java/com/example/note/data/jpa/adapter/NoteJpaAdapter.java` — [REVIEW] — объединяет все 6 операций одним классом, реализующим `NoteContract` целиком
 
 #### note/data-jdbc/ (6 файлов)
-- `note/data-jdbc/build.gradle.kts` — [REVIEW] — `spring-boot-data-jdbc` + `implementation(projects.note.dataContract)` (sync-контракт, верно для JDBC) + `implementation(projects.note.domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal») — соответствует
+- `note/data-jdbc/build.gradle.kts` — [DONE] — `spring-boot-data-jdbc` + `implementation(projects.note.dataContract)` (sync-контракт, верно для JDBC) + `implementation(projects.note.domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal») — соответствует
 - `note/data-jdbc/src/main/java/com/example/note/data/jdbc/mapper/package-info.java` — [REVIEW] — `@NullMarked`, соответствует
 - `note/data-jdbc/src/main/java/com/example/note/data/jdbc/mapper/NoteJdbcMapperContract.java` — [REVIEW] — сигнатура специфична для JDBC (`fromRow`, а не `toNewX/toExistingX/toResponse` как у остальных технологий) — оправданная адаптация под `RowMapper`, не расхождение
 - `note/data-jdbc/src/main/java/com/example/note/data/jdbc/mapper/NoteJdbcMapper.java` — [REVIEW] — реализует `RowMapper`-подобный `fromRow(ResultSet, rowNum)` — соответствует `{Entity}{Tech}Mapper`
