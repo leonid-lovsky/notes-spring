@@ -16,6 +16,10 @@ public interface UserNoteMongoReactiveRepository extends ReactiveMongoRepository
 
     Mono<UserNoteReactiveDocument> findByUserIdAndNoteId(UUID userId, UUID noteId);
 
+    Mono<Boolean> existsByUserId(UUID userId);
+
+    Mono<Boolean> existsByNoteId(UUID noteId);
+
     Mono<Boolean> existsByUserIdAndNoteId(UUID userId, UUID noteId);
 
     Mono<Void> deleteByUserIdAndNoteId(UUID userId, UUID noteId);

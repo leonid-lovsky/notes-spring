@@ -16,6 +16,10 @@ public interface UserNoteR2dbcRepository extends ReactiveCrudRepository<UserNote
 
     Mono<UserNoteR2dbcEntity> findByUserIdAndNoteId(UUID userId, UUID noteId);
 
+    Mono<Boolean> existsByUserId(UUID userId);
+
+    Mono<Boolean> existsByNoteId(UUID noteId);
+
     Mono<Boolean> existsByUserIdAndNoteId(UUID userId, UUID noteId);
 
     Mono<Void> deleteByUserIdAndNoteId(UUID userId, UUID noteId);

@@ -2,8 +2,7 @@ package com.example.usernote.webflux;
 
 import java.util.UUID;
 
-import com.example.usernote.contract.reactive.UserNoteContractReactive;
-import com.example.usernote.domain.UserNoteNotFoundException;
+import com.example.usernote.contract.reactive.UserNoteServiceInterfaceReactive;
 import com.example.usernote.domain.UserNoteRequest;
 import com.example.usernote.domain.UserNoteResponse;
 import reactor.core.publisher.Flux;
@@ -13,70 +12,132 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/user-notes")
-class UserNoteController {
+class UserNoteController implements UserNoteControllerInterfaceReactive {
 
-    private final UserNoteContractReactive userNoteContractReactive;
+    private final UserNoteServiceInterfaceReactive userNoteService;
 
-    UserNoteController(UserNoteContractReactive userNoteContractReactive) {
-        this.userNoteContractReactive = userNoteContractReactive;
+    UserNoteController(UserNoteServiceInterfaceReactive userNoteService) {
+        this.userNoteService = userNoteService;
     }
 
+    @Override
+    @GetMapping("/{userNoteId}/exists")
+    public Mono<ResponseEntity<Boolean>> existsByUserNoteId(@PathVariable UUID userNoteId) {
+        return this.userNoteService.existsByUserNoteId(userNoteId)
+            .map((exists) -> ResponseEntity.status(HttpStatus.OK).body(exists));
+    }
+
+    @Override
+    @GetMapping(path = "/exists", params = "userId")
+    public Mono<ResponseEntity<Boolean>> existsByUserId(@RequestParam UUID userId) {
+        return this.userNoteService.existsByUserId(userId)
+            .map((exists) -> ResponseEntity.status(HttpStatus.OK).body(exists));
+    }
+
+    @Override
+    @GetMapping(path = "/exists", params = "noteId")
+    public Mono<ResponseEntity<Boolean>> existsByNoteId(@RequestParam UUID noteId) {
+        return this.userNoteService.existsByNoteId(noteId)
+            .map((exists) -> ResponseEntity.status(HttpStatus.OK).body(exists));
+    }
+
+    @Override
+    @GetMapping(path = "/exists", params = { "userId", "noteId" })
+    public Mono<ResponseEntity<Boolean>> existsByUserIdAndNoteId(@RequestParam UUID userId,
+            @RequestParam UUID noteId) {
+        return this.userNoteService.existsByUserIdAndNoteId(userId, noteId)
+            .map((exists) -> ResponseEntity.status(HttpStatus.OK).body(exists));
+    }
+
+    @Override
     @PostMapping
-    Mono<ResponseEntity<UserNoteResponse>> create(@RequestBody UserNoteRequest request) {
-        return this.userNoteContractReactive.add(request)
+    public Mono<ResponseEntity<UserNoteResponse>> add(@RequestBody UserNoteRequest request) {
+        return this.userNoteService.add(request)
             .map((userNote) -> ResponseEntity.status(HttpStatus.CREATED).body(userNote));
     }
 
-    @GetMapping("/{id}")
-    Mono<ResponseEntity<UserNoteResponse>> findById(@PathVariable UUID id) {
-        return this.userNoteContractReactive.findById(id)
-            .map((userNote) -> ResponseEntity.status(HttpStatus.OK).body(userNote))
-            .switchIfEmpty(Mono.error(new UserNoteNotFoundException(id)));
+    @Override
+    @GetMapping("/{userNoteId}")
+    public Mono<ResponseEntity<UserNoteResponse>> findByUserNoteId(@PathVariable UUID userNoteId) {
+        return this.userNoteService.findByUserNoteId(userNoteId)
+            .map((userNote) -> ResponseEntity.status(HttpStatus.OK).body(userNote));
     }
 
-    @GetMapping("/note/{noteId}")
-    Flux<UserNoteResponse> findByNoteId(@PathVariable UUID noteId) {
-        return this.userNoteContractReactive.findByNoteId(noteId);
+    @Override
+    @GetMapping(params = "userId")
+    public ResponseEntity<Flux<UserNoteResponse>> findByUserId(@RequestParam UUID userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(this.userNoteService.findByUserId(userId));
     }
 
-    @GetMapping("/{userId}/{noteId}")
-    Mono<ResponseEntity<UserNoteResponse>> findByUserIdAndNoteId(@PathVariable UUID userId, @PathVariable UUID noteId) {
-        return this.userNoteContractReactive.findByUserIdAndNoteId(userId, noteId)
-            .map((userNote) -> ResponseEntity.status(HttpStatus.OK).body(userNote))
-            .switchIfEmpty(Mono.error(new UserNoteNotFoundException(userId, noteId)));
+    @Override
+    @GetMapping(params = "noteId")
+    public ResponseEntity<Flux<UserNoteResponse>> findByNoteId(@RequestParam UUID noteId) {
+        return ResponseEntity.status(HttpStatus.OK).body(this.userNoteService.findByNoteId(noteId));
     }
 
-    @GetMapping("/user/{userId}")
-    Flux<UserNoteResponse> findByUserId(@PathVariable UUID userId) {
-        return this.userNoteContractReactive.findByUserId(userId);
+    @Override
+    @GetMapping(params = { "userId", "noteId" })
+    public Mono<ResponseEntity<UserNoteResponse>> findByUserIdAndNoteId(@RequestParam UUID userId,
+            @RequestParam UUID noteId) {
+        return this.userNoteService.findByUserIdAndNoteId(userId, noteId)
+            .map((userNote) -> ResponseEntity.status(HttpStatus.OK).body(userNote));
     }
 
-    @PutMapping("/{userId}/{noteId}")
-    Mono<ResponseEntity<UserNoteResponse>> update(@PathVariable UUID userId, @PathVariable UUID noteId,
+    @Override
+    @PutMapping("/{userNoteId}")
+    public Mono<ResponseEntity<UserNoteResponse>> replaceByUserNoteId(@PathVariable UUID userNoteId,
             @RequestBody UserNoteRequest request) {
-        return this.userNoteContractReactive.existsByUserIdAndNoteId(userId, noteId)
-            .flatMap((exists) -> exists
-                    ? this.userNoteContractReactive.replace(userId, noteId, request)
-                        .map((userNote) -> ResponseEntity.status(HttpStatus.OK).body(userNote))
-                    : Mono.error(new UserNoteNotFoundException(userId, noteId)));
+        return this.userNoteService.replaceByUserNoteId(userNoteId, request)
+            .map((userNote) -> ResponseEntity.status(HttpStatus.OK).body(userNote));
     }
 
-    @DeleteMapping("/{userId}/{noteId}")
-    Mono<ResponseEntity<Void>> delete(@PathVariable UUID userId, @PathVariable UUID noteId) {
-        return this.userNoteContractReactive.existsByUserIdAndNoteId(userId, noteId)
-            .flatMap((exists) -> exists
-                    ? this.userNoteContractReactive.remove(userId, noteId)
-                        .thenReturn(ResponseEntity.status(HttpStatus.NO_CONTENT).<Void>build())
-                    : Mono.error(new UserNoteNotFoundException(userId, noteId)));
+    @Override
+    @PutMapping
+    public Mono<ResponseEntity<UserNoteResponse>> replaceByUserIdAndNoteId(@RequestParam UUID userId,
+            @RequestParam UUID noteId, @RequestBody UserNoteRequest request) {
+        return this.userNoteService.replaceByUserIdAndNoteId(userId, noteId, request)
+            .map((userNote) -> ResponseEntity.status(HttpStatus.OK).body(userNote));
+    }
+
+    @Override
+    @PatchMapping("/{userNoteId}")
+    public Mono<ResponseEntity<UserNoteResponse>> mergeByUserNoteId(@PathVariable UUID userNoteId,
+            @RequestBody UserNoteRequest request) {
+        return this.userNoteService.mergeByUserNoteId(userNoteId, request)
+            .map((userNote) -> ResponseEntity.status(HttpStatus.OK).body(userNote));
+    }
+
+    @Override
+    @PatchMapping
+    public Mono<ResponseEntity<UserNoteResponse>> mergeByUserIdAndNoteId(@RequestParam UUID userId,
+            @RequestParam UUID noteId, @RequestBody UserNoteRequest request) {
+        return this.userNoteService.mergeByUserIdAndNoteId(userId, noteId, request)
+            .map((userNote) -> ResponseEntity.status(HttpStatus.OK).body(userNote));
+    }
+
+    @Override
+    @DeleteMapping("/{userNoteId}")
+    public Mono<ResponseEntity<Void>> deleteByUserNoteId(@PathVariable UUID userNoteId) {
+        return this.userNoteService.deleteByUserNoteId(userNoteId)
+            .thenReturn(ResponseEntity.status(HttpStatus.NO_CONTENT).<Void>build());
+    }
+
+    @Override
+    @DeleteMapping
+    public Mono<ResponseEntity<Void>> deleteByUserIdAndNoteId(@RequestParam UUID userId, @RequestParam UUID noteId) {
+        return this.userNoteService.deleteByUserIdAndNoteId(userId, noteId)
+            .thenReturn(ResponseEntity.status(HttpStatus.NO_CONTENT).<Void>build());
     }
 
 }
