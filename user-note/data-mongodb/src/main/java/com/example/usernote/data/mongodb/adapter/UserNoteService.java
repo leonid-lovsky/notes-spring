@@ -3,7 +3,7 @@ package com.example.usernote.data.mongodb.adapter;
 import java.util.List;
 import java.util.UUID;
 
-import com.example.usernote.contract.UserNoteService;
+import com.example.usernote.contract.UserNoteServiceInterface;
 import com.example.usernote.data.mongodb.mapper.UserNoteMongoMapperContract;
 import com.example.usernote.data.mongodb.model.UserNoteDocument;
 import com.example.usernote.data.mongodb.repository.UserNoteMongoRepository;
@@ -18,7 +18,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
-class UserNoteMongoAdapter implements UserNoteService {
+class UserNoteService implements UserNoteServiceInterface {
 
     private final MongoTemplate mongoTemplate;
 
@@ -26,7 +26,7 @@ class UserNoteMongoAdapter implements UserNoteService {
 
     private final UserNoteMongoMapperContract userNoteMongoMapper;
 
-    UserNoteMongoAdapter(MongoTemplate mongoTemplate, UserNoteMongoRepository userNoteMongoRepository,
+    UserNoteService(MongoTemplate mongoTemplate, UserNoteMongoRepository userNoteMongoRepository,
             UserNoteMongoMapperContract userNoteMongoMapper) {
         this.mongoTemplate = mongoTemplate;
         this.userNoteMongoRepository = userNoteMongoRepository;

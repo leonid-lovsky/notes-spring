@@ -6,7 +6,7 @@ import java.util.UUID;
 import com.example.usernote.domain.UserNoteRequest;
 import com.example.usernote.domain.UserNoteResponse;
 
-public interface UserNoteService extends UserNoteInterface {
+public interface UserNoteServiceInterface extends UserNoteInterface {
 
     @Override
     Boolean existsByUserNoteId(UUID userNoteId);

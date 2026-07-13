@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.example.usernote.contract.UserNoteService;
+import com.example.usernote.contract.UserNoteServiceInterface;
 import com.example.usernote.data.jdbc.mapper.UserNoteJdbcMapperContract;
 import com.example.usernote.domain.NoteNotFoundException;
 import com.example.usernote.domain.UserNotFoundException;
@@ -17,13 +17,13 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
-class UserNoteJdbcAdapter implements UserNoteService {
+class UserNoteService implements UserNoteServiceInterface {
 
     private final NamedParameterJdbcTemplate jdbc;
 
     private final UserNoteJdbcMapperContract userNoteJdbcMapper;
 
-    UserNoteJdbcAdapter(NamedParameterJdbcTemplate jdbc, UserNoteJdbcMapperContract userNoteJdbcMapper) {
+    UserNoteService(NamedParameterJdbcTemplate jdbc, UserNoteJdbcMapperContract userNoteJdbcMapper) {
         this.jdbc = jdbc;
         this.userNoteJdbcMapper = userNoteJdbcMapper;
     }

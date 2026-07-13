@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import com.example.usernote.contract.UserNoteService;
+import com.example.usernote.contract.UserNoteServiceInterface;
 import com.example.usernote.data.jpa.mapper.UserNoteJpaMapperContract;
 import com.example.usernote.data.jpa.model.UserNoteEntity;
 import com.example.usernote.data.jpa.repository.UserNoteJpaRepository;
@@ -18,13 +18,13 @@ import com.example.usernote.domain.UserNoteRole;
 import org.springframework.stereotype.Repository;
 
 @Repository
-class UserNoteJpaAdapter implements UserNoteService {
+class UserNoteService implements UserNoteServiceInterface {
 
     private final UserNoteJpaRepository userNoteJpaRepository;
 
     private final UserNoteJpaMapperContract userNoteJpaMapper;
 
-    UserNoteJpaAdapter(UserNoteJpaRepository userNoteJpaRepository, UserNoteJpaMapperContract userNoteJpaMapper) {
+    UserNoteService(UserNoteJpaRepository userNoteJpaRepository, UserNoteJpaMapperContract userNoteJpaMapper) {
         this.userNoteJpaRepository = userNoteJpaRepository;
         this.userNoteJpaMapper = userNoteJpaMapper;
     }

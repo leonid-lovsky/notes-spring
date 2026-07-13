@@ -1,7 +1,6 @@
 package com.example.usernote.webmvc;
 
-import com.example.usernote.contract.UserNoteInterface;
-import com.example.usernote.contract.UserNoteService;
+import com.example.usernote.contract.UserNoteServiceInterface;
 import com.example.usernote.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,11 +11,11 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/user-notes")
-class UserNoteController implements UserNoteInterface {
+class UserNoteController implements UserNoteControllerInterface {
 
-    private final UserNoteService userNoteService;
+    private final UserNoteServiceInterface userNoteService;
 
-    UserNoteController(UserNoteService userNoteService) {
+    UserNoteController(UserNoteServiceInterface userNoteService) {
         this.userNoteService = userNoteService;
     }
 
