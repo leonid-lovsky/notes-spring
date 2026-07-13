@@ -2,7 +2,7 @@ package com.example.user.webflux;
 
 import java.util.UUID;
 
-import com.example.user.contract.reactive.UserServiceInterfaceReactive;
+import com.example.user.contract.reactive.UserServiceReactiveInterface;
 import com.example.user.domain.UserRequest;
 import com.example.user.domain.UserResponse;
 import reactor.core.publisher.Flux;
@@ -22,11 +22,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/users")
-class UserController implements UserControllerInterfaceReactive {
+class UserController implements UserControllerReactiveInterface {
 
-    private final UserServiceInterfaceReactive userService;
+    private final UserServiceReactiveInterface userService;
 
-    UserController(UserServiceInterfaceReactive userService) {
+    UserController(UserServiceReactiveInterface userService) {
         this.userService = userService;
     }
 

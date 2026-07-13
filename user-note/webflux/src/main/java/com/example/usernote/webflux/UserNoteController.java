@@ -2,7 +2,7 @@ package com.example.usernote.webflux;
 
 import java.util.UUID;
 
-import com.example.usernote.contract.reactive.UserNoteServiceInterfaceReactive;
+import com.example.usernote.contract.reactive.UserNoteServiceReactiveInterface;
 import com.example.usernote.domain.UserNoteRequest;
 import com.example.usernote.domain.UserNoteResponse;
 import reactor.core.publisher.Flux;
@@ -23,11 +23,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/user-notes")
-class UserNoteController implements UserNoteControllerInterfaceReactive {
+class UserNoteController implements UserNoteControllerReactiveInterface {
 
-    private final UserNoteServiceInterfaceReactive userNoteService;
+    private final UserNoteServiceReactiveInterface userNoteService;
 
-    UserNoteController(UserNoteServiceInterfaceReactive userNoteService) {
+    UserNoteController(UserNoteServiceReactiveInterface userNoteService) {
         this.userNoteService = userNoteService;
     }
 

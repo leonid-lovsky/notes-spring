@@ -2,7 +2,7 @@ package com.example.user.data.r2dbc.adapter;
 
 import java.util.UUID;
 
-import com.example.user.contract.reactive.UserServiceInterfaceReactive;
+import com.example.user.contract.reactive.UserServiceReactiveInterface;
 import com.example.user.data.r2dbc.mapper.UserR2dbcMapperContract;
 import com.example.user.data.r2dbc.repository.UserR2dbcRepository;
 import com.example.user.domain.UserNotFoundException;
@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono;
 import org.springframework.stereotype.Repository;
 
 @Repository
-class UserService implements UserServiceInterfaceReactive {
+class UserService implements UserServiceReactiveInterface {
 
     private final UserR2dbcRepository userR2dbcRepository;
 

@@ -2,7 +2,7 @@ package com.example.note.data.mongodb.reactive.adapter;
 
 import java.util.UUID;
 
-import com.example.note.contract.reactive.NoteServiceInterfaceReactive;
+import com.example.note.contract.reactive.NoteServiceReactiveInterface;
 import com.example.note.data.mongodb.reactive.mapper.NoteMongoReactiveMapperContract;
 import com.example.note.data.mongodb.reactive.model.NoteReactiveDocument;
 import com.example.note.data.mongodb.reactive.repository.NoteMongoReactiveRepository;
@@ -15,7 +15,7 @@ import reactor.core.publisher.Mono;
 import org.springframework.stereotype.Repository;
 
 @Repository
-class NoteService implements NoteServiceInterfaceReactive {
+class NoteService implements NoteServiceReactiveInterface {
 
     private final NoteMongoReactiveRepository noteMongoReactiveRepository;
 

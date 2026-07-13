@@ -5,7 +5,7 @@ plugins {
 
 dependencies {
     implementation(projects.userNote.domain)
-    implementation(projects.userNote.dataContract)
+    implementation(projects.userNote.contract)
     implementation(projects.userNote.webmvc)
     implementation(projects.userNote.dataJpa)
 }

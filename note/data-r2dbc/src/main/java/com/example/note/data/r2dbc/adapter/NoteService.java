@@ -2,7 +2,7 @@ package com.example.note.data.r2dbc.adapter;
 
 import java.util.UUID;
 
-import com.example.note.contract.reactive.NoteServiceInterfaceReactive;
+import com.example.note.contract.reactive.NoteServiceReactiveInterface;
 import com.example.note.data.r2dbc.mapper.NoteR2dbcMapperContract;
 import com.example.note.data.r2dbc.repository.NoteR2dbcRepository;
 import com.example.note.domain.NoteNotFoundException;
@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono;
 import org.springframework.stereotype.Repository;
 
 @Repository
-class NoteService implements NoteServiceInterfaceReactive {
+class NoteService implements NoteServiceReactiveInterface {
 
     private final NoteR2dbcRepository noteR2dbcRepository;
 

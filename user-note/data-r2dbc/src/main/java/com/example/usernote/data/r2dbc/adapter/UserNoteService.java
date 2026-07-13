@@ -3,7 +3,7 @@ package com.example.usernote.data.r2dbc.adapter;
 import java.util.Objects;
 import java.util.UUID;
 
-import com.example.usernote.contract.reactive.UserNoteServiceInterfaceReactive;
+import com.example.usernote.contract.reactive.UserNoteServiceReactiveInterface;
 import com.example.usernote.data.r2dbc.mapper.UserNoteR2dbcMapperContract;
 import com.example.usernote.data.r2dbc.model.UserNoteR2dbcEntity;
 import com.example.usernote.data.r2dbc.repository.UserNoteR2dbcRepository;
@@ -19,7 +19,7 @@ import reactor.core.publisher.Mono;
 import org.springframework.stereotype.Repository;
 
 @Repository
-class UserNoteService implements UserNoteServiceInterfaceReactive {
+class UserNoteService implements UserNoteServiceReactiveInterface {
 
     private final UserNoteR2dbcRepository userNoteR2dbcRepository;
 

@@ -3,6 +3,6 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.note.dataContractReactive)
+    implementation(projects.note.contractReactive)
     implementation(projects.note.domain)
 }

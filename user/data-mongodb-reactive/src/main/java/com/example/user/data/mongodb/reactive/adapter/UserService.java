@@ -2,7 +2,7 @@ package com.example.user.data.mongodb.reactive.adapter;
 
 import java.util.UUID;
 
-import com.example.user.contract.reactive.UserServiceInterfaceReactive;
+import com.example.user.contract.reactive.UserServiceReactiveInterface;
 import com.example.user.data.mongodb.reactive.mapper.UserMongoReactiveMapperContract;
 import com.example.user.data.mongodb.reactive.model.UserReactiveDocument;
 import com.example.user.data.mongodb.reactive.repository.UserMongoReactiveRepository;
@@ -15,7 +15,7 @@ import reactor.core.publisher.Mono;
 import org.springframework.stereotype.Repository;
 
 @Repository
-class UserService implements UserServiceInterfaceReactive {
+class UserService implements UserServiceReactiveInterface {
 
     private final UserMongoReactiveRepository userMongoReactiveRepository;
 
