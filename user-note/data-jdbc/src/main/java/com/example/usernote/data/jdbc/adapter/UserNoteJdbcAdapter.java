@@ -1,16 +1,20 @@
 package com.example.usernote.data.jdbc.adapter;
 
-import com.example.usernote.contract.UserNoteService;
-import com.example.usernote.data.jdbc.mapper.UserNoteJdbcMapperContract;
-import com.example.usernote.domain.UserNoteNotFoundException;
-import com.example.usernote.domain.UserNoteRequest;
-import com.example.usernote.domain.UserNoteResponse;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Repository;
-
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import com.example.usernote.contract.UserNoteService;
+import com.example.usernote.data.jdbc.mapper.UserNoteJdbcMapperContract;
+import com.example.usernote.domain.NoteNotFoundException;
+import com.example.usernote.domain.UserNotFoundException;
+import com.example.usernote.domain.UserNoteNotFoundException;
+import com.example.usernote.domain.UserNoteRequest;
+import com.example.usernote.domain.UserNoteResponse;
+import com.example.usernote.domain.UserNoteRole;
+
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 @Repository
 class UserNoteJdbcAdapter implements UserNoteService {
@@ -25,28 +29,28 @@ class UserNoteJdbcAdapter implements UserNoteService {
     }
 
     @Override
-    public boolean existsByUserNoteId(UUID userNoteId) {
+    public Boolean existsByUserNoteId(UUID userNoteId) {
         Integer count = this.jdbc.queryForObject("SELECT COUNT(*) FROM user_notes WHERE id = :id",
                 Map.of("id", userNoteId), Integer.class);
         return count != null && count > 0;
     }
 
     @Override
-    public boolean existsByUserId(UUID userId) {
+    public Boolean existsByUserId(UUID userId) {
         Integer count = this.jdbc.queryForObject("SELECT COUNT(*) FROM user_notes WHERE user_id = :userId",
                 Map.of("userId", userId), Integer.class);
         return count != null && count > 0;
     }
 
     @Override
-    public boolean existsByNoteId(UUID noteId) {
+    public Boolean existsByNoteId(UUID noteId) {
         Integer count = this.jdbc.queryForObject("SELECT COUNT(*) FROM user_notes WHERE note_id = :noteId",
                 Map.of("noteId", noteId), Integer.class);
         return count != null && count > 0;
     }
 
     @Override
-    public boolean existsByUserIdAndNoteId(UUID userId, UUID noteId) {
+    public Boolean existsByUserIdAndNoteId(UUID userId, UUID noteId) {
         Integer count = this.jdbc.queryForObject(
                 "SELECT COUNT(*) FROM user_notes WHERE user_id = :userId AND note_id = :noteId",
                 Map.of("userId", userId, "noteId", noteId), Integer.class);
@@ -74,12 +78,18 @@ class UserNoteJdbcAdapter implements UserNoteService {
 
     @Override
     public List<UserNoteResponse> findByUserId(UUID userId) {
+        if (!existsByUserId(userId)) {
+            throw new UserNotFoundException(userId);
+        }
         return this.jdbc.query("SELECT id, user_id, note_id, role FROM user_notes WHERE user_id = :userId",
                 Map.of("userId", userId), this.userNoteJdbcMapper::fromRow);
     }
 
     @Override
     public List<UserNoteResponse> findByNoteId(UUID noteId) {
+        if (!existsByNoteId(noteId)) {
+            throw new NoteNotFoundException(noteId);
+        }
         return this.jdbc.query("SELECT id, user_id, note_id, role FROM user_notes WHERE note_id = :noteId",
                 Map.of("noteId", noteId), this.userNoteJdbcMapper::fromRow);
     }
@@ -115,14 +125,22 @@ class UserNoteJdbcAdapter implements UserNoteService {
 
     @Override
     public UserNoteResponse mergeByUserNoteId(UUID userNoteId, UserNoteRequest request) {
-        // UserNoteRequest has no optional fields, so a partial merge is identical to a
-        // full replace.
-        return replaceByUserNoteId(userNoteId, request);
+        UserNoteResponse existing = findByUserNoteId(userNoteId);
+        UserNoteRequest merged = merge(existing, request);
+        this.jdbc.update("UPDATE user_notes SET user_id = :userId, note_id = :noteId, role = :role WHERE id = :id", Map
+            .of("id", userNoteId, "userId", merged.userId(), "noteId", merged.noteId(), "role", merged.role().name()));
+        return new UserNoteResponse(userNoteId, merged.userId(), merged.noteId(), merged.role());
     }
 
     @Override
     public UserNoteResponse mergeByUserIdAndNoteId(UUID userId, UUID noteId, UserNoteRequest request) {
-        return replaceByUserIdAndNoteId(userId, noteId, request);
+        UserNoteResponse existing = findByUserIdAndNoteId(userId, noteId);
+        UserNoteRequest merged = merge(existing, request);
+        this.jdbc.update(
+                "UPDATE user_notes SET user_id = :newUserId, note_id = :newNoteId, role = :role WHERE id = :id",
+                Map.of("id", existing.id(), "newUserId", merged.userId(), "newNoteId", merged.noteId(), "role",
+                        merged.role().name()));
+        return new UserNoteResponse(existing.id(), merged.userId(), merged.noteId(), merged.role());
     }
 
     @Override
@@ -138,6 +156,13 @@ class UserNoteJdbcAdapter implements UserNoteService {
         this.jdbc.update("DELETE FROM user_notes WHERE user_id = :userId AND note_id = :noteId",
                 Map.of("userId", userId, "noteId", noteId));
         return existing;
+    }
+
+    private static UserNoteRequest merge(UserNoteResponse existing, UserNoteRequest request) {
+        UUID userId = (request.userId() != null) ? request.userId() : existing.userId();
+        UUID noteId = (request.noteId() != null) ? request.noteId() : existing.noteId();
+        UserNoteRole role = (request.role() != null) ? request.role() : existing.role();
+        return new UserNoteRequest(userId, noteId, role);
     }
 
 }

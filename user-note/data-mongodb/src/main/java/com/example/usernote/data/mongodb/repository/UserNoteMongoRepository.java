@@ -1,11 +1,12 @@
 package com.example.usernote.data.mongodb.repository;
 
-import com.example.usernote.data.mongodb.model.UserNoteDocument;
-import org.springframework.data.mongodb.repository.MongoRepository;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import com.example.usernote.data.mongodb.model.UserNoteDocument;
+
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface UserNoteMongoRepository extends MongoRepository<UserNoteDocument, UUID> {
 

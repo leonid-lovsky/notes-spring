@@ -1,17 +1,21 @@
 package com.example.usernote.data.jpa.adapter;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
+
 import com.example.usernote.contract.UserNoteService;
 import com.example.usernote.data.jpa.mapper.UserNoteJpaMapperContract;
 import com.example.usernote.data.jpa.model.UserNoteEntity;
 import com.example.usernote.data.jpa.repository.UserNoteJpaRepository;
+import com.example.usernote.domain.NoteNotFoundException;
+import com.example.usernote.domain.UserNotFoundException;
 import com.example.usernote.domain.UserNoteNotFoundException;
 import com.example.usernote.domain.UserNoteRequest;
 import com.example.usernote.domain.UserNoteResponse;
-import org.springframework.stereotype.Repository;
+import com.example.usernote.domain.UserNoteRole;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import org.springframework.stereotype.Repository;
 
 @Repository
 class UserNoteJpaAdapter implements UserNoteService {
@@ -26,22 +30,22 @@ class UserNoteJpaAdapter implements UserNoteService {
     }
 
     @Override
-    public boolean existsByUserNoteId(UUID userNoteId) {
+    public Boolean existsByUserNoteId(UUID userNoteId) {
         return this.userNoteJpaRepository.existsById(userNoteId);
     }
 
     @Override
-    public boolean existsByUserId(UUID userId) {
+    public Boolean existsByUserId(UUID userId) {
         return this.userNoteJpaRepository.existsByUserId(userId);
     }
 
     @Override
-    public boolean existsByNoteId(UUID noteId) {
+    public Boolean existsByNoteId(UUID noteId) {
         return this.userNoteJpaRepository.existsByNoteId(noteId);
     }
 
     @Override
-    public boolean existsByUserIdAndNoteId(UUID userId, UUID noteId) {
+    public Boolean existsByUserIdAndNoteId(UUID userId, UUID noteId) {
         return this.userNoteJpaRepository.existsByUserIdAndNoteId(userId, noteId);
     }
 
@@ -60,6 +64,9 @@ class UserNoteJpaAdapter implements UserNoteService {
 
     @Override
     public List<UserNoteResponse> findByUserId(UUID userId) {
+        if (!existsByUserId(userId)) {
+            throw new UserNotFoundException(userId);
+        }
         return this.userNoteJpaRepository.findByUserId(userId)
             .stream()
             .map(this.userNoteJpaMapper::toResponse)
@@ -68,6 +75,9 @@ class UserNoteJpaAdapter implements UserNoteService {
 
     @Override
     public List<UserNoteResponse> findByNoteId(UUID noteId) {
+        if (!existsByNoteId(noteId)) {
+            throw new NoteNotFoundException(noteId);
+        }
         return this.userNoteJpaRepository.findByNoteId(noteId)
             .stream()
             .map(this.userNoteJpaMapper::toResponse)
@@ -102,14 +112,22 @@ class UserNoteJpaAdapter implements UserNoteService {
 
     @Override
     public UserNoteResponse mergeByUserNoteId(UUID userNoteId, UserNoteRequest request) {
-        // UserNoteRequest has no optional fields, so a partial merge is identical to a
-        // full replace.
-        return replaceByUserNoteId(userNoteId, request);
+        UserNoteEntity existing = this.userNoteJpaRepository.findById(userNoteId)
+            .orElseThrow(() -> new UserNoteNotFoundException(userNoteId));
+        UserNoteRequest merged = merge(existing, request);
+        UserNoteEntity saved = this.userNoteJpaRepository
+            .save(this.userNoteJpaMapper.toExistingEntity(userNoteId, merged));
+        return this.userNoteJpaMapper.toResponse(saved);
     }
 
     @Override
     public UserNoteResponse mergeByUserIdAndNoteId(UUID userId, UUID noteId, UserNoteRequest request) {
-        return replaceByUserIdAndNoteId(userId, noteId, request);
+        UserNoteEntity existing = this.userNoteJpaRepository.findByUserIdAndNoteId(userId, noteId)
+            .orElseThrow(() -> new UserNoteNotFoundException(userId, noteId));
+        UserNoteRequest merged = merge(existing, request);
+        UserNoteEntity saved = this.userNoteJpaRepository
+            .save(this.userNoteJpaMapper.toExistingEntity(Objects.requireNonNull(existing.getId()), merged));
+        return this.userNoteJpaMapper.toResponse(saved);
     }
 
     @Override
@@ -126,6 +144,13 @@ class UserNoteJpaAdapter implements UserNoteService {
             .orElseThrow(() -> new UserNoteNotFoundException(userId, noteId));
         this.userNoteJpaRepository.delete(existing);
         return this.userNoteJpaMapper.toResponse(existing);
+    }
+
+    private static UserNoteRequest merge(UserNoteEntity existing, UserNoteRequest request) {
+        UUID userId = (request.userId() != null) ? request.userId() : existing.getUserId();
+        UUID noteId = (request.noteId() != null) ? request.noteId() : existing.getNoteId();
+        UserNoteRole role = (request.role() != null) ? request.role() : existing.getRole();
+        return new UserNoteRequest(userId, noteId, role);
     }
 
 }

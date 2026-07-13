@@ -1,18 +1,18 @@
 package com.example.usernote.contract;
 
-import com.example.usernote.domain.UserNoteRequest;
-
 import java.util.UUID;
+
+import com.example.usernote.domain.UserNoteRequest;
 
 public interface UserNoteInterface {
 
-    boolean existsByUserNoteId(UUID userNoteId);
+    Object existsByUserNoteId(UUID userNoteId);
 
-    boolean existsByUserId(UUID userId);
+    Object existsByUserId(UUID userId);
 
-    boolean existsByNoteId(UUID noteId);
+    Object existsByNoteId(UUID noteId);
 
-    boolean existsByUserIdAndNoteId(UUID userId, UUID noteId);
+    Object existsByUserIdAndNoteId(UUID userId, UUID noteId);
 
     Object create(UserNoteRequest request);
 
@@ -35,4 +35,5 @@ public interface UserNoteInterface {
     Object deleteByUserNoteId(UUID userNoteId);
 
     Object deleteByUserIdAndNoteId(UUID userId, UUID noteId);
+
 }
