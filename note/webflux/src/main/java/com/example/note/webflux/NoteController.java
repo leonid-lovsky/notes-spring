@@ -2,8 +2,7 @@ package com.example.note.webflux;
 
 import java.util.UUID;
 
-import com.example.note.contract.reactive.NoteContractReactive;
-import com.example.note.domain.NoteNotFoundException;
+import com.example.note.contract.reactive.NoteServiceInterfaceReactive;
 import com.example.note.domain.NoteRequest;
 import com.example.note.domain.NoteResponse;
 import reactor.core.publisher.Flux;
@@ -13,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -22,48 +22,55 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/notes")
-class NoteController {
+class NoteController implements NoteControllerInterfaceReactive {
 
-    private final NoteContractReactive noteContractReactive;
+    private final NoteServiceInterfaceReactive noteService;
 
-    NoteController(NoteContractReactive noteContractReactive) {
-        this.noteContractReactive = noteContractReactive;
+    NoteController(NoteServiceInterfaceReactive noteService) {
+        this.noteService = noteService;
     }
 
+    @Override
+    @GetMapping("/{id}/exists")
+    public Mono<ResponseEntity<Boolean>> existsById(@PathVariable UUID id) {
+        return this.noteService.existsById(id).map((exists) -> ResponseEntity.status(HttpStatus.OK).body(exists));
+    }
+
+    @Override
     @PostMapping
-    Mono<ResponseEntity<NoteResponse>> create(@RequestBody NoteRequest request) {
-        return this.noteContractReactive.add(request)
-            .map((note) -> ResponseEntity.status(HttpStatus.CREATED).body(note));
+    public Mono<ResponseEntity<NoteResponse>> add(@RequestBody NoteRequest request) {
+        return this.noteService.add(request).map((note) -> ResponseEntity.status(HttpStatus.CREATED).body(note));
     }
 
+    @Override
     @GetMapping
-    Flux<NoteResponse> findAll() {
-        return this.noteContractReactive.findAll();
+    public ResponseEntity<Flux<NoteResponse>> findAll() {
+        return ResponseEntity.status(HttpStatus.OK).body(this.noteService.findAll());
     }
 
+    @Override
     @GetMapping("/{id}")
-    Mono<ResponseEntity<NoteResponse>> findById(@PathVariable UUID id) {
-        return this.noteContractReactive.findById(id)
-            .map((note) -> ResponseEntity.status(HttpStatus.OK).body(note))
-            .switchIfEmpty(Mono.error(new NoteNotFoundException(id)));
+    public Mono<ResponseEntity<NoteResponse>> findById(@PathVariable UUID id) {
+        return this.noteService.findById(id).map((note) -> ResponseEntity.status(HttpStatus.OK).body(note));
     }
 
+    @Override
     @PutMapping("/{id}")
-    Mono<ResponseEntity<NoteResponse>> update(@PathVariable UUID id, @RequestBody NoteRequest request) {
-        return this.noteContractReactive.existsById(id)
-            .flatMap((exists) -> exists
-                    ? this.noteContractReactive.replace(id, request)
-                        .map((updated) -> ResponseEntity.status(HttpStatus.OK).body(updated))
-                    : Mono.error(new NoteNotFoundException(id)));
+    public Mono<ResponseEntity<NoteResponse>> replace(@PathVariable UUID id, @RequestBody NoteRequest request) {
+        return this.noteService.replace(id, request)
+            .map((note) -> ResponseEntity.status(HttpStatus.OK).body(note));
     }
 
+    @Override
+    @PatchMapping("/{id}")
+    public Mono<ResponseEntity<NoteResponse>> merge(@PathVariable UUID id, @RequestBody NoteRequest request) {
+        return this.noteService.merge(id, request).map((note) -> ResponseEntity.status(HttpStatus.OK).body(note));
+    }
+
+    @Override
     @DeleteMapping("/{id}")
-    Mono<ResponseEntity<Void>> delete(@PathVariable UUID id) {
-        return this.noteContractReactive.existsById(id)
-            .flatMap((exists) -> exists
-                    ? this.noteContractReactive.remove(id)
-                        .thenReturn(ResponseEntity.status(HttpStatus.NO_CONTENT).<Void>build())
-                    : Mono.error(new NoteNotFoundException(id)));
+    public Mono<ResponseEntity<Void>> remove(@PathVariable UUID id) {
+        return this.noteService.remove(id).thenReturn(ResponseEntity.status(HttpStatus.NO_CONTENT).<Void>build());
     }
 
 }
