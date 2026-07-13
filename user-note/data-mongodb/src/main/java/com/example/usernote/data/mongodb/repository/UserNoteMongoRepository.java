@@ -1,12 +1,11 @@
 package com.example.usernote.data.mongodb.repository;
 
+import com.example.usernote.data.mongodb.model.UserNoteDocument;
+import org.springframework.data.mongodb.repository.MongoRepository;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
-import com.example.usernote.data.mongodb.model.UserNoteDocument;
-
-import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface UserNoteMongoRepository extends MongoRepository<UserNoteDocument, UUID> {
 
@@ -16,8 +15,10 @@ public interface UserNoteMongoRepository extends MongoRepository<UserNoteDocumen
 
     Optional<UserNoteDocument> findByUserIdAndNoteId(UUID userId, UUID noteId);
 
-    boolean existsByUserIdAndNoteId(UUID userId, UUID noteId);
+    boolean existsByUserId(UUID userId);
 
-    void deleteByUserIdAndNoteId(UUID userId, UUID noteId);
+    boolean existsByNoteId(UUID noteId);
+
+    boolean existsByUserIdAndNoteId(UUID userId, UUID noteId);
 
 }

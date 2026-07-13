@@ -11,7 +11,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -31,9 +30,18 @@ class UserNoteMongoAdapter implements UserNoteService {
     }
 
     @Override
-    public UserNoteResponse create(UserNoteRequest request) {
-        UserNoteDocument document = this.mongoTemplate.insert(this.userNoteMongoMapper.toNewDocument(request));
-        return this.userNoteMongoMapper.toResponse(document);
+    public boolean existsByUserNoteId(UUID userNoteId) {
+        return this.userNoteMongoRepository.existsById(userNoteId);
+    }
+
+    @Override
+    public boolean existsByUserId(UUID userId) {
+        return this.userNoteMongoRepository.existsByUserId(userId);
+    }
+
+    @Override
+    public boolean existsByNoteId(UUID noteId) {
+        return this.userNoteMongoRepository.existsByNoteId(noteId);
     }
 
     @Override
@@ -42,22 +50,16 @@ class UserNoteMongoAdapter implements UserNoteService {
     }
 
     @Override
-    public Optional<UserNoteResponse> findByUserNoteId(UUID id) {
-        return this.userNoteMongoRepository.findById(id).map(this.userNoteMongoMapper::toResponse);
+    public UserNoteResponse create(UserNoteRequest request) {
+        UserNoteDocument document = this.mongoTemplate.insert(this.userNoteMongoMapper.toNewDocument(request));
+        return this.userNoteMongoMapper.toResponse(document);
     }
 
     @Override
-    public List<UserNoteResponse> findByNoteId(UUID noteId) {
-        return this.userNoteMongoRepository.findByNoteId(noteId)
-            .stream()
+    public UserNoteResponse findByUserNoteId(UUID userNoteId) {
+        return this.userNoteMongoRepository.findById(userNoteId)
             .map(this.userNoteMongoMapper::toResponse)
-            .toList();
-    }
-
-    @Override
-    public Optional<UserNoteResponse> findByUserIdAndNoteId(UUID userId, UUID noteId) {
-        return this.userNoteMongoRepository.findByUserIdAndNoteId(userId, noteId)
-            .map(this.userNoteMongoMapper::toResponse);
+            .orElseThrow(() -> new UserNoteNotFoundException(userNoteId));
     }
 
     @Override
@@ -69,17 +71,65 @@ class UserNoteMongoAdapter implements UserNoteService {
     }
 
     @Override
-    public void remove(UUID userId, UUID noteId) {
-        this.userNoteMongoRepository.deleteByUserIdAndNoteId(userId, noteId);
+    public List<UserNoteResponse> findByNoteId(UUID noteId) {
+        return this.userNoteMongoRepository.findByNoteId(noteId)
+            .stream()
+            .map(this.userNoteMongoMapper::toResponse)
+            .toList();
     }
 
     @Override
-    public UserNoteResponse replaceByUserNoteId(UUID userId, UUID noteId, UserNoteRequest request) {
+    public UserNoteResponse findByUserIdAndNoteId(UUID userId, UUID noteId) {
+        return this.userNoteMongoRepository.findByUserIdAndNoteId(userId, noteId)
+            .map(this.userNoteMongoMapper::toResponse)
+            .orElseThrow(() -> new UserNoteNotFoundException(userId, noteId));
+    }
+
+    @Override
+    public UserNoteResponse replaceByUserNoteId(UUID userNoteId, UserNoteRequest request) {
+        if (!this.userNoteMongoRepository.existsById(userNoteId)) {
+            throw new UserNoteNotFoundException(userNoteId);
+        }
+        UserNoteDocument saved = this.mongoTemplate
+            .save(this.userNoteMongoMapper.toExistingDocument(userNoteId, request));
+        return this.userNoteMongoMapper.toResponse(saved);
+    }
+
+    @Override
+    public UserNoteResponse replaceByUserIdAndNoteId(UUID userId, UUID noteId, UserNoteRequest request) {
         UserNoteDocument existing = this.userNoteMongoRepository.findByUserIdAndNoteId(userId, noteId)
             .orElseThrow(() -> new UserNoteNotFoundException(userId, noteId));
         UserNoteDocument saved = this.mongoTemplate
             .save(this.userNoteMongoMapper.toExistingDocument(existing.getId(), request));
         return this.userNoteMongoMapper.toResponse(saved);
+    }
+
+    @Override
+    public UserNoteResponse mergeByUserNoteId(UUID userNoteId, UserNoteRequest request) {
+        // UserNoteRequest has no optional fields, so a partial merge is identical to a
+        // full replace.
+        return replaceByUserNoteId(userNoteId, request);
+    }
+
+    @Override
+    public UserNoteResponse mergeByUserIdAndNoteId(UUID userId, UUID noteId, UserNoteRequest request) {
+        return replaceByUserIdAndNoteId(userId, noteId, request);
+    }
+
+    @Override
+    public UserNoteResponse deleteByUserNoteId(UUID userNoteId) {
+        UserNoteDocument existing = this.userNoteMongoRepository.findById(userNoteId)
+            .orElseThrow(() -> new UserNoteNotFoundException(userNoteId));
+        this.userNoteMongoRepository.deleteById(userNoteId);
+        return this.userNoteMongoMapper.toResponse(existing);
+    }
+
+    @Override
+    public UserNoteResponse deleteByUserIdAndNoteId(UUID userId, UUID noteId) {
+        UserNoteDocument existing = this.userNoteMongoRepository.findByUserIdAndNoteId(userId, noteId)
+            .orElseThrow(() -> new UserNoteNotFoundException(userId, noteId));
+        this.userNoteMongoRepository.delete(existing);
+        return this.userNoteMongoMapper.toResponse(existing);
     }
 
 }
