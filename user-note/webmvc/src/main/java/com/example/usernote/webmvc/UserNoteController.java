@@ -1,9 +1,8 @@
 package com.example.usernote.webmvc;
 
+import com.example.usernote.contract.UserNoteInterface;
 import com.example.usernote.contract.UserNoteService;
-import com.example.usernote.domain.UserNoteNotFoundException;
-import com.example.usernote.domain.UserNoteRequest;
-import com.example.usernote.domain.UserNoteResponse;
+import com.example.usernote.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +12,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/user-notes")
-class UserNoteController {
+class UserNoteController implements UserNoteInterface {
 
     private final UserNoteService userNoteService;
 
@@ -21,14 +20,36 @@ class UserNoteController {
         this.userNoteService = userNoteService;
     }
 
+    @Override
+    public boolean existsByUserNoteId(UUID userNoteId) {
+        return false;
+    }
+
+    @Override
+    public boolean existsByUserId(UUID userId) {
+        return false;
+    }
+
+    @Override
+    public boolean existsByNoteId(UUID noteId) {
+        return false;
+    }
+
+    @Override
+    public boolean existsByUserIdAndNoteId(UUID userId, UUID noteId) {
+        return false;
+    }
+
+    @Override
     @PostMapping
-    ResponseEntity<UserNoteResponse> create(@RequestBody UserNoteRequest request) {
+    public ResponseEntity<UserNoteResponse> create(@RequestBody UserNoteRequest request) {
         UserNoteResponse response = this.userNoteService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @Override
     @GetMapping("/{userNoteId}")
-    ResponseEntity<UserNoteResponse> findByUserNoteId(@PathVariable UUID userNoteId) {
+    public ResponseEntity<UserNoteResponse> findByUserNoteId(@PathVariable UUID userNoteId) {
         if (!this.userNoteService.existsByUserNoteId(userNoteId)) {
             throw new UserNoteNotFoundException(userNoteId);
         }
@@ -36,8 +57,9 @@ class UserNoteController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @Override
     @GetMapping
-    ResponseEntity<List<UserNoteResponse>> findByUserId(@RequestParam UUID userId) {
+    public ResponseEntity<List<UserNoteResponse>> findByUserId(@RequestParam UUID userId) {
         if (!this.userNoteService.existsByUserId(userId)) {
             throw new UserNotFoundException(userId);
         }
@@ -45,8 +67,9 @@ class UserNoteController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @Override
     @GetMapping
-    ResponseEntity<List<UserNoteResponse>> findByNoteId(@RequestParam UUID noteId) {
+    public ResponseEntity<List<UserNoteResponse>> findByNoteId(@RequestParam UUID noteId) {
         if (!this.userNoteService.existsByNoteId(noteId)) {
             throw new NoteNotFoundException(noteId);
         }
@@ -54,8 +77,9 @@ class UserNoteController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @Override
     @GetMapping
-    ResponseEntity<UserNoteResponse> findByUserIdAndNoteId(@RequestParam UUID userId, @RequestParam UUID noteId) {
+    public ResponseEntity<UserNoteResponse> findByUserIdAndNoteId(@RequestParam UUID userId, @RequestParam UUID noteId) {
         if (!this.userNoteService.existsByUserIdAndNoteId(userId, noteId)) {
             throw new UserNoteNotFoundException(userId, noteId);
         }
@@ -63,8 +87,9 @@ class UserNoteController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @Override
     @PutMapping("/{userNoteId}")
-    ResponseEntity<UserNoteResponse> replaceByUserNoteId(@PathVariable UUID userNoteId, @RequestBody UserNoteRequest request) {
+    public ResponseEntity<UserNoteResponse> replaceByUserNoteId(@PathVariable UUID userNoteId, @RequestBody UserNoteRequest request) {
         if (!this.userNoteService.existsByUserNoteId(userNoteId)) {
             throw new UserNoteNotFoundException(userNoteId);
         }
@@ -72,17 +97,19 @@ class UserNoteController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @Override
     @PutMapping
-    ResponseEntity<UserNoteResponse> replaceByUserIdAndNoteId(@RequestParam UUID userId, @RequestParam UUID noteId, @RequestBody UserNoteRequest request) {
+    public ResponseEntity<UserNoteResponse> replaceByUserIdAndNoteId(@RequestParam UUID userId, @RequestParam UUID noteId, @RequestBody UserNoteRequest request) {
         if (!this.userNoteService.existsByUserIdAndNoteId(userId, noteId)) {
             throw new UserNoteNotFoundException(userId, noteId);
         }
-        UserNoteResponse response = this.userNoteService.replaceByUserIdAndNoteId(userId, noteId);
+        UserNoteResponse response = this.userNoteService.replaceByUserIdAndNoteId(userId, noteId, request);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @Override
     @PatchMapping("/{userNoteId}")
-    ResponseEntity<UserNoteResponse> mergeByUserNoteId(@PathVariable UUID userNoteId, @RequestBody UserNoteRequest request) {
+    public ResponseEntity<UserNoteResponse> mergeByUserNoteId(@PathVariable UUID userNoteId, @RequestBody UserNoteRequest request) {
         if (!this.userNoteService.existsByUserNoteId(userNoteId)) {
             throw new UserNoteNotFoundException(userNoteId);
         }
@@ -90,26 +117,29 @@ class UserNoteController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @Override
     @PatchMapping
-    ResponseEntity<UserNoteResponse> mergeByUserIdAndNoteId(@RequestParam UUID userId, @RequestParam UUID noteId, @RequestBody UserNoteRequest request) {
+    public ResponseEntity<UserNoteResponse> mergeByUserIdAndNoteId(@RequestParam UUID userId, @RequestParam UUID noteId, @RequestBody UserNoteRequest request) {
         if (!this.userNoteService.existsByUserIdAndNoteId(userId, noteId)) {
             throw new UserNoteNotFoundException(userId, noteId);
         }
-        UserNoteResponse response = this.userNoteService.mergeByUserIdAndNoteId(userId, noteId);
+        UserNoteResponse response = this.userNoteService.mergeByUserIdAndNoteId(userId, noteId, request);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @Override
     @DeleteMapping("/{userNoteId}")
-    ResponseEntity<Void> deleteByUserNoteId(@PathVariable UUID userNoteId) {
+    public ResponseEntity<UserNoteResponse> deleteByUserNoteId(@PathVariable UUID userNoteId) {
         if (!this.userNoteService.existsByUserNoteId(userNoteId)) {
             throw new UserNoteNotFoundException(userNoteId);
         }
-        this.userNoteService.deleteByUserNoteId(userNoteId);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        UserNoteResponse response = this.userNoteService.deleteByUserNoteId(userNoteId);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @Override
     @DeleteMapping
-    ResponseEntity<UserNoteResponse> deleteByUserIdAndNoteId(@RequestParam UUID userId, @RequestParam UUID noteId) {
+    public ResponseEntity<UserNoteResponse> deleteByUserIdAndNoteId(@RequestParam UUID userId, @RequestParam UUID noteId) {
         if (!this.userNoteService.existsByUserIdAndNoteId(userId, noteId)) {
             throw new UserNoteNotFoundException(userId, noteId);
         }
