@@ -7,5 +7,4 @@ public class NoteNotFoundException extends RuntimeException {
     public NoteNotFoundException(UUID id) {
         super("Note not found: " + id);
     }
-
 }

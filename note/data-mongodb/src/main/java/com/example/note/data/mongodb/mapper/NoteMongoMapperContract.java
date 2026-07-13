@@ -13,5 +13,4 @@ public interface NoteMongoMapperContract {
     NoteDocument toExistingDocument(UUID id, NoteRequest request);
 
     NoteResponse toResponse(NoteDocument document);
-
 }

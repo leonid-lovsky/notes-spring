@@ -11,5 +11,4 @@ class ConfigApplicationTests {
     void contextLoads() {
 
     }
-
 }

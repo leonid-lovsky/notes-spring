@@ -13,5 +13,4 @@ public interface UserNoteMongoMapperContract {
     UserNoteDocument toExistingDocument(UUID id, UserNoteRequest request);
 
     UserNoteResponse toResponse(UserNoteDocument document);
-
 }

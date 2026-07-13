@@ -15,5 +15,4 @@ class UserJdbcMapper implements UserJdbcMapperContract {
     public UserResponse fromRow(ResultSet rs, int rowNum) throws SQLException {
         return new UserResponse(rs.getObject("id", UUID.class), rs.getString("username"), rs.getString("email"));
     }
-
 }

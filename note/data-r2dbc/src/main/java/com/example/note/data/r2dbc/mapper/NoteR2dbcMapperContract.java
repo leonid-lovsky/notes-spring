@@ -13,5 +13,4 @@ public interface NoteR2dbcMapperContract {
     NoteR2dbcEntity toExistingEntity(UUID id, NoteRequest request);
 
     NoteResponse toResponse(NoteR2dbcEntity entity);
-
 }

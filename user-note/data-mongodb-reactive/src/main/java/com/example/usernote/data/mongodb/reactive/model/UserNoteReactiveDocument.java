@@ -48,5 +48,4 @@ public class UserNoteReactiveDocument {
     public UserNoteRole getRole() {
         return this.role;
     }
-
 }

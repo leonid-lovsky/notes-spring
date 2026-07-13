@@ -28,5 +28,4 @@ public interface NoteServiceInterface extends NoteInterface {
 
     @Override
     NoteResponse remove(UUID id);
-
 }

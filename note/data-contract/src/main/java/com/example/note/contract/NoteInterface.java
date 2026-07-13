@@ -19,5 +19,4 @@ public interface NoteInterface {
     Object merge(UUID id, NoteRequest request);
 
     Object remove(UUID id);
-
 }

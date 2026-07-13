@@ -26,5 +26,4 @@ class NoteJpaMapper implements NoteJpaMapperContract {
     public NoteResponse toResponse(NoteEntity entity) {
         return new NoteResponse(Objects.requireNonNull(entity.getId()), entity.getContent());
     }
-
 }

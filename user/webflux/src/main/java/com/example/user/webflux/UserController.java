@@ -72,5 +72,4 @@ class UserController implements UserControllerInterfaceReactive {
     public Mono<ResponseEntity<Void>> remove(@PathVariable UUID id) {
         return this.userService.remove(id).thenReturn(ResponseEntity.status(HttpStatus.NO_CONTENT).<Void>build());
     }
-
 }

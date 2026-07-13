@@ -28,5 +28,4 @@ class UserNoteR2dbcMapper implements UserNoteR2dbcMapperContract {
         return new UserNoteResponse(Objects.requireNonNull(entity.getId()), entity.getUserId(), entity.getNoteId(),
                 UserNoteRole.valueOf(entity.getRole()));
     }
-
 }

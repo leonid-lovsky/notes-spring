@@ -26,5 +26,4 @@ class UserR2dbcMapper implements UserR2dbcMapperContract {
     public UserResponse toResponse(UserR2dbcEntity entity) {
         return new UserResponse(Objects.requireNonNull(entity.getId()), entity.getUsername(), entity.getEmail());
     }
-
 }

@@ -25,5 +25,4 @@ class UserMongoMapper implements UserMongoMapperContract {
     public UserResponse toResponse(UserDocument document) {
         return new UserResponse(document.getId(), document.getUsername(), document.getEmail());
     }
-
 }

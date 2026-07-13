@@ -13,5 +13,4 @@ public interface NoteMongoReactiveMapperContract {
     NoteReactiveDocument toExistingDocument(UUID id, NoteRequest request);
 
     NoteResponse toResponse(NoteReactiveDocument document);
-
 }

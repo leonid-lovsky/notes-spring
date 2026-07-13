@@ -13,5 +13,4 @@ public interface NoteJpaMapperContract {
     NoteEntity toExistingEntity(UUID id, NoteRequest request);
 
     NoteResponse toResponse(NoteEntity entity);
-
 }

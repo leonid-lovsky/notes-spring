@@ -30,5 +30,4 @@ public class NoteReactiveDocument {
     public String getContent() {
         return this.content;
     }
-
 }

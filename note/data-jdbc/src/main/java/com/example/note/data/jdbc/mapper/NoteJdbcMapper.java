@@ -15,5 +15,4 @@ class NoteJdbcMapper implements NoteJdbcMapperContract {
     public NoteResponse fromRow(ResultSet rs, int rowNum) throws SQLException {
         return new NoteResponse(rs.getObject("id", UUID.class), rs.getString("content"));
     }
-
 }

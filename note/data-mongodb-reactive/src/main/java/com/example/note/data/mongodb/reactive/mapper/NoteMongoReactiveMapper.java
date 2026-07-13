@@ -25,5 +25,4 @@ class NoteMongoReactiveMapper implements NoteMongoReactiveMapperContract {
     public NoteResponse toResponse(NoteReactiveDocument document) {
         return new NoteResponse(document.getId(), document.getContent());
     }
-
 }

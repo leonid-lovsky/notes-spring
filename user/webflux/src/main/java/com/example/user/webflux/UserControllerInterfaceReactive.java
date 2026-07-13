@@ -32,5 +32,4 @@ public interface UserControllerInterfaceReactive extends UserInterfaceReactive {
 
     @Override
     Mono<ResponseEntity<Void>> remove(UUID id);
-
 }

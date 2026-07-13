@@ -33,5 +33,4 @@ public interface UserServiceInterfaceReactive extends UserInterfaceReactive {
 
     @Override
     Mono<Void> remove(UUID id);
-
 }

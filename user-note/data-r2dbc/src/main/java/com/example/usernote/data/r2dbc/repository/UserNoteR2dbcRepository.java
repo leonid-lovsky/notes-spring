@@ -23,5 +23,4 @@ public interface UserNoteR2dbcRepository extends ReactiveCrudRepository<UserNote
     Mono<Boolean> existsByUserIdAndNoteId(UUID userId, UUID noteId);
 
     Mono<Void> deleteByUserIdAndNoteId(UUID userId, UUID noteId);
-
 }

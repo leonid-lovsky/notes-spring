@@ -21,5 +21,4 @@ public interface UserNoteMongoRepository extends MongoRepository<UserNoteDocumen
     boolean existsByNoteId(UUID noteId);
 
     boolean existsByUserIdAndNoteId(UUID userId, UUID noteId);
-
 }

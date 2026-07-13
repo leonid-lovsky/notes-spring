@@ -13,5 +13,4 @@ public interface UserJpaMapperContract {
     UserEntity toExistingEntity(UUID id, UserRequest request);
 
     UserResponse toResponse(UserEntity entity);
-
 }

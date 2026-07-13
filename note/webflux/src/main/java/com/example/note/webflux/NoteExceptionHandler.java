@@ -16,5 +16,4 @@ class NoteExceptionHandler {
         problem.setTitle("Note Not Found");
         return problem;
     }
-
 }

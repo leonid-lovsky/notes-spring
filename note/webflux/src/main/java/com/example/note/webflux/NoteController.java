@@ -72,5 +72,4 @@ class NoteController implements NoteControllerInterfaceReactive {
     public Mono<ResponseEntity<Void>> remove(@PathVariable UUID id) {
         return this.noteService.remove(id).thenReturn(ResponseEntity.status(HttpStatus.NO_CONTENT).<Void>build());
     }
-
 }

@@ -152,5 +152,4 @@ class UserNoteService implements UserNoteServiceInterface {
         UserNoteRole role = (request.role() != null) ? request.role() : existing.getRole();
         return new UserNoteRequest(userId, noteId, role);
     }
-
 }

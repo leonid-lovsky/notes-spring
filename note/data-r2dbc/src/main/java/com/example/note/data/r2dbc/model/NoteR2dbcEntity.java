@@ -38,5 +38,4 @@ public class NoteR2dbcEntity {
     public String getContent() {
         return this.content;
     }
-
 }

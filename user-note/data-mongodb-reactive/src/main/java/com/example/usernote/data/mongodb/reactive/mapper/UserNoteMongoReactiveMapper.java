@@ -25,5 +25,4 @@ class UserNoteMongoReactiveMapper implements UserNoteMongoReactiveMapperContract
     public UserNoteResponse toResponse(UserNoteReactiveDocument document) {
         return new UserNoteResponse(document.getId(), document.getUserId(), document.getNoteId(), document.getRole());
     }
-
 }

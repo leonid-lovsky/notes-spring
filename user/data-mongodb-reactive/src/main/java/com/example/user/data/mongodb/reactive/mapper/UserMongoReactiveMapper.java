@@ -25,5 +25,4 @@ class UserMongoReactiveMapper implements UserMongoReactiveMapperContract {
     public UserResponse toResponse(UserReactiveDocument document) {
         return new UserResponse(document.getId(), document.getUsername(), document.getEmail());
     }
-
 }

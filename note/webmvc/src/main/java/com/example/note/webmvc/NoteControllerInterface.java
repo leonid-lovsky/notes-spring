@@ -31,5 +31,4 @@ public interface NoteControllerInterface extends NoteInterface {
 
     @Override
     ResponseEntity<NoteResponse> remove(UUID id);
-
 }

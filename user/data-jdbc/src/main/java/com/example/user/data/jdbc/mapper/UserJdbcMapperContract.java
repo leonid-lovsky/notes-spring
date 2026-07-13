@@ -8,5 +8,4 @@ import com.example.user.domain.UserResponse;
 public interface UserJdbcMapperContract {
 
     UserResponse fromRow(ResultSet rs, int rowNum) throws SQLException;
-
 }

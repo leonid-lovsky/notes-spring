@@ -9,5 +9,4 @@ public class UserNoteApplication {
     public static void main(String[] args) {
         SpringApplication.run(UserNoteApplication.class, args);
     }
-
 }

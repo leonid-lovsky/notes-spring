@@ -96,5 +96,4 @@ class UserService implements UserServiceInterfaceReactive {
         String email = (request.email() != null) ? request.email() : existing.email();
         return new UserRequest(username, email);
     }
-
 }

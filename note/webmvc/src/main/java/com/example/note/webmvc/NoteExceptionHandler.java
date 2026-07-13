@@ -15,5 +15,4 @@ class NoteExceptionHandler extends ResponseEntityExceptionHandler {
     ProblemDetail handleNotFound(NoteNotFoundException e) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
     }
-
 }

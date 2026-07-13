@@ -77,5 +77,4 @@ class UserController implements UserControllerInterface {
         UserResponse response = this.userService.remove(id);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
-
 }

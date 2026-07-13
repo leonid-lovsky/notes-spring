@@ -26,5 +26,4 @@ class NoteR2dbcMapper implements NoteR2dbcMapperContract {
     public NoteResponse toResponse(NoteR2dbcEntity entity) {
         return new NoteResponse(Objects.requireNonNull(entity.getId()), entity.getContent());
     }
-
 }

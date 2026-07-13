@@ -11,6 +11,37 @@
                    com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocMethodCheck,
                    com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocVariableCheck,
                    com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocStyleCheck,
-                   io.spring.javaformat.checkstyle.check.SpringJavadocCheck"/>
+                   io.spring.javaformat.checkstyle.check.SpringJavadocCheck,
+                   io.spring.javaformat.checkstyle.check.SpringLeadingWhitespaceCheck"/>
+    </module>
+
+    <module name="com.puppycrawl.tools.checkstyle.checks.whitespace.FileTabCharacterCheck">
+        <property name="eachLine" value="true"/>
+    </module>
+
+    <module name="com.puppycrawl.tools.checkstyle.checks.regexp.RegexpMultilineCheck">
+        <property name="format" value="[^\s{][ \t]*\n[ \t]*\n[ \t]*\}"/>
+        <property name="message" value="Пустая строка перед закрывающей скобкой не допускается"/>
+    </module>
+
+    <module name="com.puppycrawl.tools.checkstyle.checks.regexp.RegexpMultilineCheck">
+        <property name="format" value="\{[ \t]*(\n[ \t]*)?\}"/>
+        <property name="message" value="Пустое тело должно содержать ровно одну пустую строку внутри"/>
+    </module>
+
+    <module name="com.puppycrawl.tools.checkstyle.TreeWalker">
+        <module name="com.puppycrawl.tools.checkstyle.checks.indentation.IndentationCheck">
+            <property name="basicOffset" value="4"/>
+            <property name="braceAdjustment" value="0"/>
+            <property name="caseIndent" value="4"/>
+            <property name="throwsIndent" value="4"/>
+            <property name="arrayInitIndent" value="4"/>
+            <property name="lineWrappingIndentation" value="4"/>
+        </module>
+        <module name="com.puppycrawl.tools.checkstyle.checks.whitespace.EmptyLineSeparatorCheck">
+            <property name="tokens" value="METHOD_DEF"/>
+            <property name="allowMultipleEmptyLines" value="false"/>
+            <property name="allowMultipleEmptyLinesInsideClassMembers" value="false"/>
+        </module>
     </module>
 </module>

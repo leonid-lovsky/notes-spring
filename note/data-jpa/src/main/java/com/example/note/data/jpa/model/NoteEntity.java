@@ -42,5 +42,4 @@ public class NoteEntity {
     public String getContent() {
         return this.content;
     }
-
 }

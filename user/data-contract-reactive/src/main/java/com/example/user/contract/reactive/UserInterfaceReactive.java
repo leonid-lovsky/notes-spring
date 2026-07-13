@@ -19,5 +19,4 @@ public interface UserInterfaceReactive {
     Object merge(UUID id, UserRequest request);
 
     Object remove(UUID id);
-
 }

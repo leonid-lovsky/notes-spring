@@ -15,5 +15,4 @@ class UserNoteExceptionHandler extends ResponseEntityExceptionHandler {
     ProblemDetail handleNotFound(UserNoteNotFoundException e) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
     }
-
 }

@@ -53,5 +53,4 @@ public interface UserNoteServiceInterfaceReactive extends UserNoteInterfaceReact
 
     @Override
     Mono<Void> deleteByUserIdAndNoteId(UUID userId, UUID noteId);
-
 }

@@ -48,5 +48,4 @@ public class UserNoteDocument {
     public UserNoteRole getRole() {
         return this.role;
     }
-
 }

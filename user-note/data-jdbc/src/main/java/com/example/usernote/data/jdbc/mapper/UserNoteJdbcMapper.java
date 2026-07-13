@@ -17,5 +17,4 @@ class UserNoteJdbcMapper implements UserNoteJdbcMapperContract {
         return new UserNoteResponse(rs.getObject("id", UUID.class), rs.getObject("user_id", UUID.class),
                 rs.getObject("note_id", UUID.class), UserNoteRole.valueOf(rs.getString("role")));
     }
-
 }

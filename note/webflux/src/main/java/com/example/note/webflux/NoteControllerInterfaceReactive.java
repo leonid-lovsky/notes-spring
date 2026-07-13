@@ -32,5 +32,4 @@ public interface NoteControllerInterfaceReactive extends NoteInterfaceReactive {
 
     @Override
     Mono<ResponseEntity<Void>> remove(UUID id);
-
 }

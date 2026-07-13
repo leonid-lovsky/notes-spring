@@ -21,5 +21,4 @@ public interface UserNoteJpaRepository extends JpaRepository<UserNoteEntity, UUI
     boolean existsByNoteId(UUID noteId);
 
     boolean existsByUserIdAndNoteId(UUID userId, UUID noteId);
-
 }

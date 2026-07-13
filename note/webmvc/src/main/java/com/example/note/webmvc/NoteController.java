@@ -77,5 +77,4 @@ class NoteController implements NoteControllerInterface {
         NoteResponse response = this.noteService.remove(id);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
-
 }

@@ -76,5 +76,4 @@ class NoteService implements NoteServiceInterface {
         String content = (request.content() != null) ? request.content() : existing.content();
         return new NoteRequest(content);
     }
-
 }

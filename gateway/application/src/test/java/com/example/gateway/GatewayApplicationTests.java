@@ -11,5 +11,4 @@ class GatewayApplicationTests {
     void contextLoads() {
 
     }
-
 }

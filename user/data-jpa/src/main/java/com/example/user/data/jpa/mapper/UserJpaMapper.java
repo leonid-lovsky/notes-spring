@@ -26,5 +26,4 @@ class UserJpaMapper implements UserJpaMapperContract {
     public UserResponse toResponse(UserEntity entity) {
         return new UserResponse(Objects.requireNonNull(entity.getId()), entity.getUsername(), entity.getEmail());
     }
-
 }

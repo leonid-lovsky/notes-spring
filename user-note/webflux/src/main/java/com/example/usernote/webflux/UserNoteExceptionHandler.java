@@ -16,5 +16,4 @@ class UserNoteExceptionHandler {
         problem.setTitle("UserNote Not Found");
         return problem;
     }
-
 }

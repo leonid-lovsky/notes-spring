@@ -31,5 +31,4 @@ public interface UserControllerInterface extends UserInterface {
 
     @Override
     ResponseEntity<UserResponse> remove(UUID id);
-
 }

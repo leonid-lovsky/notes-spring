@@ -139,5 +139,4 @@ class UserNoteController implements UserNoteControllerInterfaceReactive {
         return this.userNoteService.deleteByUserIdAndNoteId(userId, noteId)
             .thenReturn(ResponseEntity.status(HttpStatus.NO_CONTENT).<Void>build());
     }
-
 }

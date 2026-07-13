@@ -13,5 +13,4 @@ public interface UserNoteJpaMapperContract {
     UserNoteEntity toExistingEntity(UUID id, UserNoteRequest request);
 
     UserNoteResponse toResponse(UserNoteEntity entity);
-
 }

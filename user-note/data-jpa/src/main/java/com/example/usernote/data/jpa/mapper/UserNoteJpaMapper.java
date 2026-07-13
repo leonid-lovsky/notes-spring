@@ -27,5 +27,4 @@ class UserNoteJpaMapper implements UserNoteJpaMapperContract {
         return new UserNoteResponse(Objects.requireNonNull(entity.getId()), entity.getUserId(), entity.getNoteId(),
                 entity.getRole());
     }
-
 }

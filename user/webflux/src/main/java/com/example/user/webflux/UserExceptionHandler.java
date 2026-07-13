@@ -16,5 +16,4 @@ class UserExceptionHandler {
         problem.setTitle("User Not Found");
         return problem;
     }
-
 }

@@ -32,5 +32,4 @@ public interface UserServiceInterface extends UserInterface {
 
     @Override
     UserResponse remove(UUID id);
-
 }

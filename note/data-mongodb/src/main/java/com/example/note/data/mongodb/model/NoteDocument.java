@@ -30,5 +30,4 @@ public class NoteDocument {
     public String getContent() {
         return this.content;
     }
-
 }

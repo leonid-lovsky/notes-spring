@@ -35,5 +35,4 @@ public interface UserNoteInterface {
     Object deleteByUserNoteId(UUID userNoteId);
 
     Object deleteByUserIdAndNoteId(UUID userId, UUID noteId);
-
 }

@@ -13,5 +13,4 @@ public interface UserMongoReactiveMapperContract {
     UserReactiveDocument toExistingDocument(UUID id, UserRequest request);
 
     UserResponse toResponse(UserReactiveDocument document);
-
 }

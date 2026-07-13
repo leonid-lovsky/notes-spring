@@ -40,5 +40,4 @@ public class UserDocument {
     public String getEmail() {
         return this.email;
     }
-
 }

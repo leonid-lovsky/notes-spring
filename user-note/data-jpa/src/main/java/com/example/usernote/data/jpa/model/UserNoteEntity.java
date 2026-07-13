@@ -65,5 +65,4 @@ public class UserNoteEntity {
     public UserNoteRole getRole() {
         return this.role;
     }
-
 }

@@ -47,5 +47,4 @@ public class UserR2dbcEntity {
     public String getEmail() {
         return this.email;
     }
-
 }

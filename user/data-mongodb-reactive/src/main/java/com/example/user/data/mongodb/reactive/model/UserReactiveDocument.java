@@ -40,5 +40,4 @@ public class UserReactiveDocument {
     public String getEmail() {
         return this.email;
     }
-
 }

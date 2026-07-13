@@ -13,5 +13,4 @@ public interface UserR2dbcMapperContract {
     UserR2dbcEntity toExistingEntity(UUID id, UserRequest request);
 
     UserResponse toResponse(UserR2dbcEntity entity);
-
 }

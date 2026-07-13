@@ -11,5 +11,4 @@ class UserNoteApplicationTests {
     void contextLoads() {
 
     }
-
 }

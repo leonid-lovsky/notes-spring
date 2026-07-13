@@ -7,11 +7,11 @@ import com.example.usernote.data.mongodb.reactive.mapper.UserNoteMongoReactiveMa
 import com.example.usernote.data.mongodb.reactive.model.UserNoteReactiveDocument;
 import com.example.usernote.data.mongodb.reactive.repository.UserNoteMongoReactiveRepository;
 import com.example.usernote.domain.NoteNotFoundException;
+import com.example.usernote.domain.UserNotFoundException;
 import com.example.usernote.domain.UserNoteNotFoundException;
 import com.example.usernote.domain.UserNoteRequest;
 import com.example.usernote.domain.UserNoteResponse;
 import com.example.usernote.domain.UserNoteRole;
-import com.example.usernote.domain.UserNotFoundException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -151,5 +151,4 @@ class UserNoteService implements UserNoteServiceInterfaceReactive {
         UserNoteRole role = (request.role() != null) ? request.role() : existing.getRole();
         return new UserNoteRequest(userId, noteId, role);
     }
-
 }

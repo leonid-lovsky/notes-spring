@@ -8,11 +8,11 @@ import com.example.usernote.data.r2dbc.mapper.UserNoteR2dbcMapperContract;
 import com.example.usernote.data.r2dbc.model.UserNoteR2dbcEntity;
 import com.example.usernote.data.r2dbc.repository.UserNoteR2dbcRepository;
 import com.example.usernote.domain.NoteNotFoundException;
+import com.example.usernote.domain.UserNotFoundException;
 import com.example.usernote.domain.UserNoteNotFoundException;
 import com.example.usernote.domain.UserNoteRequest;
 import com.example.usernote.domain.UserNoteResponse;
 import com.example.usernote.domain.UserNoteRole;
-import com.example.usernote.domain.UserNotFoundException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -145,5 +145,4 @@ class UserNoteService implements UserNoteServiceInterfaceReactive {
         UserNoteRole role = (request.role() != null) ? request.role() : UserNoteRole.valueOf(existing.getRole());
         return new UserNoteRequest(userId, noteId, role);
     }
-
 }

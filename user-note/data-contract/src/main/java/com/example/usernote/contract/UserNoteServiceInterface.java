@@ -52,5 +52,4 @@ public interface UserNoteServiceInterface extends UserNoteInterface {
 
     @Override
     UserNoteResponse deleteByUserIdAndNoteId(UUID userId, UUID noteId);
-
 }

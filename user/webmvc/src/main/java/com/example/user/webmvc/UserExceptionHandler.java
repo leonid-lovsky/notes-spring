@@ -15,5 +15,4 @@ class UserExceptionHandler extends ResponseEntityExceptionHandler {
     ProblemDetail handleNotFound(UserNotFoundException e) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
     }
-
 }

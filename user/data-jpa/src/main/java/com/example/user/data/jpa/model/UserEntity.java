@@ -51,5 +51,4 @@ public class UserEntity {
     public String getEmail() {
         return this.email;
     }
-
 }

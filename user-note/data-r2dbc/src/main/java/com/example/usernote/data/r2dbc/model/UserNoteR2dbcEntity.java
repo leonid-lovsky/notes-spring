@@ -56,5 +56,4 @@ public class UserNoteR2dbcEntity {
     public String getRole() {
         return this.role;
     }
-
 }
