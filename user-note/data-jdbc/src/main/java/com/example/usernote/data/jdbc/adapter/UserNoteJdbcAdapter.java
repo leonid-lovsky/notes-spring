@@ -1,21 +1,20 @@
 package com.example.usernote.data.jdbc.adapter;
 
+import com.example.usernote.contract.UserNoteService;
+import com.example.usernote.data.jdbc.mapper.UserNoteJdbcMapperContract;
+import com.example.usernote.domain.UserNoteNotFoundException;
+import com.example.usernote.domain.UserNoteRequest;
+import com.example.usernote.domain.UserNoteResponse;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Repository;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.example.usernote.contract.UserNoteContract;
-import com.example.usernote.data.jdbc.mapper.UserNoteJdbcMapperContract;
-import com.example.usernote.domain.UserNoteNotFoundException;
-import com.example.usernote.domain.UserNoteRequest;
-import com.example.usernote.domain.UserNoteResponse;
-
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Repository;
-
 @Repository
-class UserNoteJdbcAdapter implements UserNoteContract {
+class UserNoteJdbcAdapter implements UserNoteService {
 
     private final NamedParameterJdbcTemplate jdbc;
 
@@ -27,7 +26,7 @@ class UserNoteJdbcAdapter implements UserNoteContract {
     }
 
     @Override
-    public UserNoteResponse add(UserNoteRequest request) {
+    public UserNoteResponse create(UserNoteRequest request) {
         UUID id = UUID.randomUUID();
         this.jdbc.update("INSERT INTO user_notes (id, user_id, note_id, role) VALUES (:id, :userId, :noteId, :role)",
                 Map.of("id", id, "userId", request.userId(), "noteId", request.noteId(), "role",
@@ -44,7 +43,7 @@ class UserNoteJdbcAdapter implements UserNoteContract {
     }
 
     @Override
-    public Optional<UserNoteResponse> findById(UUID id) {
+    public Optional<UserNoteResponse> findByUserNoteId(UUID id) {
         return this.jdbc
             .query("SELECT id, user_id, note_id, role FROM user_notes WHERE id = :id", Map.of("id", id),
                     this.userNoteJdbcMapper::fromRow)
@@ -80,7 +79,7 @@ class UserNoteJdbcAdapter implements UserNoteContract {
     }
 
     @Override
-    public UserNoteResponse replace(UUID userId, UUID noteId, UserNoteRequest request) {
+    public UserNoteResponse replaceByUserNoteId(UUID userId, UUID noteId, UserNoteRequest request) {
         UUID id = this.jdbc
             .query("SELECT id FROM user_notes WHERE user_id = :userId AND note_id = :noteId",
                     Map.of("userId", userId, "noteId", noteId), (rs, rowNum) -> rs.getObject("id", UUID.class))

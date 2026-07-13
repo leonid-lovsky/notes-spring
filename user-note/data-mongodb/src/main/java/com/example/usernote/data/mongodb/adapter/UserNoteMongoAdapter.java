@@ -1,22 +1,21 @@
 package com.example.usernote.data.mongodb.adapter;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import com.example.usernote.contract.UserNoteContract;
+import com.example.usernote.contract.UserNoteService;
 import com.example.usernote.data.mongodb.mapper.UserNoteMongoMapperContract;
 import com.example.usernote.data.mongodb.model.UserNoteDocument;
 import com.example.usernote.data.mongodb.repository.UserNoteMongoRepository;
 import com.example.usernote.domain.UserNoteNotFoundException;
 import com.example.usernote.domain.UserNoteRequest;
 import com.example.usernote.domain.UserNoteResponse;
-
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
 @Repository
-class UserNoteMongoAdapter implements UserNoteContract {
+class UserNoteMongoAdapter implements UserNoteService {
 
     private final MongoTemplate mongoTemplate;
 
@@ -32,7 +31,7 @@ class UserNoteMongoAdapter implements UserNoteContract {
     }
 
     @Override
-    public UserNoteResponse add(UserNoteRequest request) {
+    public UserNoteResponse create(UserNoteRequest request) {
         UserNoteDocument document = this.mongoTemplate.insert(this.userNoteMongoMapper.toNewDocument(request));
         return this.userNoteMongoMapper.toResponse(document);
     }
@@ -43,7 +42,7 @@ class UserNoteMongoAdapter implements UserNoteContract {
     }
 
     @Override
-    public Optional<UserNoteResponse> findById(UUID id) {
+    public Optional<UserNoteResponse> findByUserNoteId(UUID id) {
         return this.userNoteMongoRepository.findById(id).map(this.userNoteMongoMapper::toResponse);
     }
 
@@ -75,7 +74,7 @@ class UserNoteMongoAdapter implements UserNoteContract {
     }
 
     @Override
-    public UserNoteResponse replace(UUID userId, UUID noteId, UserNoteRequest request) {
+    public UserNoteResponse replaceByUserNoteId(UUID userId, UUID noteId, UserNoteRequest request) {
         UserNoteDocument existing = this.userNoteMongoRepository.findByUserIdAndNoteId(userId, noteId)
             .orElseThrow(() -> new UserNoteNotFoundException(userId, noteId));
         UserNoteDocument saved = this.mongoTemplate

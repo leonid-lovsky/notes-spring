@@ -1,22 +1,21 @@
 package com.example.usernote.data.jpa.adapter;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
-
-import com.example.usernote.contract.UserNoteContract;
+import com.example.usernote.contract.UserNoteService;
 import com.example.usernote.data.jpa.mapper.UserNoteJpaMapperContract;
 import com.example.usernote.data.jpa.model.UserNoteEntity;
 import com.example.usernote.data.jpa.repository.UserNoteJpaRepository;
 import com.example.usernote.domain.UserNoteNotFoundException;
 import com.example.usernote.domain.UserNoteRequest;
 import com.example.usernote.domain.UserNoteResponse;
-
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
+
 @Repository
-class UserNoteJpaAdapter implements UserNoteContract {
+class UserNoteJpaAdapter implements UserNoteService {
 
     private final UserNoteJpaRepository userNoteJpaRepository;
 
@@ -28,7 +27,7 @@ class UserNoteJpaAdapter implements UserNoteContract {
     }
 
     @Override
-    public UserNoteResponse add(UserNoteRequest request) {
+    public UserNoteResponse create(UserNoteRequest request) {
         UserNoteEntity saved = this.userNoteJpaRepository.save(this.userNoteJpaMapper.toNewEntity(request));
         return this.userNoteJpaMapper.toResponse(saved);
     }
@@ -39,7 +38,7 @@ class UserNoteJpaAdapter implements UserNoteContract {
     }
 
     @Override
-    public Optional<UserNoteResponse> findById(UUID id) {
+    public Optional<UserNoteResponse> findByUserNoteId(UUID id) {
         return this.userNoteJpaRepository.findById(id).map(this.userNoteJpaMapper::toResponse);
     }
 
@@ -70,7 +69,7 @@ class UserNoteJpaAdapter implements UserNoteContract {
     }
 
     @Override
-    public UserNoteResponse replace(UUID userId, UUID noteId, UserNoteRequest request) {
+    public UserNoteResponse replaceByUserNoteId(UUID userId, UUID noteId, UserNoteRequest request) {
         UserNoteEntity existing = this.userNoteJpaRepository.findByUserIdAndNoteId(userId, noteId)
             .orElseThrow(() -> new UserNoteNotFoundException(userId, noteId));
         UserNoteEntity saved = this.userNoteJpaRepository
