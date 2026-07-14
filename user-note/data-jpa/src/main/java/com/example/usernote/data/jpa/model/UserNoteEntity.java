@@ -2,6 +2,7 @@ package com.example.usernote.data.jpa.model;
 
 import java.util.UUID;
 
+import com.example.usernote.domain.UserNotePersistable;
 import com.example.usernote.domain.UserNoteRole;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,7 +19,7 @@ import org.jspecify.annotations.Nullable;
 @NullUnmarked
 @Entity
 @Table(name = "user_notes", uniqueConstraints = @UniqueConstraint(columnNames = { "user_id", "note_id" }))
-public class UserNoteEntity {
+public class UserNoteEntity implements UserNotePersistable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -51,18 +52,22 @@ public class UserNoteEntity {
         this.role = role;
     }
 
+    @Override
     public @Nullable UUID getId() {
         return this.id;
     }
 
+    @Override
     public UUID getUserId() {
         return this.userId;
     }
 
+    @Override
     public UUID getNoteId() {
         return this.noteId;
     }
 
+    @Override
     public UserNoteRole getRole() {
         return this.role;
     }

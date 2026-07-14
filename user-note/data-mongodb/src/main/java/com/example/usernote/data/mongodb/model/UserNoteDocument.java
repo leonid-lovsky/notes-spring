@@ -2,6 +2,7 @@ package com.example.usernote.data.mongodb.model;
 
 import java.util.UUID;
 
+import com.example.usernote.domain.UserNotePersistable;
 import com.example.usernote.domain.UserNoteRole;
 import org.jspecify.annotations.NullUnmarked;
 
@@ -12,7 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NullUnmarked
 @Document(collection = "user_notes")
 @CompoundIndex(name = "user_id_note_id_unique", def = "{'userId': 1, 'noteId': 1}", unique = true)
-public class UserNoteDocument {
+public class UserNoteDocument implements UserNotePersistable {
 
     @Id
     private UUID id;
@@ -34,18 +35,22 @@ public class UserNoteDocument {
         this.role = role;
     }
 
+    @Override
     public UUID getId() {
         return this.id;
     }
 
+    @Override
     public UUID getUserId() {
         return this.userId;
     }
 
+    @Override
     public UUID getNoteId() {
         return this.noteId;
     }
 
+    @Override
     public UserNoteRole getRole() {
         return this.role;
     }

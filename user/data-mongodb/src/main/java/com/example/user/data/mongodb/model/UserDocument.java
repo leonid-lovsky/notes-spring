@@ -2,6 +2,7 @@ package com.example.user.data.mongodb.model;
 
 import java.util.UUID;
 
+import com.example.user.domain.UserPersistable;
 import org.jspecify.annotations.NullUnmarked;
 
 import org.springframework.data.annotation.Id;
@@ -10,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @NullUnmarked
 @Document(collection = "users")
-public class UserDocument {
+public class UserDocument implements UserPersistable {
 
     @Id
     private UUID id;
@@ -31,14 +32,17 @@ public class UserDocument {
         this.email = email;
     }
 
+    @Override
     public UUID getId() {
         return this.id;
     }
 
+    @Override
     public String getUsername() {
         return this.username;
     }
 
+    @Override
     public String getEmail() {
         return this.email;
     }

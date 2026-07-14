@@ -2,6 +2,7 @@ package com.example.user.data.r2dbc.model;
 
 import java.util.UUID;
 
+import com.example.user.domain.UserPersistable;
 import org.jspecify.annotations.NullUnmarked;
 import org.jspecify.annotations.Nullable;
 
@@ -11,7 +12,7 @@ import org.springframework.data.relational.core.mapping.Table;
 
 @NullUnmarked
 @Table("users")
-public class UserR2dbcEntity {
+public class UserR2dbcEntity implements UserPersistable {
 
     @Id
     private @Nullable UUID id;
@@ -37,14 +38,17 @@ public class UserR2dbcEntity {
         this.email = email;
     }
 
+    @Override
     public @Nullable UUID getId() {
         return this.id;
     }
 
+    @Override
     public String getUsername() {
         return this.username;
     }
 
+    @Override
     public String getEmail() {
         return this.email;
     }

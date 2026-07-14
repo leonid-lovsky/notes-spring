@@ -2,6 +2,7 @@ package com.example.note.data.r2dbc.model;
 
 import java.util.UUID;
 
+import com.example.note.domain.NotePersistable;
 import org.jspecify.annotations.NullUnmarked;
 import org.jspecify.annotations.Nullable;
 
@@ -11,7 +12,7 @@ import org.springframework.data.relational.core.mapping.Table;
 
 @NullUnmarked
 @Table("notes")
-public class NoteR2dbcEntity {
+public class NoteR2dbcEntity implements NotePersistable {
 
     @Id
     private @Nullable UUID id;
@@ -32,10 +33,12 @@ public class NoteR2dbcEntity {
         this.content = content;
     }
 
+    @Override
     public @Nullable UUID getId() {
         return this.id;
     }
 
+    @Override
     public String getContent() {
         return this.content;
     }

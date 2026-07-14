@@ -2,6 +2,7 @@ package com.example.note.data.jpa.model;
 
 import java.util.UUID;
 
+import com.example.note.domain.NotePersistable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -14,7 +15,7 @@ import org.jspecify.annotations.Nullable;
 @NullUnmarked
 @Entity
 @Table(name = "notes")
-public class NoteEntity {
+public class NoteEntity implements NotePersistable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -36,10 +37,12 @@ public class NoteEntity {
         this.content = content;
     }
 
+    @Override
     public @Nullable UUID getId() {
         return this.id;
     }
 
+    @Override
     public String getContent() {
         return this.content;
     }

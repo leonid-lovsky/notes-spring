@@ -2,6 +2,7 @@ package com.example.user.data.jpa.model;
 
 import java.util.UUID;
 
+import com.example.user.domain.UserPersistable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -14,7 +15,7 @@ import org.jspecify.annotations.Nullable;
 @NullUnmarked
 @Entity
 @Table(name = "users")
-public class UserEntity {
+public class UserEntity implements UserPersistable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -41,14 +42,17 @@ public class UserEntity {
         this.email = email;
     }
 
+    @Override
     public @Nullable UUID getId() {
         return this.id;
     }
 
+    @Override
     public String getUsername() {
         return this.username;
     }
 
+    @Override
     public String getEmail() {
         return this.email;
     }
