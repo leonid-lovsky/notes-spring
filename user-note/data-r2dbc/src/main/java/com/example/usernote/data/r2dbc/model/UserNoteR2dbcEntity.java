@@ -2,12 +2,14 @@ package com.example.usernote.data.r2dbc.model;
 
 import java.util.UUID;
 
+import org.jspecify.annotations.NullUnmarked;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+@NullUnmarked
 @Table("user_notes")
 public class UserNoteR2dbcEntity {
 
@@ -23,7 +25,6 @@ public class UserNoteR2dbcEntity {
     @Column("role")
     private String role;
 
-    @SuppressWarnings("NullAway.Init")
     protected UserNoteR2dbcEntity() {
 
     }

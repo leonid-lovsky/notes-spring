@@ -2,9 +2,12 @@ package com.example.note.data.mongodb.model;
 
 import java.util.UUID;
 
+import org.jspecify.annotations.NullUnmarked;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+@NullUnmarked
 @Document(collection = "notes")
 public class NoteDocument {
 
@@ -13,7 +16,6 @@ public class NoteDocument {
 
     private String content;
 
-    @SuppressWarnings("NullAway.Init")
     protected NoteDocument() {
 
     }

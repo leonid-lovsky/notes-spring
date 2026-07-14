@@ -2,12 +2,14 @@ package com.example.note.data.jdbc.model;
 
 import java.util.UUID;
 
+import org.jspecify.annotations.NullUnmarked;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+@NullUnmarked
 @Table("notes")
 public class NoteJdbcEntity {
 
@@ -17,7 +19,6 @@ public class NoteJdbcEntity {
     @Column("content")
     private String content;
 
-    @SuppressWarnings("NullAway.Init")
     protected NoteJdbcEntity() {
 
     }

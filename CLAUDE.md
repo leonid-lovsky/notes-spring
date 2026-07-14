@@ -1,10 +1,10 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: Tue Jul 14 11:54:27 IDT 2026 **Всё временно** — любое решение подлежит обсуждению и изменению.
+> Последнее обновление: Tue Jul 14 12:53:05 IDT 2026 **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 Многомодульный Spring Boot 4 проект (`note/`, `user/`, `user-note/`, ...), реализующий hexagonal architecture единообразно во всех сервисах через Gradle convention plugins. Этот файл — единственный источник истины по конвенциям, статусу и решениям проекта; вся необходимая для работы над проектом информация должна быть здесь, без обращения к внешним источникам.
 
-**Оглавление:** [Начало сессии](#начало-каждой-сессии) · [Правила](#правила) · [Задачи](#-задачи) · [Архитектура и структура](#архитектура-и-структура-проекта) · [Именование](#именование) · [Стек](#стек) · [Технологии](#технологии) · [Принятые решения](#принятые-решения) · [Открытые решения](#открытые-решения) · [Каталог файлов](#каталог-файлов-проекта)
+**Оглавление:** [Начало сессии](#начало-каждой-сессии) · [Правила](#правила) · [Задачи](#-задачи) · [Архитектура и структура](#архитектура-и-структура-проекта) · [Именование](#именование) · [Стек](#стек) · [Технологии](#технологии) · [Принятые решения](#принятые-решения) · [Открытые решения](#открытые-решения) · [Каталог файлов](#каталог-файлов-проекта) · [Референс стартеров](#-референс-полный-набор-spring-boot-стартеров-объединение-всех-присланных-максимальный--запрещено-удалять-или-сокращать)
 
 ---
 
@@ -32,19 +32,17 @@
 - **Пересмотр решений** — статус «принято»/«зафиксировано» (в т. ч. в «Принятые решения») не закрывает вопрос навсегда: любое решение по CRUD-сервисам и по проекту в целом нужно поднимать заново для обсуждения и пересмотра в подходящий момент, а не только по отдельному запросу
 - **Build** — после каждого логического шага: `./gradlew clean check` (быстрее `build`: без `assemble`/`bootJar`) → обновить CLAUDE.md → коммит → пуш; перед коммитом дополнительно `./gradlew clean build` (проверяет и паковку — `bootJar`/`resolveMainClassName`, что `check` не покрывает)
 - **Подзадачи** — крупную задачу разбивать на подзадачи; коммитить и пушить после каждой завершённой подзадачи, чтобы не терять прогресс при обрыве сессии
-- **⚠️ Лимит размера файла** (2026-07-14) — при приближении/превышении порога `⚠ CLAUDE.md is over the 150.0k-char limit` (мерить `wc -c CLAUDE.md`) сокращать можно, но не всё подряд: (1) раздел «Правила» — ни одна строка не удаляется, это правила для ИИ-агента; (2) блок «⛔ Референс: полный набор Spring Boot стартеров — ЗАПРЕЩЕНО УДАЛЯТЬ ИЛИ СОКРАЩАТЬ» (сейчас в разделе «⚡ Задачи»; перенос в самый низ файла и слияние 4 присланных референсов в один — см. «⚡ Задачи» → «В очереди») — не сокращать, держать максимально полным; (3) «Каталог файлов проекта» — править только очень аккуратно: можно добавлять пропущенные файлы с пометкой `[REVIEW]`, можно удалять строки реально удалённых файлов, но пометку `[DONE]` ставить только по явному принудительному указанию пользователя, не по инициативе агента. Сокращать без ограничений — остальные разделы (сворачивать историческую избыточность в «Задачах»/«Принятые решения» и т. п.), не теряя решения по существу
+- **⚠️ Лимит размера файла** (2026-07-14) — при приближении/превышении порога `⚠ CLAUDE.md is over the 150.0k-char limit` (мерить `wc -c CLAUDE.md`) сокращать можно, но не всё подряд: (1) раздел «Правила» — ни одна строка не удаляется, это правила для ИИ-агента; (2) блок «⛔ Референс: полный набор Spring Boot стартеров — ЗАПРЕЩЕНО УДАЛЯТЬ ИЛИ СОКРАЩАТЬ» (перенесён в самый конец файла 2026-07-14, объединён из 5 присланных снапшотов) — не сокращать, держать максимально полным; (3) «Каталог файлов проекта» — править только очень аккуратно: можно добавлять пропущенные файлы с пометкой `[REVIEW]`, можно удалять строки реально удалённых файлов, но пометку `[DONE]` ставить только по явному принудительному указанию пользователя, не по инициативе агента. Сокращать без ограничений — остальные разделы (сворачивать историческую избыточность в «Задачах»/«Принятые решения» и т. п.), не теряя решения по существу
 
 ---
 
 ## ⚡ Задачи
 
-**Текущая работа** — построчный пересмотр «Каталог файлов проекта» (см. соответствующий раздел ниже): ровно один файл за раз — показать разбор → дождаться личного утверждения пользователем → пометить `[DONE]` в каталоге → перейти к следующей строке `[REVIEW]` сверху вниз. Не забегать вперёд, не разбирать несколько файлов пакетом. Временно прервана двумя более срочными задачами ниже («В очереди») — вернуться к построчному пересмотру после их завершения.
+**Текущая работа** — построчный пересмотр «Каталог файлов проекта» (см. соответствующий раздел ниже): ровно один файл за раз — показать разбор → дождаться личного утверждения пользователем → пометить `[DONE]` в каталоге → перейти к следующей строке `[REVIEW]` сверху вниз. Не забегать вперёд, не разбирать несколько файлов пакетом. Была временно прервана более срочными задачами (переход `data-jdbc/`, `@NullUnmarked`, слияние референсов — все завершены 2026-07-14, см. ниже и «Открытые решения» → «Каталог `data/`») — можно возвращаться к построчному пересмотру.
 
 **`data-jdbc/`: переход на Spring Data JDBC repository — завершено по всем трём сервисам 2026-07-14**: прежнее решение «сырой `NamedParameterJdbcTemplate`, без `model/`/`repository/`» признано пользователем ошибочным («если у нас есть стартер с готовым repository интерфейсом — не пишем свой repository»): раз convention-плагин уже подключает `spring-boot-starter-data-jdbc` (см. «Полнота R2DBC/JDBC-стартеров» выше), `data-jdbc/` получил `model/`+`repository/`+`mapper/` во всех трёх сервисах, по структуре зеркалируя `data-r2dbc/` (та же `org.springframework.data.relational.core.mapping.Table`/`Column`/`org.springframework.data.annotation.Id` — Spring Data JDBC и R2DBC используют один и тот же модуль `spring-data-relational`), адаптеры — через репозиторий (`ListCrudRepository`, не `CrudRepository` — доступен с Spring Data 3.0, даёт `findAll(): List<T>` напрямую) вместо сырого SQL, `mapper` — `toNewEntity`/`toExistingEntity`/`toResponse` вместо `fromRow(ResultSet, int)`. `note/`/`user/` — repository-based адаптер 1:1 копирует структуру одноимённого `data-jpa`-адаптера; `user/data-jdbc/`'шный `UserJdbcRepository` получил derived-методы `findByUsername`/`findByEmail` (`Optional`, sync — не `Mono` как у `UserR2dbcRepository`). `user-note/` — самый сложный случай (15 методов, разбивка по суррогатному `userNoteId` и составному `userId+noteId`): `UserNoteJdbcRepository extends ListCrudRepository<UserNoteJdbcEntity, UUID>` получил `findByUserId`/`findByNoteId`(`List`)/`findByUserIdAndNoteId`(`Optional`)/`existsByUserId`/`existsByNoteId`/`existsByUserIdAndNoteId` — все derived-методами, `@Query` не понадобился; адаптер `UserNoteService` — 1:1 копия структуры `user-note/data-jpa`-шного адаптера. `./gradlew clean check`+`clean build` по всему проекту — чисто на каждом из трёх шагов. Строка «Асимметрия `data-jdbc/`» в «Открытые решения» удалена (вопрос закрыт, не открытый больше), абзац о `data-jdbc/` в «Принятые решения» → «Архитектура» обновлён. **Не решено**: схема БД (`schema.sql`) по-прежнему не создана нигде — открытый вопрос «Управление схемой для R2DBC/JDBC» не затронут, `data-jdbc/` ни в одном сервисе не подключён к `application/`, так что реальные запросы к БД пока не проверялись end-to-end (только компиляция + Checkstyle + `contextLoads` — не применимо, `data-jdbc/` не в composition root)
 
-**В очереди / не завершено** (2026-07-14):
-1. **Слияние референсов в один + перенос в конец файла** — 4 присланных Initializr-референса (Boot 4.1.0×2, 4.1.0 без Lombok, 4.0.7-максимальный) нужно объединить в ОДИН блок (объединение по всем стартерам — если артефакт встретился хотя бы в одном референсе, он должен быть в итоговом), версии — везде последние (Boot 4.1.0, не 4.0.7 как сейчас), и переместить весь блок «⛔ Референс...» из раздела «⚡ Задачи» в самый конец CLAUDE.md. Не начато повторно после прерывания технической ошибкой инструмента — сейчас в разделе «⚡ Задачи» лежит только референс #4 (Boot 4.0.7) как есть, не объединённый и не на своём итоговом месте.
-2. **Каталог `data/` на уровне сервиса** — вопрос «сгруппировать `data-jpa`/`data-jdbc`/`data-r2dbc`/`data-mongodb`/`data-mongodb-reactive` в подкаталог `data/` внутри сервиса» был поднят, но явного решения пользователь не давал (выбор «как прислали: 1→2→3→4» касался других 4 задач, не этой) — статус: открытый вопрос, не зафиксирован нигде в «Открытые решения», не начат
+**Слияние референсов — завершено 2026-07-14**: объединил все присланные Initializr-снапшоты в один блок и перенёс его в конец файла (см. «⛔ Референс...» в самом низу CLAUDE.md) — подробности объединения (4 источника, версии, 7 новых стартеров) записаны прямо в интро того раздела, не дублирую здесь.
 
 Статус по сервисам и модулям:
 
@@ -79,407 +77,6 @@
 **Переименования и новые модули** (2026-07-14): (1) `application-reactive/` — во всех трёх CRUD-сервисах, `webflux`+`data-r2dbc`+H2(R2DBC), зеркалит `application/`, новый плагин `com.example.spring-boot-r2dbc-h2-database` (без `spring-boot-h2console` — тот требует Servlet+JDBC, недоступно в webflux/R2DBC); схема R2DBC не создана, частично закрывает «Комбинации technology в `application/`». (2) `data-contract`/`-reactive` → `contract`/`contract-reactive` (пакеты уже были просто `contract`/`contract.reactive`, не менялись) — везде массово. (3) `contract-reactive/` — оба плагина, `com.example.library`+`com.example.reactor`, несмотря на частичное дублирование. (4) `{Entity}InterfaceReactive`/`ServiceInterfaceReactive`/`ControllerInterfaceReactive` → `{Entity}ReactiveInterface`/`ServiceReactiveInterface`/`ControllerReactiveInterface` (см. «Именование») — 9 файлов + usages.
 
 **Полнота R2DBC/JDBC-стартеров** (2026-07-14, источник — Spring Initializr `start.spring.io/metadata/client`, не Maven Central): где Initializr даёт раздельно «Spring Data X» и «X API» (JDBC: `jdbc`+`data-jdbc`; R2DBC: `r2dbc`+`data-r2dbc`) — подключать оба + оба `-test`, даже при транзитивном дублировании. Добавлено: `spring-boot-starter-r2dbc`(`-test`) в `com.example.spring-boot-data-r2dbc`; `spring-boot-starter-jdbc`(`-test`) в `com.example.spring-boot-data-jdbc` (реальный пробел — модуль и так на сыром `NamedParameterJdbcTemplate`). JPA/MongoDB/MongoDB-reactive — уже полные, у них отдельного «plain API» стартера нет вообще. Полная копия референса — также в памяти (`reference_spring_boot_data_starters_matrix.md`).
-
-### ⛔ Референс: полный набор Spring Boot 4.0.7 стартеров (максимальный, Azure/GCP/Tanzu/gRPC/Sentry) — ЗАПРЕЩЕНО УДАЛЯТЬ ИЛИ СОКРАЩАТЬ
-
-**Прямое повторное указание пользователя (2026-07-14, четыре раза подряд) — этот блок и его заголовок никогда не трогать ни при какой задаче по сокращению/актуализации CLAUDE.md, включая явную задачу «уменьши размер файла».** Эталонный полный набор Spring Boot стартеров (Initializr «select all», версия здесь — 4.0.7, у проекта — 4.1.0, см. «Стек») — источник истины при проверке полноты convention-плагинов на предмет пропущенных `-test`-компаньонов/plain-API-вариантов при добавлении новой технологии в проект (см. «Правила» → «Полнота R2DBC/JDBC-стартеров» выше, [[feedback_add_all_starters_no_pruning]] в памяти). **Уже подтвердил свою ценность**: по нему найден и исправлен реальный пробел в `com.example.spring-boot-data-elasticsearch` — не хватало plain `spring-boot-starter-elasticsearch`(`-test`) рядом с `spring-boot-starter-data-elasticsearch`(`-test`), тот же паттерн, что раньше нашли для JDBC/R2DBC.
-
-```gradle
-plugins {
-    id 'java'
-    id 'org.springframework.boot' version '4.0.7'
-    id 'io.spring.dependency-management' version '1.1.7'
-    id 'com.netflix.dgs.codegen' version '8.3.0'
-    id 'org.hibernate.orm' version '7.2.19.Final'
-    id 'org.graalvm.buildtools.native' version '0.11.5'
-    id 'org.cyclonedx.bom' version '3.2.4'
-    id 'org.springframework.cloud.contract' version '5.0.3'
-    id 'com.google.protobuf' version '0.9.5'
-    id 'org.asciidoctor.jvm.convert' version '4.0.5'
-    id 'com.vaadin' version '25.1.8'
-}
-
-group = 'com.example'
-version = '0.0.1-SNAPSHOT'
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
-}
-
-repositories {
-    mavenCentral()
-    maven { url = 'https://build.shibboleth.net/maven/releases' }
-}
-
-ext {
-    set('snippetsDir', file("build/generated-snippets"))
-    set('datasourceMicrometerVersion', "2.2.1")
-    set('sentryVersion', "8.27.0")
-    set('springBootAdminVersion', "4.0.4")
-    set('springCloudAzureVersion', "7.3.0")
-    set('springCloudGcpVersion', "8.0.5")
-    set('springCloudServicesVersion', "4.4.1")
-    set('springCloudVersion', "2025.1.2")
-    set('springGrpcVersion', "1.0.3")
-    set('springModulithVersion', "2.0.7")
-    set('tanzuSpringSdkVersion', "1.0.0")
-    set('vaadinVersion', "25.1.8")
-}
-
-dependencies {
-    implementation 'org.springframework.boot:spring-boot-h2console'
-    implementation 'org.springframework.boot:spring-boot-starter-activemq'
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation 'org.springframework.boot:spring-boot-starter-amqp'
-    implementation 'org.springframework.boot:spring-boot-starter-artemis'
-    implementation 'org.springframework.boot:spring-boot-starter-batch'
-    implementation 'org.springframework.boot:spring-boot-starter-batch-jdbc'
-    implementation 'org.springframework.boot:spring-boot-starter-cache'
-    implementation 'org.springframework.boot:spring-boot-starter-cassandra'
-    implementation 'org.springframework.boot:spring-boot-starter-cloudfoundry'
-    implementation 'org.springframework.boot:spring-boot-starter-couchbase'
-    implementation 'org.springframework.boot:spring-boot-starter-data-cassandra'
-    implementation 'org.springframework.boot:spring-boot-starter-data-cassandra-reactive'
-    implementation 'org.springframework.boot:spring-boot-starter-data-couchbase'
-    implementation 'org.springframework.boot:spring-boot-starter-data-couchbase-reactive'
-    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-data-ldap'
-    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
-    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
-    implementation 'org.springframework.boot:spring-boot-starter-data-neo4j'
-    implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
-    implementation 'org.springframework.boot:spring-boot-starter-data-rest'
-    implementation 'org.springframework.boot:spring-boot-starter-elasticsearch'
-    implementation 'org.springframework.boot:spring-boot-starter-flyway'
-    implementation 'org.springframework.boot:spring-boot-starter-freemarker'
-    implementation 'org.springframework.boot:spring-boot-starter-graphql'
-    implementation 'org.springframework.boot:spring-boot-starter-groovy-templates'
-    implementation 'org.springframework.boot:spring-boot-starter-hateoas'
-    implementation 'org.springframework.boot:spring-boot-starter-hazelcast'
-    implementation 'org.springframework.boot:spring-boot-starter-integration'
-    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
-    implementation 'org.springframework.boot:spring-boot-starter-jersey'
-    implementation 'org.springframework.boot:spring-boot-starter-jooq'
-    implementation 'org.springframework.boot:spring-boot-starter-kafka'
-    implementation 'org.springframework.boot:spring-boot-starter-ldap'
-    implementation 'org.springframework.boot:spring-boot-starter-liquibase'
-    implementation 'org.springframework.boot:spring-boot-starter-mail'
-    implementation 'org.springframework.boot:spring-boot-starter-mongodb'
-    implementation 'org.springframework.boot:spring-boot-starter-mustache'
-    implementation 'org.springframework.boot:spring-boot-starter-neo4j'
-    implementation 'org.springframework.boot:spring-boot-starter-opentelemetry'
-    implementation 'org.springframework.boot:spring-boot-starter-pulsar'
-    implementation 'org.springframework.boot:spring-boot-starter-quartz'
-    implementation 'org.springframework.boot:spring-boot-starter-r2dbc'
-    implementation 'org.springframework.boot:spring-boot-starter-restclient'
-    implementation 'org.springframework.boot:spring-boot-starter-rsocket'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-authorization-server'
-    implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-client'
-    implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-resource-server'
-    implementation 'org.springframework.boot:spring-boot-starter-security-saml2'
-    implementation 'org.springframework.boot:spring-boot-starter-session-data-redis'
-    implementation 'org.springframework.boot:spring-boot-starter-session-jdbc'
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.springframework.boot:spring-boot-starter-webclient'
-    implementation 'org.springframework.boot:spring-boot-starter-webflux'
-    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
-    implementation 'org.springframework.boot:spring-boot-starter-webservices'
-    implementation 'org.springframework.boot:spring-boot-starter-websocket'
-    implementation 'org.springframework.boot:spring-boot-starter-zipkin'
-    implementation 'com.azure.spring:spring-cloud-azure-starter'
-    implementation 'com.azure.spring:spring-cloud-azure-starter-active-directory'
-    implementation 'com.azure.spring:spring-cloud-azure-starter-actuator'
-    implementation 'com.azure.spring:spring-cloud-azure-starter-data-cosmos'
-    implementation 'com.azure.spring:spring-cloud-azure-starter-integration-storage-queue'
-    implementation 'com.azure.spring:spring-cloud-azure-starter-jdbc-mysql'
-    implementation 'com.azure.spring:spring-cloud-azure-starter-jdbc-postgresql'
-    implementation 'com.azure.spring:spring-cloud-azure-starter-keyvault'
-    implementation 'com.azure.spring:spring-cloud-azure-starter-storage'
-    implementation 'com.google.cloud:spring-cloud-gcp-starter'
-    implementation 'com.google.cloud:spring-cloud-gcp-starter-pubsub'
-    implementation 'com.google.cloud:spring-cloud-gcp-starter-storage'
-    developmentOnly 'com.vaadin:vaadin-dev'
-    implementation 'com.vaadin:vaadin-spring-boot-starter'
-    implementation 'com.vmware.tanzu.spring:tanzu-spring-starter'
-    implementation 'de.codecentric:spring-boot-admin-starter-client'
-    implementation 'de.codecentric:spring-boot-admin-starter-server'
-    implementation 'io.grpc:grpc-services'
-    implementation 'io.pivotal.spring.cloud:spring-cloud-services-starter-config-client'
-    implementation 'io.pivotal.spring.cloud:spring-cloud-services-starter-service-registry'
-    implementation 'io.sentry:sentry-spring-boot-4-starter'
-    implementation 'net.ttddyy.observation:datasource-micrometer-opentelemetry'
-    implementation 'net.ttddyy.observation:datasource-micrometer-spring-boot'
-    implementation 'org.apache.kafka:kafka-streams'
-    implementation 'org.flywaydb:flyway-database-db2'
-    implementation 'org.flywaydb:flyway-database-derby'
-    implementation 'org.flywaydb:flyway-database-hsqldb'
-    implementation 'org.flywaydb:flyway-database-oracle'
-    implementation 'org.flywaydb:flyway-database-postgresql'
-    implementation 'org.flywaydb:flyway-mysql'
-    implementation 'org.flywaydb:flyway-sqlserver'
-    implementation 'org.jobrunr:jobrunr-spring-boot-4-starter:8.7.0'
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2'
-    implementation 'org.springframework.amqp:spring-rabbit-stream'
-    implementation 'org.springframework.cloud:spring-cloud-bus'
-    implementation 'org.springframework.cloud:spring-cloud-config-server'
-    implementation 'org.springframework.cloud:spring-cloud-function-web'
-    implementation 'org.springframework.cloud:spring-cloud-starter'
-    implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-reactor-resilience4j'
-    implementation 'org.springframework.cloud:spring-cloud-starter-config'
-    implementation 'org.springframework.cloud:spring-cloud-starter-consul-config'
-    implementation 'org.springframework.cloud:spring-cloud-starter-consul-discovery'
-    implementation 'org.springframework.cloud:spring-cloud-starter-gateway-server-webflux'
-    implementation 'org.springframework.cloud:spring-cloud-starter-gateway-server-webmvc'
-    implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
-    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
-    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
-    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
-    implementation 'org.springframework.cloud:spring-cloud-starter-task'
-    implementation 'org.springframework.cloud:spring-cloud-starter-vault-config'
-    implementation 'org.springframework.cloud:spring-cloud-starter-zookeeper-config'
-    implementation 'org.springframework.cloud:spring-cloud-starter-zookeeper-discovery'
-    implementation 'org.springframework.cloud:spring-cloud-stream'
-    implementation 'org.springframework.cloud:spring-cloud-stream-binder-kafka'
-    implementation 'org.springframework.cloud:spring-cloud-stream-binder-kafka-streams'
-    implementation 'org.springframework.cloud:spring-cloud-stream-binder-pulsar'
-    implementation 'org.springframework.cloud:spring-cloud-stream-binder-rabbit'
-    implementation 'org.springframework.data:spring-data-rest-hal-explorer'
-    implementation 'org.springframework.grpc:spring-grpc-client-spring-boot-starter'
-    implementation 'org.springframework.grpc:spring-grpc-server-web-spring-boot-starter'
-    implementation 'org.springframework.integration:spring-integration-amqp'
-    implementation 'org.springframework.integration:spring-integration-http'
-    implementation 'org.springframework.integration:spring-integration-jdbc'
-    implementation 'org.springframework.integration:spring-integration-jms'
-    implementation 'org.springframework.integration:spring-integration-jpa'
-    implementation 'org.springframework.integration:spring-integration-kafka'
-    implementation 'org.springframework.integration:spring-integration-mail'
-    implementation 'org.springframework.integration:spring-integration-mongodb'
-    implementation 'org.springframework.integration:spring-integration-r2dbc'
-    implementation 'org.springframework.integration:spring-integration-redis'
-    implementation 'org.springframework.integration:spring-integration-rsocket'
-    implementation 'org.springframework.integration:spring-integration-stomp'
-    implementation 'org.springframework.integration:spring-integration-webflux'
-    implementation 'org.springframework.integration:spring-integration-websocket'
-    implementation 'org.springframework.integration:spring-integration-ws'
-    implementation 'org.springframework.modulith:spring-modulith-events-api'
-    implementation 'org.springframework.modulith:spring-modulith-starter-core'
-    implementation 'org.springframework.modulith:spring-modulith-starter-insight'
-    implementation 'org.springframework.modulith:spring-modulith-starter-jdbc'
-    implementation 'org.springframework.modulith:spring-modulith-starter-jpa'
-    implementation 'org.springframework.modulith:spring-modulith-starter-mongodb'
-    implementation 'org.springframework.modulith:spring-modulith-starter-neo4j'
-    implementation 'org.springframework.security:spring-security-messaging'
-    implementation 'org.springframework.security:spring-security-rsocket'
-    implementation 'org.springframework.security:spring-security-webauthn'
-    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
-    compileOnly 'org.projectlombok:lombok'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
-    developmentOnly 'com.azure.spring:spring-cloud-azure-docker-compose'
-    runtimeOnly 'com.h2database:h2'
-    runtimeOnly 'com.ibm.db2:jcc'
-    runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc'
-    runtimeOnly 'com.mysql:mysql-connector-j'
-    runtimeOnly 'com.oracle.database.jdbc:ojdbc11'
-    runtimeOnly 'com.oracle.database.r2dbc:oracle-r2dbc'
-    runtimeOnly 'io.asyncer:r2dbc-mysql'
-    runtimeOnly 'io.micrometer:micrometer-registry-datadog'
-    runtimeOnly 'io.micrometer:micrometer-registry-dynatrace'
-    runtimeOnly 'io.micrometer:micrometer-registry-graphite'
-    runtimeOnly 'io.micrometer:micrometer-registry-influx'
-    runtimeOnly 'io.micrometer:micrometer-registry-new-relic'
-    runtimeOnly 'io.micrometer:micrometer-registry-otlp'
-    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
-    runtimeOnly 'io.r2dbc:r2dbc-h2'
-    runtimeOnly 'io.r2dbc:r2dbc-mssql:1.0.0.RELEASE'
-    runtimeOnly 'org.apache.derby:derby'
-    runtimeOnly 'org.apache.derby:derbytools'
-    runtimeOnly 'org.hsqldb:hsqldb'
-    runtimeOnly 'org.mariadb:r2dbc-mariadb:1.1.3'
-    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
-    runtimeOnly 'org.postgresql:postgresql'
-    runtimeOnly 'org.postgresql:r2dbc-postgresql'
-    runtimeOnly 'org.springframework.modulith:spring-modulith-events-jms'
-    runtimeOnly 'org.springframework.modulith:spring-modulith-runtime'
-    runtimeOnly 'org.xerial:sqlite-jdbc'
-    annotationProcessor 'org.projectlombok:lombok'
-    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-    testImplementation 'org.springframework.boot:spring-boot-starter-activemq-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-actuator-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-amqp-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-artemis-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-batch-jdbc-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-batch-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-cache-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-cassandra-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-cloudfoundry-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-couchbase-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-data-cassandra-reactive-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-data-cassandra-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-data-couchbase-reactive-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-data-couchbase-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-data-jdbc-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-data-ldap-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-data-mongodb-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-data-neo4j-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-data-r2dbc-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-data-redis-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-data-rest-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-elasticsearch-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-flyway-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-freemarker-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-graphql-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-groovy-templates-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-hateoas-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-hazelcast-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-jdbc-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-jersey-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-jooq-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-kafka-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-ldap'
-    testImplementation 'org.springframework.boot:spring-boot-starter-ldap-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-liquibase-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-mail-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-mongodb-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-mustache-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-neo4j-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-opentelemetry-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-pulsar-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-quartz-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-r2dbc-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-restclient-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-restdocs'
-    testImplementation 'org.springframework.boot:spring-boot-starter-rsocket-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-security-oauth2-authorization-server-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-security-oauth2-client-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-security-oauth2-resource-server-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-security-saml2-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-security-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-session-data-redis-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-session-jdbc-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-thymeleaf-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-validation-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-webclient-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-webflux-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-webservices-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-websocket-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-zipkin-test'
-    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
-    testImplementation 'com.azure.spring:spring-cloud-azure-testcontainers'
-    testImplementation 'com.unboundid:unboundid-ldapsdk'
-    testImplementation 'io.projectreactor:reactor-test'
-    testImplementation 'io.rest-assured:spring-web-test-client'
-    testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner'
-    testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-verifier'
-    testImplementation 'org.springframework.cloud:spring-cloud-stream-test-binder'
-    testImplementation 'org.springframework.grpc:spring-grpc-test'
-    testImplementation 'org.springframework.integration:spring-integration-test'
-    testImplementation 'org.springframework.modulith:spring-modulith-starter-test'
-    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
-    testImplementation 'org.testcontainers:testcontainers-activemq'
-    testImplementation 'org.testcontainers:testcontainers-cassandra'
-    testImplementation 'org.testcontainers:testcontainers-consul'
-    testImplementation 'org.testcontainers:testcontainers-couchbase'
-    testImplementation 'org.testcontainers:testcontainers-db2'
-    testImplementation 'org.testcontainers:testcontainers-elasticsearch'
-    testImplementation 'org.testcontainers:testcontainers-gcloud'
-    testImplementation 'org.testcontainers:testcontainers-grafana'
-    testImplementation 'org.testcontainers:testcontainers-junit-jupiter'
-    testImplementation 'org.testcontainers:testcontainers-kafka'
-    testImplementation 'org.testcontainers:testcontainers-mariadb'
-    testImplementation 'org.testcontainers:testcontainers-mongodb'
-    testImplementation 'org.testcontainers:testcontainers-mssqlserver'
-    testImplementation 'org.testcontainers:testcontainers-mysql'
-    testImplementation 'org.testcontainers:testcontainers-neo4j'
-    testImplementation 'org.testcontainers:testcontainers-oracle-free'
-    testImplementation 'org.testcontainers:testcontainers-postgresql'
-    testImplementation 'org.testcontainers:testcontainers-pulsar'
-    testImplementation 'org.testcontainers:testcontainers-r2dbc'
-    testImplementation 'org.testcontainers:testcontainers-rabbitmq'
-    testImplementation 'org.testcontainers:testcontainers-vault'
-    testCompileOnly 'org.projectlombok:lombok'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    testAnnotationProcessor 'org.projectlombok:lombok'
-}
-
-dependencyManagement {
-    imports {
-        mavenBom "org.springframework.modulith:spring-modulith-bom:${springModulithVersion}"
-        mavenBom "com.vaadin:vaadin-bom:${vaadinVersion}"
-        mavenBom "org.springframework.grpc:spring-grpc-dependencies:${springGrpcVersion}"
-        mavenBom "de.codecentric:spring-boot-admin-dependencies:${springBootAdminVersion}"
-        mavenBom "io.pivotal.spring.cloud:spring-cloud-services-dependencies:${springCloudServicesVersion}"
-        mavenBom "io.sentry:sentry-bom:${sentryVersion}"
-        mavenBom "net.ttddyy.observation:datasource-micrometer-bom:${datasourceMicrometerVersion}"
-        mavenBom "com.vmware.tanzu.spring:tanzu-spring-sdk-dependencies:${tanzuSpringSdkVersion}"
-        mavenBom "com.azure.spring:spring-cloud-azure-dependencies:${springCloudAzureVersion}"
-        mavenBom "com.google.cloud:spring-cloud-gcp-dependencies:${springCloudGcpVersion}"
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-    }
-}
-
-generateJava {
-    schemaPaths = ["${projectDir}/src/main/resources/graphql-client"]
-    packageName = 'com.example.demo.codegen'
-    generateClient = true
-}
-
-hibernate {
-    enhancement {
-    }
-}
-
-contracts {
-    testMode = 'WebTestClient'
-}
-
-protobuf {
-    protoc {
-        artifact = 'com.google.protobuf:protoc'
-    }
-    plugins {
-        grpc {
-            artifact = 'io.grpc:protoc-gen-grpc-java'
-        }
-    }
-    generateProtoTasks {
-        all()*.plugins {
-            grpc {
-                option '@generated=omit'
-            }
-        }
-    }
-}
-
-tasks.named('contractTest') {
-    useJUnitPlatform()
-}
-
-tasks.named('test') {
-    outputs.dir snippetsDir
-    useJUnitPlatform()
-}
-
-tasks.named('asciidoctor') {
-    inputs.dir snippetsDir
-    dependsOn test
-}
-```
-
-
 
 **Checkstyle — порядок импортов:**
 
@@ -724,7 +321,8 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
 - Импорты: `java.*` → `javax.*` → `*` → `org.springframework.*`; пустая строка между группами
 - `@NullMarked` на каждый `package-info.java`
 - `@Nullable` из `org.jspecify.annotations`
-- `@SuppressWarnings("NullAway.Init")` на `protected` no-arg конструкторах JPA entity
+- **`@NullUnmarked` на классах Entity/Document** (пересмотрено 2026-07-14, было `@SuppressWarnings("NullAway.Init")` на `protected` no-arg конструкторе): decompилирован `spring-data-commons-4.1.0` (`PreferredConstructorDiscoverer$Discoverers$1`) — при наличии у класса хотя бы одного no-arg конструктора и отсутствии `@PersistenceCreator` framework **всегда** выбирает именно no-arg конструктор для чтения из БД (`Field.set(...)` рефлексией напрямую, минуя args-конструкторы), независимо от их числа — то есть NullAway абсолютно корректно ловит «поле не инициализировано» сразу после `protected EntityX()`, просто не видит пост-конструкторную рефлексию. Suppression на одном конструкторе — точечный костыль под конкретный симптом; `@NullUnmarked org.jspecify.annotations` на самом классе — правильный псевдоним «эта модель заполняется framework'ом вне контроля null-checker'а», отключает null-checking для всего класса разом. Явные `@Nullable` (например, на `id` до присвоения БД) внутри `@NullUnmarked`-класса по спецификации JSpecify по-прежнему учитываются — проверка на границе (`Objects.requireNonNull(entity.getId())` в мэпперах) не потеряна. Применено ко всем 15 model-классам (`{Entity}Entity`/`{Entity}Document`/`{Entity}ReactiveDocument`/`{Entity}R2dbcEntity`/`{Entity}JdbcEntity` × `note`/`user`/`user-note`), `./gradlew clean check`+`clean build` — чисто. Альтернатива `@PersistenceCreator` на args-конструкторе (убрать no-arg вовсе, получить нормальный constructor binding) — рассмотрена и отклонена пользователем в пользу `@NullUnmarked`
+- **Jakarta Bean Validation для Entity/Document — принято к реализации, не начато** (2026-07-14): пользователь обозначил направление «в дальнейшем для Entity/Document используем Jakarta Bean Validation» (`jakarta.validation.constraints.*` — `@NotNull`/`@NotBlank` и т. п., через `spring-boot-starter-validation`, уже есть в референсе стартеров). Convention-плагин под `com.example.spring-boot-validation` пока не создан (проверено — отсутствует в `build-logic/convention/`). Отдельный от JSpecify/NullAway механизм: там — статический null-checking на этапе компиляции, тут — runtime-валидация (`@Valid`/`Validator`) — не взаимозаменяемы, дополняют друг друга. Не реализовывать до отдельного запроса
 - Промежуточная переменная перед `return`, не inline в `.body()`
 - **Длина строки — не ограничена** (пересмотрено 2026-07-13, было «до 120 символов») — переносы только вручную, авто-форматтер не используется (см. «Задачи» → «Форматирование без авто-форматтера»)
 - **10 персональных правил форматирования** (реализовано 2026-07-13, пункты 1–7/9/10 из 10; пункт 8 отложен, см. «Открытые решения»): неограниченная длина строки без авто-переноса; никогда не пустая строка перед закрывающей скобкой, **кроме** пустого тела метода/класса/record — там, наоборот, обязательна ровно одна пустая строка между `{` и `}` (2 модуля `RegexpMultiline`: первый требует непустого нестандартного символа перед пустой строкой — `[^\s{]` — чтобы не путать «пустая строка после реального кода» с «пустая строка — единственное содержимое тела», второй явно требует эту пустую строку там, где тело иначе было бы `{}`/`{\n}`); всегда `\n` после последней закрывающей скобки (`NewlineAtEndOfFileCheck`, уже был в `SpringChecks`); ровно одна пустая строка между методами и не более одной пустой строки подряд где-либо (`EmptyLineSeparator`, `allowMultipleEmptyLines=false` + `allowMultipleEmptyLinesInsideClassMembers=false`); аннотации перед полями/классами/интерфейсами/методами — всегда каждая на своей строке (`SpringAnnotationLocationCheck`, уже был в `SpringChecks`); аннотации перед параметрами — никогда не переносятся (тот же чек сознательно не проверяет `PARAMETER_DEF`); отступ 4 пробела без табов (`IndentationCheck`/`FileTabCharacterCheck`). **Ловушка**: сообщения `RegexpMultiline`/любых Checkstyle-модулей форматируются через `java.text.MessageFormat` — литеральные `{`/`}` в тексте `message` ломают парсинг (`can't parse argument number`), в тексте сообщения фигурные скобки нужно либо избегать, либо экранировать одинарными кавычками
@@ -737,6 +335,7 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
 - **Стратегия активации адаптеров** — `@Profile("jpa")` _(склонение)_ vs отдельные `application-jpa/`
 - **Управление схемой для R2DBC/JDBC** — `schema.sql` vs Flyway/Liquibase; нужно для unique constraint `userId+noteId` в `user-note/data-r2dbc`/`data-jdbc` (см. «Принятые решения» → «Архитектура»)
 - **Регистрация auth/ ↔ user/** — Lazy / Sync / Events (Kafka)
+- **Каталог `data/` на уровне сервиса** — группировать `data-jpa`/`data-jdbc`/`data-r2dbc`/`data-mongodb`/`data-mongodb-reactive` в подкаталог `data/` внутри каждого сервиса (только каталог, не Gradle-модуль — нет `data/build.gradle.kts`) — вопрос поднят 2026-07-14, явного решения не было. Два варианта: (1) оставить как есть (без изменений) — рекомендую: `data/` не даёт функциональной пользы (не Gradle-модуль, не агрегирует таски, не добавляет общую конфигурацию), а правило «id плагина 1:1 папке модуля» и так уже соблюдено на текущем плоском уровне; цена реорганизации реальная — `settings.gradle.kts` (30 строк `include(...)` на 3 сервиса), typesafe project accessors меняют форму (`projects.note.dataJpa` → `projects.note.data.dataJpa`) везде, где driving-адаптеры/`application` зависят от driven, плюс сбивает пути в идущем построчном пересмотре «Каталог файлов проекта» (~50 уже вычитанных строк, часть с `[DONE]`); прецедент — «Composite build на границе сервисов» ниже отклонён по той же логике «нет текущего драйвера, цена больше выигрыша»; (2) сделать группировку — плюс только визуальный (короче листинг `ls note/`, зримое отделение driven от driving/composition-root). Пересмотреть, если появится конкретный драйвер (агрегирующий тул/задача, которой нужна именно каталожная группировка, а не просто naming convention)
 - **Возврат мутирующего use case** — DTO _(склонение)_ vs `void`
 - **`@Transactional` на методах адаптера** — решение было зафиксировано, но при пересмотре CRUD-сервисов (2026-07-07) выяснилось, что оно не реализовано ни в одном адаптере ни одной технологии ни одного сервиса. Решить: реализовать по всем адаптерам (~150 файлов) или снять решение как устаревшее (Spring Data репозитории уже транзакционны на уровне отдельного метода)
 - **Комбинации technology в `application/`** — частично закрыто 2026-07-14: добавлен `application-reactive/` (`webflux`+`data-r2dbc`+H2 через R2DBC, новый плагин `com.example.spring-boot-h2-r2dbc-database`) во всех трёх CRUD-сервисах, зеркалит `application/` (`webmvc`+`data-jpa`+H2). Схема для R2DBC не создана (см. «Управление схемой для R2DBC/JDBC» ниже — решение по ней отложено, `application-reactive` сейчас стартует и проходит `contextLoads()`, но реальные запросы к БД упадут без таблиц). MongoDB (sync и reactive) — намеренно не подключена, рассматривается как будущая замена JPA/JDBC/R2DBC, а не третья одновременная связка (autoconfiguration не разводит два driven-технологии в одном контексте однозначно)
@@ -844,7 +443,7 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
 - `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/repository/package-info.java` — [DONE] — `@NullMarked`
 - `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/repository/UserNoteJpaRepository.java` — [REVIEW] — `JpaRepository<UserNoteEntity, UUID>` + derived queries (`findByUserId`, `findByNoteId`, `findByUserIdAndNoteId`, `existsByUserId`/`existsByNoteId`/`existsByUserIdAndNoteId`) — `deleteByUserIdAndNoteId` убран (2026-07-13, больше не используется — адаптер сам делает `find`+`delete(entity)`, чтобы вернуть удалённую сущность)
 - `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/model/package-info.java` — [DONE] — `@NullMarked`
-- `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/model/UserNoteEntity.java` — [REVIEW] — `{Entity}Entity`, `@Table(uniqueConstraints = {user_id, note_id})`, `@Enumerated(EnumType.STRING)` для `role`, `@SuppressWarnings("NullAway.Init")` на protected no-arg конструкторе — соответствует принятым решениям
+- `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/model/UserNoteEntity.java` — [REVIEW] — `{Entity}Entity`, `@Table(uniqueConstraints = {user_id, note_id})`, `@Enumerated(EnumType.STRING)` для `role`, `@NullUnmarked` на классе (2026-07-14, было `@SuppressWarnings("NullAway.Init")` на конструкторе — см. «Стиль кода») — соответствует принятым решениям
 - `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/mapper/package-info.java` — [DONE] — `@NullMarked`
 - `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/mapper/UserNoteJpaMapperContract.java` — [REVIEW]
 - `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/mapper/UserNoteJpaMapper.java` — [REVIEW] — `toNewEntity`/`toExistingEntity`/`toResponse`, ручной маппинг без MapStruct
@@ -982,14 +581,14 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
 - `user/data-jpa/src/main/java/com/example/user/data/jpa/repository/package-info.java` — [DONE] — `@NullMarked`
 - `user/data-jpa/src/main/java/com/example/user/data/jpa/repository/UserJpaRepository.java` — [REVIEW] — `JpaRepository<UserEntity, UUID>` + кастомные `findByUsername`/`findByEmail` — максимально использует Spring Data, соответствует памяти пользователя
 - `user/data-jpa/src/main/java/com/example/user/data/jpa/model/package-info.java` — [DONE] — `@NullMarked`
-- `user/data-jpa/src/main/java/com/example/user/data/jpa/model/UserEntity.java` — [REVIEW] — `{Entity}Entity`, `@Id @GeneratedValue(UUID)`, `@Column(unique=true)` на `username`/`email` — unique constraint реально создаётся (в отличие от R2DBC/JDBC), `@SuppressWarnings("NullAway.Init")` на protected-конструкторе
+- `user/data-jpa/src/main/java/com/example/user/data/jpa/model/UserEntity.java` — [REVIEW] — `{Entity}Entity`, `@Id @GeneratedValue(UUID)`, `@Column(unique=true)` на `username`/`email` — unique constraint реально создаётся (в отличие от R2DBC/JDBC), `@NullUnmarked` на классе (2026-07-14, было `@SuppressWarnings("NullAway.Init")` — см. «Стиль кода»)
 - `user/data-jpa/src/main/java/com/example/user/data/jpa/mapper/package-info.java` — [DONE] — `@NullMarked`
 - `user/data-jpa/src/main/java/com/example/user/data/jpa/mapper/UserJpaMapperContract.java` — [REVIEW]
 - `user/data-jpa/src/main/java/com/example/user/data/jpa/mapper/UserJpaMapper.java` — [REVIEW] — Ручной маппинг, `Objects.requireNonNull(entity.getId())` в `toResponse` — корректная обработка `@Nullable UUID id`
 - `user/data-jpa/src/main/java/com/example/user/data/jpa/adapter/package-info.java` — [DONE] — `@NullMarked`
 - `user/data-jpa/src/main/java/com/example/user/data/jpa/adapter/UserService.java` — [REVIEW] — переименован из `UserJpaAdapter` (2026-07-13): `implements UserServiceInterface` (был `UserContract`); `findById`/`findByEmail`/`findByUsername` бросают `UserNotFoundException` вместо `Optional.empty()`; добавлен `merge()`; `remove()` возвращает `UserResponse` вместо `void`
 
-#### user/data-jdbc/ (10 файлов, было 6 — 2026-07-14, переход на Spring Data JDBC repository, см. «⚡ Задачи» → «В очереди» п. 2)
+#### user/data-jdbc/ (10 файлов, было 6 — 2026-07-14, переход на Spring Data JDBC repository, см. «⚡ Задачи»)
 - `user/data-jdbc/build.gradle.kts` — [DONE] — `id("com.example.spring-boot-data-jdbc")` + `implementation(projects.user.contract)` + `implementation(projects.user.domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal»); не менялся при переходе на repository (зависимости те же)
 - `user/data-jdbc/src/main/java/com/example/user/data/jdbc/repository/package-info.java` — [REVIEW] — новый (2026-07-14) — `@NullMarked`
 - `user/data-jdbc/src/main/java/com/example/user/data/jdbc/repository/UserJdbcRepository.java` — [REVIEW] — новый (2026-07-14): `extends ListCrudRepository<UserJdbcEntity, UUID>` + derived `Optional<UserJdbcEntity> findByUsername(String)`/`findByEmail(String)` — зеркалирует `UserJpaRepository` (sync `Optional`, не `Mono` как у `UserR2dbcRepository`)
@@ -1125,19 +724,19 @@ Skeleton-сервис Eureka server. Структурно идентичен `ga
 - `note/data-jpa/src/main/java/com/example/note/data/jpa/repository/package-info.java` — [DONE] — `@NullMarked`, соответствует
 - `note/data-jpa/src/main/java/com/example/note/data/jpa/repository/NoteJpaRepository.java` — [REVIEW] — пустой `extends JpaRepository<NoteEntity, UUID>` — максимально использует Spring Data, соответствует
 - `note/data-jpa/src/main/java/com/example/note/data/jpa/model/package-info.java` — [DONE] — `@NullMarked`, соответствует
-- `note/data-jpa/src/main/java/com/example/note/data/jpa/model/NoteEntity.java` — [REVIEW] — `@Entity`/`@Table("notes")`, `@GeneratedValue(UUID)`, `@Nullable UUID id`, `protected` no-arg конструктор + `@SuppressWarnings("NullAway.Init")` — точно соответствует принятым решениям и стилю кода
+- `note/data-jpa/src/main/java/com/example/note/data/jpa/model/NoteEntity.java` — [REVIEW] — `@Entity`/`@Table("notes")`, `@GeneratedValue(UUID)`, `@Nullable UUID id`, `protected` no-arg конструктор + `@NullUnmarked` на классе (2026-07-14, было `@SuppressWarnings("NullAway.Init")` — см. «Стиль кода») — точно соответствует принятым решениям и стилю кода
 - `note/data-jpa/src/main/java/com/example/note/data/jpa/mapper/package-info.java` — [DONE] — `@NullMarked`, соответствует
 - `note/data-jpa/src/main/java/com/example/note/data/jpa/mapper/NoteJpaMapperContract.java` — [REVIEW] — соответствует `{Entity}{Tech}MapperContract`
 - `note/data-jpa/src/main/java/com/example/note/data/jpa/mapper/NoteJpaMapper.java` — [REVIEW] — `toNewEntity`/`toExistingEntity`/`toResponse`, `Objects.requireNonNull(entity.getId())` в `toResponse` — соответствует
 - `note/data-jpa/src/main/java/com/example/note/data/jpa/adapter/package-info.java` — [DONE] — `@NullMarked`, соответствует
 - `note/data-jpa/src/main/java/com/example/note/data/jpa/adapter/NoteService.java` — [REVIEW] — переименован из `NoteJpaAdapter` (2026-07-13): `implements NoteServiceInterface` (был `NoteContract`); `findById` бросает `NoteNotFoundException` вместо `Optional.empty()`; `replace` проверяет `existsById` сам (была проверка в контроллере); добавлен `merge()` (PATCH, null-preserving); `remove()` возвращает `NoteResponse` вместо `void`
 
-#### note/data-jdbc/ (10 файлов, было 6 — 2026-07-14, переход на Spring Data JDBC repository, см. «⚡ Задачи» → «В очереди» п. 2)
+#### note/data-jdbc/ (10 файлов, было 6 — 2026-07-14, переход на Spring Data JDBC repository, см. «⚡ Задачи»)
 - `note/data-jdbc/build.gradle.kts` — [DONE] — `spring-boot-data-jdbc` + `implementation(projects.note.contract)` (sync-контракт, верно для JDBC) + `implementation(projects.note.domain)` (добавлено 2026-07-09, см. «Принятые решения» → «Hexagonal») — соответствует; не менялся при переходе на repository (зависимости те же)
 - `note/data-jdbc/src/main/java/com/example/note/data/jdbc/repository/package-info.java` — [REVIEW] — новый (2026-07-14) — `@NullMarked`
 - `note/data-jdbc/src/main/java/com/example/note/data/jdbc/repository/NoteJdbcRepository.java` — [REVIEW] — новый (2026-07-14): `extends ListCrudRepository<NoteJdbcEntity, UUID>` (не `CrudRepository` — `ListCrudRepository`, Spring Data 3.0+, даёт `findAll(): List<T>` напрямую), пустое тело — зеркалирует `NoteR2dbcRepository`/`NoteJpaRepository`
 - `note/data-jdbc/src/main/java/com/example/note/data/jdbc/model/package-info.java` — [REVIEW] — новый (2026-07-14) — `@NullMarked`
-- `note/data-jdbc/src/main/java/com/example/note/data/jdbc/model/NoteJdbcEntity.java` — [REVIEW] — новый (2026-07-14): `@Table("notes")`, `@Id private @Nullable UUID id`, `@Column("content")` — структура 1:1 с `NoteR2dbcEntity` (оба на `spring-data-relational`), `@SuppressWarnings("NullAway.Init")` на protected no-arg конструкторе
+- `note/data-jdbc/src/main/java/com/example/note/data/jdbc/model/NoteJdbcEntity.java` — [REVIEW] — новый (2026-07-14): `@Table("notes")`, `@Id private @Nullable UUID id`, `@Column("content")` — структура 1:1 с `NoteR2dbcEntity` (оба на `spring-data-relational`), `@NullUnmarked` на классе (см. «Стиль кода»)
 - `note/data-jdbc/src/main/java/com/example/note/data/jdbc/mapper/package-info.java` — [DONE] — `@NullMarked`, соответствует
 - `note/data-jdbc/src/main/java/com/example/note/data/jdbc/mapper/NoteJdbcMapperContract.java` — [REVIEW] — переписан 2026-07-14 (было `fromRow(ResultSet, int)`, `RowMapper`-стиль): теперь `toNewEntity`/`toExistingEntity`/`toResponse`, сигнатура один-в-один с `NoteR2dbcMapperContract`, старое обоснование «оправданная адаптация под RowMapper» снято вместе с переходом на repository
 - `note/data-jdbc/src/main/java/com/example/note/data/jdbc/mapper/NoteJdbcMapper.java` — [REVIEW] — переписан 2026-07-14: `Objects.requireNonNull(entity.getId())` в `toResponse` — структура идентична `NoteR2dbcMapper`/`NoteJpaMapper`
@@ -1296,3 +895,413 @@ Skeleton-модуль (`com.example.spring-boot-application`, логики не�
 
 ### .github/ (1 файл)
 - `.github/workflows/gradle.yml` — [REVIEW] — гоняет `./gradlew build` (без `clean`) на push/PR в `main`; не разведены `check`/`build`, в отличие от локального workflow из раздела «Правила». Править только по отдельному запросу (правило «CI»).
+
+---
+
+## ⛔ Референс: полный набор Spring Boot стартеров (объединение всех присланных, максимальный) — ЗАПРЕЩЕНО УДАЛЯТЬ ИЛИ СОКРАЩАТЬ
+
+**Прямое повторное указание пользователя (2026-07-14, четыре раза подряд) — этот блок и его заголовок никогда не трогать ни при какой задаче по сокращению/актуализации CLAUDE.md, включая явную задачу «уменьши размер файла».** Эталонный полный набор Spring Boot стартеров (Initializr «select all») — источник истины при проверке полноты convention-плагинов на предмет пропущенных `-test`-компаньонов/plain-API-вариантов при добавлении новой технологии в проект (см. «Правила» → «Полнота R2DBC/JDBC-стартеров», [[feedback_add_all_starters_no_pruning]] в памяти). **Уже подтвердил свою ценность**: по нему найден и исправлен реальный пробел в `com.example.spring-boot-data-elasticsearch` — не хватало plain `spring-boot-starter-elasticsearch`(`-test`) рядом с `spring-boot-starter-data-elasticsearch`(`-test`), тот же паттерн, что раньше нашли для JDBC/R2DBC.
+
+**Объединено 2026-07-14 из 4 присланных Initializr-снапшотов** (восстановлены из сырого лога сессии — после компакции сам текст пастов был недоступен, только их резюме): (1) снапшот-«матрица» data/persistence-стартеров, Boot 4.1.0 (сохранён отдельно в памяти как `reference_spring_boot_data_starters_matrix.md`) — ему предшествовал точечный R2DBC+H2 снапшот (тот самый, с которого начался весь разговор про plain-API-стартеры), но он оказался строгим подмножеством этого снапшота (все 8 его строк уже есть в снапшоте-«матрице», проверено программно) — самостоятельным пятым источником не считается; (2) «select all» с Lombok+Vaadin, Boot 4.1.0; (3) «select all» без Lombok, с Vaadin, Boot 4.1.0; (4) «select all» с Azure/GCP/Tanzu/gRPC/Sentry, Boot 4.0.7 (был единственным источником этого блока раньше). Объединение — по коду проекта (Python-скрипт, не вручную): каждый стартер, встретившийся хотя бы в одном снапшоте, попал в итоговый список; при конфликте версий одного плагина/BOM-переменной — выбрана большая (сравнение по числовым компонентам версии); один случайный дубль строки (`spring-security-messaging`, дважды в снапшоте (4)) — убран как явный артефакт вставки, не переносился в CLAUDE.md изначально. Итог — 7 новых стартеров, которых не было в прежнем единственном источнике (снапшот (4)): `spring-boot-starter-batch-data-mongodb`(`-test`), `spring-boot-starter-grpc-client`(`-test`), `spring-boot-starter-grpc-server`(`-test`), `spring-integration-grpc` — Boot 4.1.0 переименовал/добавил нативные gRPC-стартеры, которых не было в более старом снапшоте (4) на Boot 4.0.7. Versions: `org.springframework.boot` 4.0.7→**4.1.0**, `org.hibernate.orm` 7.2.19.Final→**7.4.1.Final**, `org.graalvm.buildtools.native` 0.11.5→**1.1.1**, `com.google.protobuf` (plugin) 0.9.5→**0.9.6**, `com.vaadin` 25.1.8→**25.2.1**, `springBootAdminVersion` 4.0.4→**4.1.2**, `springModulithVersion` 2.0.7→**2.1.0**, `vaadinVersion` 25.1.8→**25.2.1** — везде взята старшая из встретившихся, не досверялась WebSearch'ем отдельно (см. «Правила» → источник истины для Spring-фактов: сравнение версий между уже предоставленными пользователем референсами не требует Maven Central/WebSearch, там нет вопроса о существовании артефакта). **Перенесено в конец файла 2026-07-14** (было в разделе «⚡ Задачи») — по прямому указанию пользователя, как отдельный самодостаточный референс-раздел.
+
+```gradle
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '4.1.0'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'com.netflix.dgs.codegen' version '8.3.0'
+    id 'org.hibernate.orm' version '7.4.1.Final'
+    id 'org.graalvm.buildtools.native' version '1.1.1'
+    id 'org.cyclonedx.bom' version '3.2.4'
+    id 'org.springframework.cloud.contract' version '5.0.3'
+    id 'com.google.protobuf' version '0.9.6'
+    id 'org.asciidoctor.jvm.convert' version '4.0.5'
+    id 'com.vaadin' version '25.2.1'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://build.shibboleth.net/maven/releases' }
+}
+
+ext {
+    set('snippetsDir', file("build/generated-snippets"))
+    set('datasourceMicrometerVersion', "2.2.1")
+    set('sentryVersion', "8.27.0")
+    set('springBootAdminVersion', "4.1.2")
+    set('springCloudAzureVersion', "7.3.0")
+    set('springCloudGcpVersion', "8.0.5")
+    set('springCloudServicesVersion', "4.4.1")
+    set('springCloudVersion', "2025.1.2")
+    set('springGrpcVersion', "1.0.3")
+    set('springModulithVersion', "2.1.0")
+    set('tanzuSpringSdkVersion', "1.0.0")
+    set('vaadinVersion', "25.2.1")
+}
+
+dependencies {
+    implementation 'com.azure.spring:spring-cloud-azure-starter'
+    implementation 'com.azure.spring:spring-cloud-azure-starter-active-directory'
+    implementation 'com.azure.spring:spring-cloud-azure-starter-actuator'
+    implementation 'com.azure.spring:spring-cloud-azure-starter-data-cosmos'
+    implementation 'com.azure.spring:spring-cloud-azure-starter-integration-storage-queue'
+    implementation 'com.azure.spring:spring-cloud-azure-starter-jdbc-mysql'
+    implementation 'com.azure.spring:spring-cloud-azure-starter-jdbc-postgresql'
+    implementation 'com.azure.spring:spring-cloud-azure-starter-keyvault'
+    implementation 'com.azure.spring:spring-cloud-azure-starter-storage'
+    implementation 'com.google.cloud:spring-cloud-gcp-starter'
+    implementation 'com.google.cloud:spring-cloud-gcp-starter-pubsub'
+    implementation 'com.google.cloud:spring-cloud-gcp-starter-storage'
+    implementation 'com.vaadin:vaadin-spring-boot-starter'
+    implementation 'com.vmware.tanzu.spring:tanzu-spring-starter'
+    implementation 'de.codecentric:spring-boot-admin-starter-client'
+    implementation 'de.codecentric:spring-boot-admin-starter-server'
+    implementation 'io.grpc:grpc-services'
+    implementation 'io.pivotal.spring.cloud:spring-cloud-services-starter-config-client'
+    implementation 'io.pivotal.spring.cloud:spring-cloud-services-starter-service-registry'
+    implementation 'io.sentry:sentry-spring-boot-4-starter'
+    implementation 'net.ttddyy.observation:datasource-micrometer-opentelemetry'
+    implementation 'net.ttddyy.observation:datasource-micrometer-spring-boot'
+    implementation 'org.apache.kafka:kafka-streams'
+    implementation 'org.flywaydb:flyway-database-db2'
+    implementation 'org.flywaydb:flyway-database-derby'
+    implementation 'org.flywaydb:flyway-database-hsqldb'
+    implementation 'org.flywaydb:flyway-database-oracle'
+    implementation 'org.flywaydb:flyway-database-postgresql'
+    implementation 'org.flywaydb:flyway-mysql'
+    implementation 'org.flywaydb:flyway-sqlserver'
+    implementation 'org.jobrunr:jobrunr-spring-boot-4-starter:8.7.0'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2'
+    implementation 'org.springframework.amqp:spring-rabbit-stream'
+    implementation 'org.springframework.boot:spring-boot-h2console'
+    implementation 'org.springframework.boot:spring-boot-starter-activemq'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+    implementation 'org.springframework.boot:spring-boot-starter-artemis'
+    implementation 'org.springframework.boot:spring-boot-starter-batch'
+    implementation 'org.springframework.boot:spring-boot-starter-batch-data-mongodb'
+    implementation 'org.springframework.boot:spring-boot-starter-batch-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation 'org.springframework.boot:spring-boot-starter-cassandra'
+    implementation 'org.springframework.boot:spring-boot-starter-cloudfoundry'
+    implementation 'org.springframework.boot:spring-boot-starter-couchbase'
+    implementation 'org.springframework.boot:spring-boot-starter-data-cassandra'
+    implementation 'org.springframework.boot:spring-boot-starter-data-cassandra-reactive'
+    implementation 'org.springframework.boot:spring-boot-starter-data-couchbase'
+    implementation 'org.springframework.boot:spring-boot-starter-data-couchbase-reactive'
+    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-data-ldap'
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
+    implementation 'org.springframework.boot:spring-boot-starter-data-neo4j'
+    implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
+    implementation 'org.springframework.boot:spring-boot-starter-data-rest'
+    implementation 'org.springframework.boot:spring-boot-starter-elasticsearch'
+    implementation 'org.springframework.boot:spring-boot-starter-flyway'
+    implementation 'org.springframework.boot:spring-boot-starter-freemarker'
+    implementation 'org.springframework.boot:spring-boot-starter-graphql'
+    implementation 'org.springframework.boot:spring-boot-starter-groovy-templates'
+    implementation 'org.springframework.boot:spring-boot-starter-grpc-client'
+    implementation 'org.springframework.boot:spring-boot-starter-grpc-server'
+    implementation 'org.springframework.boot:spring-boot-starter-hateoas'
+    implementation 'org.springframework.boot:spring-boot-starter-hazelcast'
+    implementation 'org.springframework.boot:spring-boot-starter-integration'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-jersey'
+    implementation 'org.springframework.boot:spring-boot-starter-jooq'
+    implementation 'org.springframework.boot:spring-boot-starter-kafka'
+    implementation 'org.springframework.boot:spring-boot-starter-ldap'
+    implementation 'org.springframework.boot:spring-boot-starter-liquibase'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'org.springframework.boot:spring-boot-starter-mongodb'
+    implementation 'org.springframework.boot:spring-boot-starter-mustache'
+    implementation 'org.springframework.boot:spring-boot-starter-neo4j'
+    implementation 'org.springframework.boot:spring-boot-starter-opentelemetry'
+    implementation 'org.springframework.boot:spring-boot-starter-pulsar'
+    implementation 'org.springframework.boot:spring-boot-starter-quartz'
+    implementation 'org.springframework.boot:spring-boot-starter-r2dbc'
+    implementation 'org.springframework.boot:spring-boot-starter-restclient'
+    implementation 'org.springframework.boot:spring-boot-starter-rsocket'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-authorization-server'
+    implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-client'
+    implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-resource-server'
+    implementation 'org.springframework.boot:spring-boot-starter-security-saml2'
+    implementation 'org.springframework.boot:spring-boot-starter-session-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-session-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-webclient'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+    implementation 'org.springframework.boot:spring-boot-starter-webservices'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.boot:spring-boot-starter-zipkin'
+    implementation 'org.springframework.cloud:spring-cloud-bus'
+    implementation 'org.springframework.cloud:spring-cloud-config-server'
+    implementation 'org.springframework.cloud:spring-cloud-function-web'
+    implementation 'org.springframework.cloud:spring-cloud-starter'
+    implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-reactor-resilience4j'
+    implementation 'org.springframework.cloud:spring-cloud-starter-config'
+    implementation 'org.springframework.cloud:spring-cloud-starter-consul-config'
+    implementation 'org.springframework.cloud:spring-cloud-starter-consul-discovery'
+    implementation 'org.springframework.cloud:spring-cloud-starter-gateway-server-webflux'
+    implementation 'org.springframework.cloud:spring-cloud-starter-gateway-server-webmvc'
+    implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation 'org.springframework.cloud:spring-cloud-starter-task'
+    implementation 'org.springframework.cloud:spring-cloud-starter-vault-config'
+    implementation 'org.springframework.cloud:spring-cloud-starter-zookeeper-config'
+    implementation 'org.springframework.cloud:spring-cloud-starter-zookeeper-discovery'
+    implementation 'org.springframework.cloud:spring-cloud-stream'
+    implementation 'org.springframework.cloud:spring-cloud-stream-binder-kafka'
+    implementation 'org.springframework.cloud:spring-cloud-stream-binder-kafka-streams'
+    implementation 'org.springframework.cloud:spring-cloud-stream-binder-pulsar'
+    implementation 'org.springframework.cloud:spring-cloud-stream-binder-rabbit'
+    implementation 'org.springframework.data:spring-data-rest-hal-explorer'
+    implementation 'org.springframework.grpc:spring-grpc-client-spring-boot-starter'
+    implementation 'org.springframework.grpc:spring-grpc-server-web-spring-boot-starter'
+    implementation 'org.springframework.integration:spring-integration-amqp'
+    implementation 'org.springframework.integration:spring-integration-grpc'
+    implementation 'org.springframework.integration:spring-integration-http'
+    implementation 'org.springframework.integration:spring-integration-jdbc'
+    implementation 'org.springframework.integration:spring-integration-jms'
+    implementation 'org.springframework.integration:spring-integration-jpa'
+    implementation 'org.springframework.integration:spring-integration-kafka'
+    implementation 'org.springframework.integration:spring-integration-mail'
+    implementation 'org.springframework.integration:spring-integration-mongodb'
+    implementation 'org.springframework.integration:spring-integration-r2dbc'
+    implementation 'org.springframework.integration:spring-integration-redis'
+    implementation 'org.springframework.integration:spring-integration-rsocket'
+    implementation 'org.springframework.integration:spring-integration-stomp'
+    implementation 'org.springframework.integration:spring-integration-webflux'
+    implementation 'org.springframework.integration:spring-integration-websocket'
+    implementation 'org.springframework.integration:spring-integration-ws'
+    implementation 'org.springframework.modulith:spring-modulith-events-api'
+    implementation 'org.springframework.modulith:spring-modulith-starter-core'
+    implementation 'org.springframework.modulith:spring-modulith-starter-insight'
+    implementation 'org.springframework.modulith:spring-modulith-starter-jdbc'
+    implementation 'org.springframework.modulith:spring-modulith-starter-jpa'
+    implementation 'org.springframework.modulith:spring-modulith-starter-mongodb'
+    implementation 'org.springframework.modulith:spring-modulith-starter-neo4j'
+    implementation 'org.springframework.security:spring-security-messaging'
+    implementation 'org.springframework.security:spring-security-rsocket'
+    implementation 'org.springframework.security:spring-security-webauthn'
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'com.azure.spring:spring-cloud-azure-docker-compose'
+    developmentOnly 'com.vaadin:vaadin-dev'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
+    runtimeOnly 'com.h2database:h2'
+    runtimeOnly 'com.ibm.db2:jcc'
+    runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    runtimeOnly 'com.oracle.database.jdbc:ojdbc11'
+    runtimeOnly 'com.oracle.database.r2dbc:oracle-r2dbc'
+    runtimeOnly 'io.asyncer:r2dbc-mysql'
+    runtimeOnly 'io.micrometer:micrometer-registry-datadog'
+    runtimeOnly 'io.micrometer:micrometer-registry-dynatrace'
+    runtimeOnly 'io.micrometer:micrometer-registry-graphite'
+    runtimeOnly 'io.micrometer:micrometer-registry-influx'
+    runtimeOnly 'io.micrometer:micrometer-registry-new-relic'
+    runtimeOnly 'io.micrometer:micrometer-registry-otlp'
+    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+    runtimeOnly 'io.r2dbc:r2dbc-h2'
+    runtimeOnly 'io.r2dbc:r2dbc-mssql:1.0.0.RELEASE'
+    runtimeOnly 'org.apache.derby:derby'
+    runtimeOnly 'org.apache.derby:derbytools'
+    runtimeOnly 'org.hsqldb:hsqldb'
+    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+    runtimeOnly 'org.mariadb:r2dbc-mariadb:1.1.3'
+    runtimeOnly 'org.postgresql:postgresql'
+    runtimeOnly 'org.postgresql:r2dbc-postgresql'
+    runtimeOnly 'org.springframework.modulith:spring-modulith-events-jms'
+    runtimeOnly 'org.springframework.modulith:spring-modulith-runtime'
+    runtimeOnly 'org.xerial:sqlite-jdbc'
+    annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    testImplementation 'com.azure.spring:spring-cloud-azure-testcontainers'
+    testImplementation 'com.unboundid:unboundid-ldapsdk'
+    testImplementation 'io.projectreactor:reactor-test'
+    testImplementation 'io.rest-assured:spring-web-test-client'
+    testImplementation 'org.springframework.boot:spring-boot-starter-activemq-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-actuator-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-amqp-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-artemis-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-batch-data-mongodb-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-batch-jdbc-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-batch-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-cache-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-cassandra-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-cloudfoundry-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-couchbase-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-data-cassandra-reactive-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-data-cassandra-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-data-couchbase-reactive-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-data-couchbase-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-data-jdbc-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-data-ldap-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-data-mongodb-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-data-neo4j-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-data-r2dbc-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-data-redis-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-data-rest-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-elasticsearch-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-flyway-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-freemarker-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-graphql-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-groovy-templates-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-grpc-client-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-grpc-server-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-hateoas-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-hazelcast-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-jdbc-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-jersey-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-jooq-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-kafka-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-ldap'
+    testImplementation 'org.springframework.boot:spring-boot-starter-ldap-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-liquibase-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-mail-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-mongodb-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-mustache-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-neo4j-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-opentelemetry-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-pulsar-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-quartz-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-r2dbc-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-restclient-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-restdocs'
+    testImplementation 'org.springframework.boot:spring-boot-starter-rsocket-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-security-oauth2-authorization-server-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-security-oauth2-client-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-security-oauth2-resource-server-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-security-saml2-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-security-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-session-data-redis-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-session-jdbc-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-thymeleaf-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-validation-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-webclient-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-webflux-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-webservices-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-websocket-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-zipkin-test'
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+    testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner'
+    testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-verifier'
+    testImplementation 'org.springframework.cloud:spring-cloud-stream-test-binder'
+    testImplementation 'org.springframework.grpc:spring-grpc-test'
+    testImplementation 'org.springframework.integration:spring-integration-test'
+    testImplementation 'org.springframework.modulith:spring-modulith-starter-test'
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    testImplementation 'org.testcontainers:testcontainers-activemq'
+    testImplementation 'org.testcontainers:testcontainers-cassandra'
+    testImplementation 'org.testcontainers:testcontainers-consul'
+    testImplementation 'org.testcontainers:testcontainers-couchbase'
+    testImplementation 'org.testcontainers:testcontainers-db2'
+    testImplementation 'org.testcontainers:testcontainers-elasticsearch'
+    testImplementation 'org.testcontainers:testcontainers-gcloud'
+    testImplementation 'org.testcontainers:testcontainers-grafana'
+    testImplementation 'org.testcontainers:testcontainers-junit-jupiter'
+    testImplementation 'org.testcontainers:testcontainers-kafka'
+    testImplementation 'org.testcontainers:testcontainers-mariadb'
+    testImplementation 'org.testcontainers:testcontainers-mongodb'
+    testImplementation 'org.testcontainers:testcontainers-mssqlserver'
+    testImplementation 'org.testcontainers:testcontainers-mysql'
+    testImplementation 'org.testcontainers:testcontainers-neo4j'
+    testImplementation 'org.testcontainers:testcontainers-oracle-free'
+    testImplementation 'org.testcontainers:testcontainers-postgresql'
+    testImplementation 'org.testcontainers:testcontainers-pulsar'
+    testImplementation 'org.testcontainers:testcontainers-r2dbc'
+    testImplementation 'org.testcontainers:testcontainers-rabbitmq'
+    testImplementation 'org.testcontainers:testcontainers-vault'
+    testCompileOnly 'org.projectlombok:lombok'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.modulith:spring-modulith-bom:${springModulithVersion}"
+        mavenBom "com.vaadin:vaadin-bom:${vaadinVersion}"
+        mavenBom "org.springframework.grpc:spring-grpc-dependencies:${springGrpcVersion}"
+        mavenBom "de.codecentric:spring-boot-admin-dependencies:${springBootAdminVersion}"
+        mavenBom "io.pivotal.spring.cloud:spring-cloud-services-dependencies:${springCloudServicesVersion}"
+        mavenBom "io.sentry:sentry-bom:${sentryVersion}"
+        mavenBom "net.ttddyy.observation:datasource-micrometer-bom:${datasourceMicrometerVersion}"
+        mavenBom "com.vmware.tanzu.spring:tanzu-spring-sdk-dependencies:${tanzuSpringSdkVersion}"
+        mavenBom "com.azure.spring:spring-cloud-azure-dependencies:${springCloudAzureVersion}"
+        mavenBom "com.google.cloud:spring-cloud-gcp-dependencies:${springCloudGcpVersion}"
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+generateJava {
+    schemaPaths = ["${projectDir}/src/main/resources/graphql-client"]
+    packageName = 'com.example.demo.codegen'
+    generateClient = true
+}
+
+hibernate {
+    enhancement {
+    }
+}
+
+contracts {
+    testMode = 'WebTestClient'
+}
+
+protobuf {
+    protoc {
+        artifact = 'com.google.protobuf:protoc'
+    }
+    plugins {
+        grpc {
+            artifact = 'io.grpc:protoc-gen-grpc-java'
+        }
+    }
+    generateProtoTasks {
+        all()*.plugins {
+            grpc {
+                option '@generated=omit'
+            }
+        }
+    }
+}
+
+tasks.named('contractTest') {
+    useJUnitPlatform()
+}
+
+tasks.named('test') {
+    outputs.dir snippetsDir
+    useJUnitPlatform()
+}
+
+tasks.named('asciidoctor') {
+    inputs.dir snippetsDir
+    dependsOn test
+}
+```

@@ -12,8 +12,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import org.jspecify.annotations.NullUnmarked;
 import org.jspecify.annotations.Nullable;
 
+@NullUnmarked
 @Entity
 @Table(name = "user_notes", uniqueConstraints = @UniqueConstraint(columnNames = { "user_id", "note_id" }))
 public class UserNoteEntity {
@@ -32,7 +34,6 @@ public class UserNoteEntity {
     @Column(nullable = false)
     private UserNoteRole role;
 
-    @SuppressWarnings("NullAway.Init")
     protected UserNoteEntity() {
 
     }

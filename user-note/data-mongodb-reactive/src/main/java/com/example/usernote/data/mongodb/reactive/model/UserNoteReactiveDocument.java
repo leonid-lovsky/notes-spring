@@ -3,11 +3,13 @@ package com.example.usernote.data.mongodb.reactive.model;
 import java.util.UUID;
 
 import com.example.usernote.domain.UserNoteRole;
+import org.jspecify.annotations.NullUnmarked;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+@NullUnmarked
 @Document(collection = "user_notes")
 @CompoundIndex(name = "user_id_note_id_unique", def = "{'userId': 1, 'noteId': 1}", unique = true)
 public class UserNoteReactiveDocument {
@@ -21,7 +23,6 @@ public class UserNoteReactiveDocument {
 
     private UserNoteRole role;
 
-    @SuppressWarnings("NullAway.Init")
     protected UserNoteReactiveDocument() {
 
     }

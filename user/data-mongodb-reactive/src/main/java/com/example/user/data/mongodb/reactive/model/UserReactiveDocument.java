@@ -2,10 +2,13 @@ package com.example.user.data.mongodb.reactive.model;
 
 import java.util.UUID;
 
+import org.jspecify.annotations.NullUnmarked;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+@NullUnmarked
 @Document(collection = "users")
 public class UserReactiveDocument {
 
@@ -18,7 +21,6 @@ public class UserReactiveDocument {
     @Indexed(unique = true)
     private String email;
 
-    @SuppressWarnings("NullAway.Init")
     protected UserReactiveDocument() {
 
     }

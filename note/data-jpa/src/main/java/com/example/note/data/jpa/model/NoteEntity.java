@@ -8,8 +8,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import org.jspecify.annotations.NullUnmarked;
 import org.jspecify.annotations.Nullable;
 
+@NullUnmarked
 @Entity
 @Table(name = "notes")
 public class NoteEntity {
@@ -21,7 +23,6 @@ public class NoteEntity {
     @Column(nullable = false)
     private String content;
 
-    @SuppressWarnings("NullAway.Init")
     protected NoteEntity() {
 
     }
