@@ -456,9 +456,53 @@
 - `config/application/src/main/java/com/example/config/package-info.java` — [DONE]
 - `config/application/src/main/java/com/example/config/ConfigApplication.java` — [REVIEW]
 
-### build-logic/ (38 файлов)
+### build-logic/ (40 файлов, было 38 — добавлены `spring-cloud-application`/`jspecify` 2026-07-15)
 
-Вынесено в [convention-plugins.md](convention-plugins.md) — precompiled script plugins.
+#### build-logic/ — корневые файлы (2 файлов)
+- `build-logic/settings.gradle.kts` — [REVIEW]
+- `build-logic/convention/build.gradle.kts` — [REVIEW]
+
+#### build-logic/convention/src/main/kotlin/ — precompiled script plugins (38 файлов, было 36)
+- `build-logic/com.example.jspecify.gradle.kts` — [REVIEW] — новый 2026-07-15, вынесен из `nullaway` (`id("java-library")` + `api("org.jspecify")`), применяется через `codequality`
+- `build-logic/com.example.spring-cloud-application.gradle.kts` — [REVIEW] — новый 2026-07-15, устраняет диамант у 4 standalone `spring-cloud-*`-плагинов (родитель `spring-boot-application` вместо параллельных `spring-cloud`+`spring-boot-application`)
+- `build-logic/com.example.spring-cloud.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-cloud-openfeign.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-cloud-loadbalancer.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-cloud-gateway-webmvc.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-cloud-gateway-webflux.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-cloud-eureka-server.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-cloud-eureka-client.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-cloud-config-server.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-cloud-config-client.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-cloud-circuit-breaker.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-boot.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-boot-webmvc.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-boot-webflux.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-boot-oauth2-resource-server.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-boot-oauth2-client.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-boot-oauth2-authorization-server.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-boot-h2-database.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-boot-graphql.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-boot-data-r2dbc.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-boot-data-mongodb.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-boot-data-mongodb-reactive.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-boot-data-jpa.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-boot-data-jdbc.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-boot-data-elasticsearch.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-boot-client-web.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-boot-client-rest.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-boot-application.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-boot-actuator.gradle.kts` — [REMOVED]
+- `build-logic/com.example.reactor.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-boot-r2dbc-h2-database.gradle.kts` — [REVIEW]
+- `build-logic/com.example.nullaway.gradle.kts` — [REVIEW]
+- `build-logic/com.example.library.gradle.kts` — [REVIEW]
+- `build-logic/com.example.javaformat.gradle.kts` — [REMOVED]
+- `build-logic/com.example.jacoco.gradle.kts` — [REVIEW]
+- `build-logic/com.example.jacoco-report-aggregation.gradle.kts` — [REVIEW]
+- `build-logic/com.example.codequality.gradle.kts` — [REVIEW]
+- `build-logic/com.example.checkstyle.gradle.kts` — [REVIEW]
+- `build-logic/com.example.base.gradle.kts` — [REVIEW]
 
 ### auth/ (6 файлов)
 

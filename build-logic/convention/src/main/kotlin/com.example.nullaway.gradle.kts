@@ -2,7 +2,7 @@ import net.ltgt.gradle.errorprone.CheckSeverity
 import net.ltgt.gradle.errorprone.errorprone
 
 plugins {
-    id("java-library")
+    id("java")
     id("net.ltgt.errorprone")
 }
 
@@ -14,7 +14,6 @@ repositories {
 
 dependencies {
     errorprone("com.uber.nullaway:nullaway:${libs.findVersion("nullaway").get().requiredVersion}")
-    api("org.jspecify:jspecify:${libs.findVersion("jspecify").get().requiredVersion}")
     errorprone("com.google.errorprone:error_prone_core:${libs.findVersion("errorprone-core").get().requiredVersion}")
 }
 
