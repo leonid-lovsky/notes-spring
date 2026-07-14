@@ -1,9 +1,9 @@
 plugins {
-    id("java-library")
+    id("java")
 }
 
 val libs = extensions.getByType(VersionCatalogsExtension::class.java).named("libs")
 
 dependencies {
-    api("org.jspecify:jspecify:${libs.findVersion("jspecify").get().requiredVersion}")
+    implementation("org.jspecify:jspecify:${libs.findVersion("jspecify").get().requiredVersion}")
 }
