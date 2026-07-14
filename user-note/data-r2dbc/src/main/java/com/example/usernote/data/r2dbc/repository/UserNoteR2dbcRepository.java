@@ -7,7 +7,9 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface UserNoteR2dbcRepository extends ReactiveCrudRepository<UserNoteR2dbcEntity, UUID> {
 
     Flux<UserNoteR2dbcEntity> findByUserId(UUID userId);

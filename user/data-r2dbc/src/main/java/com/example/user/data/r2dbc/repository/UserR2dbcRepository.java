@@ -6,7 +6,9 @@ import com.example.user.data.r2dbc.model.UserR2dbcEntity;
 import reactor.core.publisher.Mono;
 
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface UserR2dbcRepository extends ReactiveCrudRepository<UserR2dbcEntity, UUID> {
 
     Mono<UserR2dbcEntity> findByUsername(String username);

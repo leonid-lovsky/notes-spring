@@ -15,9 +15,9 @@ import com.example.usernote.domain.UserNoteRequest;
 import com.example.usernote.domain.UserNoteResponse;
 import com.example.usernote.domain.UserNoteRole;
 
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
-@Repository
+@Service
 class UserNoteService implements UserNoteServiceInterface {
 
     private final UserNoteJpaRepository userNoteJpaRepository;

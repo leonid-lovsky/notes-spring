@@ -12,9 +12,9 @@ import com.example.user.domain.UserRequest;
 import com.example.user.domain.UserResponse;
 
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
-@Repository
+@Service
 class UserService implements UserServiceInterface {
 
     private final MongoTemplate mongoTemplate;

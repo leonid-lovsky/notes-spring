@@ -7,7 +7,9 @@ import java.util.UUID;
 import com.example.usernote.data.jpa.model.UserNoteEntity;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface UserNoteJpaRepository extends JpaRepository<UserNoteEntity, UUID> {
 
     List<UserNoteEntity> findByUserId(UUID userId);

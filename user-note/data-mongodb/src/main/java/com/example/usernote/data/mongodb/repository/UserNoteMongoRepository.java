@@ -7,7 +7,9 @@ import java.util.UUID;
 import com.example.usernote.data.mongodb.model.UserNoteDocument;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface UserNoteMongoRepository extends MongoRepository<UserNoteDocument, UUID> {
 
     List<UserNoteDocument> findByUserId(UUID userId);

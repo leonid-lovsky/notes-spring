@@ -12,9 +12,9 @@ import com.example.note.domain.NoteRequest;
 import com.example.note.domain.NoteResponse;
 
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
-@Repository
+@Service
 class NoteService implements NoteServiceInterface {
 
     private final MongoTemplate mongoTemplate;

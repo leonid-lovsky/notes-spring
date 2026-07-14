@@ -7,7 +7,9 @@ import java.util.UUID;
 import com.example.usernote.data.jdbc.model.UserNoteJdbcEntity;
 
 import org.springframework.data.repository.ListCrudRepository;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface UserNoteJdbcRepository extends ListCrudRepository<UserNoteJdbcEntity, UUID> {
 
     List<UserNoteJdbcEntity> findByUserId(UUID userId);

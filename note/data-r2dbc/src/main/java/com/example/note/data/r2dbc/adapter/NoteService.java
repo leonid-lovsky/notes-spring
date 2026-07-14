@@ -11,9 +11,9 @@ import com.example.note.domain.NoteResponse;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
-@Repository
+@Service
 class NoteService implements NoteServiceReactiveInterface {
 
     private final NoteR2dbcRepository noteR2dbcRepository;

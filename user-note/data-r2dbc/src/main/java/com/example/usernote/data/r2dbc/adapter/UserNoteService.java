@@ -16,9 +16,9 @@ import com.example.usernote.domain.UserNoteRole;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
-@Repository
+@Service
 class UserNoteService implements UserNoteServiceReactiveInterface {
 
     private final UserNoteR2dbcRepository userNoteR2dbcRepository;
@@ -142,7 +142,7 @@ class UserNoteService implements UserNoteServiceReactiveInterface {
     private static UserNoteRequest merge(UserNoteR2dbcEntity existing, UserNoteRequest request) {
         UUID userId = (request.userId() != null) ? request.userId() : existing.getUserId();
         UUID noteId = (request.noteId() != null) ? request.noteId() : existing.getNoteId();
-        UserNoteRole role = (request.role() != null) ? request.role() : UserNoteRole.valueOf(existing.getRole());
+        UserNoteRole role = (request.role() != null) ? request.role() : existing.getRole();
         return new UserNoteRequest(userId, noteId, role);
     }
 }

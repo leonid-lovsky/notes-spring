@@ -15,9 +15,9 @@ import com.example.usernote.domain.UserNoteRequest;
 import com.example.usernote.domain.UserNoteResponse;
 import com.example.usernote.domain.UserNoteRole;
 
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
-@Repository
+@Service
 class UserNoteService implements UserNoteServiceInterface {
 
     private final UserNoteJdbcRepository userNoteJdbcRepository;
@@ -149,7 +149,7 @@ class UserNoteService implements UserNoteServiceInterface {
     private static UserNoteRequest merge(UserNoteJdbcEntity existing, UserNoteRequest request) {
         UUID userId = (request.userId() != null) ? request.userId() : existing.getUserId();
         UUID noteId = (request.noteId() != null) ? request.noteId() : existing.getNoteId();
-        UserNoteRole role = (request.role() != null) ? request.role() : UserNoteRole.valueOf(existing.getRole());
+        UserNoteRole role = (request.role() != null) ? request.role() : existing.getRole();
         return new UserNoteRequest(userId, noteId, role);
     }
 }

@@ -6,7 +6,9 @@ import com.example.user.data.mongodb.reactive.model.UserReactiveDocument;
 import reactor.core.publisher.Mono;
 
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface UserMongoReactiveRepository extends ReactiveMongoRepository<UserReactiveDocument, UUID> {
 
     Mono<UserReactiveDocument> findByUsername(String username);

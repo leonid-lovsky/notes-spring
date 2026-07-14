@@ -15,9 +15,9 @@ import com.example.usernote.domain.UserNoteRole;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
-@Repository
+@Service
 class UserNoteService implements UserNoteServiceReactiveInterface {
 
     private final UserNoteMongoReactiveRepository userNoteMongoReactiveRepository;
