@@ -2,7 +2,7 @@
 
 > Вынесено из CLAUDE.md 2026-07-14 (см. [CLAUDE.md](CLAUDE.md) → «Правила» → лимит размера файла). Полный git-отслеживаемый список файлов; статусы: [DONE] — утверждено, [REVIEW] — требует пересмотра (по умолчанию), [ADD] — файла нет, предложен, [REMOVED] — удалён (строка сохранена для истории). Список путей/статусов не трогать без прямого запроса (см. CLAUDE.md → «Правила» → лимит размера файла).
 
-### Корень репозитория (10 файлов)
+### Корень репозитория (14 файлов)
 - `settings.gradle.kts` — [DONE]
 - `gradlew.bat` — [DONE]
 - `gradlew` — [DONE]
@@ -15,8 +15,11 @@
 - `db-migration-tools-reference.md` — [REVIEW]
 - `decisions-log.md` — [REVIEW] — новый 2026-07-23, вынесен из CLAUDE.md → «Принятые решения» (снятие объёма, AI-readability)
 - `tech-glossary.md` — [REVIEW] — новый 2026-07-23, вынесен из CLAUDE.md → «Технологии» (снятие объёма, AI-readability)
+- `file-catalog.md` — [REVIEW] — пропущен в собственном каталоге, добавлен 2026-07-23 при попутной правке
+- `spring-boot-starters-reference.md` — [REVIEW] — пропущен в каталоге, добавлен 2026-07-23 при попутной правке
+- `google-docs-full-model.md` — [REVIEW] — новый 2026-07-23, набросок требований к совместному редактированию (см. CLAUDE.md → «Открытые решения»), не решение
 
-### user-note/ (115 файлов)
+### user-note/ (153 файлов)
 
 #### user-note/webmvc/ (5 файлов)
 - `user-note/webmvc/build.gradle.kts` — [DONE]
@@ -117,7 +120,7 @@
 - `user-note/contract/src/main/java/com/example/usernote/contract/UserNoteInterface.java` — [REVIEW]
 - `user-note/contract/src/main/java/com/example/usernote/contract/UserNoteServiceInterface.java` — [REVIEW]
 
-#### user-note/application-r2dbc/ (8 файлов)
+#### user-note/application-r2dbc/ (12 файлов)
 - `user-note/application-r2dbc/build.gradle.kts` — [REVIEW]
 - `user-note/application-r2dbc/src/test/resources/application.properties` — [REVIEW]
 - `user-note/application-r2dbc/src/test/java/com/example/usernote/UserNoteR2dbcApplicationTests.java` — [REVIEW]
@@ -126,8 +129,12 @@
 - `user-note/application-r2dbc/src/main/java/com/example/usernote/UserNoteR2dbcApplication.java` — [REVIEW]
 - `user-note/application-r2dbc/src/main/resources/application-postgresql.properties` — [REVIEW]
 - `user-note/application-r2dbc/src/main/resources/application-mysql.properties` — [REVIEW]
+- `user-note/application-r2dbc/compose-postgresql.yaml` — [REVIEW]
+- `user-note/application-r2dbc/compose-mysql.yaml` — [REVIEW]
+- `user-note/application-r2dbc/src/test/java/com/example/usernote/UserNoteR2dbcPostgresqlApplicationTests.java` — [REVIEW]
+- `user-note/application-r2dbc/src/test/java/com/example/usernote/UserNoteR2dbcMysqlApplicationTests.java` — [REVIEW]
 
-#### user-note/application-jpa/ (8 файлов)
+#### user-note/application-jpa/ (12 файлов)
 - `user-note/application-jpa/build.gradle.kts` — [REVIEW]
 - `user-note/application-jpa/src/test/resources/application.properties` — [REVIEW]
 - `user-note/application-jpa/src/test/java/com/example/usernote/UserNoteJpaApplicationTests.java` — [REVIEW]
@@ -136,8 +143,12 @@
 - `user-note/application-jpa/src/main/java/com/example/usernote/UserNoteJpaApplication.java` — [REVIEW]
 - `user-note/application-jpa/src/main/resources/application-postgresql.properties` — [REVIEW]
 - `user-note/application-jpa/src/main/resources/application-mysql.properties` — [REVIEW]
+- `user-note/application-jpa/compose-postgresql.yaml` — [REVIEW]
+- `user-note/application-jpa/compose-mysql.yaml` — [REVIEW]
+- `user-note/application-jpa/src/test/java/com/example/usernote/UserNoteJpaPostgresqlApplicationTests.java` — [REVIEW]
+- `user-note/application-jpa/src/test/java/com/example/usernote/UserNoteJpaMysqlApplicationTests.java` — [REVIEW]
 
-#### user-note/application-jdbc/ (8 файлов)
+#### user-note/application-jdbc/ (12 файлов)
 - `user-note/application-jdbc/build.gradle.kts` — [REVIEW]
 - `user-note/application-jdbc/src/test/resources/application.properties` — [REVIEW]
 - `user-note/application-jdbc/src/test/java/com/example/usernote/UserNoteJdbcApplicationTests.java` — [REVIEW]
@@ -146,22 +157,28 @@
 - `user-note/application-jdbc/src/main/java/com/example/usernote/UserNoteJdbcApplication.java` — [REVIEW]
 - `user-note/application-jdbc/src/main/resources/application-postgresql.properties` — [REVIEW]
 - `user-note/application-jdbc/src/main/resources/application-mysql.properties` — [REVIEW]
+- `user-note/application-jdbc/compose-postgresql.yaml` — [REVIEW]
+- `user-note/application-jdbc/compose-mysql.yaml` — [REVIEW]
+- `user-note/application-jdbc/src/test/java/com/example/usernote/UserNoteJdbcPostgresqlApplicationTests.java` — [REVIEW]
+- `user-note/application-jdbc/src/test/java/com/example/usernote/UserNoteJdbcMysqlApplicationTests.java` — [REVIEW]
 
-#### user-note/application-mongodb/ (6 файлов)
+#### user-note/application-mongodb/ (7 файлов)
 - `user-note/application-mongodb/build.gradle.kts` — [REVIEW]
 - `user-note/application-mongodb/src/test/resources/application.properties` — [REVIEW]
 - `user-note/application-mongodb/src/test/java/com/example/usernote/UserNoteMongoApplicationTests.java` — [REVIEW]
 - `user-note/application-mongodb/src/main/resources/application.properties` — [REVIEW]
 - `user-note/application-mongodb/src/main/java/com/example/usernote/package-info.java` — [REVIEW]
 - `user-note/application-mongodb/src/main/java/com/example/usernote/UserNoteMongoApplication.java` — [REVIEW]
+- `user-note/application-mongodb/compose.yaml` — [REVIEW] — восстановлен 2026-07-23 (Testcontainers/Compose для Mongo вернули, теперь симметрично с PostgreSQL/MySQL)
 
-#### user-note/application-mongodb-reactive/ (6 файлов)
+#### user-note/application-mongodb-reactive/ (7 файлов)
 - `user-note/application-mongodb-reactive/build.gradle.kts` — [REVIEW]
 - `user-note/application-mongodb-reactive/src/test/resources/application.properties` — [REVIEW]
 - `user-note/application-mongodb-reactive/src/test/java/com/example/usernote/UserNoteMongoReactiveApplicationTests.java` — [REVIEW]
 - `user-note/application-mongodb-reactive/src/main/resources/application.properties` — [REVIEW]
 - `user-note/application-mongodb-reactive/src/main/java/com/example/usernote/package-info.java` — [REVIEW]
 - `user-note/application-mongodb-reactive/src/main/java/com/example/usernote/UserNoteMongoReactiveApplication.java` — [REVIEW]
+- `user-note/application-mongodb-reactive/compose.yaml` — [REVIEW] — восстановлен 2026-07-23 (Testcontainers/Compose для Mongo вернули, теперь симметрично с PostgreSQL/MySQL)
 
 #### user-note/ — предлагаемые отсутствующие файлы (`[ADD]`, 18)
 - `user-note/webmvc/src/test/java/com/example/usernote/webmvc/UserNoteExceptionHandlerTest.java` — [ADD]
@@ -181,7 +198,7 @@
 - `user-note/data-jdbc/src/test/java/com/example/usernote/data/jdbc/adapter/UserNoteJdbcAdapterIT.java` — [ADD]
 - `user-note/application-jpa/src/test/java/com/example/usernote/UserNoteEndToEndIT.java` — [ADD]
 
-### user/ (112 файлов)
+### user/ (150 файлов)
 
 #### user/webmvc/ (5 файлов)
 - `user/webmvc/build.gradle.kts` — [DONE]
@@ -279,7 +296,7 @@
 - `user/contract/src/main/java/com/example/user/contract/UserInterface.java` — [REVIEW]
 - `user/contract/src/main/java/com/example/user/contract/UserServiceInterface.java` — [REVIEW]
 
-#### user/application-r2dbc/ (8 файлов)
+#### user/application-r2dbc/ (12 файлов)
 - `user/application-r2dbc/build.gradle.kts` — [REVIEW]
 - `user/application-r2dbc/src/test/resources/application.properties` — [REVIEW]
 - `user/application-r2dbc/src/test/java/com/example/user/UserR2dbcApplicationTests.java` — [REVIEW]
@@ -288,8 +305,12 @@
 - `user/application-r2dbc/src/main/java/com/example/user/UserR2dbcApplication.java` — [REVIEW]
 - `user/application-r2dbc/src/main/resources/application-postgresql.properties` — [REVIEW]
 - `user/application-r2dbc/src/main/resources/application-mysql.properties` — [REVIEW]
+- `user/application-r2dbc/compose-postgresql.yaml` — [REVIEW]
+- `user/application-r2dbc/compose-mysql.yaml` — [REVIEW]
+- `user/application-r2dbc/src/test/java/com/example/user/UserR2dbcPostgresqlApplicationTests.java` — [REVIEW]
+- `user/application-r2dbc/src/test/java/com/example/user/UserR2dbcMysqlApplicationTests.java` — [REVIEW]
 
-#### user/application-jpa/ (8 файлов)
+#### user/application-jpa/ (12 файлов)
 - `user/application-jpa/build.gradle.kts` — [REVIEW]
 - `user/application-jpa/src/test/resources/application.properties` — [REVIEW]
 - `user/application-jpa/src/test/java/com/example/user/UserJpaApplicationTests.java` — [REVIEW]
@@ -298,8 +319,12 @@
 - `user/application-jpa/src/main/java/com/example/user/UserJpaApplication.java` — [REVIEW]
 - `user/application-jpa/src/main/resources/application-postgresql.properties` — [REVIEW]
 - `user/application-jpa/src/main/resources/application-mysql.properties` — [REVIEW]
+- `user/application-jpa/compose-postgresql.yaml` — [REVIEW]
+- `user/application-jpa/compose-mysql.yaml` — [REVIEW]
+- `user/application-jpa/src/test/java/com/example/user/UserJpaPostgresqlApplicationTests.java` — [REVIEW]
+- `user/application-jpa/src/test/java/com/example/user/UserJpaMysqlApplicationTests.java` — [REVIEW]
 
-#### user/application-jdbc/ (8 файлов)
+#### user/application-jdbc/ (12 файлов)
 - `user/application-jdbc/build.gradle.kts` — [REVIEW]
 - `user/application-jdbc/src/test/resources/application.properties` — [REVIEW]
 - `user/application-jdbc/src/test/java/com/example/user/UserJdbcApplicationTests.java` — [REVIEW]
@@ -308,22 +333,28 @@
 - `user/application-jdbc/src/main/java/com/example/user/UserJdbcApplication.java` — [REVIEW]
 - `user/application-jdbc/src/main/resources/application-postgresql.properties` — [REVIEW]
 - `user/application-jdbc/src/main/resources/application-mysql.properties` — [REVIEW]
+- `user/application-jdbc/compose-postgresql.yaml` — [REVIEW]
+- `user/application-jdbc/compose-mysql.yaml` — [REVIEW]
+- `user/application-jdbc/src/test/java/com/example/user/UserJdbcPostgresqlApplicationTests.java` — [REVIEW]
+- `user/application-jdbc/src/test/java/com/example/user/UserJdbcMysqlApplicationTests.java` — [REVIEW]
 
-#### user/application-mongodb/ (6 файлов)
+#### user/application-mongodb/ (7 файлов)
 - `user/application-mongodb/build.gradle.kts` — [REVIEW]
 - `user/application-mongodb/src/test/resources/application.properties` — [REVIEW]
 - `user/application-mongodb/src/test/java/com/example/user/UserMongoApplicationTests.java` — [REVIEW]
 - `user/application-mongodb/src/main/resources/application.properties` — [REVIEW]
 - `user/application-mongodb/src/main/java/com/example/user/package-info.java` — [REVIEW]
 - `user/application-mongodb/src/main/java/com/example/user/UserMongoApplication.java` — [REVIEW]
+- `user/application-mongodb/compose.yaml` — [REVIEW] — восстановлен 2026-07-23 (Testcontainers/Compose для Mongo вернули, теперь симметрично с PostgreSQL/MySQL)
 
-#### user/application-mongodb-reactive/ (6 файлов)
+#### user/application-mongodb-reactive/ (7 файлов)
 - `user/application-mongodb-reactive/build.gradle.kts` — [REVIEW]
 - `user/application-mongodb-reactive/src/test/resources/application.properties` — [REVIEW]
 - `user/application-mongodb-reactive/src/test/java/com/example/user/UserMongoReactiveApplicationTests.java` — [REVIEW]
 - `user/application-mongodb-reactive/src/main/resources/application.properties` — [REVIEW]
 - `user/application-mongodb-reactive/src/main/java/com/example/user/package-info.java` — [REVIEW]
 - `user/application-mongodb-reactive/src/main/java/com/example/user/UserMongoReactiveApplication.java` — [REVIEW]
+- `user/application-mongodb-reactive/compose.yaml` — [REVIEW] — восстановлен 2026-07-23 (Testcontainers/Compose для Mongo вернули, теперь симметрично с PostgreSQL/MySQL)
 
 #### user/ — предлагаемые отсутствующие файлы (`[ADD]`, 13)
 - `user/webmvc/src/test/java/com/example/user/webmvc/UserControllerTest.java` — [ADD]
@@ -347,7 +378,7 @@
 - `registry/application/src/main/java/com/example/registry/package-info.java` — [DONE]
 - `registry/application/src/main/java/com/example/registry/RegistryApplication.java` — [REVIEW]
 
-### note/ (112 файлов)
+### note/ (150 файлов)
 
 #### note/webmvc/ (5 файлов)
 - `note/webmvc/build.gradle.kts` — [DONE]
@@ -445,7 +476,7 @@
 - `note/contract/src/main/java/com/example/note/contract/NoteInterface.java` — [REVIEW]
 - `note/contract/src/main/java/com/example/note/contract/NoteServiceInterface.java` — [REVIEW]
 
-#### note/application-r2dbc/ (8 файлов)
+#### note/application-r2dbc/ (12 файлов)
 - `note/application-r2dbc/build.gradle.kts` — [REVIEW]
 - `note/application-r2dbc/src/test/resources/application.properties` — [REVIEW]
 - `note/application-r2dbc/src/test/java/com/example/note/NoteR2dbcApplicationTests.java` — [REVIEW]
@@ -454,8 +485,12 @@
 - `note/application-r2dbc/src/main/java/com/example/note/NoteR2dbcApplication.java` — [REVIEW]
 - `note/application-r2dbc/src/main/resources/application-postgresql.properties` — [REVIEW]
 - `note/application-r2dbc/src/main/resources/application-mysql.properties` — [REVIEW]
+- `note/application-r2dbc/compose-postgresql.yaml` — [REVIEW]
+- `note/application-r2dbc/compose-mysql.yaml` — [REVIEW]
+- `note/application-r2dbc/src/test/java/com/example/note/NoteR2dbcPostgresqlApplicationTests.java` — [REVIEW]
+- `note/application-r2dbc/src/test/java/com/example/note/NoteR2dbcMysqlApplicationTests.java` — [REVIEW]
 
-#### note/application-jpa/ (8 файлов)
+#### note/application-jpa/ (12 файлов)
 - `note/application-jpa/build.gradle.kts` — [REVIEW]
 - `note/application-jpa/src/test/resources/application.properties` — [REVIEW]
 - `note/application-jpa/src/test/java/com/example/note/NoteJpaApplicationTests.java` — [REVIEW]
@@ -464,8 +499,12 @@
 - `note/application-jpa/src/main/java/com/example/note/NoteJpaApplication.java` — [REVIEW]
 - `note/application-jpa/src/main/resources/application-postgresql.properties` — [REVIEW]
 - `note/application-jpa/src/main/resources/application-mysql.properties` — [REVIEW]
+- `note/application-jpa/compose-postgresql.yaml` — [REVIEW]
+- `note/application-jpa/compose-mysql.yaml` — [REVIEW]
+- `note/application-jpa/src/test/java/com/example/note/NoteJpaPostgresqlApplicationTests.java` — [REVIEW]
+- `note/application-jpa/src/test/java/com/example/note/NoteJpaMysqlApplicationTests.java` — [REVIEW]
 
-#### note/application-jdbc/ (8 файлов)
+#### note/application-jdbc/ (12 файлов)
 - `note/application-jdbc/build.gradle.kts` — [REVIEW]
 - `note/application-jdbc/src/test/resources/application.properties` — [REVIEW]
 - `note/application-jdbc/src/test/java/com/example/note/NoteJdbcApplicationTests.java` — [REVIEW]
@@ -474,22 +513,28 @@
 - `note/application-jdbc/src/main/java/com/example/note/NoteJdbcApplication.java` — [REVIEW]
 - `note/application-jdbc/src/main/resources/application-postgresql.properties` — [REVIEW]
 - `note/application-jdbc/src/main/resources/application-mysql.properties` — [REVIEW]
+- `note/application-jdbc/compose-postgresql.yaml` — [REVIEW]
+- `note/application-jdbc/compose-mysql.yaml` — [REVIEW]
+- `note/application-jdbc/src/test/java/com/example/note/NoteJdbcPostgresqlApplicationTests.java` — [REVIEW]
+- `note/application-jdbc/src/test/java/com/example/note/NoteJdbcMysqlApplicationTests.java` — [REVIEW]
 
-#### note/application-mongodb/ (6 файлов)
+#### note/application-mongodb/ (7 файлов)
 - `note/application-mongodb/build.gradle.kts` — [REVIEW]
 - `note/application-mongodb/src/test/resources/application.properties` — [REVIEW]
 - `note/application-mongodb/src/test/java/com/example/note/NoteMongoApplicationTests.java` — [REVIEW]
 - `note/application-mongodb/src/main/resources/application.properties` — [REVIEW]
 - `note/application-mongodb/src/main/java/com/example/note/package-info.java` — [REVIEW]
 - `note/application-mongodb/src/main/java/com/example/note/NoteMongoApplication.java` — [REVIEW]
+- `note/application-mongodb/compose.yaml` — [REVIEW] — восстановлен 2026-07-23 (Testcontainers/Compose для Mongo вернули, теперь симметрично с PostgreSQL/MySQL)
 
-#### note/application-mongodb-reactive/ (6 файлов)
+#### note/application-mongodb-reactive/ (7 файлов)
 - `note/application-mongodb-reactive/build.gradle.kts` — [REVIEW]
 - `note/application-mongodb-reactive/src/test/resources/application.properties` — [REVIEW]
 - `note/application-mongodb-reactive/src/test/java/com/example/note/NoteMongoReactiveApplicationTests.java` — [REVIEW]
 - `note/application-mongodb-reactive/src/main/resources/application.properties` — [REVIEW]
 - `note/application-mongodb-reactive/src/main/java/com/example/note/package-info.java` — [REVIEW]
 - `note/application-mongodb-reactive/src/main/java/com/example/note/NoteMongoReactiveApplication.java` — [REVIEW]
+- `note/application-mongodb-reactive/compose.yaml` — [REVIEW] — восстановлен 2026-07-23 (Testcontainers/Compose для Mongo вернули, теперь симметрично с PostgreSQL/MySQL)
 
 #### note/ — предлагаемые отсутствующие файлы (`[ADD]`, 19)
 - `note/webmvc/src/test/java/com/example/note/webmvc/NoteExceptionHandlerTest.java` — [ADD]
@@ -541,19 +586,22 @@
 - `config/application/src/main/java/com/example/config/package-info.java` — [DONE]
 - `config/application/src/main/java/com/example/config/ConfigApplication.java` — [REVIEW]
 
-### build-logic/ (47 файлов, было 40 — добавлены 7 плагинов оси вендора/Testcontainers/dev-режима 2026-07-23)
+### build-logic/ (50 файлов, было 40 — добавлены 10 плагинов оси вендора/Testcontainers/dev-режима 2026-07-23)
 
 #### build-logic/ — корневые файлы (2 файлов)
 - `build-logic/settings.gradle.kts` — [REVIEW]
 - `build-logic/convention/build.gradle.kts` — [REVIEW]
 
-#### build-logic/convention/src/main/kotlin/ — precompiled script plugins (45 файлов, было 38)
+#### build-logic/convention/src/main/kotlin/ — precompiled script plugins (48 файлов, было 38)
 - `build-logic/com.example.spring-boot-postgresql-database.gradle.kts` — [REVIEW] — новый 2026-07-23, вендорная ось для JPA/JDBC (`runtimeOnly org.postgresql:postgresql`), активируется через Spring-профиль
 - `build-logic/com.example.spring-boot-mysql-database.gradle.kts` — [REVIEW] — новый 2026-07-23, `runtimeOnly com.mysql:mysql-connector-j`
 - `build-logic/com.example.spring-boot-r2dbc-postgresql-database.gradle.kts` — [REVIEW] — новый 2026-07-23, `runtimeOnly org.postgresql:r2dbc-postgresql`
 - `build-logic/com.example.spring-boot-r2dbc-mysql-database.gradle.kts` — [REVIEW] — новый 2026-07-23, `runtimeOnly io.asyncer:r2dbc-mysql`
 - `build-logic/com.example.spring-boot-testcontainers.gradle.kts` — [REVIEW] — новый 2026-07-23, технологически нейтральная обвязка Testcontainers+JUnit5+`@ServiceConnection` (родитель `spring-boot`); выделен из `-testcontainers-mongodb` в тот же день — не должен быть привязан к одной технологии, пригоден для будущих Postgres/Kafka/Redis-контейнеров
 - `build-logic/com.example.spring-boot-testcontainers-mongodb.gradle.kts` — [REVIEW] — новый 2026-07-23, только MongoDB-специфичный артефакт `testcontainers-mongodb` (родитель `spring-boot`); применяется вместе с `-testcontainers` в `application-mongodb*`
+- `build-logic/com.example.spring-boot-testcontainers-postgresql.gradle.kts` — [REVIEW] — новый 2026-07-23, `testcontainers-postgresql` — один контейнер даёт и `JdbcConnectionDetails`, и `R2dbcConnectionDetails` (подтверждено docs.spring.io), применяется в `application-jpa`/`-jdbc`/`-r2dbc`
+- `build-logic/com.example.spring-boot-testcontainers-mysql.gradle.kts` — [REVIEW] — новый 2026-07-23, `testcontainers-mysql` + `testRuntimeOnly(mysql-connector-j)` (добавлено в тот же день: `MySQLContainer`, в отличие от `PostgreSQLContainer`, использует JDBC-based wait-strategy по умолчанию — без JDBC-драйвера падает `NoDriverFoundException`, найдено live-прогоном `clean check`)
+- `build-logic/com.example.spring-boot-testcontainers-r2dbc.gradle.kts` — [REVIEW] — новый 2026-07-23, мост `testcontainers-r2dbc` (`R2DBCDatabaseContainer`) — нужен только `application-r2dbc`, чтобы JDBC-семейство контейнеров (Postgres/MySQL) отдавало `R2dbcConnectionDetails`; без него — `ClassNotFoundException` в рантайме (найдено этой же сборкой)
 - `build-logic/com.example.spring-boot-docker-compose.gradle.kts` — [REVIEW] — новый 2026-07-23, dev-запуск `application-mongodb*`; родитель `spring-boot` + прямой `id("org.springframework.boot")` (как у `spring-boot-application`, не через него — исправлено в тот же день по замечанию пользователя о композиции)
 - `build-logic/com.example.jspecify.gradle.kts` — [REVIEW] — новый 2026-07-15, вынесен из `nullaway` (`id("java-library")` + `api("org.jspecify")`), применяется через `codequality`
 - `build-logic/com.example.spring-cloud-application.gradle.kts` — [REVIEW] — новый 2026-07-15, устраняет диамант у 4 standalone `spring-cloud-*`-плагинов (родитель `spring-boot-application` вместо параллельных `spring-cloud`+`spring-boot-application`)
