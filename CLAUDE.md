@@ -1,6 +1,6 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: Thu Jul 23 21:25:55 IDT 2026 **Всё временно** — любое решение подлежит обсуждению и изменению.
+> Последнее обновление: Thu Jul 23 21:27:21 IDT 2026 **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 Многомодульный Spring Boot 4 проект (`note/`, `user/`, `user-note/`, ...), реализующий hexagonal architecture единообразно во всех сервисах через Gradle convention plugins. Этот файл — точка входа: правила, текущая задача, активно пересматриваемые открытые решения. Вся необходимая для работы над проектом информация — здесь или в справочных файлах ниже, без обращения к внешним источникам. Формат оптимизирован для чтения/правки ИИ-агентом — см. «Правила» → «Доступность CLAUDE.md для ИИ-агента».
 
@@ -184,6 +184,7 @@ com.example.note.data.jpa.repository   NoteJpaRepository
 - **MongoDB model class** — `{Entity}Document` — `NoteDocument`
 - **MongoDB reactive model class** — `{Entity}ReactiveDocument` — `NoteReactiveDocument`
 - **Общий маркер-интерфейс модели сущности** (новое, 2026-07-14) — `{Entity}Persistable`, в `domain/` — `NotePersistable`, `UserPersistable`, `UserNotePersistable`; реализуют все 5 технологических model-классов сущности сразу (единственный общий предок sync+reactive). Осознанно выбрано имя, пересекающееся с реальным `org.springframework.data.domain.Persistable<ID>` — не конфликтует (префикс сущности делает simple name другим), но напоминает: сам маркер в `domain/` остаётся чистым Java без зависимости на `spring-data-commons`, а НАСТОЯЩИЙ `Persistable<ID>` (если понадобится `isNew()`) реализуется отдельно в каждом адаптере — см. `decisions-log.md` → «Архитектура»
+- **Composition-root главный класс** (новое, 2026-07-23) — `{Service}{Tech}Application` в `application-{tech}/` — `NoteJpaApplication`, `NoteJdbcApplication`, `NoteMongoApplication`, `NoteR2dbcApplication`, `NoteMongoReactiveApplication`; и тестовый класс `{Service}{Tech}ApplicationTests`. До 2026-07-23 было 2 модуля на сервис (`application`/`application-reactive`) без Tech-суффикса — переименованы вместе с расширением до полной технологической матрицы (5 модулей), для единообразия с остальной Tech-таксономией ниже
 
 **Tech**: `Jpa` · `Mongo` · `Jdbc` · `R2dbc` · `MongoReactive` (в имени класса — только для `{Tech}MapperContract`/`{Tech}Mapper`/`{Tech}Repository`/`{Tech}Entity`; адаптеры и порт-интерфейсы суффикс технологии в имени не несут — технология различается пакетом/модулем)
 
