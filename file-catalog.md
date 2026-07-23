@@ -14,7 +14,7 @@
 - `.gitattributes` — [DONE]
 - `db-migration-tools-reference.md` — [REVIEW]
 
-### user-note/ (93 файлов)
+### user-note/ (100 файлов)
 
 #### user-note/webmvc/ (5 файлов)
 - `user-note/webmvc/build.gradle.kts` — [DONE]
@@ -139,6 +139,15 @@
 - `user-note/application-jdbc/src/main/java/com/example/usernote/package-info.java` — [REVIEW]
 - `user-note/application-jdbc/src/main/java/com/example/usernote/UserNoteJdbcApplication.java` — [REVIEW]
 
+#### user-note/application-mongodb/ (7 файлов)
+- `user-note/application-mongodb/build.gradle.kts` — [REVIEW]
+- `user-note/application-mongodb/compose.yaml` — [REVIEW]
+- `user-note/application-mongodb/src/test/resources/application.properties` — [REVIEW]
+- `user-note/application-mongodb/src/test/java/com/example/usernote/UserNoteMongoApplicationTests.java` — [REVIEW]
+- `user-note/application-mongodb/src/main/resources/application.properties` — [REVIEW]
+- `user-note/application-mongodb/src/main/java/com/example/usernote/package-info.java` — [REVIEW]
+- `user-note/application-mongodb/src/main/java/com/example/usernote/UserNoteMongoApplication.java` — [REVIEW]
+
 #### user-note/ — предлагаемые отсутствующие файлы (`[ADD]`, 18)
 - `user-note/webmvc/src/test/java/com/example/usernote/webmvc/UserNoteExceptionHandlerTest.java` — [ADD]
 - `user-note/webmvc/src/test/java/com/example/usernote/webmvc/UserNoteControllerTest.java` — [ADD]
@@ -159,7 +168,7 @@
 - `user-note/data-jdbc/src/main/resources/schema.sql` — [REVIEW]
 - `user-note/application-jpa/src/test/java/com/example/usernote/UserNoteEndToEndIT.java` — [ADD]
 
-### user/ (90 файлов)
+### user/ (97 файлов)
 
 #### user/webmvc/ (5 файлов)
 - `user/webmvc/build.gradle.kts` — [DONE]
@@ -281,6 +290,15 @@
 - `user/application-jdbc/src/main/java/com/example/user/package-info.java` — [REVIEW]
 - `user/application-jdbc/src/main/java/com/example/user/UserJdbcApplication.java` — [REVIEW]
 
+#### user/application-mongodb/ (7 файлов)
+- `user/application-mongodb/build.gradle.kts` — [REVIEW]
+- `user/application-mongodb/compose.yaml` — [REVIEW]
+- `user/application-mongodb/src/test/resources/application.properties` — [REVIEW]
+- `user/application-mongodb/src/test/java/com/example/user/UserMongoApplicationTests.java` — [REVIEW]
+- `user/application-mongodb/src/main/resources/application.properties` — [REVIEW]
+- `user/application-mongodb/src/main/java/com/example/user/package-info.java` — [REVIEW]
+- `user/application-mongodb/src/main/java/com/example/user/UserMongoApplication.java` — [REVIEW]
+
 #### user/ — предлагаемые отсутствующие файлы (`[ADD]`, 13)
 - `user/webmvc/src/test/java/com/example/user/webmvc/UserControllerTest.java` — [ADD]
 - `user/webmvc/src/main/java/com/example/user/webmvc/UserController.java` — [ADD]
@@ -306,7 +324,7 @@
 - `registry/application/src/main/java/com/example/registry/package-info.java` — [DONE]
 - `registry/application/src/main/java/com/example/registry/RegistryApplication.java` — [REVIEW]
 
-### note/ (90 файлов)
+### note/ (97 файлов)
 
 #### note/webmvc/ (5 файлов)
 - `note/webmvc/build.gradle.kts` — [DONE]
@@ -427,6 +445,15 @@
 - `note/application-jdbc/src/main/resources/application.properties` — [REVIEW]
 - `note/application-jdbc/src/main/java/com/example/note/package-info.java` — [REVIEW]
 - `note/application-jdbc/src/main/java/com/example/note/NoteJdbcApplication.java` — [REVIEW]
+
+#### note/application-mongodb/ (7 файлов)
+- `note/application-mongodb/build.gradle.kts` — [REVIEW]
+- `note/application-mongodb/compose.yaml` — [REVIEW]
+- `note/application-mongodb/src/test/resources/application.properties` — [REVIEW]
+- `note/application-mongodb/src/test/java/com/example/note/NoteMongoApplicationTests.java` — [REVIEW]
+- `note/application-mongodb/src/main/resources/application.properties` — [REVIEW]
+- `note/application-mongodb/src/main/java/com/example/note/package-info.java` — [REVIEW]
+- `note/application-mongodb/src/main/java/com/example/note/NoteMongoApplication.java` — [REVIEW]
 
 #### note/ — предлагаемые отсутствующие файлы (`[ADD]`, 19)
 - `note/webmvc/src/test/java/com/example/note/webmvc/NoteExceptionHandlerTest.java` — [ADD]

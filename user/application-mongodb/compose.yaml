@@ -1,0 +1,7 @@
+services:
+  mongodb:
+    image: 'mongo:8'
+    environment:
+      - 'MONGO_INITDB_DATABASE=user-service-mongodb'
+    ports:
+      - '27017'
