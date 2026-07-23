@@ -48,6 +48,8 @@
 
 **Текущая работа** — построчный пересмотр «Каталог файлов проекта»: ровно один файл за раз — разбор → утверждение пользователем → `[DONE]` → следующая строка `[REVIEW]` сверху вниз. Не пакетами, не забегая вперёд.
 
+**Завершено 2026-07-23**: сверка версий стека с GitHub releases API — актуально всё, кроме NullAway `0.13.7`→`0.13.8` (вышел 2026-07-19; заметное изменение — добавлена поддержка Reactor, актуально для проекта с активным `reactor-core`). `./gradlew clean check` пройден, новых warnings не появилось
+
 **Завершено 2026-07-23** (детали — см. «Принятые решения» → «Архитектура» → «Технологическая и вендорная ось адаптеров»): полная матрица composition-root модулей — 5 на сервис (`application-jpa`/`application-jdbc`/`application-mongodb`/`application-r2dbc`/`application-mongodb-reactive`, было 2) × 3 сервиса = 15; вендорная ось H2/PostgreSQL/MySQL для JPA/JDBC/R2DBC через 4 новых convention-плагина + рантайм-профили, без новых Gradle-модулей. `application/`→`application-jpa/`, `application-reactive/`→`application-r2dbc/` (классы и `spring.application.name` тоже переименованы). MongoDB-модули — Testcontainers (тесты) + Docker Compose (`bootRun`), нет embedded-аналога H2. Все узлы верифицированы вживую: H2-дефолт, PostgreSQL-профиль (`HikariPool` реально подключился), Docker Compose поднял `mongo:8` без ручного `docker run`. `./gradlew clean check` пройден на каждом шаге
 
 **Завершено 2026-07-15** (детали — см. «Принятые решения» → «Convention plugins», «Правила»):
@@ -301,7 +303,9 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
     │                         + testcontainers (нейтральная обвязка) + testcontainers-mongodb
     │                         (только MongoDB-артефакт, композиция через 2 id(...) в leaf —
     │                         не единый комбинированный плагин); docker-compose — родитель
-    │                         spring-boot-application, см. текст ниже)
+    │                         spring-boot (bootable — прямой id("org.springframework.boot"),
+    │                         как у spring-boot-application, не через него как родителя —
+    │                         исправлено 2026-07-23, см. текст ниже)
     ├── spring-boot-application — + id("org.springframework.boot") + actuator (bootable-ось)
     │   └── spring-cloud-application — 2 прямых родителя (диамант, восстановлен осознанно
     │       │                          2026-07-15, см. текст ниже): spring-boot-application (слева)
