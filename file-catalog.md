@@ -12,6 +12,7 @@
 - `.springjavaformatconfig` — [REMOVED]
 - `.gitignore` — [DONE]
 - `.gitattributes` — [DONE]
+- `db-migration-tools-reference.md` — [REVIEW]
 
 ### user-note/ (87 файлов)
 

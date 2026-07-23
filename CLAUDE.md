@@ -1,6 +1,6 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: Wed Jul 15 17:42:55 IDT 2026 **Всё временно** — любое решение подлежит обсуждению и изменению.
+> Последнее обновление: Thu Jul 23 18:59:06 IDT 2026 **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 Многомодульный Spring Boot 4 проект (`note/`, `user/`, `user-note/`, ...), реализующий hexagonal architecture единообразно во всех сервисах через Gradle convention plugins. Этот файл — единственный источник истины по конвенциям, статусу и решениям проекта; вся необходимая для работы над проектом информация должна быть здесь или в связанных `*.md` в корне репозитория (вынесены крупные справочные блоки — см. «Каталог файлов»/«Референс стартеров»), без обращения к внешним источникам.
 
@@ -335,6 +335,7 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
 - **`user/`: `findByEmail`/`findByUsername` без HTTP-входа** — доведены до всех driven-адаптеров, не выведены в `webmvc`/`webflux`. Варианты: задел под будущий `auth/`, добавить контроллеры сейчас, или убрать как неиспользуемое
 - **Javadoc в `package-info.java`** — ни один пакет не содержит package-level Javadoc, только `@NullMarked`; `checkstyle.xml` сейчас исключает javadoc-проверки — включение потребует такого комментария в каждом пакете
 - **Composite build на границе сервисов** — каждый сервис мог бы подключаться через `includeBuild(...)` вместо `include(...)`. Ни один сервис не ссылается на модули другого, так что accessors не пострадали бы, но цена (7 новых `settings.gradle.kts`, ручная агрегация `build`/`check`/`clean`) больше выигрыша без текущего драйвера (независимое CI/версионирование, разъезд по репозиториям)
+- **Инструмент миграции БД по адаптерам** (2026-07-15) — справочный обзор кандидатов (Flyway/Liquibase для data-jpa·data-jdbc, обход через blocking JDBC или Flamingock SQL target system для data-r2dbc, Mongock/Flamingock/liquibase-mongodb/Flyway Native Connectors для data-mongodb·data-mongodb-reactive, elasticsearch-evolution для data-elasticsearch) вынесен в [db-migration-tools-reference.md](db-migration-tools-reference.md). Ключевая находка: **Mongock в maintenance mode, официальный EOL — конец 2026 года**, преемник — Flamingock (те же авторы, v1.4.4). Выбор конкретного инструмента не сделан — не реализовывать до отдельного запроса
 
 ---
 
@@ -345,3 +346,5 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
 ## ⛔ Референс: полный набор Spring Boot стартеров (объединение всех присланных, максимальный) — ЗАПРЕЩЕНО УДАЛЯТЬ ИЛИ СОКРАЩАТЬ
 
 Вынесен в [spring-boot-starters-reference.md](spring-boot-starters-reference.md) (2026-07-14, снятие объёма с CLAUDE.md) — дословная копия со Spring Initializr, источник истины при проверке полноты convention-плагинов на пропущенные `-test`-компаньоны/plain-API-варианты. Сам список не сокращать и не удалять из него строки (см. «Правила»); допустима только проверка на дубликаты.
+
+Инструменты миграции/версионирования схемы БД по каждому возможному DB-адаптеру (Flyway/Liquibase/Mongock/Flamingock/liquibase-mongodb/elasticsearch-evolution и др.) — отдельный справочник [db-migration-tools-reference.md](db-migration-tools-reference.md) (2026-07-15), см. пойнтер в «Открытые решения».
