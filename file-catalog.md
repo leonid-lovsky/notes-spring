@@ -14,7 +14,7 @@
 - `.gitattributes` — [DONE]
 - `db-migration-tools-reference.md` — [REVIEW]
 
-### user-note/ (100 файлов)
+### user-note/ (107 файлов)
 
 #### user-note/webmvc/ (5 файлов)
 - `user-note/webmvc/build.gradle.kts` — [DONE]
@@ -148,6 +148,15 @@
 - `user-note/application-mongodb/src/main/java/com/example/usernote/package-info.java` — [REVIEW]
 - `user-note/application-mongodb/src/main/java/com/example/usernote/UserNoteMongoApplication.java` — [REVIEW]
 
+#### user-note/application-mongodb-reactive/ (7 файлов)
+- `user-note/application-mongodb-reactive/build.gradle.kts` — [REVIEW]
+- `user-note/application-mongodb-reactive/compose.yaml` — [REVIEW]
+- `user-note/application-mongodb-reactive/src/test/resources/application.properties` — [REVIEW]
+- `user-note/application-mongodb-reactive/src/test/java/com/example/usernote/UserNoteMongoReactiveApplicationTests.java` — [REVIEW]
+- `user-note/application-mongodb-reactive/src/main/resources/application.properties` — [REVIEW]
+- `user-note/application-mongodb-reactive/src/main/java/com/example/usernote/package-info.java` — [REVIEW]
+- `user-note/application-mongodb-reactive/src/main/java/com/example/usernote/UserNoteMongoReactiveApplication.java` — [REVIEW]
+
 #### user-note/ — предлагаемые отсутствующие файлы (`[ADD]`, 18)
 - `user-note/webmvc/src/test/java/com/example/usernote/webmvc/UserNoteExceptionHandlerTest.java` — [ADD]
 - `user-note/webmvc/src/test/java/com/example/usernote/webmvc/UserNoteControllerTest.java` — [ADD]
@@ -168,7 +177,7 @@
 - `user-note/data-jdbc/src/main/resources/schema.sql` — [REVIEW]
 - `user-note/application-jpa/src/test/java/com/example/usernote/UserNoteEndToEndIT.java` — [ADD]
 
-### user/ (97 файлов)
+### user/ (104 файлов)
 
 #### user/webmvc/ (5 файлов)
 - `user/webmvc/build.gradle.kts` — [DONE]
@@ -299,6 +308,15 @@
 - `user/application-mongodb/src/main/java/com/example/user/package-info.java` — [REVIEW]
 - `user/application-mongodb/src/main/java/com/example/user/UserMongoApplication.java` — [REVIEW]
 
+#### user/application-mongodb-reactive/ (7 файлов)
+- `user/application-mongodb-reactive/build.gradle.kts` — [REVIEW]
+- `user/application-mongodb-reactive/compose.yaml` — [REVIEW]
+- `user/application-mongodb-reactive/src/test/resources/application.properties` — [REVIEW]
+- `user/application-mongodb-reactive/src/test/java/com/example/user/UserMongoReactiveApplicationTests.java` — [REVIEW]
+- `user/application-mongodb-reactive/src/main/resources/application.properties` — [REVIEW]
+- `user/application-mongodb-reactive/src/main/java/com/example/user/package-info.java` — [REVIEW]
+- `user/application-mongodb-reactive/src/main/java/com/example/user/UserMongoReactiveApplication.java` — [REVIEW]
+
 #### user/ — предлагаемые отсутствующие файлы (`[ADD]`, 13)
 - `user/webmvc/src/test/java/com/example/user/webmvc/UserControllerTest.java` — [ADD]
 - `user/webmvc/src/main/java/com/example/user/webmvc/UserController.java` — [ADD]
@@ -324,7 +342,7 @@
 - `registry/application/src/main/java/com/example/registry/package-info.java` — [DONE]
 - `registry/application/src/main/java/com/example/registry/RegistryApplication.java` — [REVIEW]
 
-### note/ (97 файлов)
+### note/ (104 файлов)
 
 #### note/webmvc/ (5 файлов)
 - `note/webmvc/build.gradle.kts` — [DONE]
@@ -454,6 +472,15 @@
 - `note/application-mongodb/src/main/resources/application.properties` — [REVIEW]
 - `note/application-mongodb/src/main/java/com/example/note/package-info.java` — [REVIEW]
 - `note/application-mongodb/src/main/java/com/example/note/NoteMongoApplication.java` — [REVIEW]
+
+#### note/application-mongodb-reactive/ (7 файлов)
+- `note/application-mongodb-reactive/build.gradle.kts` — [REVIEW]
+- `note/application-mongodb-reactive/compose.yaml` — [REVIEW]
+- `note/application-mongodb-reactive/src/test/resources/application.properties` — [REVIEW]
+- `note/application-mongodb-reactive/src/test/java/com/example/note/NoteMongoReactiveApplicationTests.java` — [REVIEW]
+- `note/application-mongodb-reactive/src/main/resources/application.properties` — [REVIEW]
+- `note/application-mongodb-reactive/src/main/java/com/example/note/package-info.java` — [REVIEW]
+- `note/application-mongodb-reactive/src/main/java/com/example/note/NoteMongoReactiveApplication.java` — [REVIEW]
 
 #### note/ — предлагаемые отсутствующие файлы (`[ADD]`, 19)
 - `note/webmvc/src/test/java/com/example/note/webmvc/NoteExceptionHandlerTest.java` — [ADD]
