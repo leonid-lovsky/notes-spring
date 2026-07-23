@@ -1,0 +1,9 @@
+services:
+  postgresql:
+    image: 'postgres:18'
+    environment:
+      - 'POSTGRES_DB=notedb'
+      - 'POSTGRES_USER=notedb'
+      - 'POSTGRES_PASSWORD=notedb'
+    ports:
+      - '5432'
