@@ -14,7 +14,7 @@
 - `.gitattributes` — [DONE]
 - `db-migration-tools-reference.md` — [REVIEW]
 
-### user-note/ (117 файлов)
+### user-note/ (115 файлов)
 
 #### user-note/webmvc/ (5 файлов)
 - `user-note/webmvc/build.gradle.kts` — [DONE]
@@ -145,18 +145,16 @@
 - `user-note/application-jdbc/src/main/resources/application-postgresql.properties` — [REVIEW]
 - `user-note/application-jdbc/src/main/resources/application-mysql.properties` — [REVIEW]
 
-#### user-note/application-mongodb/ (7 файлов)
+#### user-note/application-mongodb/ (6 файлов)
 - `user-note/application-mongodb/build.gradle.kts` — [REVIEW]
-- `user-note/application-mongodb/compose.yaml` — [REVIEW]
 - `user-note/application-mongodb/src/test/resources/application.properties` — [REVIEW]
 - `user-note/application-mongodb/src/test/java/com/example/usernote/UserNoteMongoApplicationTests.java` — [REVIEW]
 - `user-note/application-mongodb/src/main/resources/application.properties` — [REVIEW]
 - `user-note/application-mongodb/src/main/java/com/example/usernote/package-info.java` — [REVIEW]
 - `user-note/application-mongodb/src/main/java/com/example/usernote/UserNoteMongoApplication.java` — [REVIEW]
 
-#### user-note/application-mongodb-reactive/ (7 файлов)
+#### user-note/application-mongodb-reactive/ (6 файлов)
 - `user-note/application-mongodb-reactive/build.gradle.kts` — [REVIEW]
-- `user-note/application-mongodb-reactive/compose.yaml` — [REVIEW]
 - `user-note/application-mongodb-reactive/src/test/resources/application.properties` — [REVIEW]
 - `user-note/application-mongodb-reactive/src/test/java/com/example/usernote/UserNoteMongoReactiveApplicationTests.java` — [REVIEW]
 - `user-note/application-mongodb-reactive/src/main/resources/application.properties` — [REVIEW]
@@ -181,7 +179,7 @@
 - `user-note/data-jdbc/src/test/java/com/example/usernote/data/jdbc/adapter/UserNoteJdbcAdapterIT.java` — [ADD]
 - `user-note/application-jpa/src/test/java/com/example/usernote/UserNoteEndToEndIT.java` — [ADD]
 
-### user/ (114 файлов)
+### user/ (112 файлов)
 
 #### user/webmvc/ (5 файлов)
 - `user/webmvc/build.gradle.kts` — [DONE]
@@ -309,18 +307,16 @@
 - `user/application-jdbc/src/main/resources/application-postgresql.properties` — [REVIEW]
 - `user/application-jdbc/src/main/resources/application-mysql.properties` — [REVIEW]
 
-#### user/application-mongodb/ (7 файлов)
+#### user/application-mongodb/ (6 файлов)
 - `user/application-mongodb/build.gradle.kts` — [REVIEW]
-- `user/application-mongodb/compose.yaml` — [REVIEW]
 - `user/application-mongodb/src/test/resources/application.properties` — [REVIEW]
 - `user/application-mongodb/src/test/java/com/example/user/UserMongoApplicationTests.java` — [REVIEW]
 - `user/application-mongodb/src/main/resources/application.properties` — [REVIEW]
 - `user/application-mongodb/src/main/java/com/example/user/package-info.java` — [REVIEW]
 - `user/application-mongodb/src/main/java/com/example/user/UserMongoApplication.java` — [REVIEW]
 
-#### user/application-mongodb-reactive/ (7 файлов)
+#### user/application-mongodb-reactive/ (6 файлов)
 - `user/application-mongodb-reactive/build.gradle.kts` — [REVIEW]
-- `user/application-mongodb-reactive/compose.yaml` — [REVIEW]
 - `user/application-mongodb-reactive/src/test/resources/application.properties` — [REVIEW]
 - `user/application-mongodb-reactive/src/test/java/com/example/user/UserMongoReactiveApplicationTests.java` — [REVIEW]
 - `user/application-mongodb-reactive/src/main/resources/application.properties` — [REVIEW]
@@ -349,7 +345,7 @@
 - `registry/application/src/main/java/com/example/registry/package-info.java` — [DONE]
 - `registry/application/src/main/java/com/example/registry/RegistryApplication.java` — [REVIEW]
 
-### note/ (114 файлов)
+### note/ (112 файлов)
 
 #### note/webmvc/ (5 файлов)
 - `note/webmvc/build.gradle.kts` — [DONE]
@@ -477,18 +473,16 @@
 - `note/application-jdbc/src/main/resources/application-postgresql.properties` — [REVIEW]
 - `note/application-jdbc/src/main/resources/application-mysql.properties` — [REVIEW]
 
-#### note/application-mongodb/ (7 файлов)
+#### note/application-mongodb/ (6 файлов)
 - `note/application-mongodb/build.gradle.kts` — [REVIEW]
-- `note/application-mongodb/compose.yaml` — [REVIEW]
 - `note/application-mongodb/src/test/resources/application.properties` — [REVIEW]
 - `note/application-mongodb/src/test/java/com/example/note/NoteMongoApplicationTests.java` — [REVIEW]
 - `note/application-mongodb/src/main/resources/application.properties` — [REVIEW]
 - `note/application-mongodb/src/main/java/com/example/note/package-info.java` — [REVIEW]
 - `note/application-mongodb/src/main/java/com/example/note/NoteMongoApplication.java` — [REVIEW]
 
-#### note/application-mongodb-reactive/ (7 файлов)
+#### note/application-mongodb-reactive/ (6 файлов)
 - `note/application-mongodb-reactive/build.gradle.kts` — [REVIEW]
-- `note/application-mongodb-reactive/compose.yaml` — [REVIEW]
 - `note/application-mongodb-reactive/src/test/resources/application.properties` — [REVIEW]
 - `note/application-mongodb-reactive/src/test/java/com/example/note/NoteMongoReactiveApplicationTests.java` — [REVIEW]
 - `note/application-mongodb-reactive/src/main/resources/application.properties` — [REVIEW]
