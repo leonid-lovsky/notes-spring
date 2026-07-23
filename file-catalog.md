@@ -14,7 +14,7 @@
 - `.gitattributes` — [DONE]
 - `db-migration-tools-reference.md` — [REVIEW]
 
-### user-note/ (87 файлов)
+### user-note/ (93 файлов)
 
 #### user-note/webmvc/ (5 файлов)
 - `user-note/webmvc/build.gradle.kts` — [DONE]
@@ -131,6 +131,14 @@
 - `user-note/application-jpa/src/main/java/com/example/usernote/package-info.java` — [DONE]
 - `user-note/application-jpa/src/main/java/com/example/usernote/UserNoteJpaApplication.java` — [REVIEW]
 
+#### user-note/application-jdbc/ (6 файлов)
+- `user-note/application-jdbc/build.gradle.kts` — [REVIEW]
+- `user-note/application-jdbc/src/test/resources/application.properties` — [REVIEW]
+- `user-note/application-jdbc/src/test/java/com/example/usernote/UserNoteJdbcApplicationTests.java` — [REVIEW]
+- `user-note/application-jdbc/src/main/resources/application.properties` — [REVIEW]
+- `user-note/application-jdbc/src/main/java/com/example/usernote/package-info.java` — [REVIEW]
+- `user-note/application-jdbc/src/main/java/com/example/usernote/UserNoteJdbcApplication.java` — [REVIEW]
+
 #### user-note/ — предлагаемые отсутствующие файлы (`[ADD]`, 18)
 - `user-note/webmvc/src/test/java/com/example/usernote/webmvc/UserNoteExceptionHandlerTest.java` — [ADD]
 - `user-note/webmvc/src/test/java/com/example/usernote/webmvc/UserNoteControllerTest.java` — [ADD]
@@ -151,7 +159,7 @@
 - `user-note/data-jdbc/src/main/resources/schema.sql` — [REVIEW]
 - `user-note/application-jpa/src/test/java/com/example/usernote/UserNoteEndToEndIT.java` — [ADD]
 
-### user/ (84 файлов)
+### user/ (90 файлов)
 
 #### user/webmvc/ (5 файлов)
 - `user/webmvc/build.gradle.kts` — [DONE]
@@ -265,6 +273,14 @@
 - `user/application-jpa/src/main/java/com/example/user/package-info.java` — [DONE]
 - `user/application-jpa/src/main/java/com/example/user/UserJpaApplication.java` — [REVIEW]
 
+#### user/application-jdbc/ (6 файлов)
+- `user/application-jdbc/build.gradle.kts` — [REVIEW]
+- `user/application-jdbc/src/test/resources/application.properties` — [REVIEW]
+- `user/application-jdbc/src/test/java/com/example/user/UserJdbcApplicationTests.java` — [REVIEW]
+- `user/application-jdbc/src/main/resources/application.properties` — [REVIEW]
+- `user/application-jdbc/src/main/java/com/example/user/package-info.java` — [REVIEW]
+- `user/application-jdbc/src/main/java/com/example/user/UserJdbcApplication.java` — [REVIEW]
+
 #### user/ — предлагаемые отсутствующие файлы (`[ADD]`, 13)
 - `user/webmvc/src/test/java/com/example/user/webmvc/UserControllerTest.java` — [ADD]
 - `user/webmvc/src/main/java/com/example/user/webmvc/UserController.java` — [ADD]
@@ -290,7 +306,7 @@
 - `registry/application/src/main/java/com/example/registry/package-info.java` — [DONE]
 - `registry/application/src/main/java/com/example/registry/RegistryApplication.java` — [REVIEW]
 
-### note/ (84 файлов)
+### note/ (90 файлов)
 
 #### note/webmvc/ (5 файлов)
 - `note/webmvc/build.gradle.kts` — [DONE]
@@ -404,6 +420,14 @@
 - `note/application-jpa/src/main/java/com/example/note/package-info.java` — [DONE]
 - `note/application-jpa/src/main/java/com/example/note/NoteJpaApplication.java` — [REVIEW]
 
+#### note/application-jdbc/ (6 файлов)
+- `note/application-jdbc/build.gradle.kts` — [REVIEW]
+- `note/application-jdbc/src/test/resources/application.properties` — [REVIEW]
+- `note/application-jdbc/src/test/java/com/example/note/NoteJdbcApplicationTests.java` — [REVIEW]
+- `note/application-jdbc/src/main/resources/application.properties` — [REVIEW]
+- `note/application-jdbc/src/main/java/com/example/note/package-info.java` — [REVIEW]
+- `note/application-jdbc/src/main/java/com/example/note/NoteJdbcApplication.java` — [REVIEW]
+
 #### note/ — предлагаемые отсутствующие файлы (`[ADD]`, 19)
 - `note/webmvc/src/test/java/com/example/note/webmvc/NoteExceptionHandlerTest.java` — [ADD]
 - `note/webmvc/src/test/java/com/example/note/webmvc/NoteControllerTest.java` — [ADD]
@@ -457,13 +481,19 @@
 - `config/application/src/main/java/com/example/config/package-info.java` — [DONE]
 - `config/application/src/main/java/com/example/config/ConfigApplication.java` — [REVIEW]
 
-### build-logic/ (40 файлов, было 38 — добавлены `spring-cloud-application`/`jspecify` 2026-07-15)
+### build-logic/ (46 файлов, было 40 — добавлены 6 плагинов оси вендора/MongoDB-тестирования/dev-режима 2026-07-23)
 
 #### build-logic/ — корневые файлы (2 файлов)
 - `build-logic/settings.gradle.kts` — [REVIEW]
 - `build-logic/convention/build.gradle.kts` — [REVIEW]
 
-#### build-logic/convention/src/main/kotlin/ — precompiled script plugins (38 файлов, было 36)
+#### build-logic/convention/src/main/kotlin/ — precompiled script plugins (44 файлов, было 38)
+- `build-logic/com.example.spring-boot-postgresql-database.gradle.kts` — [REVIEW] — новый 2026-07-23, вендорная ось для JPA/JDBC (`runtimeOnly org.postgresql:postgresql`), активируется через Spring-профиль
+- `build-logic/com.example.spring-boot-mysql-database.gradle.kts` — [REVIEW] — новый 2026-07-23, `runtimeOnly com.mysql:mysql-connector-j`
+- `build-logic/com.example.spring-boot-r2dbc-postgresql-database.gradle.kts` — [REVIEW] — новый 2026-07-23, `runtimeOnly org.postgresql:r2dbc-postgresql`
+- `build-logic/com.example.spring-boot-r2dbc-mysql-database.gradle.kts` — [REVIEW] — новый 2026-07-23, `runtimeOnly io.asyncer:r2dbc-mysql`
+- `build-logic/com.example.spring-boot-testcontainers-mongodb.gradle.kts` — [REVIEW] — новый 2026-07-23, тесты `application-mongodb*` (родитель `spring-boot`)
+- `build-logic/com.example.spring-boot-docker-compose.gradle.kts` — [REVIEW] — новый 2026-07-23, dev-запуск `application-mongodb*` (родитель `spring-boot-application` — `developmentOnly` требует bootable-плагин)
 - `build-logic/com.example.jspecify.gradle.kts` — [REVIEW] — новый 2026-07-15, вынесен из `nullaway` (`id("java-library")` + `api("org.jspecify")`), применяется через `codequality`
 - `build-logic/com.example.spring-cloud-application.gradle.kts` — [REVIEW] — новый 2026-07-15, устраняет диамант у 4 standalone `spring-cloud-*`-плагинов (родитель `spring-boot-application` вместо параллельных `spring-cloud`+`spring-boot-application`)
 - `build-logic/com.example.spring-cloud.gradle.kts` — [REVIEW]
