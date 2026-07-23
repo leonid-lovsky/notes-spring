@@ -14,7 +14,7 @@
 - `.gitattributes` — [DONE]
 - `db-migration-tools-reference.md` — [REVIEW]
 
-### user-note/ (107 файлов)
+### user-note/ (113 файлов)
 
 #### user-note/webmvc/ (5 файлов)
 - `user-note/webmvc/build.gradle.kts` — [DONE]
@@ -115,29 +115,35 @@
 - `user-note/contract/src/main/java/com/example/usernote/contract/UserNoteInterface.java` — [REVIEW]
 - `user-note/contract/src/main/java/com/example/usernote/contract/UserNoteServiceInterface.java` — [REVIEW]
 
-#### user-note/application-r2dbc/ (6 файлов)
+#### user-note/application-r2dbc/ (8 файлов)
 - `user-note/application-r2dbc/build.gradle.kts` — [REVIEW]
 - `user-note/application-r2dbc/src/test/resources/application.properties` — [REVIEW]
 - `user-note/application-r2dbc/src/test/java/com/example/usernote/UserNoteR2dbcApplicationTests.java` — [REVIEW]
 - `user-note/application-r2dbc/src/main/resources/application.properties` — [REVIEW]
 - `user-note/application-r2dbc/src/main/java/com/example/usernote/package-info.java` — [REVIEW]
 - `user-note/application-r2dbc/src/main/java/com/example/usernote/UserNoteR2dbcApplication.java` — [REVIEW]
+- `user-note/application-r2dbc/src/main/resources/application-postgresql.properties` — [REVIEW]
+- `user-note/application-r2dbc/src/main/resources/application-mysql.properties` — [REVIEW]
 
-#### user-note/application-jpa/ (6 файлов)
+#### user-note/application-jpa/ (8 файлов)
 - `user-note/application-jpa/build.gradle.kts` — [REVIEW]
 - `user-note/application-jpa/src/test/resources/application.properties` — [REVIEW]
 - `user-note/application-jpa/src/test/java/com/example/usernote/UserNoteJpaApplicationTests.java` — [REVIEW]
 - `user-note/application-jpa/src/main/resources/application.properties` — [REVIEW]
 - `user-note/application-jpa/src/main/java/com/example/usernote/package-info.java` — [DONE]
 - `user-note/application-jpa/src/main/java/com/example/usernote/UserNoteJpaApplication.java` — [REVIEW]
+- `user-note/application-jpa/src/main/resources/application-postgresql.properties` — [REVIEW]
+- `user-note/application-jpa/src/main/resources/application-mysql.properties` — [REVIEW]
 
-#### user-note/application-jdbc/ (6 файлов)
+#### user-note/application-jdbc/ (8 файлов)
 - `user-note/application-jdbc/build.gradle.kts` — [REVIEW]
 - `user-note/application-jdbc/src/test/resources/application.properties` — [REVIEW]
 - `user-note/application-jdbc/src/test/java/com/example/usernote/UserNoteJdbcApplicationTests.java` — [REVIEW]
 - `user-note/application-jdbc/src/main/resources/application.properties` — [REVIEW]
 - `user-note/application-jdbc/src/main/java/com/example/usernote/package-info.java` — [REVIEW]
 - `user-note/application-jdbc/src/main/java/com/example/usernote/UserNoteJdbcApplication.java` — [REVIEW]
+- `user-note/application-jdbc/src/main/resources/application-postgresql.properties` — [REVIEW]
+- `user-note/application-jdbc/src/main/resources/application-mysql.properties` — [REVIEW]
 
 #### user-note/application-mongodb/ (7 файлов)
 - `user-note/application-mongodb/build.gradle.kts` — [REVIEW]
@@ -177,7 +183,7 @@
 - `user-note/data-jdbc/src/main/resources/schema.sql` — [REVIEW]
 - `user-note/application-jpa/src/test/java/com/example/usernote/UserNoteEndToEndIT.java` — [ADD]
 
-### user/ (104 файлов)
+### user/ (110 файлов)
 
 #### user/webmvc/ (5 файлов)
 - `user/webmvc/build.gradle.kts` — [DONE]
@@ -275,29 +281,35 @@
 - `user/contract/src/main/java/com/example/user/contract/UserInterface.java` — [REVIEW]
 - `user/contract/src/main/java/com/example/user/contract/UserServiceInterface.java` — [REVIEW]
 
-#### user/application-r2dbc/ (6 файлов)
+#### user/application-r2dbc/ (8 файлов)
 - `user/application-r2dbc/build.gradle.kts` — [REVIEW]
 - `user/application-r2dbc/src/test/resources/application.properties` — [REVIEW]
 - `user/application-r2dbc/src/test/java/com/example/user/UserR2dbcApplicationTests.java` — [REVIEW]
 - `user/application-r2dbc/src/main/resources/application.properties` — [REVIEW]
 - `user/application-r2dbc/src/main/java/com/example/user/package-info.java` — [REVIEW]
 - `user/application-r2dbc/src/main/java/com/example/user/UserR2dbcApplication.java` — [REVIEW]
+- `user/application-r2dbc/src/main/resources/application-postgresql.properties` — [REVIEW]
+- `user/application-r2dbc/src/main/resources/application-mysql.properties` — [REVIEW]
 
-#### user/application-jpa/ (6 файлов)
+#### user/application-jpa/ (8 файлов)
 - `user/application-jpa/build.gradle.kts` — [REVIEW]
 - `user/application-jpa/src/test/resources/application.properties` — [REVIEW]
 - `user/application-jpa/src/test/java/com/example/user/UserJpaApplicationTests.java` — [REVIEW]
 - `user/application-jpa/src/main/resources/application.properties` — [REVIEW]
 - `user/application-jpa/src/main/java/com/example/user/package-info.java` — [DONE]
 - `user/application-jpa/src/main/java/com/example/user/UserJpaApplication.java` — [REVIEW]
+- `user/application-jpa/src/main/resources/application-postgresql.properties` — [REVIEW]
+- `user/application-jpa/src/main/resources/application-mysql.properties` — [REVIEW]
 
-#### user/application-jdbc/ (6 файлов)
+#### user/application-jdbc/ (8 файлов)
 - `user/application-jdbc/build.gradle.kts` — [REVIEW]
 - `user/application-jdbc/src/test/resources/application.properties` — [REVIEW]
 - `user/application-jdbc/src/test/java/com/example/user/UserJdbcApplicationTests.java` — [REVIEW]
 - `user/application-jdbc/src/main/resources/application.properties` — [REVIEW]
 - `user/application-jdbc/src/main/java/com/example/user/package-info.java` — [REVIEW]
 - `user/application-jdbc/src/main/java/com/example/user/UserJdbcApplication.java` — [REVIEW]
+- `user/application-jdbc/src/main/resources/application-postgresql.properties` — [REVIEW]
+- `user/application-jdbc/src/main/resources/application-mysql.properties` — [REVIEW]
 
 #### user/application-mongodb/ (7 файлов)
 - `user/application-mongodb/build.gradle.kts` — [REVIEW]
@@ -342,7 +354,7 @@
 - `registry/application/src/main/java/com/example/registry/package-info.java` — [DONE]
 - `registry/application/src/main/java/com/example/registry/RegistryApplication.java` — [REVIEW]
 
-### note/ (104 файлов)
+### note/ (110 файлов)
 
 #### note/webmvc/ (5 файлов)
 - `note/webmvc/build.gradle.kts` — [DONE]
@@ -440,29 +452,35 @@
 - `note/contract/src/main/java/com/example/note/contract/NoteInterface.java` — [REVIEW]
 - `note/contract/src/main/java/com/example/note/contract/NoteServiceInterface.java` — [REVIEW]
 
-#### note/application-r2dbc/ (6 файлов)
+#### note/application-r2dbc/ (8 файлов)
 - `note/application-r2dbc/build.gradle.kts` — [REVIEW]
 - `note/application-r2dbc/src/test/resources/application.properties` — [REVIEW]
 - `note/application-r2dbc/src/test/java/com/example/note/NoteR2dbcApplicationTests.java` — [REVIEW]
 - `note/application-r2dbc/src/main/resources/application.properties` — [REVIEW]
 - `note/application-r2dbc/src/main/java/com/example/note/package-info.java` — [REVIEW]
 - `note/application-r2dbc/src/main/java/com/example/note/NoteR2dbcApplication.java` — [REVIEW]
+- `note/application-r2dbc/src/main/resources/application-postgresql.properties` — [REVIEW]
+- `note/application-r2dbc/src/main/resources/application-mysql.properties` — [REVIEW]
 
-#### note/application-jpa/ (6 файлов)
+#### note/application-jpa/ (8 файлов)
 - `note/application-jpa/build.gradle.kts` — [REVIEW]
 - `note/application-jpa/src/test/resources/application.properties` — [REVIEW]
 - `note/application-jpa/src/test/java/com/example/note/NoteJpaApplicationTests.java` — [REVIEW]
 - `note/application-jpa/src/main/resources/application.properties` — [REVIEW]
 - `note/application-jpa/src/main/java/com/example/note/package-info.java` — [DONE]
 - `note/application-jpa/src/main/java/com/example/note/NoteJpaApplication.java` — [REVIEW]
+- `note/application-jpa/src/main/resources/application-postgresql.properties` — [REVIEW]
+- `note/application-jpa/src/main/resources/application-mysql.properties` — [REVIEW]
 
-#### note/application-jdbc/ (6 файлов)
+#### note/application-jdbc/ (8 файлов)
 - `note/application-jdbc/build.gradle.kts` — [REVIEW]
 - `note/application-jdbc/src/test/resources/application.properties` — [REVIEW]
 - `note/application-jdbc/src/test/java/com/example/note/NoteJdbcApplicationTests.java` — [REVIEW]
 - `note/application-jdbc/src/main/resources/application.properties` — [REVIEW]
 - `note/application-jdbc/src/main/java/com/example/note/package-info.java` — [REVIEW]
 - `note/application-jdbc/src/main/java/com/example/note/NoteJdbcApplication.java` — [REVIEW]
+- `note/application-jdbc/src/main/resources/application-postgresql.properties` — [REVIEW]
+- `note/application-jdbc/src/main/resources/application-mysql.properties` — [REVIEW]
 
 #### note/application-mongodb/ (7 файлов)
 - `note/application-mongodb/build.gradle.kts` — [REVIEW]
