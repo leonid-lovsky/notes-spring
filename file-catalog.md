@@ -14,7 +14,7 @@
 - `.gitattributes` — [DONE]
 - `db-migration-tools-reference.md` — [REVIEW]
 
-### user-note/ (113 файлов)
+### user-note/ (117 файлов)
 
 #### user-note/webmvc/ (5 файлов)
 - `user-note/webmvc/build.gradle.kts` — [DONE]
@@ -171,7 +171,6 @@
 - `user-note/domain/src/test/java/com/example/usernote/domain/UserNoteNotFoundExceptionTest.java` — [ADD]
 - `user-note/data-r2dbc/src/test/java/com/example/usernote/data/r2dbc/mapper/UserNoteR2dbcMapperTest.java` — [ADD]
 - `user-note/data-r2dbc/src/test/java/com/example/usernote/data/r2dbc/adapter/UserNoteR2dbcAdapterIT.java` — [ADD]
-- `user-note/data-r2dbc/src/main/resources/schema.sql` — [REVIEW]
 - `user-note/data-mongodb/src/test/java/com/example/usernote/data/mongodb/mapper/UserNoteMongoMapperTest.java` — [ADD]
 - `user-note/data-mongodb/src/test/java/com/example/usernote/data/mongodb/adapter/UserNoteMongoAdapterIT.java` — [ADD]
 - `user-note/data-mongodb-reactive/src/test/java/com/example/usernote/data/mongodb/reactive/mapper/UserNoteMongoReactiveMapperTest.java` — [ADD]
@@ -180,10 +179,9 @@
 - `user-note/data-jpa/src/test/java/com/example/usernote/data/jpa/adapter/UserNoteJpaAdapterIT.java` — [ADD]
 - `user-note/data-jdbc/src/test/java/com/example/usernote/data/jdbc/mapper/UserNoteJdbcMapperTest.java` — [ADD]
 - `user-note/data-jdbc/src/test/java/com/example/usernote/data/jdbc/adapter/UserNoteJdbcAdapterIT.java` — [ADD]
-- `user-note/data-jdbc/src/main/resources/schema.sql` — [REVIEW]
 - `user-note/application-jpa/src/test/java/com/example/usernote/UserNoteEndToEndIT.java` — [ADD]
 
-### user/ (110 файлов)
+### user/ (114 файлов)
 
 #### user/webmvc/ (5 файлов)
 - `user/webmvc/build.gradle.kts` — [DONE]
@@ -336,13 +334,10 @@
 - `user/webflux/src/main/java/com/example/user/webflux/UserController.java` — [ADD]
 - `user/domain/src/test/java/com/example/user/domain/UserNotFoundExceptionTest.java` — [ADD]
 - `user/data-r2dbc/src/test/java/com/example/user/data/r2dbc/adapter/UserR2dbcAdapterTest.java` — [ADD]
-- `user/data-r2dbc/src/main/resources/schema.sql` — [REVIEW]
 - `user/data-mongodb/src/test/java/com/example/user/data/mongodb/adapter/UserMongoAdapterTest.java` — [ADD]
 - `user/data-mongodb-reactive/src/test/java/com/example/user/data/mongodb/reactive/adapter/UserMongoReactiveAdapterTest.java` — [ADD]
 - `user/data-jpa/src/test/java/com/example/user/data/jpa/adapter/UserJpaAdapterTest.java` — [ADD]
 - `user/data-jdbc/src/test/java/com/example/user/data/jdbc/adapter/UserJdbcAdapterTest.java` — [ADD]
-- `user/data-jdbc/src/main/resources/schema.sql` — [REVIEW]
-- `user/application-r2dbc/build.gradle.kts` — [REVIEW]
 
 ### registry/ (6 файлов)
 
@@ -354,7 +349,7 @@
 - `registry/application/src/main/java/com/example/registry/package-info.java` — [DONE]
 - `registry/application/src/main/java/com/example/registry/RegistryApplication.java` — [REVIEW]
 
-### note/ (110 файлов)
+### note/ (114 файлов)
 
 #### note/webmvc/ (5 файлов)
 - `note/webmvc/build.gradle.kts` — [DONE]
@@ -508,7 +503,6 @@
 - `note/domain/src/test/java/com/example/note/domain/NoteNotFoundExceptionTest.java` — [ADD]
 - `note/data-r2dbc/src/test/java/com/example/note/data/r2dbc/mapper/NoteR2dbcMapperTest.java` — [ADD]
 - `note/data-r2dbc/src/test/java/com/example/note/data/r2dbc/adapter/NoteR2dbcAdapterIntegrationTest.java` — [ADD]
-- `note/data-r2dbc/src/main/resources/schema.sql` — [REVIEW]
 - `note/data-mongodb/src/test/java/com/example/note/data/mongodb/mapper/NoteMongoMapperTest.java` — [ADD]
 - `note/data-mongodb/src/test/java/com/example/note/data/mongodb/adapter/NoteMongoAdapterIntegrationTest.java` — [ADD]
 - `note/data-mongodb-reactive/src/test/java/com/example/note/data/mongodb/reactive/mapper/NoteMongoReactiveMapperTest.java` — [ADD]
@@ -517,9 +511,7 @@
 - `note/data-jpa/src/test/java/com/example/note/data/jpa/adapter/NoteJpaAdapterIntegrationTest.java` — [ADD]
 - `note/data-jdbc/src/test/java/com/example/note/data/jdbc/mapper/NoteJdbcMapperTest.java` — [ADD]
 - `note/data-jdbc/src/test/java/com/example/note/data/jdbc/adapter/NoteJdbcAdapterIntegrationTest.java` — [ADD]
-- `note/data-jdbc/src/main/resources/schema.sql` — [REVIEW]
 - `note/application-jpa/src/test/java/com/example/note/NoteCreateEndpointIntegrationTest.java` — [ADD]
-- `note/application-r2dbc/build.gradle.kts` — [REVIEW]
 
 ### gradle/ (4 файлов)
 
