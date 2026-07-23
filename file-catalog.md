@@ -545,18 +545,19 @@
 - `config/application/src/main/java/com/example/config/package-info.java` — [DONE]
 - `config/application/src/main/java/com/example/config/ConfigApplication.java` — [REVIEW]
 
-### build-logic/ (46 файлов, было 40 — добавлены 6 плагинов оси вендора/MongoDB-тестирования/dev-режима 2026-07-23)
+### build-logic/ (47 файлов, было 40 — добавлены 7 плагинов оси вендора/Testcontainers/dev-режима 2026-07-23)
 
 #### build-logic/ — корневые файлы (2 файлов)
 - `build-logic/settings.gradle.kts` — [REVIEW]
 - `build-logic/convention/build.gradle.kts` — [REVIEW]
 
-#### build-logic/convention/src/main/kotlin/ — precompiled script plugins (44 файлов, было 38)
+#### build-logic/convention/src/main/kotlin/ — precompiled script plugins (45 файлов, было 38)
 - `build-logic/com.example.spring-boot-postgresql-database.gradle.kts` — [REVIEW] — новый 2026-07-23, вендорная ось для JPA/JDBC (`runtimeOnly org.postgresql:postgresql`), активируется через Spring-профиль
 - `build-logic/com.example.spring-boot-mysql-database.gradle.kts` — [REVIEW] — новый 2026-07-23, `runtimeOnly com.mysql:mysql-connector-j`
 - `build-logic/com.example.spring-boot-r2dbc-postgresql-database.gradle.kts` — [REVIEW] — новый 2026-07-23, `runtimeOnly org.postgresql:r2dbc-postgresql`
 - `build-logic/com.example.spring-boot-r2dbc-mysql-database.gradle.kts` — [REVIEW] — новый 2026-07-23, `runtimeOnly io.asyncer:r2dbc-mysql`
-- `build-logic/com.example.spring-boot-testcontainers-mongodb.gradle.kts` — [REVIEW] — новый 2026-07-23, тесты `application-mongodb*` (родитель `spring-boot`)
+- `build-logic/com.example.spring-boot-testcontainers.gradle.kts` — [REVIEW] — новый 2026-07-23, технологически нейтральная обвязка Testcontainers+JUnit5+`@ServiceConnection` (родитель `spring-boot`); выделен из `-testcontainers-mongodb` в тот же день — не должен быть привязан к одной технологии, пригоден для будущих Postgres/Kafka/Redis-контейнеров
+- `build-logic/com.example.spring-boot-testcontainers-mongodb.gradle.kts` — [REVIEW] — новый 2026-07-23, только MongoDB-специфичный артефакт `testcontainers-mongodb` (родитель `spring-boot`); применяется вместе с `-testcontainers` в `application-mongodb*`
 - `build-logic/com.example.spring-boot-docker-compose.gradle.kts` — [REVIEW] — новый 2026-07-23, dev-запуск `application-mongodb*` (родитель `spring-boot-application` — `developmentOnly` требует bootable-плагин)
 - `build-logic/com.example.jspecify.gradle.kts` — [REVIEW] — новый 2026-07-15, вынесен из `nullaway` (`id("java-library")` + `api("org.jspecify")`), применяется через `codequality`
 - `build-logic/com.example.spring-cloud-application.gradle.kts` — [REVIEW] — новый 2026-07-15, устраняет диамант у 4 standalone `spring-cloud-*`-плагинов (родитель `spring-boot-application` вместо параллельных `spring-cloud`+`spring-boot-application`)
