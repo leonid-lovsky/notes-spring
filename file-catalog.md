@@ -115,21 +115,21 @@
 - `user-note/contract/src/main/java/com/example/usernote/contract/UserNoteInterface.java` — [REVIEW]
 - `user-note/contract/src/main/java/com/example/usernote/contract/UserNoteServiceInterface.java` — [REVIEW]
 
-#### user-note/application-reactive/ (6 файлов)
-- `user-note/application-reactive/build.gradle.kts` — [REVIEW]
-- `user-note/application-reactive/src/test/resources/application.properties` — [REVIEW]
-- `user-note/application-reactive/src/test/java/com/example/usernote/UserNoteReactiveApplicationTests.java` — [REVIEW]
-- `user-note/application-reactive/src/main/resources/application.properties` — [REVIEW]
-- `user-note/application-reactive/src/main/java/com/example/usernote/package-info.java` — [REVIEW]
-- `user-note/application-reactive/src/main/java/com/example/usernote/UserNoteReactiveApplication.java` — [REVIEW]
+#### user-note/application-r2dbc/ (6 файлов)
+- `user-note/application-r2dbc/build.gradle.kts` — [REVIEW]
+- `user-note/application-r2dbc/src/test/resources/application.properties` — [REVIEW]
+- `user-note/application-r2dbc/src/test/java/com/example/usernote/UserNoteR2dbcApplicationTests.java` — [REVIEW]
+- `user-note/application-r2dbc/src/main/resources/application.properties` — [REVIEW]
+- `user-note/application-r2dbc/src/main/java/com/example/usernote/package-info.java` — [REVIEW]
+- `user-note/application-r2dbc/src/main/java/com/example/usernote/UserNoteR2dbcApplication.java` — [REVIEW]
 
-#### user-note/application/ (6 файлов)
-- `user-note/application/build.gradle.kts` — [REVIEW]
-- `user-note/application/src/test/resources/application.properties` — [REVIEW]
-- `user-note/application/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW]
-- `user-note/application/src/main/resources/application.properties` — [REVIEW]
-- `user-note/application/src/main/java/com/example/usernote/package-info.java` — [DONE]
-- `user-note/application/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW]
+#### user-note/application-jpa/ (6 файлов)
+- `user-note/application-jpa/build.gradle.kts` — [REVIEW]
+- `user-note/application-jpa/src/test/resources/application.properties` — [REVIEW]
+- `user-note/application-jpa/src/test/java/com/example/usernote/UserNoteJpaApplicationTests.java` — [REVIEW]
+- `user-note/application-jpa/src/main/resources/application.properties` — [REVIEW]
+- `user-note/application-jpa/src/main/java/com/example/usernote/package-info.java` — [DONE]
+- `user-note/application-jpa/src/main/java/com/example/usernote/UserNoteJpaApplication.java` — [REVIEW]
 
 #### user-note/ — предлагаемые отсутствующие файлы (`[ADD]`, 18)
 - `user-note/webmvc/src/test/java/com/example/usernote/webmvc/UserNoteExceptionHandlerTest.java` — [ADD]
@@ -149,7 +149,7 @@
 - `user-note/data-jdbc/src/test/java/com/example/usernote/data/jdbc/mapper/UserNoteJdbcMapperTest.java` — [ADD]
 - `user-note/data-jdbc/src/test/java/com/example/usernote/data/jdbc/adapter/UserNoteJdbcAdapterIT.java` — [ADD]
 - `user-note/data-jdbc/src/main/resources/schema.sql` — [REVIEW]
-- `user-note/application/src/test/java/com/example/usernote/UserNoteEndToEndIT.java` — [ADD]
+- `user-note/application-jpa/src/test/java/com/example/usernote/UserNoteEndToEndIT.java` — [ADD]
 
 ### user/ (84 файлов)
 
@@ -249,21 +249,21 @@
 - `user/contract/src/main/java/com/example/user/contract/UserInterface.java` — [REVIEW]
 - `user/contract/src/main/java/com/example/user/contract/UserServiceInterface.java` — [REVIEW]
 
-#### user/application-reactive/ (6 файлов)
-- `user/application-reactive/build.gradle.kts` — [REVIEW]
-- `user/application-reactive/src/test/resources/application.properties` — [REVIEW]
-- `user/application-reactive/src/test/java/com/example/user/UserReactiveApplicationTests.java` — [REVIEW]
-- `user/application-reactive/src/main/resources/application.properties` — [REVIEW]
-- `user/application-reactive/src/main/java/com/example/user/package-info.java` — [REVIEW]
-- `user/application-reactive/src/main/java/com/example/user/UserReactiveApplication.java` — [REVIEW]
+#### user/application-r2dbc/ (6 файлов)
+- `user/application-r2dbc/build.gradle.kts` — [REVIEW]
+- `user/application-r2dbc/src/test/resources/application.properties` — [REVIEW]
+- `user/application-r2dbc/src/test/java/com/example/user/UserR2dbcApplicationTests.java` — [REVIEW]
+- `user/application-r2dbc/src/main/resources/application.properties` — [REVIEW]
+- `user/application-r2dbc/src/main/java/com/example/user/package-info.java` — [REVIEW]
+- `user/application-r2dbc/src/main/java/com/example/user/UserR2dbcApplication.java` — [REVIEW]
 
-#### user/application/ (6 файлов)
-- `user/application/build.gradle.kts` — [REVIEW]
-- `user/application/src/test/resources/application.properties` — [REVIEW]
-- `user/application/src/test/java/com/example/user/UserApplicationTests.java` — [REVIEW]
-- `user/application/src/main/resources/application.properties` — [REVIEW]
-- `user/application/src/main/java/com/example/user/package-info.java` — [DONE]
-- `user/application/src/main/java/com/example/user/UserApplication.java` — [REVIEW]
+#### user/application-jpa/ (6 файлов)
+- `user/application-jpa/build.gradle.kts` — [REVIEW]
+- `user/application-jpa/src/test/resources/application.properties` — [REVIEW]
+- `user/application-jpa/src/test/java/com/example/user/UserJpaApplicationTests.java` — [REVIEW]
+- `user/application-jpa/src/main/resources/application.properties` — [REVIEW]
+- `user/application-jpa/src/main/java/com/example/user/package-info.java` — [DONE]
+- `user/application-jpa/src/main/java/com/example/user/UserJpaApplication.java` — [REVIEW]
 
 #### user/ — предлагаемые отсутствующие файлы (`[ADD]`, 13)
 - `user/webmvc/src/test/java/com/example/user/webmvc/UserControllerTest.java` — [ADD]
@@ -278,7 +278,7 @@
 - `user/data-jpa/src/test/java/com/example/user/data/jpa/adapter/UserJpaAdapterTest.java` — [ADD]
 - `user/data-jdbc/src/test/java/com/example/user/data/jdbc/adapter/UserJdbcAdapterTest.java` — [ADD]
 - `user/data-jdbc/src/main/resources/schema.sql` — [REVIEW]
-- `user/application-reactive/build.gradle.kts` — [REVIEW]
+- `user/application-r2dbc/build.gradle.kts` — [REVIEW]
 
 ### registry/ (6 файлов)
 
@@ -388,21 +388,21 @@
 - `note/contract/src/main/java/com/example/note/contract/NoteInterface.java` — [REVIEW]
 - `note/contract/src/main/java/com/example/note/contract/NoteServiceInterface.java` — [REVIEW]
 
-#### note/application-reactive/ (6 файлов)
-- `note/application-reactive/build.gradle.kts` — [REVIEW]
-- `note/application-reactive/src/test/resources/application.properties` — [REVIEW]
-- `note/application-reactive/src/test/java/com/example/note/NoteReactiveApplicationTests.java` — [REVIEW]
-- `note/application-reactive/src/main/resources/application.properties` — [REVIEW]
-- `note/application-reactive/src/main/java/com/example/note/package-info.java` — [REVIEW]
-- `note/application-reactive/src/main/java/com/example/note/NoteReactiveApplication.java` — [REVIEW]
+#### note/application-r2dbc/ (6 файлов)
+- `note/application-r2dbc/build.gradle.kts` — [REVIEW]
+- `note/application-r2dbc/src/test/resources/application.properties` — [REVIEW]
+- `note/application-r2dbc/src/test/java/com/example/note/NoteR2dbcApplicationTests.java` — [REVIEW]
+- `note/application-r2dbc/src/main/resources/application.properties` — [REVIEW]
+- `note/application-r2dbc/src/main/java/com/example/note/package-info.java` — [REVIEW]
+- `note/application-r2dbc/src/main/java/com/example/note/NoteR2dbcApplication.java` — [REVIEW]
 
-#### note/application/ (6 файлов)
-- `note/application/build.gradle.kts` — [REVIEW]
-- `note/application/src/test/resources/application.properties` — [REVIEW]
-- `note/application/src/test/java/com/example/note/NoteApplicationTests.java` — [REVIEW]
-- `note/application/src/main/resources/application.properties` — [REVIEW]
-- `note/application/src/main/java/com/example/note/package-info.java` — [DONE]
-- `note/application/src/main/java/com/example/note/NoteApplication.java` — [REVIEW]
+#### note/application-jpa/ (6 файлов)
+- `note/application-jpa/build.gradle.kts` — [REVIEW]
+- `note/application-jpa/src/test/resources/application.properties` — [REVIEW]
+- `note/application-jpa/src/test/java/com/example/note/NoteJpaApplicationTests.java` — [REVIEW]
+- `note/application-jpa/src/main/resources/application.properties` — [REVIEW]
+- `note/application-jpa/src/main/java/com/example/note/package-info.java` — [DONE]
+- `note/application-jpa/src/main/java/com/example/note/NoteJpaApplication.java` — [REVIEW]
 
 #### note/ — предлагаемые отсутствующие файлы (`[ADD]`, 19)
 - `note/webmvc/src/test/java/com/example/note/webmvc/NoteExceptionHandlerTest.java` — [ADD]
@@ -422,8 +422,8 @@
 - `note/data-jdbc/src/test/java/com/example/note/data/jdbc/mapper/NoteJdbcMapperTest.java` — [ADD]
 - `note/data-jdbc/src/test/java/com/example/note/data/jdbc/adapter/NoteJdbcAdapterIntegrationTest.java` — [ADD]
 - `note/data-jdbc/src/main/resources/schema.sql` — [REVIEW]
-- `note/application/src/test/java/com/example/note/NoteCreateEndpointIntegrationTest.java` — [ADD]
-- `note/application-reactive/build.gradle.kts` — [REVIEW]
+- `note/application-jpa/src/test/java/com/example/note/NoteCreateEndpointIntegrationTest.java` — [ADD]
+- `note/application-r2dbc/build.gradle.kts` — [REVIEW]
 
 ### gradle/ (4 файлов)
 
