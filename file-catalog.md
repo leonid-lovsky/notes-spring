@@ -2,7 +2,7 @@
 
 > Вынесено из CLAUDE.md 2026-07-14 (см. [CLAUDE.md](CLAUDE.md) → «Правила» → лимит размера файла). Полный git-отслеживаемый список файлов; статусы: [DONE] — утверждено, [REVIEW] — требует пересмотра (по умолчанию), [ADD] — файла нет, предложен, [REMOVED] — удалён (строка сохранена для истории). Список путей/статусов не трогать без прямого запроса (см. CLAUDE.md → «Правила» → лимит размера файла).
 
-### Корень репозитория (8 файлов)
+### Корень репозитория (10 файлов)
 - `settings.gradle.kts` — [DONE]
 - `gradlew.bat` — [DONE]
 - `gradlew` — [DONE]
@@ -13,6 +13,8 @@
 - `.gitignore` — [DONE]
 - `.gitattributes` — [DONE]
 - `db-migration-tools-reference.md` — [REVIEW]
+- `decisions-log.md` — [REVIEW] — новый 2026-07-23, вынесен из CLAUDE.md → «Принятые решения» (снятие объёма, AI-readability)
+- `tech-glossary.md` — [REVIEW] — новый 2026-07-23, вынесен из CLAUDE.md → «Технологии» (снятие объёма, AI-readability)
 
 ### user-note/ (115 файлов)
 

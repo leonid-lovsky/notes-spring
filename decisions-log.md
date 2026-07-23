@@ -1,0 +1,122 @@
+# decisions-log.md
+
+> Вынесено из CLAUDE.md 2026-07-23 (снятие объёма — раздел «Принятые решения» занимал ~36% файла, историческая хроника, не нужна на каждую сессию в отличие от «Правила»/«Задачи»/«Открытые решения»). Читать целиком нужно редко — обычно достаточно grep по конкретному решению/дате при его пересмотре. Статус «принято» не закрывает вопрос навсегда — см. CLAUDE.md → «Правила» → «Пересмотр решений».
+
+### Архитектура
+
+- **Convention plugins в `build-logic/convention/`** (included build, не `buildSrc/`) — лучше инкрементальность (правка плагина не инвалидирует весь билд), `./gradlew clean build` из корня остаётся одной командой. Id namespaced (`com.example.{name}`) — снимает конфликт с внешними плагинами. Плагины лежат плоско в одном каталоге — id берётся только из имени файла, алфавит уже даёт естественную группировку (`spring-boot-*`, `spring-cloud-*`, ...)
+- Вся Gradle-конфигурация — Kotlin DSL; рабочий код сервисов — Java. Precompiled script plugins не видят typed-аксессоры каталога — `libs.findVersion("key").get().requiredVersion` вместо `libs.versions.x.get()`
+- Id не привязанных к папке плагинов — по смысловой роли, не только алфавиту (`spring-boot-client-web`, не `webclient`, чтобы не путать с `webflux`). 7 плагинов 1:1 с папкой модуля/стартером (`webmvc`, `webflux`, `data-jpa`, `data-jdbc`, `data-r2dbc`, `data-mongodb`, `data-mongodb-reactive`) не переименовывать в отрыве от папки; `domain`/`contract*` — исключение (называются по зависимости, не по слою)
+- `spring-boot-starter`/`-test` — в `com.example.spring-boot` (общий для любого Boot-модуля), не в `spring-boot-application`. Bootable-возможность (`org.springframework.boot`, ради `bootJar`) — вторая, ортогональная BOM-цепочке ось иерархии, см. диаграмму ниже
+- Отступ 4 пробела, не табы — для Java жёсткая Checkstyle-проверка (`FileTabCharacterCheck`/`IndentationCheck`); для Kotlin build-скриптов — только соглашение
+- Плагин `idea` — удалён (deprecated в Gradle, был только в domain/-модулях, несогласованно)
+- Type-safe project accessors включены (`enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")`), требуют явного `rootProject.name` в обоих `settings.gradle.kts`
+- `api` в `dependencies {}` — только когда тип в публичной сигнатуре модуля, иначе `implementation`, не полагаясь на транзитивный путь (проверено на `reactor-core`). `api project(...)` в `contract*/` — осознанное исключение (домен-типы больше неоткуда получить)
+- Hexagonal: `domain/` не знает о JPA/MongoDB/Spring; адаптеры зависят от `contract*/` (порт) и явно `implementation(domain)`, не полагаясь на транзитивную `api(domain)`; `api(domain)` в самих `contract*/` остаётся — интерфейсы возвращают domain-типы
+- **Один контроллер/контракт/адаптер на сущность, не на операцию** (пересмотрено 2026-07-08) — `NoteController` с 6 методами вместо по одному на HTTP-метод; применено по всем трём CRUD-сервисам, слои и hexagonal-изоляция не затронуты
+- `service/` — только при координации нескольких портов; для простого CRUD не нужен
+- `existsById` в контракте — валидный паттерн, не заменять на `findById`
+- `add` ≠ `replace`: JPA — `save(null id)` vs `save(id)`; MongoDB — `insert()` vs `save()`
+- `user-note/`: суррогатный `UUID id` (не составной `userId+noteId`) во всех технологиях; `userId+noteId` — unique constraint/index. Снимает ограничение Spring Data R2DBC (нет `@EmbeddedId`)
+- Unique constraint `userId+noteId`: JPA — `@Table(uniqueConstraints=...)`; MongoDB — `@CompoundIndex(unique=true)`; R2DBC/JDBC (`spring-data-relational`) не имеют constraint-атрибутов вообще — только через схему
+- **Управление схемой R2DBC/JDBC — `schema.sql`** (2026-07-14): `id UUID DEFAULT RANDOM_UUID() PRIMARY KEY`, `NOT NULL` на непустых колонках, `UNIQUE(...)` где нужно. Flyway/Liquibase не рассматривались (H2, схема простая). Исполняется при старте `application-r2dbc/` и `application-jdbc/` (последний подключён 2026-07-23, см. «Технологическая и вендорная ось адаптеров»)
+- `user-note/role` — унифицирован до enum везде (2026-07-14) — Spring Data JDBC/R2DBC маппят enum в строку из коробки, ручная конвертация не нужна
+- `data-jdbc/` — прежнее решение «сырой JDBC, без repository» отменено 2026-07-14 (признано ошибочным пользователем): теперь `model/`+`repository/`(`ListCrudRepository`)+`mapper/` по структуре `data-r2dbc/`, по всем трём сервисам
+- **Трёхуровневая иерархия портов** вместо единого `{Entity}Contract`/`ContractReactive` (2026-07-13): `{Entity}Interface[Reactive]` (методы возвращают `Object`) → `{Entity}ServiceInterface[Reactive]` (конкретные типы, реализуют адаптеры `{Entity}Service`) → `{Entity}ControllerInterface[Reactive]` (`ResponseEntity`/`Mono<ResponseEntity>`). Приём — ковариантное переопределение `Object` (`Mono`/`Flux` — валидные подтипы, примитивный `void` — нет, поэтому sync `remove`/`deleteBy*` возвращают `Response`). `existsById`/`existsBy*` — реальные `GET`-эндпоинты. Разбивка методов по типу ключа — только в `user-note/`
+- `user-note/`: операции разведены по типу ключа (суррогатный `userNoteId` и составной `userId+noteId` — отдельные методы, контракт из 15). `findByUserId`/`findByNoteId` сами бросают `UserNotFoundException`/`NoteNotFoundException` (собственные типы, не из `note/`/`user/` — сохраняет hexagonal-изоляцию между сервисами)
+- **PUT (`replace*`) ≠ PATCH (`merge*`)**: `replace` — полная замена; `merge` — `null` в `request` значит «не менять». Оба бросают `NotFoundException` при отсутствии сущности
+- **Диспетчеризация нескольких `@GetMapping` на одном пути** — `@RequestParam` не участвует в регистрации маппинга, нужен атрибут `params` (`@GetMapping(params = "userId")`), иначе `Ambiguous mapping` при старте контекста
+- Reactive `findById`/`findBy*` бросают `{Entity}NotFoundException` вместо пустого `Mono` (пересмотрено 2026-07-13) — проверка перенесена из контроллера в сервис/адаптер, консистентно с sync
+- `note/webflux`/`user/webflux`: `findAll()` оборачивает в `ResponseEntity<Flux<X>>` (было голый `Flux`)
+
+### HTTP / Ошибки
+
+- `ResponseEntity<T>` в контроллерах
+- `ProblemDetail` (RFC 9457); `spring.mvc.problemdetails.enabled=true`
+- Доменные исключения (`NoteNotFoundException`) — в `domain/`
+
+### Маппинг
+
+- Ручной, без MapStruct; маппер — ответственность адаптера
+- `Pageable`/`Page`/`Specification` — утечка инфраструктуры, не использовать в контрактах
+
+### Reactive-семантика
+
+- `findById`/`findBy*` (кроме `findAll`) → `Mono<{Entity}Response>`, ошибка `{Entity}NotFoundException` через `switchIfEmpty` при пустом
+- `findAll` → `Flux<{Entity}Response>`, в контроллере — `ResponseEntity<Flux<...>>`
+- `remove`/`deleteBy*` → `Mono<Void>` (уже валидный подтип `Object`, правки не требовал)
+- `existsById`/`existsBy*` → `Mono<Boolean>`
+
+### Convention plugins — принцип именования и структура
+
+Id — по зависимости/технологии, не по имени модуля/слоя (исключение — 7 плагинов 1:1 с папкой, см. выше). Префиксы убраны везде, кроме `spring-boot-*`/`spring-cloud-*`.
+
+Иерархия — две независимые оси: BOM-цепочка (`base → library/reactor/spring-boot → spring-cloud → tech-plugin`, всегда 1 родитель) и bootable-ось (`org.springframework.boot`, подключается вторым `id(...)` где нужен `bootJar` — не нарушает правило «1 родитель» по первой оси, это отдельное измерение). Плюс агрегирующий `codequality` (5 плагинов):
+
+```
+checkstyle      — id("checkstyle"); без com.example.* родителя; id("java") не нужен;
+                  сам несёт configFile/configProperties/spring-javaformat-checkstyle dependency
+jspecify        — id("java") + implementation("org.jspecify") (2026-07-15, вынесен из nullaway;
+                  изначально был id("java-library") + api(...), пересмотрено в тот же день —
+                  java-library не должен просачиваться во все модули через codequality ради
+                  зависимости, чья видимость на потребителях от api/implementation не зависит)
+nullaway        — id("java") (было id("java-library") до 2026-07-15 — downgrade сразу же после
+                  выноса jspecify, т. к. api(jspecify) была единственной причиной java-library
+                  здесь) + id("net.ltgt.errorprone")
+jacoco          — id("jacoco"); id("java") не нужен
+jacoco-report-aggregation — без родителя вообще (autoconfig)
+codequality     — агрегатор 5 плагинов выше
+
+com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 родитель: codequality)
+├── library                — java-library (Gradle core), без Spring
+├── reactor                — reactor-core + reactor-tools + reactor-test; родитель base
+└── spring-boot             — io.spring.dependency-management + Spring Boot BOM
+    ├── spring-boot-*        (22 технологических плагина, без spring-boot-application ниже —
+    │                         включает 4 вендорных БД-плагина 2026-07-23: postgresql-database,
+    │                         mysql-database, r2dbc-postgresql-database, r2dbc-mysql-database,
+    │                         + testcontainers (нейтральная обвязка) + testcontainers-mongodb
+    │                         (только MongoDB-артефакт, композиция через 2 id(...) в leaf —
+    │                         не единый комбинированный плагин); docker-compose — родитель
+    │                         spring-boot (bootable — прямой id("org.springframework.boot"),
+    │                         как у spring-boot-application, не через него как родителя —
+    │                         исправлено 2026-07-23, см. текст ниже)
+    ├── spring-boot-application — + id("org.springframework.boot") + actuator (bootable-ось)
+    │   └── spring-cloud-application — 2 прямых родителя (диамант, восстановлен осознанно
+    │       │                          2026-07-15, см. текст ниже): spring-boot-application (слева)
+    │       │                          и spring-cloud (справа, стрелка от spring-cloud ниже)
+    │       └── 4 standalone: config-server/eureka-server/gateway-webflux/gateway-webmvc
+    └── spring-cloud         — + BOM spring-cloud-dependencies
+        ├── spring-cloud-application — второй родитель (см. стрелку выше)
+        └── spring-cloud-*    (5 остальных: openfeign/loadbalancer/eureka-client/
+                                config-client/circuit-breaker)
+```
+
+**Диамант устранён, затем в тот же день осознанно восстановлен пользователем — 2026-07-15.** Исходно: 4 standalone `spring-cloud-*`-плагина применяли двух прямых родителей — `spring-cloud` и `spring-boot-application` — оба сходились в общем предке `spring-boot`. Технически безопасно (идемпотентность Gradle `PluginManager`; известное исключение gradle/gradle#13252 про cross-project apply — исключено грепом), но устранено по прямому требованию пользователя (см. CLAUDE.md → «Правила» → «Кольцевые/ромбовидные зависимости» — отслеживать и сообщать всегда, даже про безопасные). Первый шаг — новый `com.example.spring-cloud-application` как точная копия `dependencyManagement`-блока `com.example.spring-cloud`, но с единственным родителем `spring-boot-application` вместо `spring-boot` — граф строго линеен, ценой дублирования ~6 строк Spring Cloud BOM-импорта в двух файлах.
+
+Пользователь пересмотрел это решение в тот же день: `com.example.spring-cloud-application` переведён на двух прямых родителей — `id("com.example.spring-cloud")` + `id("com.example.spring-boot-application")` — убирает дублирование BOM-импорта, но воссоздаёт ровно тот же диамант (оба пути сходятся в `spring-boot`), который несколькими часами ранее был устранён по этому же правилу. Диамант заявлен агентом явно, с рекомендацией оставить линейный вариант (A) — пользователь всё равно выбрал композицию (B). `./gradlew clean check` пройден. Итог: диамант присутствует осознанно, дублирование кода устранено; правило «сообщать о каждой находке» не требует автоматического устранения — решение остаётся за пользователем. `com.example.spring-cloud`/`com.example.spring-boot-application` не менялись, остальные 5 `spring-cloud-*`-плагинов и 17 модулей с одиночным `spring-boot-application` не затронуты. `com.example.spring-boot-application` несёт `spring-boot-starter-actuator`(`-test`) — actuator привязан к bootable-оси, не к BOM-цепочке. `com.example.javaformat` удалён 2026-07-13 — конфигурация перенесена в `com.example.checkstyle` без правок по модулям-потребителям.
+
+**Технологическая и вендорная ось адаптеров** (2026-07-23, закрывает «Стратегия активации адаптеров» и «Комбинации technology в `application/`», ранее в CLAUDE.md → «Открытые решения») — задача: скелет под полный выбор адаптера/драйвера БД пользователем, расширяемый под будущие неизвестные технологии без переписывания существующего кода. Решены две независимые оси:
+- **Технология адаптера** (jpa/jdbc/r2dbc/mongodb/mongodb-reactive) — отдельный composition-root модуль на каждую (`application-jpa`/`application-jdbc`/`application-mongodb`/`application-r2dbc`/`application-mongodb-reactive`, было 2 — `application`/`application-reactive`, переименованы), а не `@Profile` внутри одного модуля. Причина — не только отсутствие диаманта: на classpath каждого модуля ровно одна repository-технология, поэтому `*RepositoriesAutoConfiguration`-классы Spring Boot (`@ConditionalOnClass`-гейтед) активируются автоматически; `@Profile`-вариант с двумя адаптерами сразу потребовал бы ручного `@EnableJpaRepositories`/`@EnableMongoRepositories(basePackages=...)`, что противоречит принципу «полагаться на autoconfiguration всегда, когда возможно» — вариант отдельных модулей аддитивен: новая технология в будущем — только новые файлы, ни один существующий модуль не редактируется. Это прямо отменяет прежнюю формулировку «MongoDB намеренно не подключена... не третья одновременная связка» — пересмотр, не продолжение (см. CLAUDE.md → «Правила» → «Пересмотр решений»)
+- **Вендор БД** (H2/PostgreSQL/MySQL для jpa/jdbc/r2dbc — код `data-jpa`/`data-jdbc`/`data-r2dbc` идентичен для любого вендора) — НЕ отдельные модули: 4 новых convention-плагина (`spring-boot-postgresql-database`, `-mysql-database`, `-r2dbc-postgresql-database`, `-r2dbc-mysql-database`) кладут драйверы `runtimeOnly` (зеркалят `spring-boot-h2-database`/`-r2dbc-h2-database`, без версии — Spring Boot BOM), активный вендор — `spring.profiles.active=postgresql|mysql` + `application-{vendor}.properties` (`spring.datasource.url`/`spring.r2dbc.url`). Без активного профиля — H2 in-memory для JDBC (`DataSourceAutoConfiguration`, embeddable-enum H2/Derby/HSQLDB) **и для R2DBC** (embedded-detection есть и там — Spring Boot docs: «You need not provide any connection URLs... only include a build dependency to the embedded database»; проверено эмпирически 2026-07-23: `application-r2dbc` без `spring.r2dbc.url` и без активного профиля стартует на H2 даже с Postgres/MySQL-драйверами на classpath). Первая попытка (`spring.profiles.default=h2`+`application-h2.properties`) была лишним усложнением на основании ошибочного предположения «у R2DBC нет embedded-detection» — откачено, `application.properties` во всех `application-r2dbc/` не содержит вообще никакого упоминания БД, симметрично `application-jpa`/`application-jdbc`
+- **MongoDB не имеет embedded-аналога H2** — построены и вживую верифицированы (не только `clean check`) `spring-boot-testcontainers` (нейтральная обвязка, годится для любого будущего Testcontainers-модуля) + `spring-boot-testcontainers-mongodb` (только `testcontainers-mongodb`-артефакт, композиция двух `id(...)` — исходно был один плагин, разделён в тот же день по замечанию о нарушении композиционного принципа; `MongoDBContainer` из пакета `org.testcontainers.mongodb`, сменился с `org.testcontainers.containers`; один контейнер/`MongoConnectionDetails` общий для sync и reactive клиента, Spring Boot сам выбирает тип по classpath — подтверждено docs.spring.io) и `spring-boot-docker-compose` (родитель `spring-boot` + прямой `id("org.springframework.boot")`, как у `spring-boot-application`, а не через него — тоже исправлено по замечанию о композиции; `bootRun` реально поднимал `mongo:8` без ручного `docker run`, `test` реально поднимал контейнер через Testcontainers). **Пересмотрено в тот же день** — оба плагина применялись в `application-mongodb*`, но пользователь указал на асимметрию: у `jpa`/`jdbc`/`r2dbc` H2 даёт бесплатный embedded zero-config путь, а PostgreSQL/MySQL там намеренно opt-in без какой-либо инфраструктурной обвязки (без Testcontainers/Compose для них); закрывать этот же пробел у MongoDB Testcontainers/Compose, пока проект на стадии подготовки скелета, а не реальной инфраструктуры — непоследовательно. **Итог**: оба convention-плагина (`spring-boot-testcontainers`/`-testcontainers-mongodb`/`spring-boot-docker-compose`) остаются в `build-logic/` про запас, но ни один `application-mongodb*`-модуль их больше не применяет — только `spring-boot-application`, без вендор/инфраструктурной обвязки, симметрично `jpa`/`jdbc`/`r2dbc`. `compose.yaml` и Testcontainers-based тесты удалены, `NoteMongoApplicationTests`-и-аналоги — обычный `contextLoads()` (проверено — проходит без запущенной Mongo, драйвер подключается лениво). Подключить обратно — когда будет настраиваться реальная инфраструктура (см. CLAUDE.md → «Открытые решения»)
+- Вендорное подключение (PostgreSQL/MySQL для jpa/jdbc/r2dbc) верифицировано вживую один раз (`application-jpa` + `--spring.profiles.active=postgresql`, Hikari реально подключился), но не покрыто автотестами/CI — как и решено выше, оставлено без инфраструктурной обвязки до отдельной задачи по инфраструктуре
+
+### Синхронизация версий
+
+- **Spring-экосистема** — единый источник `gradle/libs.versions.toml`; `build-logic` — отдельный included build, подключает тот же `.toml` отдельно (не видит корневой `gradle.properties` автоматически). Внутри precompiled-плагинов — `libs.findVersion("key")`, не typed-аксессоры
+- `com.example.spring-boot` берёт BOM через `SpringBootPlugin.BOM_COORDINATES` (версия автоматически совпадает с плагином). `com.example.spring-cloud` собирает координаты вручную (у Spring Cloud нет своего Gradle-плагина/`BOM_COORDINATES`-аналога) — риск «два источника версии» неизбежен только здесь
+- **junit-jupiter/junit-platform** — оба явно из каталога. Реальный найденный баг: расхождение 5.x/6.x при наследовании `java` через `spring-boot` (`TestEngine ... failed to discover tests`) — исправлено на `6.1.2`/`6.1.2` везде
+- **reactor-core** — два источника (`com.example.reactor` фиксирует явно, Spring-адаптеры — через BOM); синхронизация ручная при апгрейде Boot (`./gradlew :note:webflux:dependencies | grep reactor-core`)
+- **reactor-test** — убран explicit из `webflux`/`data-r2dbc`/`data-mongodb-reactive`, приходит транзитивно через `*-test`-компаньоны — не универсально, проверять каждый отдельно (`spring-cloud-gateway-webflux` своего `-test` не имеет вообще, `reactor-test` там ниоткуда не приходит осознанно)
+- **Java** — единственный источник `.java-version`; CI — `actions/setup-java@v4` (`java-version-file`), Gradle — `toolchain` через Provider API (для configuration cache)
+
+### Стиль кода
+
+- Импорты: `java.*` → `javax.*` → `*` → `org.springframework.*`; пустая строка между группами
+- `@NullMarked` на каждом `package-info.java`; `@Nullable` из `org.jspecify.annotations`
+- **`@NullUnmarked` на классах Entity/Document** (пересмотрено 2026-07-14, было `@SuppressWarnings("NullAway.Init")` на конструкторе) — декомпиляция `spring-data-commons` показала, что framework всегда выбирает no-arg конструктор для чтения из БД через прямую рефлексию, минуя args-конструкторы; `@NullUnmarked` на классе — верный псевдоним «эта модель заполняется framework'ом вне null-checker'а», явные `@Nullable` внутри по-прежнему учитываются на границе. Применено ко всем 15 model-классам
+- **Jakarta Bean Validation** — доступность подключена везде (`validation`-starter + `validation-api`), сами `@NotNull`/`@NotBlank` не расставлены ни на одном из 15 Entity/Document или domain-record'ов — не реализовывать до отдельного запроса
+- **`@Service` на адаптерах, `@Repository` на Spring Data repository-интерфейсах** (2026-07-14, найдено и исправлено расхождение — все 15 `{Entity}Service` были на `@Repository`)
+- Промежуточная переменная перед `return`, не inline в `.body()`
+- **Длина строки не ограничена** (пересмотрено 2026-07-13) — переносы только вручную, авто-форматтер не используется
+- **10 персональных правил форматирования** (реализовано 2026-07-13, п. 8 «порядок методов = порядок в интерфейсе» отложен — см. CLAUDE.md → «Открытые решения»): неограниченная длина строки; никогда пустая строка перед `}`, кроме пустого тела метода/класса (там она обязательна); всегда `\n` в конце файла; ровно одна пустая строка между методами, не более одной подряд; аннотации перед полями/классами/методами — каждая на своей строке, перед параметрами — никогда не переносятся; отступ 4 пробела без табов. Ловушка: Checkstyle-сообщения форматируются через `MessageFormat` — литеральные `{`/`}` в тексте `message` ломают парсинг
