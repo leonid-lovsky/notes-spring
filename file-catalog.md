@@ -593,17 +593,17 @@
 - `build-logic/convention/build.gradle.kts` — [REVIEW]
 
 #### build-logic/convention/src/main/kotlin/ — precompiled script plugins (48 файлов, было 38)
-- `build-logic/com.example.spring-boot-postgresql-database.gradle.kts` — [REVIEW] — новый 2026-07-23, вендорная ось для JPA/JDBC (`runtimeOnly org.postgresql:postgresql`), активируется через Spring-профиль
-- `build-logic/com.example.spring-boot-mysql-database.gradle.kts` — [REVIEW] — новый 2026-07-23, `runtimeOnly com.mysql:mysql-connector-j`
-- `build-logic/com.example.spring-boot-r2dbc-postgresql-database.gradle.kts` — [REVIEW] — новый 2026-07-23, `runtimeOnly org.postgresql:r2dbc-postgresql`
-- `build-logic/com.example.spring-boot-r2dbc-mysql-database.gradle.kts` — [REVIEW] — новый 2026-07-23, `runtimeOnly io.asyncer:r2dbc-mysql`
+- `build-logic/com.example.spring-boot-database-postgresql.gradle.kts` — [REVIEW] — новый 2026-07-23, вендорная ось для JPA/JDBC (`runtimeOnly org.postgresql:postgresql`), активируется через Spring-профиль
+- `build-logic/com.example.spring-boot-database-mysql.gradle.kts` — [REVIEW] — новый 2026-07-23, `runtimeOnly com.mysql:mysql-connector-j`
+- `build-logic/com.example.spring-boot-database-r2dbc-postgresql.gradle.kts` — [REVIEW] — новый 2026-07-23, `runtimeOnly org.postgresql:r2dbc-postgresql`
+- `build-logic/com.example.spring-boot-database-r2dbc-mysql.gradle.kts` — [REVIEW] — новый 2026-07-23, `runtimeOnly io.asyncer:r2dbc-mysql`
 - `build-logic/com.example.spring-boot-testcontainers.gradle.kts` — [REVIEW] — новый 2026-07-23, технологически нейтральная обвязка Testcontainers+JUnit5+`@ServiceConnection` (родитель `spring-boot`); выделен из `-testcontainers-mongodb` в тот же день — не должен быть привязан к одной технологии, пригоден для будущих Postgres/Kafka/Redis-контейнеров
 - `build-logic/com.example.spring-boot-testcontainers-mongodb.gradle.kts` — [REVIEW] — новый 2026-07-23, только MongoDB-специфичный артефакт `testcontainers-mongodb` (родитель `spring-boot`); применяется вместе с `-testcontainers` в `application-mongodb*`
 - `build-logic/com.example.spring-boot-testcontainers-postgresql.gradle.kts` — [REVIEW] — новый 2026-07-23, `testcontainers-postgresql` — один контейнер даёт и `JdbcConnectionDetails`, и `R2dbcConnectionDetails` (подтверждено docs.spring.io), применяется в `application-jpa`/`-jdbc`/`-r2dbc`
 - `build-logic/com.example.spring-boot-testcontainers-mysql.gradle.kts` — [REVIEW] — новый 2026-07-23, `testcontainers-mysql` + `testRuntimeOnly(mysql-connector-j)` (добавлено в тот же день: `MySQLContainer`, в отличие от `PostgreSQLContainer`, использует JDBC-based wait-strategy по умолчанию — без JDBC-драйвера падает `NoDriverFoundException`, найдено live-прогоном `clean check`)
 - `build-logic/com.example.spring-boot-testcontainers-r2dbc.gradle.kts` — [REVIEW] — новый 2026-07-23, мост `testcontainers-r2dbc` (`R2DBCDatabaseContainer`) — нужен только `application-r2dbc`, чтобы JDBC-семейство контейнеров (Postgres/MySQL) отдавало `R2dbcConnectionDetails`; без него — `ClassNotFoundException` в рантайме (найдено этой же сборкой)
 - `build-logic/com.example.spring-boot-docker-compose.gradle.kts` — [REVIEW] — новый 2026-07-23, dev-запуск `application-mongodb*`; родитель `spring-boot` + прямой `id("org.springframework.boot")` (как у `spring-boot-application`, не через него — исправлено в тот же день по замечанию пользователя о композиции)
-- `build-logic/com.example.jspecify.gradle.kts` — [REVIEW] — новый 2026-07-15, вынесен из `nullaway` (`id("java-library")` + `api("org.jspecify")`), применяется через `codequality`
+- `build-logic/com.example.codequality-jspecify.gradle.kts` — [REVIEW] — новый 2026-07-15, вынесен из `nullaway` (`id("java-library")` + `api("org.jspecify")`), применяется через `codequality`
 - `build-logic/com.example.spring-cloud-application.gradle.kts` — [REVIEW] — новый 2026-07-15, устраняет диамант у 4 standalone `spring-cloud-*`-плагинов (родитель `spring-boot-application` вместо параллельных `spring-cloud`+`spring-boot-application`)
 - `build-logic/com.example.spring-cloud.gradle.kts` — [REVIEW]
 - `build-logic/com.example.spring-cloud-openfeign.gradle.kts` — [REVIEW]
@@ -618,10 +618,10 @@
 - `build-logic/com.example.spring-boot.gradle.kts` — [REVIEW]
 - `build-logic/com.example.spring-boot-webmvc.gradle.kts` — [REVIEW]
 - `build-logic/com.example.spring-boot-webflux.gradle.kts` — [REVIEW]
-- `build-logic/com.example.spring-boot-oauth2-resource-server.gradle.kts` — [REVIEW]
-- `build-logic/com.example.spring-boot-oauth2-client.gradle.kts` — [REVIEW]
-- `build-logic/com.example.spring-boot-oauth2-authorization-server.gradle.kts` — [REVIEW]
-- `build-logic/com.example.spring-boot-h2-database.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-boot-security-oauth2-resource-server.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-boot-security-oauth2-client.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-boot-security-oauth2-authorization-server.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-boot-database-h2.gradle.kts` — [REVIEW]
 - `build-logic/com.example.spring-boot-graphql.gradle.kts` — [REVIEW]
 - `build-logic/com.example.spring-boot-data-r2dbc.gradle.kts` — [REVIEW]
 - `build-logic/com.example.spring-boot-data-mongodb.gradle.kts` — [REVIEW]
@@ -629,19 +629,19 @@
 - `build-logic/com.example.spring-boot-data-jpa.gradle.kts` — [REVIEW]
 - `build-logic/com.example.spring-boot-data-jdbc.gradle.kts` — [REVIEW]
 - `build-logic/com.example.spring-boot-data-elasticsearch.gradle.kts` — [REVIEW]
-- `build-logic/com.example.spring-boot-client-web.gradle.kts` — [REVIEW]
-- `build-logic/com.example.spring-boot-client-rest.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-boot-client-webclient.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-boot-client-restclient.gradle.kts` — [REVIEW]
 - `build-logic/com.example.spring-boot-application.gradle.kts` — [REVIEW]
 - `build-logic/com.example.spring-boot-actuator.gradle.kts` — [REMOVED]
 - `build-logic/com.example.reactor.gradle.kts` — [REVIEW]
-- `build-logic/com.example.spring-boot-r2dbc-h2-database.gradle.kts` — [REVIEW]
-- `build-logic/com.example.nullaway.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-boot-database-r2dbc-h2.gradle.kts` — [REVIEW]
+- `build-logic/com.example.codequality-nullaway.gradle.kts` — [REVIEW]
 - `build-logic/com.example.library.gradle.kts` — [REVIEW]
 - `build-logic/com.example.javaformat.gradle.kts` — [REMOVED]
-- `build-logic/com.example.jacoco.gradle.kts` — [REVIEW]
-- `build-logic/com.example.jacoco-report-aggregation.gradle.kts` — [REVIEW]
+- `build-logic/com.example.codequality-jacoco.gradle.kts` — [REVIEW]
+- `build-logic/com.example.codequality-jacoco-report-aggregation.gradle.kts` — [REVIEW]
 - `build-logic/com.example.codequality.gradle.kts` — [REVIEW]
-- `build-logic/com.example.checkstyle.gradle.kts` — [REVIEW]
+- `build-logic/com.example.codequality-checkstyle.gradle.kts` — [REVIEW]
 - `build-logic/com.example.base.gradle.kts` — [REVIEW]
 
 ### auth/ (6 файлов)

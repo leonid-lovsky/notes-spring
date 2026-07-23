@@ -1,7 +1,7 @@
 plugins {
-    id("com.example.checkstyle")
-    id("com.example.jspecify")
-    id("com.example.nullaway")
-    id("com.example.jacoco")
-    id("com.example.jacoco-report-aggregation")
+    id("com.example.codequality-checkstyle")
+    id("com.example.codequality-jspecify")
+    id("com.example.codequality-nullaway")
+    id("com.example.codequality-jacoco")
+    id("com.example.codequality-jacoco-report-aggregation")
 }

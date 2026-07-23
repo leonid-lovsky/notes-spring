@@ -1,8 +1,8 @@
 plugins {
     id("com.example.spring-boot-application")
-    id("com.example.spring-boot-h2-database")
-    id("com.example.spring-boot-postgresql-database")
-    id("com.example.spring-boot-mysql-database")
+    id("com.example.spring-boot-database-h2")
+    id("com.example.spring-boot-database-postgresql")
+    id("com.example.spring-boot-database-mysql")
     id("com.example.spring-boot-testcontainers")
     id("com.example.spring-boot-testcontainers-postgresql")
     id("com.example.spring-boot-testcontainers-mysql")
