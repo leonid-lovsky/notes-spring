@@ -21,9 +21,9 @@
 - `docs/spring-boot-starters-reference.md` — [REVIEW] — пропущен в каталоге, добавлен 2026-07-23 при попутной правке
 - `docs/google-docs-full-model.md` — [REVIEW] — новый 2026-07-23, набросок требований к совместному редактированию (см. CLAUDE.md → «Открытые решения»), не решение
 
-### .claude/ (2 файла, новое 2026-07-24)
-- `.claude/settings.json` — [REVIEW] — регистрирует SessionStart hook
-- `.claude/hooks/session-start.sh` — [REVIEW] — автоустановка JDK 25 (`openjdk-25-jdk-headless` через apt) в облачных сессиях Claude Code on the web, где базовый образ несёт только JDK 21 и автозагрузка Gradle-тулчейна через foojay заблокирована сетевой политикой (см. CLAUDE.md → «Правила» → «Build»)
+### .claude/ (0 файлов, добавлено 2026-07-24, весь каталог удалён из репозитория и с диска в тот же день)
+- `.claude/settings.json` — [REMOVED] — регистрировал SessionStart hook; удалён 2026-07-24 вместе со всем `.claude/` (`.gitignore` уже содержал `.claude/` — по факту был случайно закоммичен ранее, теперь untracked навсегда)
+- `.claude/hooks/session-start.sh` — [REMOVED] — автоустановка JDK 25 в облачных сессиях; удалён 2026-07-24 из-за CRLF-порчи файла на диске (`bad interpreter` при старте сессии), не восстановлен
 
 ### user-note/ (213 файлов, было 153 — +60: 9 вендорных application-*-{h2,mysql,postgresql}/ модулей заменили 3 профильных 2026-07-24)
 
