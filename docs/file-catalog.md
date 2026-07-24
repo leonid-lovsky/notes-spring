@@ -1,23 +1,25 @@
 # Каталог файлов проекта
 
-> Вынесено из CLAUDE.md 2026-07-14 (см. [CLAUDE.md](CLAUDE.md) → «Правила» → лимит размера файла). Полный git-отслеживаемый список файлов; статусы: [DONE] — утверждено, [REVIEW] — требует пересмотра (по умолчанию), [ADD] — файла нет, предложен, [REMOVED] — удалён (строка сохранена для истории). Список путей/статусов не трогать без прямого запроса (см. CLAUDE.md → «Правила» → лимит размера файла).
+> Вынесено из CLAUDE.md 2026-07-14 (см. [../CLAUDE.md](../CLAUDE.md) → «Правила» → лимит размера файла). Полный git-отслеживаемый список файлов; статусы: [DONE] — утверждено, [REVIEW] — требует пересмотра (по умолчанию), [ADD] — файла нет, предложен, [REMOVED] — удалён (строка сохранена для истории). Список путей/статусов не трогать без прямого запроса (см. CLAUDE.md → «Правила» → лимит размера файла).
 
-### Корень репозитория (14 файлов)
+### Корень репозитория (8 файлов)
 - `settings.gradle.kts` — [DONE]
 - `gradlew.bat` — [DONE]
 - `gradlew` — [DONE]
 - `gradle.properties` — [DONE]
-- `CLAUDE.md` — [DONE]
+- `CLAUDE.md` — [DONE] — единственный документационный файл в корне, обязательное условие автозагрузки Claude Code; остальные документационные файлы — `docs/`, см. ниже
 - `.java-version` — [DONE]
 - `.springjavaformatconfig` — [REMOVED]
 - `.gitignore` — [DONE]
 - `.gitattributes` — [DONE]
-- `db-migration-tools-reference.md` — [REVIEW]
-- `decisions-log.md` — [REVIEW] — новый 2026-07-23, вынесен из CLAUDE.md → «Принятые решения» (снятие объёма, AI-readability)
-- `tech-glossary.md` — [REVIEW] — новый 2026-07-23, вынесен из CLAUDE.md → «Технологии» (снятие объёма, AI-readability)
-- `file-catalog.md` — [REVIEW] — пропущен в собственном каталоге, добавлен 2026-07-23 при попутной правке
-- `spring-boot-starters-reference.md` — [REVIEW] — пропущен в каталоге, добавлен 2026-07-23 при попутной правке
-- `google-docs-full-model.md` — [REVIEW] — новый 2026-07-23, набросок требований к совместному редактированию (см. CLAUDE.md → «Открытые решения»), не решение
+
+### docs/ (6 файлов, перенесены из корня 2026-07-24 — реструктуризация документации под 100%-доступность для ИИ-агента, см. CLAUDE.md → «Правила» → «Документация — только для ИИ-агента, не для человека»)
+- `docs/db-migration-tools-reference.md` — [REVIEW]
+- `docs/decisions-log.md` — [REVIEW] — новый 2026-07-23, вынесен из CLAUDE.md → «Принятые решения» (снятие объёма, AI-readability)
+- `docs/tech-glossary.md` — [REVIEW] — новый 2026-07-23, вынесен из CLAUDE.md → «Технологии» (снятие объёма, AI-readability)
+- `docs/file-catalog.md` — [REVIEW] — пропущен в собственном каталоге, добавлен 2026-07-23 при попутной правке
+- `docs/spring-boot-starters-reference.md` — [REVIEW] — пропущен в каталоге, добавлен 2026-07-23 при попутной правке
+- `docs/google-docs-full-model.md` — [REVIEW] — новый 2026-07-23, набросок требований к совместному редактированию (см. CLAUDE.md → «Открытые решения»), не решение
 
 ### .claude/ (2 файла, новое 2026-07-24)
 - `.claude/settings.json` — [REVIEW] — регистрирует SessionStart hook
@@ -124,7 +126,7 @@
 - `user-note/contract/src/main/java/com/example/usernote/contract/UserNoteInterface.java` — [REVIEW]
 - `user-note/contract/src/main/java/com/example/usernote/contract/UserNoteServiceInterface.java` — [REVIEW]
 
-#### user-note/application-r2dbc/ (12 файлов) — [REMOVED] 2026-07-24, разбит на 3 вендорных модуля application-r2dbc-{h2,mysql,postgresql}/ (см. ниже) — устраняет driver bloat
+#### user-note/application-r2dbc/ (12 файлов) — [REMOVED] 2026-07-24, разбит на 3 вендорных модуля application-r2dbc-{h2,mysql,postgresql}/ — устраняет driver bloat
 - `user-note/application-r2dbc/build.gradle.kts` — [REMOVED]
 - `user-note/application-r2dbc/src/test/resources/application.properties` — [REMOVED]
 - `user-note/application-r2dbc/src/test/java/com/example/usernote/UserNoteR2dbcApplicationTests.java` — [REMOVED]
@@ -164,7 +166,7 @@
 - `user-note/application-postgresql-r2dbc/src/test/resources/application.properties` — [REVIEW]
 - `user-note/application-postgresql-r2dbc/src/test/java/com/example/usernote/UserNotePostgresqlR2dbcApplicationTests.java` — [REVIEW]
 
-#### user-note/application-jpa/ (12 файлов) — [REMOVED] 2026-07-24, разбит на 3 вендорных модуля application-jpa-{h2,mysql,postgresql}/ (см. ниже) — устраняет driver bloat
+#### user-note/application-jpa/ (12 файлов) — [REMOVED] 2026-07-24, разбит на 3 вендорных модуля application-jpa-{h2,mysql,postgresql}/ — устраняет driver bloat
 - `user-note/application-jpa/build.gradle.kts` — [REMOVED]
 - `user-note/application-jpa/src/test/resources/application.properties` — [REMOVED]
 - `user-note/application-jpa/src/test/java/com/example/usernote/UserNoteJpaApplicationTests.java` — [REMOVED]
@@ -204,7 +206,7 @@
 - `user-note/application-postgresql-jpa/src/test/resources/application.properties` — [REVIEW]
 - `user-note/application-postgresql-jpa/src/test/java/com/example/usernote/UserNotePostgresqlJpaApplicationTests.java` — [REVIEW]
 
-#### user-note/application-jdbc/ (12 файлов) — [REMOVED] 2026-07-24, разбит на 3 вендорных модуля application-jdbc-{h2,mysql,postgresql}/ (см. ниже) — устраняет driver bloat
+#### user-note/application-jdbc/ (12 файлов) — [REMOVED] 2026-07-24, разбит на 3 вендорных модуля application-jdbc-{h2,mysql,postgresql}/ — устраняет driver bloat
 - `user-note/application-jdbc/build.gradle.kts` — [REMOVED]
 - `user-note/application-jdbc/src/test/resources/application.properties` — [REMOVED]
 - `user-note/application-jdbc/src/test/java/com/example/usernote/UserNoteJdbcApplicationTests.java` — [REMOVED]
@@ -378,7 +380,7 @@
 - `user/contract/src/main/java/com/example/user/contract/UserInterface.java` — [REVIEW]
 - `user/contract/src/main/java/com/example/user/contract/UserServiceInterface.java` — [REVIEW]
 
-#### user/application-r2dbc/ (12 файлов) — [REMOVED] 2026-07-24, разбит на 3 вендорных модуля application-r2dbc-{h2,mysql,postgresql}/ (см. ниже) — устраняет driver bloat
+#### user/application-r2dbc/ (12 файлов) — [REMOVED] 2026-07-24, разбит на 3 вендорных модуля application-r2dbc-{h2,mysql,postgresql}/ — устраняет driver bloat
 - `user/application-r2dbc/build.gradle.kts` — [REMOVED]
 - `user/application-r2dbc/src/test/resources/application.properties` — [REMOVED]
 - `user/application-r2dbc/src/test/java/com/example/user/UserR2dbcApplicationTests.java` — [REMOVED]
@@ -418,7 +420,7 @@
 - `user/application-postgresql-r2dbc/src/test/resources/application.properties` — [REVIEW]
 - `user/application-postgresql-r2dbc/src/test/java/com/example/user/UserPostgresqlR2dbcApplicationTests.java` — [REVIEW]
 
-#### user/application-jpa/ (12 файлов) — [REMOVED] 2026-07-24, разбит на 3 вендорных модуля application-jpa-{h2,mysql,postgresql}/ (см. ниже) — устраняет driver bloat
+#### user/application-jpa/ (12 файлов) — [REMOVED] 2026-07-24, разбит на 3 вендорных модуля application-jpa-{h2,mysql,postgresql}/ — устраняет driver bloat
 - `user/application-jpa/build.gradle.kts` — [REMOVED]
 - `user/application-jpa/src/test/resources/application.properties` — [REMOVED]
 - `user/application-jpa/src/test/java/com/example/user/UserJpaApplicationTests.java` — [REMOVED]
@@ -458,7 +460,7 @@
 - `user/application-postgresql-jpa/src/test/resources/application.properties` — [REVIEW]
 - `user/application-postgresql-jpa/src/test/java/com/example/user/UserPostgresqlJpaApplicationTests.java` — [REVIEW]
 
-#### user/application-jdbc/ (12 файлов) — [REMOVED] 2026-07-24, разбит на 3 вендорных модуля application-jdbc-{h2,mysql,postgresql}/ (см. ниже) — устраняет driver bloat
+#### user/application-jdbc/ (12 файлов) — [REMOVED] 2026-07-24, разбит на 3 вендорных модуля application-jdbc-{h2,mysql,postgresql}/ — устраняет driver bloat
 - `user/application-jdbc/build.gradle.kts` — [REMOVED]
 - `user/application-jdbc/src/test/resources/application.properties` — [REMOVED]
 - `user/application-jdbc/src/test/java/com/example/user/UserJdbcApplicationTests.java` — [REMOVED]
@@ -636,7 +638,7 @@
 - `note/contract/src/main/java/com/example/note/contract/NoteInterface.java` — [REVIEW]
 - `note/contract/src/main/java/com/example/note/contract/NoteServiceInterface.java` — [REVIEW]
 
-#### note/application-r2dbc/ (12 файлов) — [REMOVED] 2026-07-24, разбит на 3 вендорных модуля application-r2dbc-{h2,mysql,postgresql}/ (см. ниже) — устраняет driver bloat
+#### note/application-r2dbc/ (12 файлов) — [REMOVED] 2026-07-24, разбит на 3 вендорных модуля application-r2dbc-{h2,mysql,postgresql}/ — устраняет driver bloat
 - `note/application-r2dbc/build.gradle.kts` — [REMOVED]
 - `note/application-r2dbc/src/test/resources/application.properties` — [REMOVED]
 - `note/application-r2dbc/src/test/java/com/example/note/NoteR2dbcApplicationTests.java` — [REMOVED]
@@ -676,7 +678,7 @@
 - `note/application-postgresql-r2dbc/src/test/resources/application.properties` — [REVIEW]
 - `note/application-postgresql-r2dbc/src/test/java/com/example/note/NotePostgresqlR2dbcApplicationTests.java` — [REVIEW]
 
-#### note/application-jpa/ (12 файлов) — [REMOVED] 2026-07-24, разбит на 3 вендорных модуля application-jpa-{h2,mysql,postgresql}/ (см. ниже) — устраняет driver bloat
+#### note/application-jpa/ (12 файлов) — [REMOVED] 2026-07-24, разбит на 3 вендорных модуля application-jpa-{h2,mysql,postgresql}/ — устраняет driver bloat
 - `note/application-jpa/build.gradle.kts` — [REMOVED]
 - `note/application-jpa/src/test/resources/application.properties` — [REMOVED]
 - `note/application-jpa/src/test/java/com/example/note/NoteJpaApplicationTests.java` — [REMOVED]
@@ -716,7 +718,7 @@
 - `note/application-postgresql-jpa/src/test/resources/application.properties` — [REVIEW]
 - `note/application-postgresql-jpa/src/test/java/com/example/note/NotePostgresqlJpaApplicationTests.java` — [REVIEW]
 
-#### note/application-jdbc/ (12 файлов) — [REMOVED] 2026-07-24, разбит на 3 вендорных модуля application-jdbc-{h2,mysql,postgresql}/ (см. ниже) — устраняет driver bloat
+#### note/application-jdbc/ (12 файлов) — [REMOVED] 2026-07-24, разбит на 3 вендорных модуля application-jdbc-{h2,mysql,postgresql}/ — устраняет driver bloat
 - `note/application-jdbc/build.gradle.kts` — [REMOVED]
 - `note/application-jdbc/src/test/resources/application.properties` — [REMOVED]
 - `note/application-jdbc/src/test/java/com/example/note/NoteJdbcApplicationTests.java` — [REMOVED]

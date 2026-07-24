@@ -12,7 +12,7 @@
 - Отступ 4 пробела, не табы — для Java жёсткая Checkstyle-проверка (`FileTabCharacterCheck`/`IndentationCheck`); для Kotlin build-скриптов — только соглашение
 - Плагин `idea` — удалён (deprecated в Gradle, был только в domain/-модулях, несогласованно)
 
-**Именование convention-плагинов для sort-by-name-группировки** (2026-07-23) — плоский каталог (48 файлов) полагается на алфавит для группировки (см. выше), но два реальных дефекта в этом обнаружены и исправлены:
+**Именование convention-плагинов для sort-by-name-группировки** (2026-07-23) — плоский каталог (48 файлов) полагается на алфавит для группировки (см. «Convention plugins в `build-logic/convention/`» выше), но два реальных дефекта в этом обнаружены и исправлены:
 1. **Слово-маркер как суффикс, а не префикс, не группирует** — `{vendor}-database` (`h2-database`/`mysql-database`/`postgresql-database`/`r2dbc-{vendor}-database`) не давало группировки: слово `database` в конце строки не влияет на позицию при сортировке, реальную позицию задаёт имя вендора, и посторонние плагины (`oauth2-*`) физически врезались между `mysql-database` и `postgresql-database`. Переименовано в `spring-boot-database-{vendor}`/`spring-boot-database-r2dbc-{vendor}` — слово-маркер вынесено в префикс, вся вендорная ось (6 плагинов) теперь гарантированно смежна при любой сортировке, аналогично тому, как `data-*` (5 плагинов, префикс) уже работает корректно
 2. **Приватные фрагменты одной композиции без общего маркера** — `checkstyle`/`jacoco`/`jacoco-report-aggregation`/`jspecify`/`nullaway` применяются исключительно изнутри `codequality` (проверено грепом — ни один из 39 листовых модулей их не применяет напрямую), но не имели с ним общего префикса. Переименовано в `codequality-{checkstyle,jacoco,jacoco-report-aggregation,jspecify,nullaway}` — сразу видно, что это дети `codequality`, не самостоятельные плагины
 3. **Паттерн применён и к неточным именам технологий** — `spring-boot-oauth2-{authorization-server,client,resource-server}` не отражали реальное имя стартера Boot 4 (`spring-boot-starter-security-oauth2-*`, см. CLAUDE.md → «Стек» → «Spring Boot 4 — критичные отличия») — переименовано в `spring-boot-security-oauth2-*`, группировка тройки сохранена (общий префикс `security-oauth2-`, стал точнее). `spring-boot-client-web`/`-client-rest` — см. пересмотр выше в этом же разделе, `spring-boot-client-webclient`/`-client-restclient`
@@ -58,47 +58,29 @@
 
 ### Convention plugins — принцип именования и структура
 
-Id — по зависимости/технологии, не по имени модуля/слоя (исключение — 7 плагинов 1:1 с папкой, см. выше). Префиксы убраны везде, кроме `spring-boot-*`/`spring-cloud-*`.
+Id — по зависимости/технологии, не по имени модуля/слоя (исключение — 7 плагинов 1:1 с папкой, см. «Архитектура» выше). Префиксы убраны везде, кроме `spring-boot-*`/`spring-cloud-*`.
 
 Иерархия — две независимые оси: BOM-цепочка (`base → library/reactor/spring-boot → spring-cloud → tech-plugin`, всегда 1 родитель) и bootable-ось (`org.springframework.boot`, подключается вторым `id(...)` где нужен `bootJar` — не нарушает правило «1 родитель» по первой оси, это отдельное измерение). Плюс агрегирующий `codequality` (5 плагинов):
 
-```
-checkstyle      — id("checkstyle"); без com.example.* родителя; id("java") не нужен;
-                  сам несёт configFile/configProperties/spring-javaformat-checkstyle dependency
-jspecify        — id("java") + implementation("org.jspecify") (2026-07-15, вынесен из nullaway;
-                  изначально был id("java-library") + api(...), пересмотрено в тот же день —
-                  java-library не должен просачиваться во все модули через codequality ради
-                  зависимости, чья видимость на потребителях от api/implementation не зависит)
-nullaway        — id("java") (было id("java-library") до 2026-07-15 — downgrade сразу же после
-                  выноса jspecify, т. к. api(jspecify) была единственной причиной java-library
-                  здесь) + id("net.ltgt.errorprone")
-jacoco          — id("jacoco"); id("java") не нужен
-jacoco-report-aggregation — без родителя вообще (autoconfig)
-codequality     — агрегатор 5 плагинов выше
+Фрагменты `codequality` (без manual line wrap — один пункт/факт на одну строку файла):
+- `checkstyle` — id("checkstyle"); без com.example.* родителя; id("java") не нужен; сам несёт configFile/configProperties/spring-javaformat-checkstyle dependency
+- `jspecify` — id("java") + implementation("org.jspecify") (2026-07-15, вынесен из nullaway; изначально был id("java-library") + api(...), пересмотрено в тот же день — java-library не должен просачиваться во все модули через codequality ради зависимости, чья видимость на потребителях от api/implementation не зависит)
+- `nullaway` — id("java") (было id("java-library") до 2026-07-15 — downgrade сразу же после выноса jspecify, т. к. api(jspecify) была единственной причиной java-library здесь) + id("net.ltgt.errorprone")
+- `jacoco` — id("jacoco"); id("java") не нужен
+- `jacoco-report-aggregation` — без родителя вообще (autoconfig)
+- `codequality` — агрегатор 5 плагинов выше
 
-com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 родитель: codequality)
-├── library                — java-library (Gradle core), без Spring
-├── reactor                — reactor-core + reactor-tools + reactor-test; родитель base
-└── spring-boot             — io.spring.dependency-management + Spring Boot BOM
-    ├── spring-boot-*        (22 технологических плагина, без spring-boot-application ниже —
-    │                         включает 4 вендорных БД-плагина 2026-07-23: postgresql-database,
-    │                         mysql-database, r2dbc-postgresql-database, r2dbc-mysql-database,
-    │                         + testcontainers (нейтральная обвязка) + testcontainers-mongodb
-    │                         (только MongoDB-артефакт, композиция через 2 id(...) в leaf —
-    │                         не единый комбинированный плагин); docker-compose — родитель
-    │                         spring-boot (bootable — прямой id("org.springframework.boot"),
-    │                         как у spring-boot-application, не через него как родителя —
-    │                         исправлено 2026-07-23, см. текст ниже)
-    ├── spring-boot-application — + id("org.springframework.boot") + actuator (bootable-ось)
-    │   └── spring-cloud-application — 2 прямых родителя (диамант, восстановлен осознанно
-    │       │                          2026-07-15, см. текст ниже): spring-boot-application (слева)
-    │       │                          и spring-cloud (справа, стрелка от spring-cloud ниже)
-    │       └── 4 standalone: config-server/eureka-server/gateway-webflux/gateway-webmvc
-    └── spring-cloud         — + BOM spring-cloud-dependencies
-        ├── spring-cloud-application — второй родитель (см. стрелку выше)
-        └── spring-cloud-*    (5 остальных: openfeign/loadbalancer/eureka-client/
-                                config-client/circuit-breaker)
-```
+Иерархия родитель→потомок (BOM-цепочка, каждая строка самодостаточна — родитель назван явно, без визуального дерева):
+- `com.example.base` (root) — java + toolchain + junit-jupiter + codequality (1 родитель: codequality)
+- `com.example.library` — родитель base; java-library (Gradle core), без Spring
+- `com.example.reactor` — родитель base; reactor-core + reactor-tools + reactor-test
+- `com.example.spring-boot` — родитель base; io.spring.dependency-management + Spring Boot BOM
+- `com.example.spring-boot-*` (22 технологических плагина, без spring-boot-application, отдельная строка ниже) — родитель spring-boot; включает 4 вендорных БД-плагина 2026-07-23 (postgresql-database, mysql-database, r2dbc-postgresql-database, r2dbc-mysql-database) + testcontainers (нейтральная обвязка) + testcontainers-mongodb (только MongoDB-артефакт, композиция через 2 id(...) в leaf-модуле — не единый комбинированный плагин); docker-compose — родитель spring-boot (bootable — прямой id("org.springframework.boot"), как у spring-boot-application, не через него как родителя — исправлено 2026-07-23, см. текст ниже)
+- `com.example.spring-boot-application` — родитель spring-boot; + id("org.springframework.boot") + actuator (bootable-ось)
+- `com.example.spring-cloud-application` — 2 прямых родителя: spring-boot-application и spring-cloud (диамант, восстановлен осознанно 2026-07-15, см. текст ниже)
+- `com.example.config-server`/`eureka-server`/`gateway-webflux`/`gateway-webmvc` (4 standalone) — родитель spring-cloud-application
+- `com.example.spring-cloud` — родитель spring-boot; + BOM spring-cloud-dependencies
+- `com.example.spring-cloud-*` (5 остальных: openfeign/loadbalancer/eureka-client/config-client/circuit-breaker) — родитель spring-cloud
 
 **Диамант устранён, затем в тот же день осознанно восстановлен пользователем — 2026-07-15.** Исходно: 4 standalone `spring-cloud-*`-плагина применяли двух прямых родителей — `spring-cloud` и `spring-boot-application` — оба сходились в общем предке `spring-boot`. Технически безопасно (идемпотентность Gradle `PluginManager`; известное исключение gradle/gradle#13252 про cross-project apply — исключено грепом), но устранено по прямому требованию пользователя (см. CLAUDE.md → «Правила» → «Кольцевые/ромбовидные зависимости» — отслеживать и сообщать всегда, даже про безопасные). Первый шаг — новый `com.example.spring-cloud-application` как точная копия `dependencyManagement`-блока `com.example.spring-cloud`, но с единственным родителем `spring-boot-application` вместо `spring-boot` — граф строго линеен, ценой дублирования ~6 строк Spring Cloud BOM-импорта в двух файлах.
 
@@ -114,7 +96,7 @@ com.example.base (root)  — java + toolchain + junit-jupiter + codequality (1 �
 
 Найден и исправлен реальный баг при верификации: `NoteMysqlR2dbcApplicationTests`/аналоги падали с `JdbcDatabaseContainer$NoDriverFoundException`, хотя `PostgreSQLContainer` в том же модуле проходил без проблем. Причина — не в проекте, а в самом Testcontainers: `MySQLContainer` использует JDBC-based wait-strategy по умолчанию (наследуется от `JdbcDatabaseContainer`, не переопределена), тогда как `PostgreSQLContainer` переопределяет её на log-based (не требует JDBC-драйвера). Проверено деревом зависимостей (`./gradlew :note:application-r2dbc:dependencies --configuration testRuntimeClasspath`) — ни `org.postgresql:postgresql`, ни `com.mysql:mysql-connector-j` не подтягивались транзитивно ни через R2DBC-драйверы, ни через `testcontainers-{mysql,postgresql}`-артефакты; PostgreSQL просто не нуждается в JDBC-драйвере для старта контейнера, MySQL — нуждается. Исправление — `testRuntimeOnly("com.mysql:mysql-connector-j")` добавлен в `spring-boot-testcontainers-mysql` (зеркалит то, что уже было в `spring-boot-mysql-database` для jpa/jdbc-оси, где JDBC-драйвер и так нужен приложению). Отдельно проверена и отброшена гипотеза о избыточности `org.testcontainers:testcontainers-r2dbc` в `spring-boot-testcontainers-r2dbc` — эмпирическое удаление зависимости (временное, для проверки) вызвало `ClassNotFoundException` при резолвинге `@ServiceConnection` → `ConnectionFactory` для JDBC-style контейнеров в реактивном контексте; зависимость возвращена, она необходима.
 
-**Вендор БД — граница Gradle-модуля, не рантайм-профиль (пересмотр 2026-07-24)** — отменяет вывод «Вендор БД... НЕ отдельные модули» из пункта «Технологическая и вендорная ось адаптеров» выше (пересмотр, не продолжение, см. CLAUDE.md → «Правила» → «Пересмотр решений»). Причина: профильный подход держал все три вендорных драйвера (`h2database`+`org.postgresql:postgresql`+`com.mysql:mysql-connector-j`) на runtime classpath одного `bootJar` одновременно — `spring.profiles.active` выбирает bean в рантайме, но не убирает лишние JAR из паковки. Прод неизбежно тащит два неиспользуемых драйвера. Решение — по образцу уже принятого для технологии адаптера (jpa/jdbc/r2dbc/mongodb/mongodb-reactive, см. выше): один composition-root на вендор, применяющий ровно один вендорный convention-плагин. `application-jpa`/`application-jdbc`/`application-r2dbc` (по одному на сервис) разбиты на 9 (`application-{jpa,jdbc,r2dbc}-{h2,mysql,postgresql}`) — итого 11 composition-root на сервис (9 реляционных + `application-mongodb`/`-mongodb-reactive` без изменений — там нет вендорной оси, driver bloat не возникает). 15 → 33 модуля по трём сервисам.
+**Вендор БД — граница Gradle-модуля, не рантайм-профиль (пересмотр 2026-07-24)** — отменяет вывод «Вендор БД... НЕ отдельные модули» из пункта «Технологическая и вендорная ось адаптеров» выше (пересмотр, не продолжение, см. CLAUDE.md → «Правила» → «Пересмотр решений»). Причина: профильный подход держал все три вендорных драйвера (`h2database`+`org.postgresql:postgresql`+`com.mysql:mysql-connector-j`) на runtime classpath одного `bootJar` одновременно — `spring.profiles.active` выбирает bean в рантайме, но не убирает лишние JAR из паковки. Прод неизбежно тащит два неиспользуемых драйвера. Решение — по образцу уже принятого для технологии адаптера (jpa/jdbc/r2dbc/mongodb/mongodb-reactive, см. «Технологическая и вендорная ось адаптеров» выше): один composition-root на вендор, применяющий ровно один вендорный convention-плагин. `application-jpa`/`application-jdbc`/`application-r2dbc` (по одному на сервис) разбиты на 9 (`application-{jpa,jdbc,r2dbc}-{h2,mysql,postgresql}`) — итого 11 composition-root на сервис (9 реляционных + `application-mongodb`/`-mongodb-reactive` без изменений — там нет вендорной оси, driver bloat не возникает). 15 → 33 модуля по трём сервисам.
 - Порядок частей имени модуля/класса изначально выбран `{tech}-{vendor}` (`application-jpa-h2`, класс `NoteJpaH2Application`): технология доступа (JPA/JDBC/R2DBC) архитектурно более фундаментальна (разный `contract`/`contract-reactive` слой), вендор — конфигурация поверх неё. **Пересмотрено пользователем в тот же день** на обратный порядок `{vendor}-{tech}` (`application-h2-jpa`, класс `NoteH2JpaApplication`) — см. отдельную запись «Порядок вендор-технология в имени composition-root» ниже
 - Именование расширяет `{Service}{Tech}Application` (CLAUDE.md → «Именование») явным вендорным суффиксом вместо прежнего неявного «без суффикса = H2» — снимает асимметрию между «дефолтным» и «vendor-специфичным» тестовым классом внутри одного модуля
 - H2-модули (9 из 33) — без Testcontainers/Docker Compose (embedded, не нуждается), как и раньше. MySQL/PostgreSQL-модули — по одному вендорному Testcontainers-плагину + `spring-boot-docker-compose`, `compose.yaml` (не `compose-{vendor}.yaml` — один вендор на модуль, дефолтное имя, свойство `spring.docker.compose.file` больше не нужно, симметрично `application-mongodb`)
