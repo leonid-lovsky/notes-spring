@@ -19,7 +19,7 @@
 - `spring-boot-starters-reference.md` — [REVIEW] — пропущен в каталоге, добавлен 2026-07-23 при попутной правке
 - `google-docs-full-model.md` — [REVIEW] — новый 2026-07-23, набросок требований к совместному редактированию (см. CLAUDE.md → «Открытые решения»), не решение
 
-### user-note/ (153 файлов)
+### user-note/ (213 файлов, было 153 — +60: 9 вендорных application-*-{h2,mysql,postgresql}/ модулей заменили 3 профильных 2026-07-24)
 
 #### user-note/webmvc/ (5 файлов)
 - `user-note/webmvc/build.gradle.kts` — [DONE]
@@ -120,47 +120,125 @@
 - `user-note/contract/src/main/java/com/example/usernote/contract/UserNoteInterface.java` — [REVIEW]
 - `user-note/contract/src/main/java/com/example/usernote/contract/UserNoteServiceInterface.java` — [REVIEW]
 
-#### user-note/application-r2dbc/ (12 файлов)
-- `user-note/application-r2dbc/build.gradle.kts` — [REVIEW]
-- `user-note/application-r2dbc/src/test/resources/application.properties` — [REVIEW]
-- `user-note/application-r2dbc/src/test/java/com/example/usernote/UserNoteR2dbcApplicationTests.java` — [REVIEW]
-- `user-note/application-r2dbc/src/main/resources/application.properties` — [REVIEW]
-- `user-note/application-r2dbc/src/main/java/com/example/usernote/package-info.java` — [REVIEW]
-- `user-note/application-r2dbc/src/main/java/com/example/usernote/UserNoteR2dbcApplication.java` — [REVIEW]
-- `user-note/application-r2dbc/src/main/resources/application-postgresql.properties` — [REVIEW]
-- `user-note/application-r2dbc/src/main/resources/application-mysql.properties` — [REVIEW]
-- `user-note/application-r2dbc/compose-postgresql.yaml` — [REVIEW]
-- `user-note/application-r2dbc/compose-mysql.yaml` — [REVIEW]
-- `user-note/application-r2dbc/src/test/java/com/example/usernote/UserNoteR2dbcPostgresqlApplicationTests.java` — [REVIEW]
-- `user-note/application-r2dbc/src/test/java/com/example/usernote/UserNoteR2dbcMysqlApplicationTests.java` — [REVIEW]
+#### user-note/application-r2dbc/ (12 файлов) — [REMOVED] 2026-07-24, разбит на 3 вендорных модуля application-r2dbc-{h2,mysql,postgresql}/ (см. ниже) — устраняет driver bloat
+- `user-note/application-r2dbc/build.gradle.kts` — [REMOVED]
+- `user-note/application-r2dbc/src/test/resources/application.properties` — [REMOVED]
+- `user-note/application-r2dbc/src/test/java/com/example/usernote/UserNoteR2dbcApplicationTests.java` — [REMOVED]
+- `user-note/application-r2dbc/src/main/resources/application.properties` — [REMOVED]
+- `user-note/application-r2dbc/src/main/java/com/example/usernote/package-info.java` — [REMOVED]
+- `user-note/application-r2dbc/src/main/java/com/example/usernote/UserNoteR2dbcApplication.java` — [REMOVED]
+- `user-note/application-r2dbc/src/main/resources/application-postgresql.properties` — [REMOVED]
+- `user-note/application-r2dbc/src/main/resources/application-mysql.properties` — [REMOVED]
+- `user-note/application-r2dbc/compose-postgresql.yaml` — [REMOVED]
+- `user-note/application-r2dbc/compose-mysql.yaml` — [REMOVED]
+- `user-note/application-r2dbc/src/test/java/com/example/usernote/UserNoteR2dbcPostgresqlApplicationTests.java` — [REMOVED]
+- `user-note/application-r2dbc/src/test/java/com/example/usernote/UserNoteR2dbcMysqlApplicationTests.java` — [REMOVED]
 
-#### user-note/application-jpa/ (12 файлов)
-- `user-note/application-jpa/build.gradle.kts` — [REVIEW]
-- `user-note/application-jpa/src/test/resources/application.properties` — [REVIEW]
-- `user-note/application-jpa/src/test/java/com/example/usernote/UserNoteJpaApplicationTests.java` — [REVIEW]
-- `user-note/application-jpa/src/main/resources/application.properties` — [REVIEW]
-- `user-note/application-jpa/src/main/java/com/example/usernote/package-info.java` — [DONE]
-- `user-note/application-jpa/src/main/java/com/example/usernote/UserNoteJpaApplication.java` — [REVIEW]
-- `user-note/application-jpa/src/main/resources/application-postgresql.properties` — [REVIEW]
-- `user-note/application-jpa/src/main/resources/application-mysql.properties` — [REVIEW]
-- `user-note/application-jpa/compose-postgresql.yaml` — [REVIEW]
-- `user-note/application-jpa/compose-mysql.yaml` — [REVIEW]
-- `user-note/application-jpa/src/test/java/com/example/usernote/UserNoteJpaPostgresqlApplicationTests.java` — [REVIEW]
-- `user-note/application-jpa/src/test/java/com/example/usernote/UserNoteJpaMysqlApplicationTests.java` — [REVIEW]
+#### user-note/application-r2dbc-h2/ (6 файлов)
+- `user-note/application-r2dbc-h2/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `user-note/application-r2dbc-h2/src/main/java/com/example/usernote/package-info.java` — [DONE]
+- `user-note/application-r2dbc-h2/src/main/java/com/example/usernote/UserNoteR2dbcH2Application.java` — [REVIEW]
+- `user-note/application-r2dbc-h2/src/main/resources/application.properties` — [REVIEW]
+- `user-note/application-r2dbc-h2/src/test/resources/application.properties` — [REVIEW]
+- `user-note/application-r2dbc-h2/src/test/java/com/example/usernote/UserNoteR2dbcH2ApplicationTests.java` — [REVIEW]
 
-#### user-note/application-jdbc/ (12 файлов)
-- `user-note/application-jdbc/build.gradle.kts` — [REVIEW]
-- `user-note/application-jdbc/src/test/resources/application.properties` — [REVIEW]
-- `user-note/application-jdbc/src/test/java/com/example/usernote/UserNoteJdbcApplicationTests.java` — [REVIEW]
-- `user-note/application-jdbc/src/main/resources/application.properties` — [REVIEW]
-- `user-note/application-jdbc/src/main/java/com/example/usernote/package-info.java` — [REVIEW]
-- `user-note/application-jdbc/src/main/java/com/example/usernote/UserNoteJdbcApplication.java` — [REVIEW]
-- `user-note/application-jdbc/src/main/resources/application-postgresql.properties` — [REVIEW]
-- `user-note/application-jdbc/src/main/resources/application-mysql.properties` — [REVIEW]
-- `user-note/application-jdbc/compose-postgresql.yaml` — [REVIEW]
-- `user-note/application-jdbc/compose-mysql.yaml` — [REVIEW]
-- `user-note/application-jdbc/src/test/java/com/example/usernote/UserNoteJdbcPostgresqlApplicationTests.java` — [REVIEW]
-- `user-note/application-jdbc/src/test/java/com/example/usernote/UserNoteJdbcMysqlApplicationTests.java` — [REVIEW]
+#### user-note/application-r2dbc-mysql/ (7 файлов)
+- `user-note/application-r2dbc-mysql/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `user-note/application-r2dbc-mysql/src/main/java/com/example/usernote/package-info.java` — [DONE]
+- `user-note/application-r2dbc-mysql/src/main/java/com/example/usernote/UserNoteR2dbcMysqlApplication.java` — [REVIEW]
+- `user-note/application-r2dbc-mysql/src/main/resources/application.properties` — [REVIEW]
+- `user-note/application-r2dbc-mysql/compose.yaml` — [REVIEW]
+- `user-note/application-r2dbc-mysql/src/test/resources/application.properties` — [REVIEW]
+- `user-note/application-r2dbc-mysql/src/test/java/com/example/usernote/UserNoteR2dbcMysqlApplicationTests.java` — [REVIEW]
+
+#### user-note/application-r2dbc-postgresql/ (7 файлов)
+- `user-note/application-r2dbc-postgresql/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `user-note/application-r2dbc-postgresql/src/main/java/com/example/usernote/package-info.java` — [DONE]
+- `user-note/application-r2dbc-postgresql/src/main/java/com/example/usernote/UserNoteR2dbcPostgresqlApplication.java` — [REVIEW]
+- `user-note/application-r2dbc-postgresql/src/main/resources/application.properties` — [REVIEW]
+- `user-note/application-r2dbc-postgresql/compose.yaml` — [REVIEW]
+- `user-note/application-r2dbc-postgresql/src/test/resources/application.properties` — [REVIEW]
+- `user-note/application-r2dbc-postgresql/src/test/java/com/example/usernote/UserNoteR2dbcPostgresqlApplicationTests.java` — [REVIEW]
+
+#### user-note/application-jpa/ (12 файлов) — [REMOVED] 2026-07-24, разбит на 3 вендорных модуля application-jpa-{h2,mysql,postgresql}/ (см. ниже) — устраняет driver bloat
+- `user-note/application-jpa/build.gradle.kts` — [REMOVED]
+- `user-note/application-jpa/src/test/resources/application.properties` — [REMOVED]
+- `user-note/application-jpa/src/test/java/com/example/usernote/UserNoteJpaApplicationTests.java` — [REMOVED]
+- `user-note/application-jpa/src/main/resources/application.properties` — [REMOVED]
+- `user-note/application-jpa/src/main/java/com/example/usernote/package-info.java` — [REMOVED]
+- `user-note/application-jpa/src/main/java/com/example/usernote/UserNoteJpaApplication.java` — [REMOVED]
+- `user-note/application-jpa/src/main/resources/application-postgresql.properties` — [REMOVED]
+- `user-note/application-jpa/src/main/resources/application-mysql.properties` — [REMOVED]
+- `user-note/application-jpa/compose-postgresql.yaml` — [REMOVED]
+- `user-note/application-jpa/compose-mysql.yaml` — [REMOVED]
+- `user-note/application-jpa/src/test/java/com/example/usernote/UserNoteJpaPostgresqlApplicationTests.java` — [REMOVED]
+- `user-note/application-jpa/src/test/java/com/example/usernote/UserNoteJpaMysqlApplicationTests.java` — [REMOVED]
+
+#### user-note/application-jpa-h2/ (6 файлов)
+- `user-note/application-jpa-h2/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `user-note/application-jpa-h2/src/main/java/com/example/usernote/package-info.java` — [DONE]
+- `user-note/application-jpa-h2/src/main/java/com/example/usernote/UserNoteJpaH2Application.java` — [REVIEW]
+- `user-note/application-jpa-h2/src/main/resources/application.properties` — [REVIEW]
+- `user-note/application-jpa-h2/src/test/resources/application.properties` — [REVIEW]
+- `user-note/application-jpa-h2/src/test/java/com/example/usernote/UserNoteJpaH2ApplicationTests.java` — [REVIEW]
+
+#### user-note/application-jpa-mysql/ (7 файлов)
+- `user-note/application-jpa-mysql/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `user-note/application-jpa-mysql/src/main/java/com/example/usernote/package-info.java` — [DONE]
+- `user-note/application-jpa-mysql/src/main/java/com/example/usernote/UserNoteJpaMysqlApplication.java` — [REVIEW]
+- `user-note/application-jpa-mysql/src/main/resources/application.properties` — [REVIEW]
+- `user-note/application-jpa-mysql/compose.yaml` — [REVIEW]
+- `user-note/application-jpa-mysql/src/test/resources/application.properties` — [REVIEW]
+- `user-note/application-jpa-mysql/src/test/java/com/example/usernote/UserNoteJpaMysqlApplicationTests.java` — [REVIEW]
+
+#### user-note/application-jpa-postgresql/ (7 файлов)
+- `user-note/application-jpa-postgresql/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `user-note/application-jpa-postgresql/src/main/java/com/example/usernote/package-info.java` — [DONE]
+- `user-note/application-jpa-postgresql/src/main/java/com/example/usernote/UserNoteJpaPostgresqlApplication.java` — [REVIEW]
+- `user-note/application-jpa-postgresql/src/main/resources/application.properties` — [REVIEW]
+- `user-note/application-jpa-postgresql/compose.yaml` — [REVIEW]
+- `user-note/application-jpa-postgresql/src/test/resources/application.properties` — [REVIEW]
+- `user-note/application-jpa-postgresql/src/test/java/com/example/usernote/UserNoteJpaPostgresqlApplicationTests.java` — [REVIEW]
+
+#### user-note/application-jdbc/ (12 файлов) — [REMOVED] 2026-07-24, разбит на 3 вендорных модуля application-jdbc-{h2,mysql,postgresql}/ (см. ниже) — устраняет driver bloat
+- `user-note/application-jdbc/build.gradle.kts` — [REMOVED]
+- `user-note/application-jdbc/src/test/resources/application.properties` — [REMOVED]
+- `user-note/application-jdbc/src/test/java/com/example/usernote/UserNoteJdbcApplicationTests.java` — [REMOVED]
+- `user-note/application-jdbc/src/main/resources/application.properties` — [REMOVED]
+- `user-note/application-jdbc/src/main/java/com/example/usernote/package-info.java` — [REMOVED]
+- `user-note/application-jdbc/src/main/java/com/example/usernote/UserNoteJdbcApplication.java` — [REMOVED]
+- `user-note/application-jdbc/src/main/resources/application-postgresql.properties` — [REMOVED]
+- `user-note/application-jdbc/src/main/resources/application-mysql.properties` — [REMOVED]
+- `user-note/application-jdbc/compose-postgresql.yaml` — [REMOVED]
+- `user-note/application-jdbc/compose-mysql.yaml` — [REMOVED]
+- `user-note/application-jdbc/src/test/java/com/example/usernote/UserNoteJdbcPostgresqlApplicationTests.java` — [REMOVED]
+- `user-note/application-jdbc/src/test/java/com/example/usernote/UserNoteJdbcMysqlApplicationTests.java` — [REMOVED]
+
+#### user-note/application-jdbc-h2/ (6 файлов)
+- `user-note/application-jdbc-h2/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `user-note/application-jdbc-h2/src/main/java/com/example/usernote/package-info.java` — [DONE]
+- `user-note/application-jdbc-h2/src/main/java/com/example/usernote/UserNoteJdbcH2Application.java` — [REVIEW]
+- `user-note/application-jdbc-h2/src/main/resources/application.properties` — [REVIEW]
+- `user-note/application-jdbc-h2/src/test/resources/application.properties` — [REVIEW]
+- `user-note/application-jdbc-h2/src/test/java/com/example/usernote/UserNoteJdbcH2ApplicationTests.java` — [REVIEW]
+
+#### user-note/application-jdbc-mysql/ (7 файлов)
+- `user-note/application-jdbc-mysql/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `user-note/application-jdbc-mysql/src/main/java/com/example/usernote/package-info.java` — [DONE]
+- `user-note/application-jdbc-mysql/src/main/java/com/example/usernote/UserNoteJdbcMysqlApplication.java` — [REVIEW]
+- `user-note/application-jdbc-mysql/src/main/resources/application.properties` — [REVIEW]
+- `user-note/application-jdbc-mysql/compose.yaml` — [REVIEW]
+- `user-note/application-jdbc-mysql/src/test/resources/application.properties` — [REVIEW]
+- `user-note/application-jdbc-mysql/src/test/java/com/example/usernote/UserNoteJdbcMysqlApplicationTests.java` — [REVIEW]
+
+#### user-note/application-jdbc-postgresql/ (7 файлов)
+- `user-note/application-jdbc-postgresql/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `user-note/application-jdbc-postgresql/src/main/java/com/example/usernote/package-info.java` — [DONE]
+- `user-note/application-jdbc-postgresql/src/main/java/com/example/usernote/UserNoteJdbcPostgresqlApplication.java` — [REVIEW]
+- `user-note/application-jdbc-postgresql/src/main/resources/application.properties` — [REVIEW]
+- `user-note/application-jdbc-postgresql/compose.yaml` — [REVIEW]
+- `user-note/application-jdbc-postgresql/src/test/resources/application.properties` — [REVIEW]
+- `user-note/application-jdbc-postgresql/src/test/java/com/example/usernote/UserNoteJdbcPostgresqlApplicationTests.java` — [REVIEW]
 
 #### user-note/application-mongodb/ (7 файлов)
 - `user-note/application-mongodb/build.gradle.kts` — [REVIEW]
@@ -196,9 +274,9 @@
 - `user-note/data-jpa/src/test/java/com/example/usernote/data/jpa/adapter/UserNoteJpaAdapterIT.java` — [ADD]
 - `user-note/data-jdbc/src/test/java/com/example/usernote/data/jdbc/mapper/UserNoteJdbcMapperTest.java` — [ADD]
 - `user-note/data-jdbc/src/test/java/com/example/usernote/data/jdbc/adapter/UserNoteJdbcAdapterIT.java` — [ADD]
-- `user-note/application-jpa/src/test/java/com/example/usernote/UserNoteEndToEndIT.java` — [ADD]
+- `user-note/application-jpa-h2/src/test/java/com/example/usernote/UserNoteEndToEndIT.java` — [ADD]
 
-### user/ (150 файлов)
+### user/ (210 файлов, было 150 — +60: 9 вендорных application-*-{h2,mysql,postgresql}/ модулей заменили 3 профильных 2026-07-24)
 
 #### user/webmvc/ (5 файлов)
 - `user/webmvc/build.gradle.kts` — [DONE]
@@ -296,47 +374,125 @@
 - `user/contract/src/main/java/com/example/user/contract/UserInterface.java` — [REVIEW]
 - `user/contract/src/main/java/com/example/user/contract/UserServiceInterface.java` — [REVIEW]
 
-#### user/application-r2dbc/ (12 файлов)
-- `user/application-r2dbc/build.gradle.kts` — [REVIEW]
-- `user/application-r2dbc/src/test/resources/application.properties` — [REVIEW]
-- `user/application-r2dbc/src/test/java/com/example/user/UserR2dbcApplicationTests.java` — [REVIEW]
-- `user/application-r2dbc/src/main/resources/application.properties` — [REVIEW]
-- `user/application-r2dbc/src/main/java/com/example/user/package-info.java` — [REVIEW]
-- `user/application-r2dbc/src/main/java/com/example/user/UserR2dbcApplication.java` — [REVIEW]
-- `user/application-r2dbc/src/main/resources/application-postgresql.properties` — [REVIEW]
-- `user/application-r2dbc/src/main/resources/application-mysql.properties` — [REVIEW]
-- `user/application-r2dbc/compose-postgresql.yaml` — [REVIEW]
-- `user/application-r2dbc/compose-mysql.yaml` — [REVIEW]
-- `user/application-r2dbc/src/test/java/com/example/user/UserR2dbcPostgresqlApplicationTests.java` — [REVIEW]
-- `user/application-r2dbc/src/test/java/com/example/user/UserR2dbcMysqlApplicationTests.java` — [REVIEW]
+#### user/application-r2dbc/ (12 файлов) — [REMOVED] 2026-07-24, разбит на 3 вендорных модуля application-r2dbc-{h2,mysql,postgresql}/ (см. ниже) — устраняет driver bloat
+- `user/application-r2dbc/build.gradle.kts` — [REMOVED]
+- `user/application-r2dbc/src/test/resources/application.properties` — [REMOVED]
+- `user/application-r2dbc/src/test/java/com/example/user/UserR2dbcApplicationTests.java` — [REMOVED]
+- `user/application-r2dbc/src/main/resources/application.properties` — [REMOVED]
+- `user/application-r2dbc/src/main/java/com/example/user/package-info.java` — [REMOVED]
+- `user/application-r2dbc/src/main/java/com/example/user/UserR2dbcApplication.java` — [REMOVED]
+- `user/application-r2dbc/src/main/resources/application-postgresql.properties` — [REMOVED]
+- `user/application-r2dbc/src/main/resources/application-mysql.properties` — [REMOVED]
+- `user/application-r2dbc/compose-postgresql.yaml` — [REMOVED]
+- `user/application-r2dbc/compose-mysql.yaml` — [REMOVED]
+- `user/application-r2dbc/src/test/java/com/example/user/UserR2dbcPostgresqlApplicationTests.java` — [REMOVED]
+- `user/application-r2dbc/src/test/java/com/example/user/UserR2dbcMysqlApplicationTests.java` — [REMOVED]
 
-#### user/application-jpa/ (12 файлов)
-- `user/application-jpa/build.gradle.kts` — [REVIEW]
-- `user/application-jpa/src/test/resources/application.properties` — [REVIEW]
-- `user/application-jpa/src/test/java/com/example/user/UserJpaApplicationTests.java` — [REVIEW]
-- `user/application-jpa/src/main/resources/application.properties` — [REVIEW]
-- `user/application-jpa/src/main/java/com/example/user/package-info.java` — [DONE]
-- `user/application-jpa/src/main/java/com/example/user/UserJpaApplication.java` — [REVIEW]
-- `user/application-jpa/src/main/resources/application-postgresql.properties` — [REVIEW]
-- `user/application-jpa/src/main/resources/application-mysql.properties` — [REVIEW]
-- `user/application-jpa/compose-postgresql.yaml` — [REVIEW]
-- `user/application-jpa/compose-mysql.yaml` — [REVIEW]
-- `user/application-jpa/src/test/java/com/example/user/UserJpaPostgresqlApplicationTests.java` — [REVIEW]
-- `user/application-jpa/src/test/java/com/example/user/UserJpaMysqlApplicationTests.java` — [REVIEW]
+#### user/application-r2dbc-h2/ (6 файлов)
+- `user/application-r2dbc-h2/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `user/application-r2dbc-h2/src/main/java/com/example/user/package-info.java` — [DONE]
+- `user/application-r2dbc-h2/src/main/java/com/example/user/UserR2dbcH2Application.java` — [REVIEW]
+- `user/application-r2dbc-h2/src/main/resources/application.properties` — [REVIEW]
+- `user/application-r2dbc-h2/src/test/resources/application.properties` — [REVIEW]
+- `user/application-r2dbc-h2/src/test/java/com/example/user/UserR2dbcH2ApplicationTests.java` — [REVIEW]
 
-#### user/application-jdbc/ (12 файлов)
-- `user/application-jdbc/build.gradle.kts` — [REVIEW]
-- `user/application-jdbc/src/test/resources/application.properties` — [REVIEW]
-- `user/application-jdbc/src/test/java/com/example/user/UserJdbcApplicationTests.java` — [REVIEW]
-- `user/application-jdbc/src/main/resources/application.properties` — [REVIEW]
-- `user/application-jdbc/src/main/java/com/example/user/package-info.java` — [REVIEW]
-- `user/application-jdbc/src/main/java/com/example/user/UserJdbcApplication.java` — [REVIEW]
-- `user/application-jdbc/src/main/resources/application-postgresql.properties` — [REVIEW]
-- `user/application-jdbc/src/main/resources/application-mysql.properties` — [REVIEW]
-- `user/application-jdbc/compose-postgresql.yaml` — [REVIEW]
-- `user/application-jdbc/compose-mysql.yaml` — [REVIEW]
-- `user/application-jdbc/src/test/java/com/example/user/UserJdbcPostgresqlApplicationTests.java` — [REVIEW]
-- `user/application-jdbc/src/test/java/com/example/user/UserJdbcMysqlApplicationTests.java` — [REVIEW]
+#### user/application-r2dbc-mysql/ (7 файлов)
+- `user/application-r2dbc-mysql/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `user/application-r2dbc-mysql/src/main/java/com/example/user/package-info.java` — [DONE]
+- `user/application-r2dbc-mysql/src/main/java/com/example/user/UserR2dbcMysqlApplication.java` — [REVIEW]
+- `user/application-r2dbc-mysql/src/main/resources/application.properties` — [REVIEW]
+- `user/application-r2dbc-mysql/compose.yaml` — [REVIEW]
+- `user/application-r2dbc-mysql/src/test/resources/application.properties` — [REVIEW]
+- `user/application-r2dbc-mysql/src/test/java/com/example/user/UserR2dbcMysqlApplicationTests.java` — [REVIEW]
+
+#### user/application-r2dbc-postgresql/ (7 файлов)
+- `user/application-r2dbc-postgresql/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `user/application-r2dbc-postgresql/src/main/java/com/example/user/package-info.java` — [DONE]
+- `user/application-r2dbc-postgresql/src/main/java/com/example/user/UserR2dbcPostgresqlApplication.java` — [REVIEW]
+- `user/application-r2dbc-postgresql/src/main/resources/application.properties` — [REVIEW]
+- `user/application-r2dbc-postgresql/compose.yaml` — [REVIEW]
+- `user/application-r2dbc-postgresql/src/test/resources/application.properties` — [REVIEW]
+- `user/application-r2dbc-postgresql/src/test/java/com/example/user/UserR2dbcPostgresqlApplicationTests.java` — [REVIEW]
+
+#### user/application-jpa/ (12 файлов) — [REMOVED] 2026-07-24, разбит на 3 вендорных модуля application-jpa-{h2,mysql,postgresql}/ (см. ниже) — устраняет driver bloat
+- `user/application-jpa/build.gradle.kts` — [REMOVED]
+- `user/application-jpa/src/test/resources/application.properties` — [REMOVED]
+- `user/application-jpa/src/test/java/com/example/user/UserJpaApplicationTests.java` — [REMOVED]
+- `user/application-jpa/src/main/resources/application.properties` — [REMOVED]
+- `user/application-jpa/src/main/java/com/example/user/package-info.java` — [REMOVED]
+- `user/application-jpa/src/main/java/com/example/user/UserJpaApplication.java` — [REMOVED]
+- `user/application-jpa/src/main/resources/application-postgresql.properties` — [REMOVED]
+- `user/application-jpa/src/main/resources/application-mysql.properties` — [REMOVED]
+- `user/application-jpa/compose-postgresql.yaml` — [REMOVED]
+- `user/application-jpa/compose-mysql.yaml` — [REMOVED]
+- `user/application-jpa/src/test/java/com/example/user/UserJpaPostgresqlApplicationTests.java` — [REMOVED]
+- `user/application-jpa/src/test/java/com/example/user/UserJpaMysqlApplicationTests.java` — [REMOVED]
+
+#### user/application-jpa-h2/ (6 файлов)
+- `user/application-jpa-h2/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `user/application-jpa-h2/src/main/java/com/example/user/package-info.java` — [DONE]
+- `user/application-jpa-h2/src/main/java/com/example/user/UserJpaH2Application.java` — [REVIEW]
+- `user/application-jpa-h2/src/main/resources/application.properties` — [REVIEW]
+- `user/application-jpa-h2/src/test/resources/application.properties` — [REVIEW]
+- `user/application-jpa-h2/src/test/java/com/example/user/UserJpaH2ApplicationTests.java` — [REVIEW]
+
+#### user/application-jpa-mysql/ (7 файлов)
+- `user/application-jpa-mysql/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `user/application-jpa-mysql/src/main/java/com/example/user/package-info.java` — [DONE]
+- `user/application-jpa-mysql/src/main/java/com/example/user/UserJpaMysqlApplication.java` — [REVIEW]
+- `user/application-jpa-mysql/src/main/resources/application.properties` — [REVIEW]
+- `user/application-jpa-mysql/compose.yaml` — [REVIEW]
+- `user/application-jpa-mysql/src/test/resources/application.properties` — [REVIEW]
+- `user/application-jpa-mysql/src/test/java/com/example/user/UserJpaMysqlApplicationTests.java` — [REVIEW]
+
+#### user/application-jpa-postgresql/ (7 файлов)
+- `user/application-jpa-postgresql/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `user/application-jpa-postgresql/src/main/java/com/example/user/package-info.java` — [DONE]
+- `user/application-jpa-postgresql/src/main/java/com/example/user/UserJpaPostgresqlApplication.java` — [REVIEW]
+- `user/application-jpa-postgresql/src/main/resources/application.properties` — [REVIEW]
+- `user/application-jpa-postgresql/compose.yaml` — [REVIEW]
+- `user/application-jpa-postgresql/src/test/resources/application.properties` — [REVIEW]
+- `user/application-jpa-postgresql/src/test/java/com/example/user/UserJpaPostgresqlApplicationTests.java` — [REVIEW]
+
+#### user/application-jdbc/ (12 файлов) — [REMOVED] 2026-07-24, разбит на 3 вендорных модуля application-jdbc-{h2,mysql,postgresql}/ (см. ниже) — устраняет driver bloat
+- `user/application-jdbc/build.gradle.kts` — [REMOVED]
+- `user/application-jdbc/src/test/resources/application.properties` — [REMOVED]
+- `user/application-jdbc/src/test/java/com/example/user/UserJdbcApplicationTests.java` — [REMOVED]
+- `user/application-jdbc/src/main/resources/application.properties` — [REMOVED]
+- `user/application-jdbc/src/main/java/com/example/user/package-info.java` — [REMOVED]
+- `user/application-jdbc/src/main/java/com/example/user/UserJdbcApplication.java` — [REMOVED]
+- `user/application-jdbc/src/main/resources/application-postgresql.properties` — [REMOVED]
+- `user/application-jdbc/src/main/resources/application-mysql.properties` — [REMOVED]
+- `user/application-jdbc/compose-postgresql.yaml` — [REMOVED]
+- `user/application-jdbc/compose-mysql.yaml` — [REMOVED]
+- `user/application-jdbc/src/test/java/com/example/user/UserJdbcPostgresqlApplicationTests.java` — [REMOVED]
+- `user/application-jdbc/src/test/java/com/example/user/UserJdbcMysqlApplicationTests.java` — [REMOVED]
+
+#### user/application-jdbc-h2/ (6 файлов)
+- `user/application-jdbc-h2/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `user/application-jdbc-h2/src/main/java/com/example/user/package-info.java` — [DONE]
+- `user/application-jdbc-h2/src/main/java/com/example/user/UserJdbcH2Application.java` — [REVIEW]
+- `user/application-jdbc-h2/src/main/resources/application.properties` — [REVIEW]
+- `user/application-jdbc-h2/src/test/resources/application.properties` — [REVIEW]
+- `user/application-jdbc-h2/src/test/java/com/example/user/UserJdbcH2ApplicationTests.java` — [REVIEW]
+
+#### user/application-jdbc-mysql/ (7 файлов)
+- `user/application-jdbc-mysql/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `user/application-jdbc-mysql/src/main/java/com/example/user/package-info.java` — [DONE]
+- `user/application-jdbc-mysql/src/main/java/com/example/user/UserJdbcMysqlApplication.java` — [REVIEW]
+- `user/application-jdbc-mysql/src/main/resources/application.properties` — [REVIEW]
+- `user/application-jdbc-mysql/compose.yaml` — [REVIEW]
+- `user/application-jdbc-mysql/src/test/resources/application.properties` — [REVIEW]
+- `user/application-jdbc-mysql/src/test/java/com/example/user/UserJdbcMysqlApplicationTests.java` — [REVIEW]
+
+#### user/application-jdbc-postgresql/ (7 файлов)
+- `user/application-jdbc-postgresql/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `user/application-jdbc-postgresql/src/main/java/com/example/user/package-info.java` — [DONE]
+- `user/application-jdbc-postgresql/src/main/java/com/example/user/UserJdbcPostgresqlApplication.java` — [REVIEW]
+- `user/application-jdbc-postgresql/src/main/resources/application.properties` — [REVIEW]
+- `user/application-jdbc-postgresql/compose.yaml` — [REVIEW]
+- `user/application-jdbc-postgresql/src/test/resources/application.properties` — [REVIEW]
+- `user/application-jdbc-postgresql/src/test/java/com/example/user/UserJdbcPostgresqlApplicationTests.java` — [REVIEW]
 
 #### user/application-mongodb/ (7 файлов)
 - `user/application-mongodb/build.gradle.kts` — [REVIEW]
@@ -378,7 +534,7 @@
 - `registry/application/src/main/java/com/example/registry/package-info.java` — [DONE]
 - `registry/application/src/main/java/com/example/registry/RegistryApplication.java` — [REVIEW]
 
-### note/ (150 файлов)
+### note/ (210 файлов, было 150 — +60: 9 вендорных application-*-{h2,mysql,postgresql}/ модулей заменили 3 профильных 2026-07-24)
 
 #### note/webmvc/ (5 файлов)
 - `note/webmvc/build.gradle.kts` — [DONE]
@@ -476,47 +632,125 @@
 - `note/contract/src/main/java/com/example/note/contract/NoteInterface.java` — [REVIEW]
 - `note/contract/src/main/java/com/example/note/contract/NoteServiceInterface.java` — [REVIEW]
 
-#### note/application-r2dbc/ (12 файлов)
-- `note/application-r2dbc/build.gradle.kts` — [REVIEW]
-- `note/application-r2dbc/src/test/resources/application.properties` — [REVIEW]
-- `note/application-r2dbc/src/test/java/com/example/note/NoteR2dbcApplicationTests.java` — [REVIEW]
-- `note/application-r2dbc/src/main/resources/application.properties` — [REVIEW]
-- `note/application-r2dbc/src/main/java/com/example/note/package-info.java` — [REVIEW]
-- `note/application-r2dbc/src/main/java/com/example/note/NoteR2dbcApplication.java` — [REVIEW]
-- `note/application-r2dbc/src/main/resources/application-postgresql.properties` — [REVIEW]
-- `note/application-r2dbc/src/main/resources/application-mysql.properties` — [REVIEW]
-- `note/application-r2dbc/compose-postgresql.yaml` — [REVIEW]
-- `note/application-r2dbc/compose-mysql.yaml` — [REVIEW]
-- `note/application-r2dbc/src/test/java/com/example/note/NoteR2dbcPostgresqlApplicationTests.java` — [REVIEW]
-- `note/application-r2dbc/src/test/java/com/example/note/NoteR2dbcMysqlApplicationTests.java` — [REVIEW]
+#### note/application-r2dbc/ (12 файлов) — [REMOVED] 2026-07-24, разбит на 3 вендорных модуля application-r2dbc-{h2,mysql,postgresql}/ (см. ниже) — устраняет driver bloat
+- `note/application-r2dbc/build.gradle.kts` — [REMOVED]
+- `note/application-r2dbc/src/test/resources/application.properties` — [REMOVED]
+- `note/application-r2dbc/src/test/java/com/example/note/NoteR2dbcApplicationTests.java` — [REMOVED]
+- `note/application-r2dbc/src/main/resources/application.properties` — [REMOVED]
+- `note/application-r2dbc/src/main/java/com/example/note/package-info.java` — [REMOVED]
+- `note/application-r2dbc/src/main/java/com/example/note/NoteR2dbcApplication.java` — [REMOVED]
+- `note/application-r2dbc/src/main/resources/application-postgresql.properties` — [REMOVED]
+- `note/application-r2dbc/src/main/resources/application-mysql.properties` — [REMOVED]
+- `note/application-r2dbc/compose-postgresql.yaml` — [REMOVED]
+- `note/application-r2dbc/compose-mysql.yaml` — [REMOVED]
+- `note/application-r2dbc/src/test/java/com/example/note/NoteR2dbcPostgresqlApplicationTests.java` — [REMOVED]
+- `note/application-r2dbc/src/test/java/com/example/note/NoteR2dbcMysqlApplicationTests.java` — [REMOVED]
 
-#### note/application-jpa/ (12 файлов)
-- `note/application-jpa/build.gradle.kts` — [REVIEW]
-- `note/application-jpa/src/test/resources/application.properties` — [REVIEW]
-- `note/application-jpa/src/test/java/com/example/note/NoteJpaApplicationTests.java` — [REVIEW]
-- `note/application-jpa/src/main/resources/application.properties` — [REVIEW]
-- `note/application-jpa/src/main/java/com/example/note/package-info.java` — [DONE]
-- `note/application-jpa/src/main/java/com/example/note/NoteJpaApplication.java` — [REVIEW]
-- `note/application-jpa/src/main/resources/application-postgresql.properties` — [REVIEW]
-- `note/application-jpa/src/main/resources/application-mysql.properties` — [REVIEW]
-- `note/application-jpa/compose-postgresql.yaml` — [REVIEW]
-- `note/application-jpa/compose-mysql.yaml` — [REVIEW]
-- `note/application-jpa/src/test/java/com/example/note/NoteJpaPostgresqlApplicationTests.java` — [REVIEW]
-- `note/application-jpa/src/test/java/com/example/note/NoteJpaMysqlApplicationTests.java` — [REVIEW]
+#### note/application-r2dbc-h2/ (6 файлов)
+- `note/application-r2dbc-h2/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `note/application-r2dbc-h2/src/main/java/com/example/note/package-info.java` — [DONE]
+- `note/application-r2dbc-h2/src/main/java/com/example/note/NoteR2dbcH2Application.java` — [REVIEW]
+- `note/application-r2dbc-h2/src/main/resources/application.properties` — [REVIEW]
+- `note/application-r2dbc-h2/src/test/resources/application.properties` — [REVIEW]
+- `note/application-r2dbc-h2/src/test/java/com/example/note/NoteR2dbcH2ApplicationTests.java` — [REVIEW]
 
-#### note/application-jdbc/ (12 файлов)
-- `note/application-jdbc/build.gradle.kts` — [REVIEW]
-- `note/application-jdbc/src/test/resources/application.properties` — [REVIEW]
-- `note/application-jdbc/src/test/java/com/example/note/NoteJdbcApplicationTests.java` — [REVIEW]
-- `note/application-jdbc/src/main/resources/application.properties` — [REVIEW]
-- `note/application-jdbc/src/main/java/com/example/note/package-info.java` — [REVIEW]
-- `note/application-jdbc/src/main/java/com/example/note/NoteJdbcApplication.java` — [REVIEW]
-- `note/application-jdbc/src/main/resources/application-postgresql.properties` — [REVIEW]
-- `note/application-jdbc/src/main/resources/application-mysql.properties` — [REVIEW]
-- `note/application-jdbc/compose-postgresql.yaml` — [REVIEW]
-- `note/application-jdbc/compose-mysql.yaml` — [REVIEW]
-- `note/application-jdbc/src/test/java/com/example/note/NoteJdbcPostgresqlApplicationTests.java` — [REVIEW]
-- `note/application-jdbc/src/test/java/com/example/note/NoteJdbcMysqlApplicationTests.java` — [REVIEW]
+#### note/application-r2dbc-mysql/ (7 файлов)
+- `note/application-r2dbc-mysql/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `note/application-r2dbc-mysql/src/main/java/com/example/note/package-info.java` — [DONE]
+- `note/application-r2dbc-mysql/src/main/java/com/example/note/NoteR2dbcMysqlApplication.java` — [REVIEW]
+- `note/application-r2dbc-mysql/src/main/resources/application.properties` — [REVIEW]
+- `note/application-r2dbc-mysql/compose.yaml` — [REVIEW]
+- `note/application-r2dbc-mysql/src/test/resources/application.properties` — [REVIEW]
+- `note/application-r2dbc-mysql/src/test/java/com/example/note/NoteR2dbcMysqlApplicationTests.java` — [REVIEW]
+
+#### note/application-r2dbc-postgresql/ (7 файлов)
+- `note/application-r2dbc-postgresql/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `note/application-r2dbc-postgresql/src/main/java/com/example/note/package-info.java` — [DONE]
+- `note/application-r2dbc-postgresql/src/main/java/com/example/note/NoteR2dbcPostgresqlApplication.java` — [REVIEW]
+- `note/application-r2dbc-postgresql/src/main/resources/application.properties` — [REVIEW]
+- `note/application-r2dbc-postgresql/compose.yaml` — [REVIEW]
+- `note/application-r2dbc-postgresql/src/test/resources/application.properties` — [REVIEW]
+- `note/application-r2dbc-postgresql/src/test/java/com/example/note/NoteR2dbcPostgresqlApplicationTests.java` — [REVIEW]
+
+#### note/application-jpa/ (12 файлов) — [REMOVED] 2026-07-24, разбит на 3 вендорных модуля application-jpa-{h2,mysql,postgresql}/ (см. ниже) — устраняет driver bloat
+- `note/application-jpa/build.gradle.kts` — [REMOVED]
+- `note/application-jpa/src/test/resources/application.properties` — [REMOVED]
+- `note/application-jpa/src/test/java/com/example/note/NoteJpaApplicationTests.java` — [REMOVED]
+- `note/application-jpa/src/main/resources/application.properties` — [REMOVED]
+- `note/application-jpa/src/main/java/com/example/note/package-info.java` — [REMOVED]
+- `note/application-jpa/src/main/java/com/example/note/NoteJpaApplication.java` — [REMOVED]
+- `note/application-jpa/src/main/resources/application-postgresql.properties` — [REMOVED]
+- `note/application-jpa/src/main/resources/application-mysql.properties` — [REMOVED]
+- `note/application-jpa/compose-postgresql.yaml` — [REMOVED]
+- `note/application-jpa/compose-mysql.yaml` — [REMOVED]
+- `note/application-jpa/src/test/java/com/example/note/NoteJpaPostgresqlApplicationTests.java` — [REMOVED]
+- `note/application-jpa/src/test/java/com/example/note/NoteJpaMysqlApplicationTests.java` — [REMOVED]
+
+#### note/application-jpa-h2/ (6 файлов)
+- `note/application-jpa-h2/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `note/application-jpa-h2/src/main/java/com/example/note/package-info.java` — [DONE]
+- `note/application-jpa-h2/src/main/java/com/example/note/NoteJpaH2Application.java` — [REVIEW]
+- `note/application-jpa-h2/src/main/resources/application.properties` — [REVIEW]
+- `note/application-jpa-h2/src/test/resources/application.properties` — [REVIEW]
+- `note/application-jpa-h2/src/test/java/com/example/note/NoteJpaH2ApplicationTests.java` — [REVIEW]
+
+#### note/application-jpa-mysql/ (7 файлов)
+- `note/application-jpa-mysql/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `note/application-jpa-mysql/src/main/java/com/example/note/package-info.java` — [DONE]
+- `note/application-jpa-mysql/src/main/java/com/example/note/NoteJpaMysqlApplication.java` — [REVIEW]
+- `note/application-jpa-mysql/src/main/resources/application.properties` — [REVIEW]
+- `note/application-jpa-mysql/compose.yaml` — [REVIEW]
+- `note/application-jpa-mysql/src/test/resources/application.properties` — [REVIEW]
+- `note/application-jpa-mysql/src/test/java/com/example/note/NoteJpaMysqlApplicationTests.java` — [REVIEW]
+
+#### note/application-jpa-postgresql/ (7 файлов)
+- `note/application-jpa-postgresql/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `note/application-jpa-postgresql/src/main/java/com/example/note/package-info.java` — [DONE]
+- `note/application-jpa-postgresql/src/main/java/com/example/note/NoteJpaPostgresqlApplication.java` — [REVIEW]
+- `note/application-jpa-postgresql/src/main/resources/application.properties` — [REVIEW]
+- `note/application-jpa-postgresql/compose.yaml` — [REVIEW]
+- `note/application-jpa-postgresql/src/test/resources/application.properties` — [REVIEW]
+- `note/application-jpa-postgresql/src/test/java/com/example/note/NoteJpaPostgresqlApplicationTests.java` — [REVIEW]
+
+#### note/application-jdbc/ (12 файлов) — [REMOVED] 2026-07-24, разбит на 3 вендорных модуля application-jdbc-{h2,mysql,postgresql}/ (см. ниже) — устраняет driver bloat
+- `note/application-jdbc/build.gradle.kts` — [REMOVED]
+- `note/application-jdbc/src/test/resources/application.properties` — [REMOVED]
+- `note/application-jdbc/src/test/java/com/example/note/NoteJdbcApplicationTests.java` — [REMOVED]
+- `note/application-jdbc/src/main/resources/application.properties` — [REMOVED]
+- `note/application-jdbc/src/main/java/com/example/note/package-info.java` — [REMOVED]
+- `note/application-jdbc/src/main/java/com/example/note/NoteJdbcApplication.java` — [REMOVED]
+- `note/application-jdbc/src/main/resources/application-postgresql.properties` — [REMOVED]
+- `note/application-jdbc/src/main/resources/application-mysql.properties` — [REMOVED]
+- `note/application-jdbc/compose-postgresql.yaml` — [REMOVED]
+- `note/application-jdbc/compose-mysql.yaml` — [REMOVED]
+- `note/application-jdbc/src/test/java/com/example/note/NoteJdbcPostgresqlApplicationTests.java` — [REMOVED]
+- `note/application-jdbc/src/test/java/com/example/note/NoteJdbcMysqlApplicationTests.java` — [REMOVED]
+
+#### note/application-jdbc-h2/ (6 файлов)
+- `note/application-jdbc-h2/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `note/application-jdbc-h2/src/main/java/com/example/note/package-info.java` — [DONE]
+- `note/application-jdbc-h2/src/main/java/com/example/note/NoteJdbcH2Application.java` — [REVIEW]
+- `note/application-jdbc-h2/src/main/resources/application.properties` — [REVIEW]
+- `note/application-jdbc-h2/src/test/resources/application.properties` — [REVIEW]
+- `note/application-jdbc-h2/src/test/java/com/example/note/NoteJdbcH2ApplicationTests.java` — [REVIEW]
+
+#### note/application-jdbc-mysql/ (7 файлов)
+- `note/application-jdbc-mysql/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `note/application-jdbc-mysql/src/main/java/com/example/note/package-info.java` — [DONE]
+- `note/application-jdbc-mysql/src/main/java/com/example/note/NoteJdbcMysqlApplication.java` — [REVIEW]
+- `note/application-jdbc-mysql/src/main/resources/application.properties` — [REVIEW]
+- `note/application-jdbc-mysql/compose.yaml` — [REVIEW]
+- `note/application-jdbc-mysql/src/test/resources/application.properties` — [REVIEW]
+- `note/application-jdbc-mysql/src/test/java/com/example/note/NoteJdbcMysqlApplicationTests.java` — [REVIEW]
+
+#### note/application-jdbc-postgresql/ (7 файлов)
+- `note/application-jdbc-postgresql/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `note/application-jdbc-postgresql/src/main/java/com/example/note/package-info.java` — [DONE]
+- `note/application-jdbc-postgresql/src/main/java/com/example/note/NoteJdbcPostgresqlApplication.java` — [REVIEW]
+- `note/application-jdbc-postgresql/src/main/resources/application.properties` — [REVIEW]
+- `note/application-jdbc-postgresql/compose.yaml` — [REVIEW]
+- `note/application-jdbc-postgresql/src/test/resources/application.properties` — [REVIEW]
+- `note/application-jdbc-postgresql/src/test/java/com/example/note/NoteJdbcPostgresqlApplicationTests.java` — [REVIEW]
 
 #### note/application-mongodb/ (7 файлов)
 - `note/application-mongodb/build.gradle.kts` — [REVIEW]
@@ -552,7 +786,7 @@
 - `note/data-jpa/src/test/java/com/example/note/data/jpa/adapter/NoteJpaAdapterIntegrationTest.java` — [ADD]
 - `note/data-jdbc/src/test/java/com/example/note/data/jdbc/mapper/NoteJdbcMapperTest.java` — [ADD]
 - `note/data-jdbc/src/test/java/com/example/note/data/jdbc/adapter/NoteJdbcAdapterIntegrationTest.java` — [ADD]
-- `note/application-jpa/src/test/java/com/example/note/NoteCreateEndpointIntegrationTest.java` — [ADD]
+- `note/application-jpa-h2/src/test/java/com/example/note/NoteCreateEndpointIntegrationTest.java` — [ADD]
 
 ### gradle/ (4 файлов)
 
@@ -595,8 +829,8 @@
 #### build-logic/convention/src/main/kotlin/ — precompiled script plugins (48 файлов, было 38)
 - `build-logic/com.example.spring-boot-database-postgresql.gradle.kts` — [REVIEW] — новый 2026-07-23, вендорная ось для JPA/JDBC (`runtimeOnly org.postgresql:postgresql`), активируется через Spring-профиль
 - `build-logic/com.example.spring-boot-database-mysql.gradle.kts` — [REVIEW] — новый 2026-07-23, `runtimeOnly com.mysql:mysql-connector-j`
-- `build-logic/com.example.spring-boot-database-r2dbc-postgresql.gradle.kts` — [REVIEW] — новый 2026-07-23, `runtimeOnly org.postgresql:r2dbc-postgresql`
-- `build-logic/com.example.spring-boot-database-r2dbc-mysql.gradle.kts` — [REVIEW] — новый 2026-07-23, `runtimeOnly io.asyncer:r2dbc-mysql`
+- `build-logic/com.example.spring-boot-database-postgresql-r2dbc.gradle.kts` — [REVIEW] — новый 2026-07-23, `runtimeOnly org.postgresql:r2dbc-postgresql`; переименован 2026-07-24 из `-r2dbc-postgresql` (вендор-впереди-технологии, группировка с `database-postgresql`)
+- `build-logic/com.example.spring-boot-database-mysql-r2dbc.gradle.kts` — [REVIEW] — новый 2026-07-23, `runtimeOnly io.asyncer:r2dbc-mysql`; переименован 2026-07-24 из `-r2dbc-mysql` (та же логика)
 - `build-logic/com.example.spring-boot-testcontainers.gradle.kts` — [REVIEW] — новый 2026-07-23, технологически нейтральная обвязка Testcontainers+JUnit5+`@ServiceConnection` (родитель `spring-boot`); выделен из `-testcontainers-mongodb` в тот же день — не должен быть привязан к одной технологии, пригоден для будущих Postgres/Kafka/Redis-контейнеров
 - `build-logic/com.example.spring-boot-testcontainers-mongodb.gradle.kts` — [REVIEW] — новый 2026-07-23, только MongoDB-специфичный артефакт `testcontainers-mongodb` (родитель `spring-boot`); применяется вместе с `-testcontainers` в `application-mongodb*`
 - `build-logic/com.example.spring-boot-testcontainers-postgresql.gradle.kts` — [REVIEW] — новый 2026-07-23, `testcontainers-postgresql` — один контейнер даёт и `JdbcConnectionDetails`, и `R2dbcConnectionDetails` (подтверждено docs.spring.io), применяется в `application-jpa`/`-jdbc`/`-r2dbc`
@@ -634,7 +868,7 @@
 - `build-logic/com.example.spring-boot-application.gradle.kts` — [REVIEW]
 - `build-logic/com.example.spring-boot-actuator.gradle.kts` — [REMOVED]
 - `build-logic/com.example.reactor.gradle.kts` — [REVIEW]
-- `build-logic/com.example.spring-boot-database-r2dbc-h2.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-boot-database-h2-r2dbc.gradle.kts` — [REVIEW] — переименован 2026-07-24 из `-r2dbc-h2` (группировка с `database-h2`)
 - `build-logic/com.example.codequality-nullaway.gradle.kts` — [REVIEW]
 - `build-logic/com.example.library.gradle.kts` — [REVIEW]
 - `build-logic/com.example.javaformat.gradle.kts` — [REMOVED]
