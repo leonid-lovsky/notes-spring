@@ -1,6 +1,10 @@
 plugins {
     id("java")
-    id("com.example.codequality")
+    id("com.example.codequality-checkstyle")
+    id("com.example.codequality-jspecify")
+    id("com.example.codequality-nullaway")
+    id("com.example.codequality-jacoco")
+    id("com.example.codequality-jacoco-report-aggregation")
 }
 
 val libs = extensions.getByType(VersionCatalogsExtension::class.java).named("libs")

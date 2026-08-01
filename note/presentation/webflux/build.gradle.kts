@@ -1,5 +1,6 @@
 plugins {
     id("com.example.spring-boot-webflux")
+    id("com.example.spring-boot-validation")
 }
 
 dependencies {

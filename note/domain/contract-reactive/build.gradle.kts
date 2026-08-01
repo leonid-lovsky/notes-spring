@@ -1,6 +1,6 @@
 plugins {
-    id("com.example.library")
-    id("com.example.reactor")
+    id("com.example.java-library")
+    id("com.example.project-reactor")
 }
 
 dependencies {

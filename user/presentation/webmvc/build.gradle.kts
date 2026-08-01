@@ -1,5 +1,6 @@
 plugins {
     id("com.example.spring-boot-webmvc")
+    id("com.example.spring-boot-validation")
 }
 
 dependencies {

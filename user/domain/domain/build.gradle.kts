@@ -1,3 +1,3 @@
 plugins {
-    id("com.example.base")
+    id("com.example.java")
 }

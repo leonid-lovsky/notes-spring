@@ -1,4 +1,4 @@
 plugins {
-    id("com.example.base")
+    id("com.example.java")
     id("java-library")
 }
