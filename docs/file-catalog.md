@@ -849,8 +849,10 @@
 - `build-logic/com.example.spring-cloud.gradle.kts` — [REVIEW]
 - `build-logic/com.example.spring-cloud-openfeign.gradle.kts` — [REVIEW]
 - `build-logic/com.example.spring-cloud-loadbalancer.gradle.kts` — [REVIEW]
-- `build-logic/com.example.spring-cloud-gateway-webmvc.gradle.kts` — [REVIEW]
-- `build-logic/com.example.spring-cloud-gateway-webflux.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-cloud-gateway-webmvc.gradle.kts` — [REMOVED] — переименован 2026-08-01 в `spring-cloud-gateway-server-webmvc.gradle.kts` (точное имя артефакта `spring-cloud-starter-gateway-server-webmvc`)
+- `build-logic/com.example.spring-cloud-gateway-webflux.gradle.kts` — [REMOVED] — переименован 2026-08-01 в `spring-cloud-gateway-server-webflux.gradle.kts` (точное имя артефакта `spring-cloud-starter-gateway-server-webflux`)
+- `build-logic/com.example.spring-cloud-gateway-server-webmvc.gradle.kts` — [REVIEW] — новый путь после переименования выше
+- `build-logic/com.example.spring-cloud-gateway-server-webflux.gradle.kts` — [REVIEW] — новый путь после переименования выше
 - `build-logic/com.example.spring-cloud-eureka-server.gradle.kts` — [REVIEW]
 - `build-logic/com.example.spring-cloud-eureka-client.gradle.kts` — [REVIEW]
 - `build-logic/com.example.spring-cloud-config-server.gradle.kts` — [REVIEW]
