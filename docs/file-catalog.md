@@ -27,104 +27,104 @@
 
 ### user-note/ (213 файлов, было 153 — +60: 9 вендорных application-*-{h2,mysql,postgresql}/ модулей заменили 3 профильных 2026-07-24)
 
-#### user-note/webmvc/ (5 файлов)
-- `user-note/webmvc/build.gradle.kts` — [DONE]
-- `user-note/webmvc/src/main/java/com/example/usernote/webmvc/package-info.java` — [DONE]
-- `user-note/webmvc/src/main/java/com/example/usernote/webmvc/UserNoteExceptionHandler.java` — [REVIEW]
-- `user-note/webmvc/src/main/java/com/example/usernote/webmvc/UserNoteControllerInterface.java` — [REVIEW]
-- `user-note/webmvc/src/main/java/com/example/usernote/webmvc/UserNoteController.java` — [REVIEW]
+#### user-note/presentation/webmvc/ (5 файлов)
+- `user-note/presentation/webmvc/build.gradle.kts` — [DONE]
+- `user-note/presentation/webmvc/src/main/java/com/example/usernote/webmvc/package-info.java` — [DONE]
+- `user-note/presentation/webmvc/src/main/java/com/example/usernote/webmvc/UserNoteExceptionHandler.java` — [REVIEW]
+- `user-note/presentation/webmvc/src/main/java/com/example/usernote/webmvc/UserNoteControllerInterface.java` — [REVIEW]
+- `user-note/presentation/webmvc/src/main/java/com/example/usernote/webmvc/UserNoteController.java` — [REVIEW]
 
-#### user-note/webflux/ (5 файлов)
-- `user-note/webflux/build.gradle.kts` — [DONE]
-- `user-note/webflux/src/main/java/com/example/usernote/webflux/package-info.java` — [DONE]
-- `user-note/webflux/src/main/java/com/example/usernote/webflux/UserNoteExceptionHandler.java` — [REVIEW]
-- `user-note/webflux/src/main/java/com/example/usernote/webflux/UserNoteControllerReactiveInterface.java` — [REVIEW]
-- `user-note/webflux/src/main/java/com/example/usernote/webflux/UserNoteController.java` — [REVIEW]
+#### user-note/presentation/webflux/ (5 файлов)
+- `user-note/presentation/webflux/build.gradle.kts` — [DONE]
+- `user-note/presentation/webflux/src/main/java/com/example/usernote/webflux/package-info.java` — [DONE]
+- `user-note/presentation/webflux/src/main/java/com/example/usernote/webflux/UserNoteExceptionHandler.java` — [REVIEW]
+- `user-note/presentation/webflux/src/main/java/com/example/usernote/webflux/UserNoteControllerReactiveInterface.java` — [REVIEW]
+- `user-note/presentation/webflux/src/main/java/com/example/usernote/webflux/UserNoteController.java` — [REVIEW]
 
-#### user-note/domain/ (9 файлов)
-- `user-note/domain/build.gradle.kts` — [REVIEW]
-- `user-note/domain/src/main/java/com/example/usernote/domain/package-info.java` — [DONE]
-- `user-note/domain/src/main/java/com/example/usernote/domain/UserNoteRole.java` — [REVIEW]
-- `user-note/domain/src/main/java/com/example/usernote/domain/UserNoteResponse.java` — [REVIEW]
-- `user-note/domain/src/main/java/com/example/usernote/domain/UserNoteRequest.java` — [REVIEW]
-- `user-note/domain/src/main/java/com/example/usernote/domain/UserNoteNotFoundException.java` — [REVIEW]
-- `user-note/domain/src/main/java/com/example/usernote/domain/UserNotFoundException.java` — [REVIEW]
-- `user-note/domain/src/main/java/com/example/usernote/domain/NoteNotFoundException.java` — [REVIEW]
-- `user-note/domain/src/main/java/com/example/usernote/domain/UserNotePersistable.java` — [REVIEW]
+#### user-note/domain/domain/ (9 файлов)
+- `user-note/domain/domain/build.gradle.kts` — [REVIEW]
+- `user-note/domain/domain/src/main/java/com/example/usernote/domain/package-info.java` — [DONE]
+- `user-note/domain/domain/src/main/java/com/example/usernote/domain/UserNoteRole.java` — [REVIEW]
+- `user-note/domain/domain/src/main/java/com/example/usernote/domain/UserNoteResponse.java` — [REVIEW]
+- `user-note/domain/domain/src/main/java/com/example/usernote/domain/UserNoteRequest.java` — [REVIEW]
+- `user-note/domain/domain/src/main/java/com/example/usernote/domain/UserNoteNotFoundException.java` — [REVIEW]
+- `user-note/domain/domain/src/main/java/com/example/usernote/domain/UserNotFoundException.java` — [REVIEW]
+- `user-note/domain/domain/src/main/java/com/example/usernote/domain/NoteNotFoundException.java` — [REVIEW]
+- `user-note/domain/domain/src/main/java/com/example/usernote/domain/UserNotePersistable.java` — [REVIEW]
 
-#### user-note/data-r2dbc/ (11 файлов)
-- `user-note/data-r2dbc/build.gradle.kts` — [DONE]
-- `user-note/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/repository/package-info.java` — [DONE]
-- `user-note/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/repository/UserNoteR2dbcRepository.java` — [REVIEW]
-- `user-note/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/model/package-info.java` — [DONE]
-- `user-note/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/model/UserNoteR2dbcEntity.java` — [REVIEW]
-- `user-note/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/mapper/package-info.java` — [DONE]
-- `user-note/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/mapper/UserNoteR2dbcMapperContract.java` — [REVIEW]
-- `user-note/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/mapper/UserNoteR2dbcMapper.java` — [REVIEW]
-- `user-note/data-r2dbc/src/main/resources/schema.sql` — [REVIEW]
-- `user-note/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/adapter/package-info.java` — [DONE]
-- `user-note/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/adapter/UserNoteService.java` — [REVIEW]
+#### user-note/persistence/data-r2dbc/ (11 файлов)
+- `user-note/persistence/data-r2dbc/build.gradle.kts` — [DONE]
+- `user-note/persistence/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/repository/package-info.java` — [DONE]
+- `user-note/persistence/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/repository/UserNoteR2dbcRepository.java` — [REVIEW]
+- `user-note/persistence/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/model/package-info.java` — [DONE]
+- `user-note/persistence/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/model/UserNoteR2dbcEntity.java` — [REVIEW]
+- `user-note/persistence/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/mapper/package-info.java` — [DONE]
+- `user-note/persistence/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/mapper/UserNoteR2dbcMapperContract.java` — [REVIEW]
+- `user-note/persistence/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/mapper/UserNoteR2dbcMapper.java` — [REVIEW]
+- `user-note/persistence/data-r2dbc/src/main/resources/schema.sql` — [REVIEW]
+- `user-note/persistence/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/adapter/package-info.java` — [DONE]
+- `user-note/persistence/data-r2dbc/src/main/java/com/example/usernote/data/r2dbc/adapter/UserNoteService.java` — [REVIEW]
 
-#### user-note/data-mongodb-reactive/ (10 файлов)
-- `user-note/data-mongodb-reactive/build.gradle.kts` — [DONE]
-- `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/repository/package-info.java` — [DONE]
-- `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/repository/UserNoteMongoReactiveRepository.java` — [REVIEW]
-- `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/model/package-info.java` — [DONE]
-- `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/model/UserNoteReactiveDocument.java` — [REVIEW]
-- `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/mapper/package-info.java` — [DONE]
-- `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/mapper/UserNoteMongoReactiveMapperContract.java` — [REVIEW]
-- `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/mapper/UserNoteMongoReactiveMapper.java` — [REVIEW]
-- `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/adapter/package-info.java` — [DONE]
-- `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/adapter/UserNoteService.java` — [REVIEW]
+#### user-note/persistence/data-mongodb-reactive/ (10 файлов)
+- `user-note/persistence/data-mongodb-reactive/build.gradle.kts` — [DONE]
+- `user-note/persistence/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/repository/package-info.java` — [DONE]
+- `user-note/persistence/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/repository/UserNoteMongoReactiveRepository.java` — [REVIEW]
+- `user-note/persistence/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/model/package-info.java` — [DONE]
+- `user-note/persistence/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/model/UserNoteReactiveDocument.java` — [REVIEW]
+- `user-note/persistence/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/mapper/package-info.java` — [DONE]
+- `user-note/persistence/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/mapper/UserNoteMongoReactiveMapperContract.java` — [REVIEW]
+- `user-note/persistence/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/mapper/UserNoteMongoReactiveMapper.java` — [REVIEW]
+- `user-note/persistence/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/adapter/package-info.java` — [DONE]
+- `user-note/persistence/data-mongodb-reactive/src/main/java/com/example/usernote/data/mongodb/reactive/adapter/UserNoteService.java` — [REVIEW]
 
-#### user-note/data-mongodb/ (10 файлов)
-- `user-note/data-mongodb/build.gradle.kts` — [DONE]
-- `user-note/data-mongodb/src/main/java/com/example/usernote/data/mongodb/repository/package-info.java` — [DONE]
-- `user-note/data-mongodb/src/main/java/com/example/usernote/data/mongodb/repository/UserNoteMongoRepository.java` — [REVIEW]
-- `user-note/data-mongodb/src/main/java/com/example/usernote/data/mongodb/model/package-info.java` — [DONE]
-- `user-note/data-mongodb/src/main/java/com/example/usernote/data/mongodb/model/UserNoteDocument.java` — [REVIEW]
-- `user-note/data-mongodb/src/main/java/com/example/usernote/data/mongodb/mapper/package-info.java` — [DONE]
-- `user-note/data-mongodb/src/main/java/com/example/usernote/data/mongodb/mapper/UserNoteMongoMapperContract.java` — [REVIEW]
-- `user-note/data-mongodb/src/main/java/com/example/usernote/data/mongodb/mapper/UserNoteMongoMapper.java` — [REVIEW]
-- `user-note/data-mongodb/src/main/java/com/example/usernote/data/mongodb/adapter/package-info.java` — [DONE]
-- `user-note/data-mongodb/src/main/java/com/example/usernote/data/mongodb/adapter/UserNoteService.java` — [REVIEW]
+#### user-note/persistence/data-mongodb/ (10 файлов)
+- `user-note/persistence/data-mongodb/build.gradle.kts` — [DONE]
+- `user-note/persistence/data-mongodb/src/main/java/com/example/usernote/data/mongodb/repository/package-info.java` — [DONE]
+- `user-note/persistence/data-mongodb/src/main/java/com/example/usernote/data/mongodb/repository/UserNoteMongoRepository.java` — [REVIEW]
+- `user-note/persistence/data-mongodb/src/main/java/com/example/usernote/data/mongodb/model/package-info.java` — [DONE]
+- `user-note/persistence/data-mongodb/src/main/java/com/example/usernote/data/mongodb/model/UserNoteDocument.java` — [REVIEW]
+- `user-note/persistence/data-mongodb/src/main/java/com/example/usernote/data/mongodb/mapper/package-info.java` — [DONE]
+- `user-note/persistence/data-mongodb/src/main/java/com/example/usernote/data/mongodb/mapper/UserNoteMongoMapperContract.java` — [REVIEW]
+- `user-note/persistence/data-mongodb/src/main/java/com/example/usernote/data/mongodb/mapper/UserNoteMongoMapper.java` — [REVIEW]
+- `user-note/persistence/data-mongodb/src/main/java/com/example/usernote/data/mongodb/adapter/package-info.java` — [DONE]
+- `user-note/persistence/data-mongodb/src/main/java/com/example/usernote/data/mongodb/adapter/UserNoteService.java` — [REVIEW]
 
-#### user-note/data-jpa/ (10 файлов)
-- `user-note/data-jpa/build.gradle.kts` — [DONE]
-- `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/repository/package-info.java` — [DONE]
-- `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/repository/UserNoteJpaRepository.java` — [REVIEW]
-- `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/model/package-info.java` — [DONE]
-- `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/model/UserNoteEntity.java` — [REVIEW]
-- `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/mapper/package-info.java` — [DONE]
-- `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/mapper/UserNoteJpaMapperContract.java` — [REVIEW]
-- `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/mapper/UserNoteJpaMapper.java` — [REVIEW]
-- `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/adapter/package-info.java` — [DONE]
-- `user-note/data-jpa/src/main/java/com/example/usernote/data/jpa/adapter/UserNoteService.java` — [REVIEW]
+#### user-note/persistence/data-jpa/ (10 файлов)
+- `user-note/persistence/data-jpa/build.gradle.kts` — [DONE]
+- `user-note/persistence/data-jpa/src/main/java/com/example/usernote/data/jpa/repository/package-info.java` — [DONE]
+- `user-note/persistence/data-jpa/src/main/java/com/example/usernote/data/jpa/repository/UserNoteJpaRepository.java` — [REVIEW]
+- `user-note/persistence/data-jpa/src/main/java/com/example/usernote/data/jpa/model/package-info.java` — [DONE]
+- `user-note/persistence/data-jpa/src/main/java/com/example/usernote/data/jpa/model/UserNoteEntity.java` — [REVIEW]
+- `user-note/persistence/data-jpa/src/main/java/com/example/usernote/data/jpa/mapper/package-info.java` — [DONE]
+- `user-note/persistence/data-jpa/src/main/java/com/example/usernote/data/jpa/mapper/UserNoteJpaMapperContract.java` — [REVIEW]
+- `user-note/persistence/data-jpa/src/main/java/com/example/usernote/data/jpa/mapper/UserNoteJpaMapper.java` — [REVIEW]
+- `user-note/persistence/data-jpa/src/main/java/com/example/usernote/data/jpa/adapter/package-info.java` — [DONE]
+- `user-note/persistence/data-jpa/src/main/java/com/example/usernote/data/jpa/adapter/UserNoteService.java` — [REVIEW]
 
-#### user-note/data-jdbc/ (11 файлов)
-- `user-note/data-jdbc/build.gradle.kts` — [DONE]
-- `user-note/data-jdbc/src/main/java/com/example/usernote/data/jdbc/repository/package-info.java` — [REVIEW]
-- `user-note/data-jdbc/src/main/java/com/example/usernote/data/jdbc/repository/UserNoteJdbcRepository.java` — [REVIEW]
-- `user-note/data-jdbc/src/main/java/com/example/usernote/data/jdbc/model/package-info.java` — [REVIEW]
-- `user-note/data-jdbc/src/main/java/com/example/usernote/data/jdbc/model/UserNoteJdbcEntity.java` — [REVIEW]
-- `user-note/data-jdbc/src/main/java/com/example/usernote/data/jdbc/mapper/package-info.java` — [DONE]
-- `user-note/data-jdbc/src/main/java/com/example/usernote/data/jdbc/mapper/UserNoteJdbcMapperContract.java` — [REVIEW]
-- `user-note/data-jdbc/src/main/java/com/example/usernote/data/jdbc/mapper/UserNoteJdbcMapper.java` — [REVIEW]
-- `user-note/data-jdbc/src/main/resources/schema.sql` — [REVIEW]
-- `user-note/data-jdbc/src/main/java/com/example/usernote/data/jdbc/adapter/package-info.java` — [DONE]
-- `user-note/data-jdbc/src/main/java/com/example/usernote/data/jdbc/adapter/UserNoteService.java` — [REVIEW]
+#### user-note/persistence/data-jdbc/ (11 файлов)
+- `user-note/persistence/data-jdbc/build.gradle.kts` — [DONE]
+- `user-note/persistence/data-jdbc/src/main/java/com/example/usernote/data/jdbc/repository/package-info.java` — [REVIEW]
+- `user-note/persistence/data-jdbc/src/main/java/com/example/usernote/data/jdbc/repository/UserNoteJdbcRepository.java` — [REVIEW]
+- `user-note/persistence/data-jdbc/src/main/java/com/example/usernote/data/jdbc/model/package-info.java` — [REVIEW]
+- `user-note/persistence/data-jdbc/src/main/java/com/example/usernote/data/jdbc/model/UserNoteJdbcEntity.java` — [REVIEW]
+- `user-note/persistence/data-jdbc/src/main/java/com/example/usernote/data/jdbc/mapper/package-info.java` — [DONE]
+- `user-note/persistence/data-jdbc/src/main/java/com/example/usernote/data/jdbc/mapper/UserNoteJdbcMapperContract.java` — [REVIEW]
+- `user-note/persistence/data-jdbc/src/main/java/com/example/usernote/data/jdbc/mapper/UserNoteJdbcMapper.java` — [REVIEW]
+- `user-note/persistence/data-jdbc/src/main/resources/schema.sql` — [REVIEW]
+- `user-note/persistence/data-jdbc/src/main/java/com/example/usernote/data/jdbc/adapter/package-info.java` — [DONE]
+- `user-note/persistence/data-jdbc/src/main/java/com/example/usernote/data/jdbc/adapter/UserNoteService.java` — [REVIEW]
 
-#### user-note/contract-reactive/ (4 файлов)
-- `user-note/contract-reactive/build.gradle.kts` — [REVIEW]
-- `user-note/contract-reactive/src/main/java/com/example/usernote/contract/reactive/package-info.java` — [DONE]
-- `user-note/contract-reactive/src/main/java/com/example/usernote/contract/reactive/UserNoteReactiveInterface.java` — [REVIEW]
-- `user-note/contract-reactive/src/main/java/com/example/usernote/contract/reactive/UserNoteServiceReactiveInterface.java` — [REVIEW]
+#### user-note/domain/contract-reactive/ (4 файлов)
+- `user-note/domain/contract-reactive/build.gradle.kts` — [REVIEW]
+- `user-note/domain/contract-reactive/src/main/java/com/example/usernote/contract/reactive/package-info.java` — [DONE]
+- `user-note/domain/contract-reactive/src/main/java/com/example/usernote/contract/reactive/UserNoteReactiveInterface.java` — [REVIEW]
+- `user-note/domain/contract-reactive/src/main/java/com/example/usernote/contract/reactive/UserNoteServiceReactiveInterface.java` — [REVIEW]
 
-#### user-note/contract/ (4 файлов)
-- `user-note/contract/build.gradle.kts` — [REVIEW]
-- `user-note/contract/src/main/java/com/example/usernote/contract/package-info.java` — [DONE]
-- `user-note/contract/src/main/java/com/example/usernote/contract/UserNoteInterface.java` — [REVIEW]
-- `user-note/contract/src/main/java/com/example/usernote/contract/UserNoteServiceInterface.java` — [REVIEW]
+#### user-note/domain/contract/ (4 файлов)
+- `user-note/domain/contract/build.gradle.kts` — [REVIEW]
+- `user-note/domain/contract/src/main/java/com/example/usernote/contract/package-info.java` — [DONE]
+- `user-note/domain/contract/src/main/java/com/example/usernote/contract/UserNoteInterface.java` — [REVIEW]
+- `user-note/domain/contract/src/main/java/com/example/usernote/contract/UserNoteServiceInterface.java` — [REVIEW]
 
 #### user-note/application-r2dbc/ (12 файлов) — [REMOVED] 2026-07-24, разбит на 3 вендорных модуля application-r2dbc-{h2,mysql,postgresql}/ — устраняет driver bloat
 - `user-note/application-r2dbc/build.gradle.kts` — [REMOVED]
@@ -140,31 +140,31 @@
 - `user-note/application-r2dbc/src/test/java/com/example/usernote/UserNotePostgresqlR2dbcApplicationTests.java` — [REMOVED]
 - `user-note/application-r2dbc/src/test/java/com/example/usernote/UserNoteMysqlR2dbcApplicationTests.java` — [REMOVED]
 
-#### user-note/application-h2-r2dbc/ (6 файлов)
-- `user-note/application-h2-r2dbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
-- `user-note/application-h2-r2dbc/src/main/java/com/example/usernote/package-info.java` — [DONE]
-- `user-note/application-h2-r2dbc/src/main/java/com/example/usernote/UserNoteH2R2dbcApplication.java` — [REVIEW]
-- `user-note/application-h2-r2dbc/src/main/resources/application.properties` — [REVIEW]
-- `user-note/application-h2-r2dbc/src/test/resources/application.properties` — [REVIEW]
-- `user-note/application-h2-r2dbc/src/test/java/com/example/usernote/UserNoteH2R2dbcApplicationTests.java` — [REVIEW]
+#### user-note/application/application-h2-r2dbc/ (6 файлов)
+- `user-note/application/application-h2-r2dbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `user-note/application/application-h2-r2dbc/src/main/java/com/example/usernote/package-info.java` — [DONE]
+- `user-note/application/application-h2-r2dbc/src/main/java/com/example/usernote/UserNoteH2R2dbcApplication.java` — [REVIEW]
+- `user-note/application/application-h2-r2dbc/src/main/resources/application.properties` — [REVIEW]
+- `user-note/application/application-h2-r2dbc/src/test/resources/application.properties` — [REVIEW]
+- `user-note/application/application-h2-r2dbc/src/test/java/com/example/usernote/UserNoteH2R2dbcApplicationTests.java` — [REVIEW]
 
-#### user-note/application-mysql-r2dbc/ (7 файлов)
-- `user-note/application-mysql-r2dbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
-- `user-note/application-mysql-r2dbc/src/main/java/com/example/usernote/package-info.java` — [DONE]
-- `user-note/application-mysql-r2dbc/src/main/java/com/example/usernote/UserNoteMysqlR2dbcApplication.java` — [REVIEW]
-- `user-note/application-mysql-r2dbc/src/main/resources/application.properties` — [REVIEW]
-- `user-note/application-mysql-r2dbc/compose.yaml` — [REVIEW]
-- `user-note/application-mysql-r2dbc/src/test/resources/application.properties` — [REVIEW]
-- `user-note/application-mysql-r2dbc/src/test/java/com/example/usernote/UserNoteMysqlR2dbcApplicationTests.java` — [REVIEW]
+#### user-note/application/application-mysql-r2dbc/ (7 файлов)
+- `user-note/application/application-mysql-r2dbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `user-note/application/application-mysql-r2dbc/src/main/java/com/example/usernote/package-info.java` — [DONE]
+- `user-note/application/application-mysql-r2dbc/src/main/java/com/example/usernote/UserNoteMysqlR2dbcApplication.java` — [REVIEW]
+- `user-note/application/application-mysql-r2dbc/src/main/resources/application.properties` — [REVIEW]
+- `user-note/application/application-mysql-r2dbc/compose.yaml` — [REVIEW]
+- `user-note/application/application-mysql-r2dbc/src/test/resources/application.properties` — [REVIEW]
+- `user-note/application/application-mysql-r2dbc/src/test/java/com/example/usernote/UserNoteMysqlR2dbcApplicationTests.java` — [REVIEW]
 
-#### user-note/application-postgresql-r2dbc/ (7 файлов)
-- `user-note/application-postgresql-r2dbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
-- `user-note/application-postgresql-r2dbc/src/main/java/com/example/usernote/package-info.java` — [DONE]
-- `user-note/application-postgresql-r2dbc/src/main/java/com/example/usernote/UserNotePostgresqlR2dbcApplication.java` — [REVIEW]
-- `user-note/application-postgresql-r2dbc/src/main/resources/application.properties` — [REVIEW]
-- `user-note/application-postgresql-r2dbc/compose.yaml` — [REVIEW]
-- `user-note/application-postgresql-r2dbc/src/test/resources/application.properties` — [REVIEW]
-- `user-note/application-postgresql-r2dbc/src/test/java/com/example/usernote/UserNotePostgresqlR2dbcApplicationTests.java` — [REVIEW]
+#### user-note/application/application-postgresql-r2dbc/ (7 файлов)
+- `user-note/application/application-postgresql-r2dbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `user-note/application/application-postgresql-r2dbc/src/main/java/com/example/usernote/package-info.java` — [DONE]
+- `user-note/application/application-postgresql-r2dbc/src/main/java/com/example/usernote/UserNotePostgresqlR2dbcApplication.java` — [REVIEW]
+- `user-note/application/application-postgresql-r2dbc/src/main/resources/application.properties` — [REVIEW]
+- `user-note/application/application-postgresql-r2dbc/compose.yaml` — [REVIEW]
+- `user-note/application/application-postgresql-r2dbc/src/test/resources/application.properties` — [REVIEW]
+- `user-note/application/application-postgresql-r2dbc/src/test/java/com/example/usernote/UserNotePostgresqlR2dbcApplicationTests.java` — [REVIEW]
 
 #### user-note/application-jpa/ (12 файлов) — [REMOVED] 2026-07-24, разбит на 3 вендорных модуля application-jpa-{h2,mysql,postgresql}/ — устраняет driver bloat
 - `user-note/application-jpa/build.gradle.kts` — [REMOVED]
@@ -180,31 +180,31 @@
 - `user-note/application-jpa/src/test/java/com/example/usernote/UserNotePostgresqlJpaApplicationTests.java` — [REMOVED]
 - `user-note/application-jpa/src/test/java/com/example/usernote/UserNoteMysqlJpaApplicationTests.java` — [REMOVED]
 
-#### user-note/application-h2-jpa/ (6 файлов)
-- `user-note/application-h2-jpa/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
-- `user-note/application-h2-jpa/src/main/java/com/example/usernote/package-info.java` — [DONE]
-- `user-note/application-h2-jpa/src/main/java/com/example/usernote/UserNoteH2JpaApplication.java` — [REVIEW]
-- `user-note/application-h2-jpa/src/main/resources/application.properties` — [REVIEW]
-- `user-note/application-h2-jpa/src/test/resources/application.properties` — [REVIEW]
-- `user-note/application-h2-jpa/src/test/java/com/example/usernote/UserNoteH2JpaApplicationTests.java` — [REVIEW]
+#### user-note/application/application-h2-jpa/ (6 файлов)
+- `user-note/application/application-h2-jpa/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `user-note/application/application-h2-jpa/src/main/java/com/example/usernote/package-info.java` — [DONE]
+- `user-note/application/application-h2-jpa/src/main/java/com/example/usernote/UserNoteH2JpaApplication.java` — [REVIEW]
+- `user-note/application/application-h2-jpa/src/main/resources/application.properties` — [REVIEW]
+- `user-note/application/application-h2-jpa/src/test/resources/application.properties` — [REVIEW]
+- `user-note/application/application-h2-jpa/src/test/java/com/example/usernote/UserNoteH2JpaApplicationTests.java` — [REVIEW]
 
-#### user-note/application-mysql-jpa/ (7 файлов)
-- `user-note/application-mysql-jpa/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
-- `user-note/application-mysql-jpa/src/main/java/com/example/usernote/package-info.java` — [DONE]
-- `user-note/application-mysql-jpa/src/main/java/com/example/usernote/UserNoteMysqlJpaApplication.java` — [REVIEW]
-- `user-note/application-mysql-jpa/src/main/resources/application.properties` — [REVIEW]
-- `user-note/application-mysql-jpa/compose.yaml` — [REVIEW]
-- `user-note/application-mysql-jpa/src/test/resources/application.properties` — [REVIEW]
-- `user-note/application-mysql-jpa/src/test/java/com/example/usernote/UserNoteMysqlJpaApplicationTests.java` — [REVIEW]
+#### user-note/application/application-mysql-jpa/ (7 файлов)
+- `user-note/application/application-mysql-jpa/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `user-note/application/application-mysql-jpa/src/main/java/com/example/usernote/package-info.java` — [DONE]
+- `user-note/application/application-mysql-jpa/src/main/java/com/example/usernote/UserNoteMysqlJpaApplication.java` — [REVIEW]
+- `user-note/application/application-mysql-jpa/src/main/resources/application.properties` — [REVIEW]
+- `user-note/application/application-mysql-jpa/compose.yaml` — [REVIEW]
+- `user-note/application/application-mysql-jpa/src/test/resources/application.properties` — [REVIEW]
+- `user-note/application/application-mysql-jpa/src/test/java/com/example/usernote/UserNoteMysqlJpaApplicationTests.java` — [REVIEW]
 
-#### user-note/application-postgresql-jpa/ (7 файлов)
-- `user-note/application-postgresql-jpa/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
-- `user-note/application-postgresql-jpa/src/main/java/com/example/usernote/package-info.java` — [DONE]
-- `user-note/application-postgresql-jpa/src/main/java/com/example/usernote/UserNotePostgresqlJpaApplication.java` — [REVIEW]
-- `user-note/application-postgresql-jpa/src/main/resources/application.properties` — [REVIEW]
-- `user-note/application-postgresql-jpa/compose.yaml` — [REVIEW]
-- `user-note/application-postgresql-jpa/src/test/resources/application.properties` — [REVIEW]
-- `user-note/application-postgresql-jpa/src/test/java/com/example/usernote/UserNotePostgresqlJpaApplicationTests.java` — [REVIEW]
+#### user-note/application/application-postgresql-jpa/ (7 файлов)
+- `user-note/application/application-postgresql-jpa/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `user-note/application/application-postgresql-jpa/src/main/java/com/example/usernote/package-info.java` — [DONE]
+- `user-note/application/application-postgresql-jpa/src/main/java/com/example/usernote/UserNotePostgresqlJpaApplication.java` — [REVIEW]
+- `user-note/application/application-postgresql-jpa/src/main/resources/application.properties` — [REVIEW]
+- `user-note/application/application-postgresql-jpa/compose.yaml` — [REVIEW]
+- `user-note/application/application-postgresql-jpa/src/test/resources/application.properties` — [REVIEW]
+- `user-note/application/application-postgresql-jpa/src/test/java/com/example/usernote/UserNotePostgresqlJpaApplicationTests.java` — [REVIEW]
 
 #### user-note/application-jdbc/ (12 файлов) — [REMOVED] 2026-07-24, разбит на 3 вендорных модуля application-jdbc-{h2,mysql,postgresql}/ — устраняет driver bloat
 - `user-note/application-jdbc/build.gradle.kts` — [REMOVED]
@@ -220,165 +220,165 @@
 - `user-note/application-jdbc/src/test/java/com/example/usernote/UserNotePostgresqlJdbcApplicationTests.java` — [REMOVED]
 - `user-note/application-jdbc/src/test/java/com/example/usernote/UserNoteMysqlJdbcApplicationTests.java` — [REMOVED]
 
-#### user-note/application-h2-jdbc/ (6 файлов)
-- `user-note/application-h2-jdbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
-- `user-note/application-h2-jdbc/src/main/java/com/example/usernote/package-info.java` — [DONE]
-- `user-note/application-h2-jdbc/src/main/java/com/example/usernote/UserNoteH2JdbcApplication.java` — [REVIEW]
-- `user-note/application-h2-jdbc/src/main/resources/application.properties` — [REVIEW]
-- `user-note/application-h2-jdbc/src/test/resources/application.properties` — [REVIEW]
-- `user-note/application-h2-jdbc/src/test/java/com/example/usernote/UserNoteH2JdbcApplicationTests.java` — [REVIEW]
+#### user-note/application/application-h2-jdbc/ (6 файлов)
+- `user-note/application/application-h2-jdbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `user-note/application/application-h2-jdbc/src/main/java/com/example/usernote/package-info.java` — [DONE]
+- `user-note/application/application-h2-jdbc/src/main/java/com/example/usernote/UserNoteH2JdbcApplication.java` — [REVIEW]
+- `user-note/application/application-h2-jdbc/src/main/resources/application.properties` — [REVIEW]
+- `user-note/application/application-h2-jdbc/src/test/resources/application.properties` — [REVIEW]
+- `user-note/application/application-h2-jdbc/src/test/java/com/example/usernote/UserNoteH2JdbcApplicationTests.java` — [REVIEW]
 
-#### user-note/application-mysql-jdbc/ (7 файлов)
-- `user-note/application-mysql-jdbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
-- `user-note/application-mysql-jdbc/src/main/java/com/example/usernote/package-info.java` — [DONE]
-- `user-note/application-mysql-jdbc/src/main/java/com/example/usernote/UserNoteMysqlJdbcApplication.java` — [REVIEW]
-- `user-note/application-mysql-jdbc/src/main/resources/application.properties` — [REVIEW]
-- `user-note/application-mysql-jdbc/compose.yaml` — [REVIEW]
-- `user-note/application-mysql-jdbc/src/test/resources/application.properties` — [REVIEW]
-- `user-note/application-mysql-jdbc/src/test/java/com/example/usernote/UserNoteMysqlJdbcApplicationTests.java` — [REVIEW]
+#### user-note/application/application-mysql-jdbc/ (7 файлов)
+- `user-note/application/application-mysql-jdbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `user-note/application/application-mysql-jdbc/src/main/java/com/example/usernote/package-info.java` — [DONE]
+- `user-note/application/application-mysql-jdbc/src/main/java/com/example/usernote/UserNoteMysqlJdbcApplication.java` — [REVIEW]
+- `user-note/application/application-mysql-jdbc/src/main/resources/application.properties` — [REVIEW]
+- `user-note/application/application-mysql-jdbc/compose.yaml` — [REVIEW]
+- `user-note/application/application-mysql-jdbc/src/test/resources/application.properties` — [REVIEW]
+- `user-note/application/application-mysql-jdbc/src/test/java/com/example/usernote/UserNoteMysqlJdbcApplicationTests.java` — [REVIEW]
 
-#### user-note/application-postgresql-jdbc/ (7 файлов)
-- `user-note/application-postgresql-jdbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
-- `user-note/application-postgresql-jdbc/src/main/java/com/example/usernote/package-info.java` — [DONE]
-- `user-note/application-postgresql-jdbc/src/main/java/com/example/usernote/UserNotePostgresqlJdbcApplication.java` — [REVIEW]
-- `user-note/application-postgresql-jdbc/src/main/resources/application.properties` — [REVIEW]
-- `user-note/application-postgresql-jdbc/compose.yaml` — [REVIEW]
-- `user-note/application-postgresql-jdbc/src/test/resources/application.properties` — [REVIEW]
-- `user-note/application-postgresql-jdbc/src/test/java/com/example/usernote/UserNotePostgresqlJdbcApplicationTests.java` — [REVIEW]
+#### user-note/application/application-postgresql-jdbc/ (7 файлов)
+- `user-note/application/application-postgresql-jdbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `user-note/application/application-postgresql-jdbc/src/main/java/com/example/usernote/package-info.java` — [DONE]
+- `user-note/application/application-postgresql-jdbc/src/main/java/com/example/usernote/UserNotePostgresqlJdbcApplication.java` — [REVIEW]
+- `user-note/application/application-postgresql-jdbc/src/main/resources/application.properties` — [REVIEW]
+- `user-note/application/application-postgresql-jdbc/compose.yaml` — [REVIEW]
+- `user-note/application/application-postgresql-jdbc/src/test/resources/application.properties` — [REVIEW]
+- `user-note/application/application-postgresql-jdbc/src/test/java/com/example/usernote/UserNotePostgresqlJdbcApplicationTests.java` — [REVIEW]
 
-#### user-note/application-mongodb/ (7 файлов)
-- `user-note/application-mongodb/build.gradle.kts` — [REVIEW]
-- `user-note/application-mongodb/src/test/resources/application.properties` — [REVIEW]
-- `user-note/application-mongodb/src/test/java/com/example/usernote/UserNoteMongoApplicationTests.java` — [REVIEW]
-- `user-note/application-mongodb/src/main/resources/application.properties` — [REVIEW]
-- `user-note/application-mongodb/src/main/java/com/example/usernote/package-info.java` — [REVIEW]
-- `user-note/application-mongodb/src/main/java/com/example/usernote/UserNoteMongoApplication.java` — [REVIEW]
-- `user-note/application-mongodb/compose.yaml` — [REVIEW] — восстановлен 2026-07-23 (Testcontainers/Compose для Mongo вернули, теперь симметрично с PostgreSQL/MySQL)
+#### user-note/application/application-mongodb/ (7 файлов)
+- `user-note/application/application-mongodb/build.gradle.kts` — [REVIEW]
+- `user-note/application/application-mongodb/src/test/resources/application.properties` — [REVIEW]
+- `user-note/application/application-mongodb/src/test/java/com/example/usernote/UserNoteMongoApplicationTests.java` — [REVIEW]
+- `user-note/application/application-mongodb/src/main/resources/application.properties` — [REVIEW]
+- `user-note/application/application-mongodb/src/main/java/com/example/usernote/package-info.java` — [REVIEW]
+- `user-note/application/application-mongodb/src/main/java/com/example/usernote/UserNoteMongoApplication.java` — [REVIEW]
+- `user-note/application/application-mongodb/compose.yaml` — [REVIEW] — восстановлен 2026-07-23 (Testcontainers/Compose для Mongo вернули, теперь симметрично с PostgreSQL/MySQL)
 
-#### user-note/application-mongodb-reactive/ (7 файлов)
-- `user-note/application-mongodb-reactive/build.gradle.kts` — [REVIEW]
-- `user-note/application-mongodb-reactive/src/test/resources/application.properties` — [REVIEW]
-- `user-note/application-mongodb-reactive/src/test/java/com/example/usernote/UserNoteMongoReactiveApplicationTests.java` — [REVIEW]
-- `user-note/application-mongodb-reactive/src/main/resources/application.properties` — [REVIEW]
-- `user-note/application-mongodb-reactive/src/main/java/com/example/usernote/package-info.java` — [REVIEW]
-- `user-note/application-mongodb-reactive/src/main/java/com/example/usernote/UserNoteMongoReactiveApplication.java` — [REVIEW]
-- `user-note/application-mongodb-reactive/compose.yaml` — [REVIEW] — восстановлен 2026-07-23 (Testcontainers/Compose для Mongo вернули, теперь симметрично с PostgreSQL/MySQL)
+#### user-note/application/application-mongodb-reactive/ (7 файлов)
+- `user-note/application/application-mongodb-reactive/build.gradle.kts` — [REVIEW]
+- `user-note/application/application-mongodb-reactive/src/test/resources/application.properties` — [REVIEW]
+- `user-note/application/application-mongodb-reactive/src/test/java/com/example/usernote/UserNoteMongoReactiveApplicationTests.java` — [REVIEW]
+- `user-note/application/application-mongodb-reactive/src/main/resources/application.properties` — [REVIEW]
+- `user-note/application/application-mongodb-reactive/src/main/java/com/example/usernote/package-info.java` — [REVIEW]
+- `user-note/application/application-mongodb-reactive/src/main/java/com/example/usernote/UserNoteMongoReactiveApplication.java` — [REVIEW]
+- `user-note/application/application-mongodb-reactive/compose.yaml` — [REVIEW] — восстановлен 2026-07-23 (Testcontainers/Compose для Mongo вернули, теперь симметрично с PostgreSQL/MySQL)
 
 #### user-note/ — предлагаемые отсутствующие файлы (`[ADD]`, 18)
-- `user-note/webmvc/src/test/java/com/example/usernote/webmvc/UserNoteExceptionHandlerTest.java` — [ADD]
-- `user-note/webmvc/src/test/java/com/example/usernote/webmvc/UserNoteControllerTest.java` — [ADD]
-- `user-note/webflux/src/test/java/com/example/usernote/webflux/UserNoteExceptionHandlerTest.java` — [ADD]
-- `user-note/webflux/src/test/java/com/example/usernote/webflux/UserNoteControllerTest.java` — [ADD]
-- `user-note/domain/src/test/java/com/example/usernote/domain/UserNoteNotFoundExceptionTest.java` — [ADD]
-- `user-note/data-r2dbc/src/test/java/com/example/usernote/data/r2dbc/mapper/UserNoteR2dbcMapperTest.java` — [ADD]
-- `user-note/data-r2dbc/src/test/java/com/example/usernote/data/r2dbc/adapter/UserNoteR2dbcAdapterIT.java` — [ADD]
-- `user-note/data-mongodb/src/test/java/com/example/usernote/data/mongodb/mapper/UserNoteMongoMapperTest.java` — [ADD]
-- `user-note/data-mongodb/src/test/java/com/example/usernote/data/mongodb/adapter/UserNoteMongoAdapterIT.java` — [ADD]
-- `user-note/data-mongodb-reactive/src/test/java/com/example/usernote/data/mongodb/reactive/mapper/UserNoteMongoReactiveMapperTest.java` — [ADD]
-- `user-note/data-mongodb-reactive/src/test/java/com/example/usernote/data/mongodb/reactive/adapter/UserNoteMongoReactiveAdapterIT.java` — [ADD]
-- `user-note/data-jpa/src/test/java/com/example/usernote/data/jpa/mapper/UserNoteJpaMapperTest.java` — [ADD]
-- `user-note/data-jpa/src/test/java/com/example/usernote/data/jpa/adapter/UserNoteJpaAdapterIT.java` — [ADD]
-- `user-note/data-jdbc/src/test/java/com/example/usernote/data/jdbc/mapper/UserNoteJdbcMapperTest.java` — [ADD]
-- `user-note/data-jdbc/src/test/java/com/example/usernote/data/jdbc/adapter/UserNoteJdbcAdapterIT.java` — [ADD]
-- `user-note/application-h2-jpa/src/test/java/com/example/usernote/UserNoteEndToEndIT.java` — [ADD]
+- `user-note/presentation/webmvc/src/test/java/com/example/usernote/webmvc/UserNoteExceptionHandlerTest.java` — [ADD]
+- `user-note/presentation/webmvc/src/test/java/com/example/usernote/webmvc/UserNoteControllerTest.java` — [ADD]
+- `user-note/presentation/webflux/src/test/java/com/example/usernote/webflux/UserNoteExceptionHandlerTest.java` — [ADD]
+- `user-note/presentation/webflux/src/test/java/com/example/usernote/webflux/UserNoteControllerTest.java` — [ADD]
+- `user-note/domain/domain/src/test/java/com/example/usernote/domain/UserNoteNotFoundExceptionTest.java` — [ADD]
+- `user-note/persistence/data-r2dbc/src/test/java/com/example/usernote/data/r2dbc/mapper/UserNoteR2dbcMapperTest.java` — [ADD]
+- `user-note/persistence/data-r2dbc/src/test/java/com/example/usernote/data/r2dbc/adapter/UserNoteR2dbcAdapterIT.java` — [ADD]
+- `user-note/persistence/data-mongodb/src/test/java/com/example/usernote/data/mongodb/mapper/UserNoteMongoMapperTest.java` — [ADD]
+- `user-note/persistence/data-mongodb/src/test/java/com/example/usernote/data/mongodb/adapter/UserNoteMongoAdapterIT.java` — [ADD]
+- `user-note/persistence/data-mongodb-reactive/src/test/java/com/example/usernote/data/mongodb/reactive/mapper/UserNoteMongoReactiveMapperTest.java` — [ADD]
+- `user-note/persistence/data-mongodb-reactive/src/test/java/com/example/usernote/data/mongodb/reactive/adapter/UserNoteMongoReactiveAdapterIT.java` — [ADD]
+- `user-note/persistence/data-jpa/src/test/java/com/example/usernote/data/jpa/mapper/UserNoteJpaMapperTest.java` — [ADD]
+- `user-note/persistence/data-jpa/src/test/java/com/example/usernote/data/jpa/adapter/UserNoteJpaAdapterIT.java` — [ADD]
+- `user-note/persistence/data-jdbc/src/test/java/com/example/usernote/data/jdbc/mapper/UserNoteJdbcMapperTest.java` — [ADD]
+- `user-note/persistence/data-jdbc/src/test/java/com/example/usernote/data/jdbc/adapter/UserNoteJdbcAdapterIT.java` — [ADD]
+- `user-note/application/application-h2-jpa/src/test/java/com/example/usernote/UserNoteEndToEndIT.java` — [ADD]
 
 ### user/ (210 файлов, было 150 — +60: 9 вендорных application-*-{h2,mysql,postgresql}/ модулей заменили 3 профильных 2026-07-24)
 
-#### user/webmvc/ (5 файлов)
-- `user/webmvc/build.gradle.kts` — [DONE]
-- `user/webmvc/src/main/java/com/example/user/webmvc/package-info.java` — [DONE]
-- `user/webmvc/src/main/java/com/example/user/webmvc/UserExceptionHandler.java` — [REVIEW]
-- `user/webmvc/src/main/java/com/example/user/webmvc/UserControllerInterface.java` — [REVIEW]
-- `user/webmvc/src/main/java/com/example/user/webmvc/UserController.java` — [REVIEW]
+#### user/presentation/webmvc/ (5 файлов)
+- `user/presentation/webmvc/build.gradle.kts` — [DONE]
+- `user/presentation/webmvc/src/main/java/com/example/user/webmvc/package-info.java` — [DONE]
+- `user/presentation/webmvc/src/main/java/com/example/user/webmvc/UserExceptionHandler.java` — [REVIEW]
+- `user/presentation/webmvc/src/main/java/com/example/user/webmvc/UserControllerInterface.java` — [REVIEW]
+- `user/presentation/webmvc/src/main/java/com/example/user/webmvc/UserController.java` — [REVIEW]
 
-#### user/webflux/ (5 файлов)
-- `user/webflux/build.gradle.kts` — [DONE]
-- `user/webflux/src/main/java/com/example/user/webflux/package-info.java` — [DONE]
-- `user/webflux/src/main/java/com/example/user/webflux/UserExceptionHandler.java` — [REVIEW]
-- `user/webflux/src/main/java/com/example/user/webflux/UserControllerReactiveInterface.java` — [REVIEW]
-- `user/webflux/src/main/java/com/example/user/webflux/UserController.java` — [REVIEW]
+#### user/presentation/webflux/ (5 файлов)
+- `user/presentation/webflux/build.gradle.kts` — [DONE]
+- `user/presentation/webflux/src/main/java/com/example/user/webflux/package-info.java` — [DONE]
+- `user/presentation/webflux/src/main/java/com/example/user/webflux/UserExceptionHandler.java` — [REVIEW]
+- `user/presentation/webflux/src/main/java/com/example/user/webflux/UserControllerReactiveInterface.java` — [REVIEW]
+- `user/presentation/webflux/src/main/java/com/example/user/webflux/UserController.java` — [REVIEW]
 
-#### user/domain/ (6 файлов)
-- `user/domain/build.gradle.kts` — [REVIEW]
-- `user/domain/src/main/java/com/example/user/domain/package-info.java` — [DONE]
-- `user/domain/src/main/java/com/example/user/domain/UserResponse.java` — [REVIEW]
-- `user/domain/src/main/java/com/example/user/domain/UserRequest.java` — [REVIEW]
-- `user/domain/src/main/java/com/example/user/domain/UserNotFoundException.java` — [REVIEW]
-- `user/domain/src/main/java/com/example/user/domain/UserPersistable.java` — [REVIEW]
+#### user/domain/domain/ (6 файлов)
+- `user/domain/domain/build.gradle.kts` — [REVIEW]
+- `user/domain/domain/src/main/java/com/example/user/domain/package-info.java` — [DONE]
+- `user/domain/domain/src/main/java/com/example/user/domain/UserResponse.java` — [REVIEW]
+- `user/domain/domain/src/main/java/com/example/user/domain/UserRequest.java` — [REVIEW]
+- `user/domain/domain/src/main/java/com/example/user/domain/UserNotFoundException.java` — [REVIEW]
+- `user/domain/domain/src/main/java/com/example/user/domain/UserPersistable.java` — [REVIEW]
 
-#### user/data-r2dbc/ (11 файлов)
-- `user/data-r2dbc/build.gradle.kts` — [DONE]
-- `user/data-r2dbc/src/main/java/com/example/user/data/r2dbc/repository/package-info.java` — [DONE]
-- `user/data-r2dbc/src/main/java/com/example/user/data/r2dbc/repository/UserR2dbcRepository.java` — [REVIEW]
-- `user/data-r2dbc/src/main/java/com/example/user/data/r2dbc/model/package-info.java` — [DONE]
-- `user/data-r2dbc/src/main/java/com/example/user/data/r2dbc/model/UserR2dbcEntity.java` — [REVIEW]
-- `user/data-r2dbc/src/main/resources/schema.sql` — [REVIEW]
-- `user/data-r2dbc/src/main/java/com/example/user/data/r2dbc/mapper/package-info.java` — [DONE]
-- `user/data-r2dbc/src/main/java/com/example/user/data/r2dbc/mapper/UserR2dbcMapperContract.java` — [REVIEW]
-- `user/data-r2dbc/src/main/java/com/example/user/data/r2dbc/mapper/UserR2dbcMapper.java` — [REVIEW]
-- `user/data-r2dbc/src/main/java/com/example/user/data/r2dbc/adapter/package-info.java` — [DONE]
-- `user/data-r2dbc/src/main/java/com/example/user/data/r2dbc/adapter/UserService.java` — [REVIEW]
+#### user/persistence/data-r2dbc/ (11 файлов)
+- `user/persistence/data-r2dbc/build.gradle.kts` — [DONE]
+- `user/persistence/data-r2dbc/src/main/java/com/example/user/data/r2dbc/repository/package-info.java` — [DONE]
+- `user/persistence/data-r2dbc/src/main/java/com/example/user/data/r2dbc/repository/UserR2dbcRepository.java` — [REVIEW]
+- `user/persistence/data-r2dbc/src/main/java/com/example/user/data/r2dbc/model/package-info.java` — [DONE]
+- `user/persistence/data-r2dbc/src/main/java/com/example/user/data/r2dbc/model/UserR2dbcEntity.java` — [REVIEW]
+- `user/persistence/data-r2dbc/src/main/resources/schema.sql` — [REVIEW]
+- `user/persistence/data-r2dbc/src/main/java/com/example/user/data/r2dbc/mapper/package-info.java` — [DONE]
+- `user/persistence/data-r2dbc/src/main/java/com/example/user/data/r2dbc/mapper/UserR2dbcMapperContract.java` — [REVIEW]
+- `user/persistence/data-r2dbc/src/main/java/com/example/user/data/r2dbc/mapper/UserR2dbcMapper.java` — [REVIEW]
+- `user/persistence/data-r2dbc/src/main/java/com/example/user/data/r2dbc/adapter/package-info.java` — [DONE]
+- `user/persistence/data-r2dbc/src/main/java/com/example/user/data/r2dbc/adapter/UserService.java` — [REVIEW]
 
-#### user/data-mongodb-reactive/ (10 файлов)
-- `user/data-mongodb-reactive/build.gradle.kts` — [DONE]
-- `user/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/repository/package-info.java` — [DONE]
-- `user/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/repository/UserMongoReactiveRepository.java` — [REVIEW]
-- `user/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/model/package-info.java` — [DONE]
-- `user/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/model/UserReactiveDocument.java` — [REVIEW]
-- `user/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/mapper/package-info.java` — [DONE]
-- `user/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/mapper/UserMongoReactiveMapperContract.java` — [REVIEW]
-- `user/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/mapper/UserMongoReactiveMapper.java` — [REVIEW]
-- `user/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/adapter/package-info.java` — [DONE]
-- `user/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/adapter/UserService.java` — [REVIEW]
+#### user/persistence/data-mongodb-reactive/ (10 файлов)
+- `user/persistence/data-mongodb-reactive/build.gradle.kts` — [DONE]
+- `user/persistence/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/repository/package-info.java` — [DONE]
+- `user/persistence/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/repository/UserMongoReactiveRepository.java` — [REVIEW]
+- `user/persistence/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/model/package-info.java` — [DONE]
+- `user/persistence/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/model/UserReactiveDocument.java` — [REVIEW]
+- `user/persistence/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/mapper/package-info.java` — [DONE]
+- `user/persistence/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/mapper/UserMongoReactiveMapperContract.java` — [REVIEW]
+- `user/persistence/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/mapper/UserMongoReactiveMapper.java` — [REVIEW]
+- `user/persistence/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/adapter/package-info.java` — [DONE]
+- `user/persistence/data-mongodb-reactive/src/main/java/com/example/user/data/mongodb/reactive/adapter/UserService.java` — [REVIEW]
 
-#### user/data-mongodb/ (10 файлов)
-- `user/data-mongodb/build.gradle.kts` — [DONE]
-- `user/data-mongodb/src/main/java/com/example/user/data/mongodb/repository/package-info.java` — [DONE]
-- `user/data-mongodb/src/main/java/com/example/user/data/mongodb/repository/UserMongoRepository.java` — [REVIEW]
-- `user/data-mongodb/src/main/java/com/example/user/data/mongodb/model/package-info.java` — [DONE]
-- `user/data-mongodb/src/main/java/com/example/user/data/mongodb/model/UserDocument.java` — [REVIEW]
-- `user/data-mongodb/src/main/java/com/example/user/data/mongodb/mapper/package-info.java` — [DONE]
-- `user/data-mongodb/src/main/java/com/example/user/data/mongodb/mapper/UserMongoMapperContract.java` — [REVIEW]
-- `user/data-mongodb/src/main/java/com/example/user/data/mongodb/mapper/UserMongoMapper.java` — [REVIEW]
-- `user/data-mongodb/src/main/java/com/example/user/data/mongodb/adapter/package-info.java` — [DONE]
-- `user/data-mongodb/src/main/java/com/example/user/data/mongodb/adapter/UserService.java` — [REVIEW]
+#### user/persistence/data-mongodb/ (10 файлов)
+- `user/persistence/data-mongodb/build.gradle.kts` — [DONE]
+- `user/persistence/data-mongodb/src/main/java/com/example/user/data/mongodb/repository/package-info.java` — [DONE]
+- `user/persistence/data-mongodb/src/main/java/com/example/user/data/mongodb/repository/UserMongoRepository.java` — [REVIEW]
+- `user/persistence/data-mongodb/src/main/java/com/example/user/data/mongodb/model/package-info.java` — [DONE]
+- `user/persistence/data-mongodb/src/main/java/com/example/user/data/mongodb/model/UserDocument.java` — [REVIEW]
+- `user/persistence/data-mongodb/src/main/java/com/example/user/data/mongodb/mapper/package-info.java` — [DONE]
+- `user/persistence/data-mongodb/src/main/java/com/example/user/data/mongodb/mapper/UserMongoMapperContract.java` — [REVIEW]
+- `user/persistence/data-mongodb/src/main/java/com/example/user/data/mongodb/mapper/UserMongoMapper.java` — [REVIEW]
+- `user/persistence/data-mongodb/src/main/java/com/example/user/data/mongodb/adapter/package-info.java` — [DONE]
+- `user/persistence/data-mongodb/src/main/java/com/example/user/data/mongodb/adapter/UserService.java` — [REVIEW]
 
-#### user/data-jpa/ (10 файлов)
-- `user/data-jpa/build.gradle.kts` — [DONE]
-- `user/data-jpa/src/main/java/com/example/user/data/jpa/repository/package-info.java` — [DONE]
-- `user/data-jpa/src/main/java/com/example/user/data/jpa/repository/UserJpaRepository.java` — [REVIEW]
-- `user/data-jpa/src/main/java/com/example/user/data/jpa/model/package-info.java` — [DONE]
-- `user/data-jpa/src/main/java/com/example/user/data/jpa/model/UserEntity.java` — [REVIEW]
-- `user/data-jpa/src/main/java/com/example/user/data/jpa/mapper/package-info.java` — [DONE]
-- `user/data-jpa/src/main/java/com/example/user/data/jpa/mapper/UserJpaMapperContract.java` — [REVIEW]
-- `user/data-jpa/src/main/java/com/example/user/data/jpa/mapper/UserJpaMapper.java` — [REVIEW]
-- `user/data-jpa/src/main/java/com/example/user/data/jpa/adapter/package-info.java` — [DONE]
-- `user/data-jpa/src/main/java/com/example/user/data/jpa/adapter/UserService.java` — [REVIEW]
+#### user/persistence/data-jpa/ (10 файлов)
+- `user/persistence/data-jpa/build.gradle.kts` — [DONE]
+- `user/persistence/data-jpa/src/main/java/com/example/user/data/jpa/repository/package-info.java` — [DONE]
+- `user/persistence/data-jpa/src/main/java/com/example/user/data/jpa/repository/UserJpaRepository.java` — [REVIEW]
+- `user/persistence/data-jpa/src/main/java/com/example/user/data/jpa/model/package-info.java` — [DONE]
+- `user/persistence/data-jpa/src/main/java/com/example/user/data/jpa/model/UserEntity.java` — [REVIEW]
+- `user/persistence/data-jpa/src/main/java/com/example/user/data/jpa/mapper/package-info.java` — [DONE]
+- `user/persistence/data-jpa/src/main/java/com/example/user/data/jpa/mapper/UserJpaMapperContract.java` — [REVIEW]
+- `user/persistence/data-jpa/src/main/java/com/example/user/data/jpa/mapper/UserJpaMapper.java` — [REVIEW]
+- `user/persistence/data-jpa/src/main/java/com/example/user/data/jpa/adapter/package-info.java` — [DONE]
+- `user/persistence/data-jpa/src/main/java/com/example/user/data/jpa/adapter/UserService.java` — [REVIEW]
 
-#### user/data-jdbc/ (11 файлов)
-- `user/data-jdbc/build.gradle.kts` — [DONE]
-- `user/data-jdbc/src/main/java/com/example/user/data/jdbc/repository/package-info.java` — [REVIEW]
-- `user/data-jdbc/src/main/java/com/example/user/data/jdbc/repository/UserJdbcRepository.java` — [REVIEW]
-- `user/data-jdbc/src/main/java/com/example/user/data/jdbc/model/package-info.java` — [REVIEW]
-- `user/data-jdbc/src/main/java/com/example/user/data/jdbc/model/UserJdbcEntity.java` — [REVIEW]
-- `user/data-jdbc/src/main/resources/schema.sql` — [REVIEW]
-- `user/data-jdbc/src/main/java/com/example/user/data/jdbc/mapper/package-info.java` — [DONE]
-- `user/data-jdbc/src/main/java/com/example/user/data/jdbc/mapper/UserJdbcMapperContract.java` — [REVIEW]
-- `user/data-jdbc/src/main/java/com/example/user/data/jdbc/mapper/UserJdbcMapper.java` — [REVIEW]
-- `user/data-jdbc/src/main/java/com/example/user/data/jdbc/adapter/package-info.java` — [DONE]
-- `user/data-jdbc/src/main/java/com/example/user/data/jdbc/adapter/UserService.java` — [REVIEW]
+#### user/persistence/data-jdbc/ (11 файлов)
+- `user/persistence/data-jdbc/build.gradle.kts` — [DONE]
+- `user/persistence/data-jdbc/src/main/java/com/example/user/data/jdbc/repository/package-info.java` — [REVIEW]
+- `user/persistence/data-jdbc/src/main/java/com/example/user/data/jdbc/repository/UserJdbcRepository.java` — [REVIEW]
+- `user/persistence/data-jdbc/src/main/java/com/example/user/data/jdbc/model/package-info.java` — [REVIEW]
+- `user/persistence/data-jdbc/src/main/java/com/example/user/data/jdbc/model/UserJdbcEntity.java` — [REVIEW]
+- `user/persistence/data-jdbc/src/main/resources/schema.sql` — [REVIEW]
+- `user/persistence/data-jdbc/src/main/java/com/example/user/data/jdbc/mapper/package-info.java` — [DONE]
+- `user/persistence/data-jdbc/src/main/java/com/example/user/data/jdbc/mapper/UserJdbcMapperContract.java` — [REVIEW]
+- `user/persistence/data-jdbc/src/main/java/com/example/user/data/jdbc/mapper/UserJdbcMapper.java` — [REVIEW]
+- `user/persistence/data-jdbc/src/main/java/com/example/user/data/jdbc/adapter/package-info.java` — [DONE]
+- `user/persistence/data-jdbc/src/main/java/com/example/user/data/jdbc/adapter/UserService.java` — [REVIEW]
 
-#### user/contract-reactive/ (4 файлов)
-- `user/contract-reactive/build.gradle.kts` — [REVIEW]
-- `user/contract-reactive/src/main/java/com/example/user/contract/reactive/package-info.java` — [DONE]
-- `user/contract-reactive/src/main/java/com/example/user/contract/reactive/UserReactiveInterface.java` — [REVIEW]
-- `user/contract-reactive/src/main/java/com/example/user/contract/reactive/UserServiceReactiveInterface.java` — [REVIEW]
+#### user/domain/contract-reactive/ (4 файлов)
+- `user/domain/contract-reactive/build.gradle.kts` — [REVIEW]
+- `user/domain/contract-reactive/src/main/java/com/example/user/contract/reactive/package-info.java` — [DONE]
+- `user/domain/contract-reactive/src/main/java/com/example/user/contract/reactive/UserReactiveInterface.java` — [REVIEW]
+- `user/domain/contract-reactive/src/main/java/com/example/user/contract/reactive/UserServiceReactiveInterface.java` — [REVIEW]
 
-#### user/contract/ (4 файлов)
-- `user/contract/build.gradle.kts` — [REVIEW]
-- `user/contract/src/main/java/com/example/user/contract/package-info.java` — [DONE]
-- `user/contract/src/main/java/com/example/user/contract/UserInterface.java` — [REVIEW]
-- `user/contract/src/main/java/com/example/user/contract/UserServiceInterface.java` — [REVIEW]
+#### user/domain/contract/ (4 файлов)
+- `user/domain/contract/build.gradle.kts` — [REVIEW]
+- `user/domain/contract/src/main/java/com/example/user/contract/package-info.java` — [DONE]
+- `user/domain/contract/src/main/java/com/example/user/contract/UserInterface.java` — [REVIEW]
+- `user/domain/contract/src/main/java/com/example/user/contract/UserServiceInterface.java` — [REVIEW]
 
 #### user/application-r2dbc/ (12 файлов) — [REMOVED] 2026-07-24, разбит на 3 вендорных модуля application-r2dbc-{h2,mysql,postgresql}/ — устраняет driver bloat
 - `user/application-r2dbc/build.gradle.kts` — [REMOVED]
@@ -394,31 +394,31 @@
 - `user/application-r2dbc/src/test/java/com/example/user/UserPostgresqlR2dbcApplicationTests.java` — [REMOVED]
 - `user/application-r2dbc/src/test/java/com/example/user/UserMysqlR2dbcApplicationTests.java` — [REMOVED]
 
-#### user/application-h2-r2dbc/ (6 файлов)
-- `user/application-h2-r2dbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
-- `user/application-h2-r2dbc/src/main/java/com/example/user/package-info.java` — [DONE]
-- `user/application-h2-r2dbc/src/main/java/com/example/user/UserH2R2dbcApplication.java` — [REVIEW]
-- `user/application-h2-r2dbc/src/main/resources/application.properties` — [REVIEW]
-- `user/application-h2-r2dbc/src/test/resources/application.properties` — [REVIEW]
-- `user/application-h2-r2dbc/src/test/java/com/example/user/UserH2R2dbcApplicationTests.java` — [REVIEW]
+#### user/application/application-h2-r2dbc/ (6 файлов)
+- `user/application/application-h2-r2dbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `user/application/application-h2-r2dbc/src/main/java/com/example/user/package-info.java` — [DONE]
+- `user/application/application-h2-r2dbc/src/main/java/com/example/user/UserH2R2dbcApplication.java` — [REVIEW]
+- `user/application/application-h2-r2dbc/src/main/resources/application.properties` — [REVIEW]
+- `user/application/application-h2-r2dbc/src/test/resources/application.properties` — [REVIEW]
+- `user/application/application-h2-r2dbc/src/test/java/com/example/user/UserH2R2dbcApplicationTests.java` — [REVIEW]
 
-#### user/application-mysql-r2dbc/ (7 файлов)
-- `user/application-mysql-r2dbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
-- `user/application-mysql-r2dbc/src/main/java/com/example/user/package-info.java` — [DONE]
-- `user/application-mysql-r2dbc/src/main/java/com/example/user/UserMysqlR2dbcApplication.java` — [REVIEW]
-- `user/application-mysql-r2dbc/src/main/resources/application.properties` — [REVIEW]
-- `user/application-mysql-r2dbc/compose.yaml` — [REVIEW]
-- `user/application-mysql-r2dbc/src/test/resources/application.properties` — [REVIEW]
-- `user/application-mysql-r2dbc/src/test/java/com/example/user/UserMysqlR2dbcApplicationTests.java` — [REVIEW]
+#### user/application/application-mysql-r2dbc/ (7 файлов)
+- `user/application/application-mysql-r2dbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `user/application/application-mysql-r2dbc/src/main/java/com/example/user/package-info.java` — [DONE]
+- `user/application/application-mysql-r2dbc/src/main/java/com/example/user/UserMysqlR2dbcApplication.java` — [REVIEW]
+- `user/application/application-mysql-r2dbc/src/main/resources/application.properties` — [REVIEW]
+- `user/application/application-mysql-r2dbc/compose.yaml` — [REVIEW]
+- `user/application/application-mysql-r2dbc/src/test/resources/application.properties` — [REVIEW]
+- `user/application/application-mysql-r2dbc/src/test/java/com/example/user/UserMysqlR2dbcApplicationTests.java` — [REVIEW]
 
-#### user/application-postgresql-r2dbc/ (7 файлов)
-- `user/application-postgresql-r2dbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
-- `user/application-postgresql-r2dbc/src/main/java/com/example/user/package-info.java` — [DONE]
-- `user/application-postgresql-r2dbc/src/main/java/com/example/user/UserPostgresqlR2dbcApplication.java` — [REVIEW]
-- `user/application-postgresql-r2dbc/src/main/resources/application.properties` — [REVIEW]
-- `user/application-postgresql-r2dbc/compose.yaml` — [REVIEW]
-- `user/application-postgresql-r2dbc/src/test/resources/application.properties` — [REVIEW]
-- `user/application-postgresql-r2dbc/src/test/java/com/example/user/UserPostgresqlR2dbcApplicationTests.java` — [REVIEW]
+#### user/application/application-postgresql-r2dbc/ (7 файлов)
+- `user/application/application-postgresql-r2dbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `user/application/application-postgresql-r2dbc/src/main/java/com/example/user/package-info.java` — [DONE]
+- `user/application/application-postgresql-r2dbc/src/main/java/com/example/user/UserPostgresqlR2dbcApplication.java` — [REVIEW]
+- `user/application/application-postgresql-r2dbc/src/main/resources/application.properties` — [REVIEW]
+- `user/application/application-postgresql-r2dbc/compose.yaml` — [REVIEW]
+- `user/application/application-postgresql-r2dbc/src/test/resources/application.properties` — [REVIEW]
+- `user/application/application-postgresql-r2dbc/src/test/java/com/example/user/UserPostgresqlR2dbcApplicationTests.java` — [REVIEW]
 
 #### user/application-jpa/ (12 файлов) — [REMOVED] 2026-07-24, разбит на 3 вендорных модуля application-jpa-{h2,mysql,postgresql}/ — устраняет driver bloat
 - `user/application-jpa/build.gradle.kts` — [REMOVED]
@@ -434,31 +434,31 @@
 - `user/application-jpa/src/test/java/com/example/user/UserPostgresqlJpaApplicationTests.java` — [REMOVED]
 - `user/application-jpa/src/test/java/com/example/user/UserMysqlJpaApplicationTests.java` — [REMOVED]
 
-#### user/application-h2-jpa/ (6 файлов)
-- `user/application-h2-jpa/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
-- `user/application-h2-jpa/src/main/java/com/example/user/package-info.java` — [DONE]
-- `user/application-h2-jpa/src/main/java/com/example/user/UserH2JpaApplication.java` — [REVIEW]
-- `user/application-h2-jpa/src/main/resources/application.properties` — [REVIEW]
-- `user/application-h2-jpa/src/test/resources/application.properties` — [REVIEW]
-- `user/application-h2-jpa/src/test/java/com/example/user/UserH2JpaApplicationTests.java` — [REVIEW]
+#### user/application/application-h2-jpa/ (6 файлов)
+- `user/application/application-h2-jpa/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `user/application/application-h2-jpa/src/main/java/com/example/user/package-info.java` — [DONE]
+- `user/application/application-h2-jpa/src/main/java/com/example/user/UserH2JpaApplication.java` — [REVIEW]
+- `user/application/application-h2-jpa/src/main/resources/application.properties` — [REVIEW]
+- `user/application/application-h2-jpa/src/test/resources/application.properties` — [REVIEW]
+- `user/application/application-h2-jpa/src/test/java/com/example/user/UserH2JpaApplicationTests.java` — [REVIEW]
 
-#### user/application-mysql-jpa/ (7 файлов)
-- `user/application-mysql-jpa/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
-- `user/application-mysql-jpa/src/main/java/com/example/user/package-info.java` — [DONE]
-- `user/application-mysql-jpa/src/main/java/com/example/user/UserMysqlJpaApplication.java` — [REVIEW]
-- `user/application-mysql-jpa/src/main/resources/application.properties` — [REVIEW]
-- `user/application-mysql-jpa/compose.yaml` — [REVIEW]
-- `user/application-mysql-jpa/src/test/resources/application.properties` — [REVIEW]
-- `user/application-mysql-jpa/src/test/java/com/example/user/UserMysqlJpaApplicationTests.java` — [REVIEW]
+#### user/application/application-mysql-jpa/ (7 файлов)
+- `user/application/application-mysql-jpa/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `user/application/application-mysql-jpa/src/main/java/com/example/user/package-info.java` — [DONE]
+- `user/application/application-mysql-jpa/src/main/java/com/example/user/UserMysqlJpaApplication.java` — [REVIEW]
+- `user/application/application-mysql-jpa/src/main/resources/application.properties` — [REVIEW]
+- `user/application/application-mysql-jpa/compose.yaml` — [REVIEW]
+- `user/application/application-mysql-jpa/src/test/resources/application.properties` — [REVIEW]
+- `user/application/application-mysql-jpa/src/test/java/com/example/user/UserMysqlJpaApplicationTests.java` — [REVIEW]
 
-#### user/application-postgresql-jpa/ (7 файлов)
-- `user/application-postgresql-jpa/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
-- `user/application-postgresql-jpa/src/main/java/com/example/user/package-info.java` — [DONE]
-- `user/application-postgresql-jpa/src/main/java/com/example/user/UserPostgresqlJpaApplication.java` — [REVIEW]
-- `user/application-postgresql-jpa/src/main/resources/application.properties` — [REVIEW]
-- `user/application-postgresql-jpa/compose.yaml` — [REVIEW]
-- `user/application-postgresql-jpa/src/test/resources/application.properties` — [REVIEW]
-- `user/application-postgresql-jpa/src/test/java/com/example/user/UserPostgresqlJpaApplicationTests.java` — [REVIEW]
+#### user/application/application-postgresql-jpa/ (7 файлов)
+- `user/application/application-postgresql-jpa/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `user/application/application-postgresql-jpa/src/main/java/com/example/user/package-info.java` — [DONE]
+- `user/application/application-postgresql-jpa/src/main/java/com/example/user/UserPostgresqlJpaApplication.java` — [REVIEW]
+- `user/application/application-postgresql-jpa/src/main/resources/application.properties` — [REVIEW]
+- `user/application/application-postgresql-jpa/compose.yaml` — [REVIEW]
+- `user/application/application-postgresql-jpa/src/test/resources/application.properties` — [REVIEW]
+- `user/application/application-postgresql-jpa/src/test/java/com/example/user/UserPostgresqlJpaApplicationTests.java` — [REVIEW]
 
 #### user/application-jdbc/ (12 файлов) — [REMOVED] 2026-07-24, разбит на 3 вендорных модуля application-jdbc-{h2,mysql,postgresql}/ — устраняет driver bloat
 - `user/application-jdbc/build.gradle.kts` — [REMOVED]
@@ -474,61 +474,61 @@
 - `user/application-jdbc/src/test/java/com/example/user/UserPostgresqlJdbcApplicationTests.java` — [REMOVED]
 - `user/application-jdbc/src/test/java/com/example/user/UserMysqlJdbcApplicationTests.java` — [REMOVED]
 
-#### user/application-h2-jdbc/ (6 файлов)
-- `user/application-h2-jdbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
-- `user/application-h2-jdbc/src/main/java/com/example/user/package-info.java` — [DONE]
-- `user/application-h2-jdbc/src/main/java/com/example/user/UserH2JdbcApplication.java` — [REVIEW]
-- `user/application-h2-jdbc/src/main/resources/application.properties` — [REVIEW]
-- `user/application-h2-jdbc/src/test/resources/application.properties` — [REVIEW]
-- `user/application-h2-jdbc/src/test/java/com/example/user/UserH2JdbcApplicationTests.java` — [REVIEW]
+#### user/application/application-h2-jdbc/ (6 файлов)
+- `user/application/application-h2-jdbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `user/application/application-h2-jdbc/src/main/java/com/example/user/package-info.java` — [DONE]
+- `user/application/application-h2-jdbc/src/main/java/com/example/user/UserH2JdbcApplication.java` — [REVIEW]
+- `user/application/application-h2-jdbc/src/main/resources/application.properties` — [REVIEW]
+- `user/application/application-h2-jdbc/src/test/resources/application.properties` — [REVIEW]
+- `user/application/application-h2-jdbc/src/test/java/com/example/user/UserH2JdbcApplicationTests.java` — [REVIEW]
 
-#### user/application-mysql-jdbc/ (7 файлов)
-- `user/application-mysql-jdbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
-- `user/application-mysql-jdbc/src/main/java/com/example/user/package-info.java` — [DONE]
-- `user/application-mysql-jdbc/src/main/java/com/example/user/UserMysqlJdbcApplication.java` — [REVIEW]
-- `user/application-mysql-jdbc/src/main/resources/application.properties` — [REVIEW]
-- `user/application-mysql-jdbc/compose.yaml` — [REVIEW]
-- `user/application-mysql-jdbc/src/test/resources/application.properties` — [REVIEW]
-- `user/application-mysql-jdbc/src/test/java/com/example/user/UserMysqlJdbcApplicationTests.java` — [REVIEW]
+#### user/application/application-mysql-jdbc/ (7 файлов)
+- `user/application/application-mysql-jdbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `user/application/application-mysql-jdbc/src/main/java/com/example/user/package-info.java` — [DONE]
+- `user/application/application-mysql-jdbc/src/main/java/com/example/user/UserMysqlJdbcApplication.java` — [REVIEW]
+- `user/application/application-mysql-jdbc/src/main/resources/application.properties` — [REVIEW]
+- `user/application/application-mysql-jdbc/compose.yaml` — [REVIEW]
+- `user/application/application-mysql-jdbc/src/test/resources/application.properties` — [REVIEW]
+- `user/application/application-mysql-jdbc/src/test/java/com/example/user/UserMysqlJdbcApplicationTests.java` — [REVIEW]
 
-#### user/application-postgresql-jdbc/ (7 файлов)
-- `user/application-postgresql-jdbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
-- `user/application-postgresql-jdbc/src/main/java/com/example/user/package-info.java` — [DONE]
-- `user/application-postgresql-jdbc/src/main/java/com/example/user/UserPostgresqlJdbcApplication.java` — [REVIEW]
-- `user/application-postgresql-jdbc/src/main/resources/application.properties` — [REVIEW]
-- `user/application-postgresql-jdbc/compose.yaml` — [REVIEW]
-- `user/application-postgresql-jdbc/src/test/resources/application.properties` — [REVIEW]
-- `user/application-postgresql-jdbc/src/test/java/com/example/user/UserPostgresqlJdbcApplicationTests.java` — [REVIEW]
+#### user/application/application-postgresql-jdbc/ (7 файлов)
+- `user/application/application-postgresql-jdbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `user/application/application-postgresql-jdbc/src/main/java/com/example/user/package-info.java` — [DONE]
+- `user/application/application-postgresql-jdbc/src/main/java/com/example/user/UserPostgresqlJdbcApplication.java` — [REVIEW]
+- `user/application/application-postgresql-jdbc/src/main/resources/application.properties` — [REVIEW]
+- `user/application/application-postgresql-jdbc/compose.yaml` — [REVIEW]
+- `user/application/application-postgresql-jdbc/src/test/resources/application.properties` — [REVIEW]
+- `user/application/application-postgresql-jdbc/src/test/java/com/example/user/UserPostgresqlJdbcApplicationTests.java` — [REVIEW]
 
-#### user/application-mongodb/ (7 файлов)
-- `user/application-mongodb/build.gradle.kts` — [REVIEW]
-- `user/application-mongodb/src/test/resources/application.properties` — [REVIEW]
-- `user/application-mongodb/src/test/java/com/example/user/UserMongoApplicationTests.java` — [REVIEW]
-- `user/application-mongodb/src/main/resources/application.properties` — [REVIEW]
-- `user/application-mongodb/src/main/java/com/example/user/package-info.java` — [REVIEW]
-- `user/application-mongodb/src/main/java/com/example/user/UserMongoApplication.java` — [REVIEW]
-- `user/application-mongodb/compose.yaml` — [REVIEW] — восстановлен 2026-07-23 (Testcontainers/Compose для Mongo вернули, теперь симметрично с PostgreSQL/MySQL)
+#### user/application/application-mongodb/ (7 файлов)
+- `user/application/application-mongodb/build.gradle.kts` — [REVIEW]
+- `user/application/application-mongodb/src/test/resources/application.properties` — [REVIEW]
+- `user/application/application-mongodb/src/test/java/com/example/user/UserMongoApplicationTests.java` — [REVIEW]
+- `user/application/application-mongodb/src/main/resources/application.properties` — [REVIEW]
+- `user/application/application-mongodb/src/main/java/com/example/user/package-info.java` — [REVIEW]
+- `user/application/application-mongodb/src/main/java/com/example/user/UserMongoApplication.java` — [REVIEW]
+- `user/application/application-mongodb/compose.yaml` — [REVIEW] — восстановлен 2026-07-23 (Testcontainers/Compose для Mongo вернули, теперь симметрично с PostgreSQL/MySQL)
 
-#### user/application-mongodb-reactive/ (7 файлов)
-- `user/application-mongodb-reactive/build.gradle.kts` — [REVIEW]
-- `user/application-mongodb-reactive/src/test/resources/application.properties` — [REVIEW]
-- `user/application-mongodb-reactive/src/test/java/com/example/user/UserMongoReactiveApplicationTests.java` — [REVIEW]
-- `user/application-mongodb-reactive/src/main/resources/application.properties` — [REVIEW]
-- `user/application-mongodb-reactive/src/main/java/com/example/user/package-info.java` — [REVIEW]
-- `user/application-mongodb-reactive/src/main/java/com/example/user/UserMongoReactiveApplication.java` — [REVIEW]
-- `user/application-mongodb-reactive/compose.yaml` — [REVIEW] — восстановлен 2026-07-23 (Testcontainers/Compose для Mongo вернули, теперь симметрично с PostgreSQL/MySQL)
+#### user/application/application-mongodb-reactive/ (7 файлов)
+- `user/application/application-mongodb-reactive/build.gradle.kts` — [REVIEW]
+- `user/application/application-mongodb-reactive/src/test/resources/application.properties` — [REVIEW]
+- `user/application/application-mongodb-reactive/src/test/java/com/example/user/UserMongoReactiveApplicationTests.java` — [REVIEW]
+- `user/application/application-mongodb-reactive/src/main/resources/application.properties` — [REVIEW]
+- `user/application/application-mongodb-reactive/src/main/java/com/example/user/package-info.java` — [REVIEW]
+- `user/application/application-mongodb-reactive/src/main/java/com/example/user/UserMongoReactiveApplication.java` — [REVIEW]
+- `user/application/application-mongodb-reactive/compose.yaml` — [REVIEW] — восстановлен 2026-07-23 (Testcontainers/Compose для Mongo вернули, теперь симметрично с PostgreSQL/MySQL)
 
 #### user/ — предлагаемые отсутствующие файлы (`[ADD]`, 13)
-- `user/webmvc/src/test/java/com/example/user/webmvc/UserControllerTest.java` — [ADD]
-- `user/webmvc/src/main/java/com/example/user/webmvc/UserController.java` — [ADD]
-- `user/webflux/src/test/java/com/example/user/webflux/UserControllerTest.java` — [ADD]
-- `user/webflux/src/main/java/com/example/user/webflux/UserController.java` — [ADD]
-- `user/domain/src/test/java/com/example/user/domain/UserNotFoundExceptionTest.java` — [ADD]
-- `user/data-r2dbc/src/test/java/com/example/user/data/r2dbc/adapter/UserR2dbcAdapterTest.java` — [ADD]
-- `user/data-mongodb/src/test/java/com/example/user/data/mongodb/adapter/UserMongoAdapterTest.java` — [ADD]
-- `user/data-mongodb-reactive/src/test/java/com/example/user/data/mongodb/reactive/adapter/UserMongoReactiveAdapterTest.java` — [ADD]
-- `user/data-jpa/src/test/java/com/example/user/data/jpa/adapter/UserJpaAdapterTest.java` — [ADD]
-- `user/data-jdbc/src/test/java/com/example/user/data/jdbc/adapter/UserJdbcAdapterTest.java` — [ADD]
+- `user/presentation/webmvc/src/test/java/com/example/user/webmvc/UserControllerTest.java` — [ADD]
+- `user/presentation/webmvc/src/main/java/com/example/user/webmvc/UserController.java` — [ADD]
+- `user/presentation/webflux/src/test/java/com/example/user/webflux/UserControllerTest.java` — [ADD]
+- `user/presentation/webflux/src/main/java/com/example/user/webflux/UserController.java` — [ADD]
+- `user/domain/domain/src/test/java/com/example/user/domain/UserNotFoundExceptionTest.java` — [ADD]
+- `user/persistence/data-r2dbc/src/test/java/com/example/user/data/r2dbc/adapter/UserR2dbcAdapterTest.java` — [ADD]
+- `user/persistence/data-mongodb/src/test/java/com/example/user/data/mongodb/adapter/UserMongoAdapterTest.java` — [ADD]
+- `user/persistence/data-mongodb-reactive/src/test/java/com/example/user/data/mongodb/reactive/adapter/UserMongoReactiveAdapterTest.java` — [ADD]
+- `user/persistence/data-jpa/src/test/java/com/example/user/data/jpa/adapter/UserJpaAdapterTest.java` — [ADD]
+- `user/persistence/data-jdbc/src/test/java/com/example/user/data/jdbc/adapter/UserJdbcAdapterTest.java` — [ADD]
 
 ### registry/ (6 файлов)
 
@@ -542,101 +542,101 @@
 
 ### note/ (210 файлов, было 150 — +60: 9 вендорных application-*-{h2,mysql,postgresql}/ модулей заменили 3 профильных 2026-07-24)
 
-#### note/webmvc/ (5 файлов)
-- `note/webmvc/build.gradle.kts` — [DONE]
-- `note/webmvc/src/main/java/com/example/note/webmvc/package-info.java` — [DONE]
-- `note/webmvc/src/main/java/com/example/note/webmvc/NoteExceptionHandler.java` — [REVIEW]
-- `note/webmvc/src/main/java/com/example/note/webmvc/NoteControllerInterface.java` — [REVIEW]
-- `note/webmvc/src/main/java/com/example/note/webmvc/NoteController.java` — [REVIEW]
+#### note/presentation/webmvc/ (5 файлов)
+- `note/presentation/webmvc/build.gradle.kts` — [DONE]
+- `note/presentation/webmvc/src/main/java/com/example/note/webmvc/package-info.java` — [DONE]
+- `note/presentation/webmvc/src/main/java/com/example/note/webmvc/NoteExceptionHandler.java` — [REVIEW]
+- `note/presentation/webmvc/src/main/java/com/example/note/webmvc/NoteControllerInterface.java` — [REVIEW]
+- `note/presentation/webmvc/src/main/java/com/example/note/webmvc/NoteController.java` — [REVIEW]
 
-#### note/webflux/ (5 файлов)
-- `note/webflux/build.gradle.kts` — [DONE]
-- `note/webflux/src/main/java/com/example/note/webflux/package-info.java` — [DONE]
-- `note/webflux/src/main/java/com/example/note/webflux/NoteExceptionHandler.java` — [REVIEW]
-- `note/webflux/src/main/java/com/example/note/webflux/NoteControllerReactiveInterface.java` — [REVIEW]
-- `note/webflux/src/main/java/com/example/note/webflux/NoteController.java` — [REVIEW]
+#### note/presentation/webflux/ (5 файлов)
+- `note/presentation/webflux/build.gradle.kts` — [DONE]
+- `note/presentation/webflux/src/main/java/com/example/note/webflux/package-info.java` — [DONE]
+- `note/presentation/webflux/src/main/java/com/example/note/webflux/NoteExceptionHandler.java` — [REVIEW]
+- `note/presentation/webflux/src/main/java/com/example/note/webflux/NoteControllerReactiveInterface.java` — [REVIEW]
+- `note/presentation/webflux/src/main/java/com/example/note/webflux/NoteController.java` — [REVIEW]
 
-#### note/domain/ (6 файлов)
-- `note/domain/build.gradle.kts` — [REVIEW]
-- `note/domain/src/main/java/com/example/note/domain/package-info.java` — [DONE]
-- `note/domain/src/main/java/com/example/note/domain/NoteResponse.java` — [REVIEW]
-- `note/domain/src/main/java/com/example/note/domain/NoteRequest.java` — [REVIEW]
-- `note/domain/src/main/java/com/example/note/domain/NoteNotFoundException.java` — [REVIEW]
-- `note/domain/src/main/java/com/example/note/domain/NotePersistable.java` — [REVIEW]
+#### note/domain/domain/ (6 файлов)
+- `note/domain/domain/build.gradle.kts` — [REVIEW]
+- `note/domain/domain/src/main/java/com/example/note/domain/package-info.java` — [DONE]
+- `note/domain/domain/src/main/java/com/example/note/domain/NoteResponse.java` — [REVIEW]
+- `note/domain/domain/src/main/java/com/example/note/domain/NoteRequest.java` — [REVIEW]
+- `note/domain/domain/src/main/java/com/example/note/domain/NoteNotFoundException.java` — [REVIEW]
+- `note/domain/domain/src/main/java/com/example/note/domain/NotePersistable.java` — [REVIEW]
 
-#### note/data-r2dbc/ (11 файлов)
-- `note/data-r2dbc/build.gradle.kts` — [DONE]
-- `note/data-r2dbc/src/main/java/com/example/note/data/r2dbc/repository/package-info.java` — [DONE]
-- `note/data-r2dbc/src/main/java/com/example/note/data/r2dbc/repository/NoteR2dbcRepository.java` — [REVIEW]
-- `note/data-r2dbc/src/main/java/com/example/note/data/r2dbc/model/package-info.java` — [DONE]
-- `note/data-r2dbc/src/main/java/com/example/note/data/r2dbc/model/NoteR2dbcEntity.java` — [REVIEW]
-- `note/data-r2dbc/src/main/resources/schema.sql` — [REVIEW]
-- `note/data-r2dbc/src/main/java/com/example/note/data/r2dbc/mapper/package-info.java` — [DONE]
-- `note/data-r2dbc/src/main/java/com/example/note/data/r2dbc/mapper/NoteR2dbcMapperContract.java` — [REVIEW]
-- `note/data-r2dbc/src/main/java/com/example/note/data/r2dbc/mapper/NoteR2dbcMapper.java` — [REVIEW]
-- `note/data-r2dbc/src/main/java/com/example/note/data/r2dbc/adapter/package-info.java` — [DONE]
-- `note/data-r2dbc/src/main/java/com/example/note/data/r2dbc/adapter/NoteService.java` — [REVIEW]
+#### note/persistence/data-r2dbc/ (11 файлов)
+- `note/persistence/data-r2dbc/build.gradle.kts` — [DONE]
+- `note/persistence/data-r2dbc/src/main/java/com/example/note/data/r2dbc/repository/package-info.java` — [DONE]
+- `note/persistence/data-r2dbc/src/main/java/com/example/note/data/r2dbc/repository/NoteR2dbcRepository.java` — [REVIEW]
+- `note/persistence/data-r2dbc/src/main/java/com/example/note/data/r2dbc/model/package-info.java` — [DONE]
+- `note/persistence/data-r2dbc/src/main/java/com/example/note/data/r2dbc/model/NoteR2dbcEntity.java` — [REVIEW]
+- `note/persistence/data-r2dbc/src/main/resources/schema.sql` — [REVIEW]
+- `note/persistence/data-r2dbc/src/main/java/com/example/note/data/r2dbc/mapper/package-info.java` — [DONE]
+- `note/persistence/data-r2dbc/src/main/java/com/example/note/data/r2dbc/mapper/NoteR2dbcMapperContract.java` — [REVIEW]
+- `note/persistence/data-r2dbc/src/main/java/com/example/note/data/r2dbc/mapper/NoteR2dbcMapper.java` — [REVIEW]
+- `note/persistence/data-r2dbc/src/main/java/com/example/note/data/r2dbc/adapter/package-info.java` — [DONE]
+- `note/persistence/data-r2dbc/src/main/java/com/example/note/data/r2dbc/adapter/NoteService.java` — [REVIEW]
 
-#### note/data-mongodb-reactive/ (10 файлов)
-- `note/data-mongodb-reactive/build.gradle.kts` — [DONE]
-- `note/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/repository/package-info.java` — [DONE]
-- `note/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/repository/NoteMongoReactiveRepository.java` — [REVIEW]
-- `note/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/model/package-info.java` — [DONE]
-- `note/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/model/NoteReactiveDocument.java` — [REVIEW]
-- `note/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/mapper/package-info.java` — [DONE]
-- `note/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/mapper/NoteMongoReactiveMapperContract.java` — [REVIEW]
-- `note/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/mapper/NoteMongoReactiveMapper.java` — [REVIEW]
-- `note/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/adapter/package-info.java` — [DONE]
-- `note/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/adapter/NoteService.java` — [REVIEW]
+#### note/persistence/data-mongodb-reactive/ (10 файлов)
+- `note/persistence/data-mongodb-reactive/build.gradle.kts` — [DONE]
+- `note/persistence/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/repository/package-info.java` — [DONE]
+- `note/persistence/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/repository/NoteMongoReactiveRepository.java` — [REVIEW]
+- `note/persistence/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/model/package-info.java` — [DONE]
+- `note/persistence/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/model/NoteReactiveDocument.java` — [REVIEW]
+- `note/persistence/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/mapper/package-info.java` — [DONE]
+- `note/persistence/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/mapper/NoteMongoReactiveMapperContract.java` — [REVIEW]
+- `note/persistence/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/mapper/NoteMongoReactiveMapper.java` — [REVIEW]
+- `note/persistence/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/adapter/package-info.java` — [DONE]
+- `note/persistence/data-mongodb-reactive/src/main/java/com/example/note/data/mongodb/reactive/adapter/NoteService.java` — [REVIEW]
 
-#### note/data-mongodb/ (10 файлов)
-- `note/data-mongodb/build.gradle.kts` — [DONE]
-- `note/data-mongodb/src/main/java/com/example/note/data/mongodb/repository/package-info.java` — [DONE]
-- `note/data-mongodb/src/main/java/com/example/note/data/mongodb/repository/NoteMongoRepository.java` — [REVIEW]
-- `note/data-mongodb/src/main/java/com/example/note/data/mongodb/model/package-info.java` — [DONE]
-- `note/data-mongodb/src/main/java/com/example/note/data/mongodb/model/NoteDocument.java` — [REVIEW]
-- `note/data-mongodb/src/main/java/com/example/note/data/mongodb/mapper/package-info.java` — [DONE]
-- `note/data-mongodb/src/main/java/com/example/note/data/mongodb/mapper/NoteMongoMapperContract.java` — [REVIEW]
-- `note/data-mongodb/src/main/java/com/example/note/data/mongodb/mapper/NoteMongoMapper.java` — [REVIEW]
-- `note/data-mongodb/src/main/java/com/example/note/data/mongodb/adapter/package-info.java` — [DONE]
-- `note/data-mongodb/src/main/java/com/example/note/data/mongodb/adapter/NoteService.java` — [REVIEW]
+#### note/persistence/data-mongodb/ (10 файлов)
+- `note/persistence/data-mongodb/build.gradle.kts` — [DONE]
+- `note/persistence/data-mongodb/src/main/java/com/example/note/data/mongodb/repository/package-info.java` — [DONE]
+- `note/persistence/data-mongodb/src/main/java/com/example/note/data/mongodb/repository/NoteMongoRepository.java` — [REVIEW]
+- `note/persistence/data-mongodb/src/main/java/com/example/note/data/mongodb/model/package-info.java` — [DONE]
+- `note/persistence/data-mongodb/src/main/java/com/example/note/data/mongodb/model/NoteDocument.java` — [REVIEW]
+- `note/persistence/data-mongodb/src/main/java/com/example/note/data/mongodb/mapper/package-info.java` — [DONE]
+- `note/persistence/data-mongodb/src/main/java/com/example/note/data/mongodb/mapper/NoteMongoMapperContract.java` — [REVIEW]
+- `note/persistence/data-mongodb/src/main/java/com/example/note/data/mongodb/mapper/NoteMongoMapper.java` — [REVIEW]
+- `note/persistence/data-mongodb/src/main/java/com/example/note/data/mongodb/adapter/package-info.java` — [DONE]
+- `note/persistence/data-mongodb/src/main/java/com/example/note/data/mongodb/adapter/NoteService.java` — [REVIEW]
 
-#### note/data-jpa/ (10 файлов)
-- `note/data-jpa/build.gradle.kts` — [DONE]
-- `note/data-jpa/src/main/java/com/example/note/data/jpa/repository/package-info.java` — [DONE]
-- `note/data-jpa/src/main/java/com/example/note/data/jpa/repository/NoteJpaRepository.java` — [REVIEW]
-- `note/data-jpa/src/main/java/com/example/note/data/jpa/model/package-info.java` — [DONE]
-- `note/data-jpa/src/main/java/com/example/note/data/jpa/model/NoteEntity.java` — [REVIEW]
-- `note/data-jpa/src/main/java/com/example/note/data/jpa/mapper/package-info.java` — [DONE]
-- `note/data-jpa/src/main/java/com/example/note/data/jpa/mapper/NoteJpaMapperContract.java` — [REVIEW]
-- `note/data-jpa/src/main/java/com/example/note/data/jpa/mapper/NoteJpaMapper.java` — [REVIEW]
-- `note/data-jpa/src/main/java/com/example/note/data/jpa/adapter/package-info.java` — [DONE]
-- `note/data-jpa/src/main/java/com/example/note/data/jpa/adapter/NoteService.java` — [REVIEW]
+#### note/persistence/data-jpa/ (10 файлов)
+- `note/persistence/data-jpa/build.gradle.kts` — [DONE]
+- `note/persistence/data-jpa/src/main/java/com/example/note/data/jpa/repository/package-info.java` — [DONE]
+- `note/persistence/data-jpa/src/main/java/com/example/note/data/jpa/repository/NoteJpaRepository.java` — [REVIEW]
+- `note/persistence/data-jpa/src/main/java/com/example/note/data/jpa/model/package-info.java` — [DONE]
+- `note/persistence/data-jpa/src/main/java/com/example/note/data/jpa/model/NoteEntity.java` — [REVIEW]
+- `note/persistence/data-jpa/src/main/java/com/example/note/data/jpa/mapper/package-info.java` — [DONE]
+- `note/persistence/data-jpa/src/main/java/com/example/note/data/jpa/mapper/NoteJpaMapperContract.java` — [REVIEW]
+- `note/persistence/data-jpa/src/main/java/com/example/note/data/jpa/mapper/NoteJpaMapper.java` — [REVIEW]
+- `note/persistence/data-jpa/src/main/java/com/example/note/data/jpa/adapter/package-info.java` — [DONE]
+- `note/persistence/data-jpa/src/main/java/com/example/note/data/jpa/adapter/NoteService.java` — [REVIEW]
 
-#### note/data-jdbc/ (11 файлов)
-- `note/data-jdbc/build.gradle.kts` — [DONE]
-- `note/data-jdbc/src/main/java/com/example/note/data/jdbc/repository/package-info.java` — [REVIEW]
-- `note/data-jdbc/src/main/java/com/example/note/data/jdbc/repository/NoteJdbcRepository.java` — [REVIEW]
-- `note/data-jdbc/src/main/java/com/example/note/data/jdbc/model/package-info.java` — [REVIEW]
-- `note/data-jdbc/src/main/java/com/example/note/data/jdbc/model/NoteJdbcEntity.java` — [REVIEW]
-- `note/data-jdbc/src/main/resources/schema.sql` — [REVIEW]
-- `note/data-jdbc/src/main/java/com/example/note/data/jdbc/mapper/package-info.java` — [DONE]
-- `note/data-jdbc/src/main/java/com/example/note/data/jdbc/mapper/NoteJdbcMapperContract.java` — [REVIEW]
-- `note/data-jdbc/src/main/java/com/example/note/data/jdbc/mapper/NoteJdbcMapper.java` — [REVIEW]
-- `note/data-jdbc/src/main/java/com/example/note/data/jdbc/adapter/package-info.java` — [DONE]
-- `note/data-jdbc/src/main/java/com/example/note/data/jdbc/adapter/NoteService.java` — [REVIEW]
+#### note/persistence/data-jdbc/ (11 файлов)
+- `note/persistence/data-jdbc/build.gradle.kts` — [DONE]
+- `note/persistence/data-jdbc/src/main/java/com/example/note/data/jdbc/repository/package-info.java` — [REVIEW]
+- `note/persistence/data-jdbc/src/main/java/com/example/note/data/jdbc/repository/NoteJdbcRepository.java` — [REVIEW]
+- `note/persistence/data-jdbc/src/main/java/com/example/note/data/jdbc/model/package-info.java` — [REVIEW]
+- `note/persistence/data-jdbc/src/main/java/com/example/note/data/jdbc/model/NoteJdbcEntity.java` — [REVIEW]
+- `note/persistence/data-jdbc/src/main/resources/schema.sql` — [REVIEW]
+- `note/persistence/data-jdbc/src/main/java/com/example/note/data/jdbc/mapper/package-info.java` — [DONE]
+- `note/persistence/data-jdbc/src/main/java/com/example/note/data/jdbc/mapper/NoteJdbcMapperContract.java` — [REVIEW]
+- `note/persistence/data-jdbc/src/main/java/com/example/note/data/jdbc/mapper/NoteJdbcMapper.java` — [REVIEW]
+- `note/persistence/data-jdbc/src/main/java/com/example/note/data/jdbc/adapter/package-info.java` — [DONE]
+- `note/persistence/data-jdbc/src/main/java/com/example/note/data/jdbc/adapter/NoteService.java` — [REVIEW]
 
-#### note/contract-reactive/ (4 файлов)
-- `note/contract-reactive/build.gradle.kts` — [REVIEW]
-- `note/contract-reactive/src/main/java/com/example/note/contract/reactive/package-info.java` — [DONE]
-- `note/contract-reactive/src/main/java/com/example/note/contract/reactive/NoteReactiveInterface.java` — [REVIEW]
-- `note/contract-reactive/src/main/java/com/example/note/contract/reactive/NoteServiceReactiveInterface.java` — [REVIEW]
+#### note/domain/contract-reactive/ (4 файлов)
+- `note/domain/contract-reactive/build.gradle.kts` — [REVIEW]
+- `note/domain/contract-reactive/src/main/java/com/example/note/contract/reactive/package-info.java` — [DONE]
+- `note/domain/contract-reactive/src/main/java/com/example/note/contract/reactive/NoteReactiveInterface.java` — [REVIEW]
+- `note/domain/contract-reactive/src/main/java/com/example/note/contract/reactive/NoteServiceReactiveInterface.java` — [REVIEW]
 
-#### note/contract/ (4 файлов)
-- `note/contract/build.gradle.kts` — [REVIEW]
-- `note/contract/src/main/java/com/example/note/contract/package-info.java` — [DONE]
-- `note/contract/src/main/java/com/example/note/contract/NoteInterface.java` — [REVIEW]
-- `note/contract/src/main/java/com/example/note/contract/NoteServiceInterface.java` — [REVIEW]
+#### note/domain/contract/ (4 файлов)
+- `note/domain/contract/build.gradle.kts` — [REVIEW]
+- `note/domain/contract/src/main/java/com/example/note/contract/package-info.java` — [DONE]
+- `note/domain/contract/src/main/java/com/example/note/contract/NoteInterface.java` — [REVIEW]
+- `note/domain/contract/src/main/java/com/example/note/contract/NoteServiceInterface.java` — [REVIEW]
 
 #### note/application-r2dbc/ (12 файлов) — [REMOVED] 2026-07-24, разбит на 3 вендорных модуля application-r2dbc-{h2,mysql,postgresql}/ — устраняет driver bloat
 - `note/application-r2dbc/build.gradle.kts` — [REMOVED]
@@ -652,31 +652,31 @@
 - `note/application-r2dbc/src/test/java/com/example/note/NotePostgresqlR2dbcApplicationTests.java` — [REMOVED]
 - `note/application-r2dbc/src/test/java/com/example/note/NoteMysqlR2dbcApplicationTests.java` — [REMOVED]
 
-#### note/application-h2-r2dbc/ (6 файлов)
-- `note/application-h2-r2dbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
-- `note/application-h2-r2dbc/src/main/java/com/example/note/package-info.java` — [DONE]
-- `note/application-h2-r2dbc/src/main/java/com/example/note/NoteH2R2dbcApplication.java` — [REVIEW]
-- `note/application-h2-r2dbc/src/main/resources/application.properties` — [REVIEW]
-- `note/application-h2-r2dbc/src/test/resources/application.properties` — [REVIEW]
-- `note/application-h2-r2dbc/src/test/java/com/example/note/NoteH2R2dbcApplicationTests.java` — [REVIEW]
+#### note/application/application-h2-r2dbc/ (6 файлов)
+- `note/application/application-h2-r2dbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `note/application/application-h2-r2dbc/src/main/java/com/example/note/package-info.java` — [DONE]
+- `note/application/application-h2-r2dbc/src/main/java/com/example/note/NoteH2R2dbcApplication.java` — [REVIEW]
+- `note/application/application-h2-r2dbc/src/main/resources/application.properties` — [REVIEW]
+- `note/application/application-h2-r2dbc/src/test/resources/application.properties` — [REVIEW]
+- `note/application/application-h2-r2dbc/src/test/java/com/example/note/NoteH2R2dbcApplicationTests.java` — [REVIEW]
 
-#### note/application-mysql-r2dbc/ (7 файлов)
-- `note/application-mysql-r2dbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
-- `note/application-mysql-r2dbc/src/main/java/com/example/note/package-info.java` — [DONE]
-- `note/application-mysql-r2dbc/src/main/java/com/example/note/NoteMysqlR2dbcApplication.java` — [REVIEW]
-- `note/application-mysql-r2dbc/src/main/resources/application.properties` — [REVIEW]
-- `note/application-mysql-r2dbc/compose.yaml` — [REVIEW]
-- `note/application-mysql-r2dbc/src/test/resources/application.properties` — [REVIEW]
-- `note/application-mysql-r2dbc/src/test/java/com/example/note/NoteMysqlR2dbcApplicationTests.java` — [REVIEW]
+#### note/application/application-mysql-r2dbc/ (7 файлов)
+- `note/application/application-mysql-r2dbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `note/application/application-mysql-r2dbc/src/main/java/com/example/note/package-info.java` — [DONE]
+- `note/application/application-mysql-r2dbc/src/main/java/com/example/note/NoteMysqlR2dbcApplication.java` — [REVIEW]
+- `note/application/application-mysql-r2dbc/src/main/resources/application.properties` — [REVIEW]
+- `note/application/application-mysql-r2dbc/compose.yaml` — [REVIEW]
+- `note/application/application-mysql-r2dbc/src/test/resources/application.properties` — [REVIEW]
+- `note/application/application-mysql-r2dbc/src/test/java/com/example/note/NoteMysqlR2dbcApplicationTests.java` — [REVIEW]
 
-#### note/application-postgresql-r2dbc/ (7 файлов)
-- `note/application-postgresql-r2dbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
-- `note/application-postgresql-r2dbc/src/main/java/com/example/note/package-info.java` — [DONE]
-- `note/application-postgresql-r2dbc/src/main/java/com/example/note/NotePostgresqlR2dbcApplication.java` — [REVIEW]
-- `note/application-postgresql-r2dbc/src/main/resources/application.properties` — [REVIEW]
-- `note/application-postgresql-r2dbc/compose.yaml` — [REVIEW]
-- `note/application-postgresql-r2dbc/src/test/resources/application.properties` — [REVIEW]
-- `note/application-postgresql-r2dbc/src/test/java/com/example/note/NotePostgresqlR2dbcApplicationTests.java` — [REVIEW]
+#### note/application/application-postgresql-r2dbc/ (7 файлов)
+- `note/application/application-postgresql-r2dbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `note/application/application-postgresql-r2dbc/src/main/java/com/example/note/package-info.java` — [DONE]
+- `note/application/application-postgresql-r2dbc/src/main/java/com/example/note/NotePostgresqlR2dbcApplication.java` — [REVIEW]
+- `note/application/application-postgresql-r2dbc/src/main/resources/application.properties` — [REVIEW]
+- `note/application/application-postgresql-r2dbc/compose.yaml` — [REVIEW]
+- `note/application/application-postgresql-r2dbc/src/test/resources/application.properties` — [REVIEW]
+- `note/application/application-postgresql-r2dbc/src/test/java/com/example/note/NotePostgresqlR2dbcApplicationTests.java` — [REVIEW]
 
 #### note/application-jpa/ (12 файлов) — [REMOVED] 2026-07-24, разбит на 3 вендорных модуля application-jpa-{h2,mysql,postgresql}/ — устраняет driver bloat
 - `note/application-jpa/build.gradle.kts` — [REMOVED]
@@ -692,31 +692,31 @@
 - `note/application-jpa/src/test/java/com/example/note/NotePostgresqlJpaApplicationTests.java` — [REMOVED]
 - `note/application-jpa/src/test/java/com/example/note/NoteMysqlJpaApplicationTests.java` — [REMOVED]
 
-#### note/application-h2-jpa/ (6 файлов)
-- `note/application-h2-jpa/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
-- `note/application-h2-jpa/src/main/java/com/example/note/package-info.java` — [DONE]
-- `note/application-h2-jpa/src/main/java/com/example/note/NoteH2JpaApplication.java` — [REVIEW]
-- `note/application-h2-jpa/src/main/resources/application.properties` — [REVIEW]
-- `note/application-h2-jpa/src/test/resources/application.properties` — [REVIEW]
-- `note/application-h2-jpa/src/test/java/com/example/note/NoteH2JpaApplicationTests.java` — [REVIEW]
+#### note/application/application-h2-jpa/ (6 файлов)
+- `note/application/application-h2-jpa/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `note/application/application-h2-jpa/src/main/java/com/example/note/package-info.java` — [DONE]
+- `note/application/application-h2-jpa/src/main/java/com/example/note/NoteH2JpaApplication.java` — [REVIEW]
+- `note/application/application-h2-jpa/src/main/resources/application.properties` — [REVIEW]
+- `note/application/application-h2-jpa/src/test/resources/application.properties` — [REVIEW]
+- `note/application/application-h2-jpa/src/test/java/com/example/note/NoteH2JpaApplicationTests.java` — [REVIEW]
 
-#### note/application-mysql-jpa/ (7 файлов)
-- `note/application-mysql-jpa/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
-- `note/application-mysql-jpa/src/main/java/com/example/note/package-info.java` — [DONE]
-- `note/application-mysql-jpa/src/main/java/com/example/note/NoteMysqlJpaApplication.java` — [REVIEW]
-- `note/application-mysql-jpa/src/main/resources/application.properties` — [REVIEW]
-- `note/application-mysql-jpa/compose.yaml` — [REVIEW]
-- `note/application-mysql-jpa/src/test/resources/application.properties` — [REVIEW]
-- `note/application-mysql-jpa/src/test/java/com/example/note/NoteMysqlJpaApplicationTests.java` — [REVIEW]
+#### note/application/application-mysql-jpa/ (7 файлов)
+- `note/application/application-mysql-jpa/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `note/application/application-mysql-jpa/src/main/java/com/example/note/package-info.java` — [DONE]
+- `note/application/application-mysql-jpa/src/main/java/com/example/note/NoteMysqlJpaApplication.java` — [REVIEW]
+- `note/application/application-mysql-jpa/src/main/resources/application.properties` — [REVIEW]
+- `note/application/application-mysql-jpa/compose.yaml` — [REVIEW]
+- `note/application/application-mysql-jpa/src/test/resources/application.properties` — [REVIEW]
+- `note/application/application-mysql-jpa/src/test/java/com/example/note/NoteMysqlJpaApplicationTests.java` — [REVIEW]
 
-#### note/application-postgresql-jpa/ (7 файлов)
-- `note/application-postgresql-jpa/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
-- `note/application-postgresql-jpa/src/main/java/com/example/note/package-info.java` — [DONE]
-- `note/application-postgresql-jpa/src/main/java/com/example/note/NotePostgresqlJpaApplication.java` — [REVIEW]
-- `note/application-postgresql-jpa/src/main/resources/application.properties` — [REVIEW]
-- `note/application-postgresql-jpa/compose.yaml` — [REVIEW]
-- `note/application-postgresql-jpa/src/test/resources/application.properties` — [REVIEW]
-- `note/application-postgresql-jpa/src/test/java/com/example/note/NotePostgresqlJpaApplicationTests.java` — [REVIEW]
+#### note/application/application-postgresql-jpa/ (7 файлов)
+- `note/application/application-postgresql-jpa/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `note/application/application-postgresql-jpa/src/main/java/com/example/note/package-info.java` — [DONE]
+- `note/application/application-postgresql-jpa/src/main/java/com/example/note/NotePostgresqlJpaApplication.java` — [REVIEW]
+- `note/application/application-postgresql-jpa/src/main/resources/application.properties` — [REVIEW]
+- `note/application/application-postgresql-jpa/compose.yaml` — [REVIEW]
+- `note/application/application-postgresql-jpa/src/test/resources/application.properties` — [REVIEW]
+- `note/application/application-postgresql-jpa/src/test/java/com/example/note/NotePostgresqlJpaApplicationTests.java` — [REVIEW]
 
 #### note/application-jdbc/ (12 файлов) — [REMOVED] 2026-07-24, разбит на 3 вендорных модуля application-jdbc-{h2,mysql,postgresql}/ — устраняет driver bloat
 - `note/application-jdbc/build.gradle.kts` — [REMOVED]
@@ -732,67 +732,67 @@
 - `note/application-jdbc/src/test/java/com/example/note/NotePostgresqlJdbcApplicationTests.java` — [REMOVED]
 - `note/application-jdbc/src/test/java/com/example/note/NoteMysqlJdbcApplicationTests.java` — [REMOVED]
 
-#### note/application-h2-jdbc/ (6 файлов)
-- `note/application-h2-jdbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
-- `note/application-h2-jdbc/src/main/java/com/example/note/package-info.java` — [DONE]
-- `note/application-h2-jdbc/src/main/java/com/example/note/NoteH2JdbcApplication.java` — [REVIEW]
-- `note/application-h2-jdbc/src/main/resources/application.properties` — [REVIEW]
-- `note/application-h2-jdbc/src/test/resources/application.properties` — [REVIEW]
-- `note/application-h2-jdbc/src/test/java/com/example/note/NoteH2JdbcApplicationTests.java` — [REVIEW]
+#### note/application/application-h2-jdbc/ (6 файлов)
+- `note/application/application-h2-jdbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `note/application/application-h2-jdbc/src/main/java/com/example/note/package-info.java` — [DONE]
+- `note/application/application-h2-jdbc/src/main/java/com/example/note/NoteH2JdbcApplication.java` — [REVIEW]
+- `note/application/application-h2-jdbc/src/main/resources/application.properties` — [REVIEW]
+- `note/application/application-h2-jdbc/src/test/resources/application.properties` — [REVIEW]
+- `note/application/application-h2-jdbc/src/test/java/com/example/note/NoteH2JdbcApplicationTests.java` — [REVIEW]
 
-#### note/application-mysql-jdbc/ (7 файлов)
-- `note/application-mysql-jdbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
-- `note/application-mysql-jdbc/src/main/java/com/example/note/package-info.java` — [DONE]
-- `note/application-mysql-jdbc/src/main/java/com/example/note/NoteMysqlJdbcApplication.java` — [REVIEW]
-- `note/application-mysql-jdbc/src/main/resources/application.properties` — [REVIEW]
-- `note/application-mysql-jdbc/compose.yaml` — [REVIEW]
-- `note/application-mysql-jdbc/src/test/resources/application.properties` — [REVIEW]
-- `note/application-mysql-jdbc/src/test/java/com/example/note/NoteMysqlJdbcApplicationTests.java` — [REVIEW]
+#### note/application/application-mysql-jdbc/ (7 файлов)
+- `note/application/application-mysql-jdbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `note/application/application-mysql-jdbc/src/main/java/com/example/note/package-info.java` — [DONE]
+- `note/application/application-mysql-jdbc/src/main/java/com/example/note/NoteMysqlJdbcApplication.java` — [REVIEW]
+- `note/application/application-mysql-jdbc/src/main/resources/application.properties` — [REVIEW]
+- `note/application/application-mysql-jdbc/compose.yaml` — [REVIEW]
+- `note/application/application-mysql-jdbc/src/test/resources/application.properties` — [REVIEW]
+- `note/application/application-mysql-jdbc/src/test/java/com/example/note/NoteMysqlJdbcApplicationTests.java` — [REVIEW]
 
-#### note/application-postgresql-jdbc/ (7 файлов)
-- `note/application-postgresql-jdbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
-- `note/application-postgresql-jdbc/src/main/java/com/example/note/package-info.java` — [DONE]
-- `note/application-postgresql-jdbc/src/main/java/com/example/note/NotePostgresqlJdbcApplication.java` — [REVIEW]
-- `note/application-postgresql-jdbc/src/main/resources/application.properties` — [REVIEW]
-- `note/application-postgresql-jdbc/compose.yaml` — [REVIEW]
-- `note/application-postgresql-jdbc/src/test/resources/application.properties` — [REVIEW]
-- `note/application-postgresql-jdbc/src/test/java/com/example/note/NotePostgresqlJdbcApplicationTests.java` — [REVIEW]
+#### note/application/application-postgresql-jdbc/ (7 файлов)
+- `note/application/application-postgresql-jdbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
+- `note/application/application-postgresql-jdbc/src/main/java/com/example/note/package-info.java` — [DONE]
+- `note/application/application-postgresql-jdbc/src/main/java/com/example/note/NotePostgresqlJdbcApplication.java` — [REVIEW]
+- `note/application/application-postgresql-jdbc/src/main/resources/application.properties` — [REVIEW]
+- `note/application/application-postgresql-jdbc/compose.yaml` — [REVIEW]
+- `note/application/application-postgresql-jdbc/src/test/resources/application.properties` — [REVIEW]
+- `note/application/application-postgresql-jdbc/src/test/java/com/example/note/NotePostgresqlJdbcApplicationTests.java` — [REVIEW]
 
-#### note/application-mongodb/ (7 файлов)
-- `note/application-mongodb/build.gradle.kts` — [REVIEW]
-- `note/application-mongodb/src/test/resources/application.properties` — [REVIEW]
-- `note/application-mongodb/src/test/java/com/example/note/NoteMongoApplicationTests.java` — [REVIEW]
-- `note/application-mongodb/src/main/resources/application.properties` — [REVIEW]
-- `note/application-mongodb/src/main/java/com/example/note/package-info.java` — [REVIEW]
-- `note/application-mongodb/src/main/java/com/example/note/NoteMongoApplication.java` — [REVIEW]
-- `note/application-mongodb/compose.yaml` — [REVIEW] — восстановлен 2026-07-23 (Testcontainers/Compose для Mongo вернули, теперь симметрично с PostgreSQL/MySQL)
+#### note/application/application-mongodb/ (7 файлов)
+- `note/application/application-mongodb/build.gradle.kts` — [REVIEW]
+- `note/application/application-mongodb/src/test/resources/application.properties` — [REVIEW]
+- `note/application/application-mongodb/src/test/java/com/example/note/NoteMongoApplicationTests.java` — [REVIEW]
+- `note/application/application-mongodb/src/main/resources/application.properties` — [REVIEW]
+- `note/application/application-mongodb/src/main/java/com/example/note/package-info.java` — [REVIEW]
+- `note/application/application-mongodb/src/main/java/com/example/note/NoteMongoApplication.java` — [REVIEW]
+- `note/application/application-mongodb/compose.yaml` — [REVIEW] — восстановлен 2026-07-23 (Testcontainers/Compose для Mongo вернули, теперь симметрично с PostgreSQL/MySQL)
 
-#### note/application-mongodb-reactive/ (7 файлов)
-- `note/application-mongodb-reactive/build.gradle.kts` — [REVIEW]
-- `note/application-mongodb-reactive/src/test/resources/application.properties` — [REVIEW]
-- `note/application-mongodb-reactive/src/test/java/com/example/note/NoteMongoReactiveApplicationTests.java` — [REVIEW]
-- `note/application-mongodb-reactive/src/main/resources/application.properties` — [REVIEW]
-- `note/application-mongodb-reactive/src/main/java/com/example/note/package-info.java` — [REVIEW]
-- `note/application-mongodb-reactive/src/main/java/com/example/note/NoteMongoReactiveApplication.java` — [REVIEW]
-- `note/application-mongodb-reactive/compose.yaml` — [REVIEW] — восстановлен 2026-07-23 (Testcontainers/Compose для Mongo вернули, теперь симметрично с PostgreSQL/MySQL)
+#### note/application/application-mongodb-reactive/ (7 файлов)
+- `note/application/application-mongodb-reactive/build.gradle.kts` — [REVIEW]
+- `note/application/application-mongodb-reactive/src/test/resources/application.properties` — [REVIEW]
+- `note/application/application-mongodb-reactive/src/test/java/com/example/note/NoteMongoReactiveApplicationTests.java` — [REVIEW]
+- `note/application/application-mongodb-reactive/src/main/resources/application.properties` — [REVIEW]
+- `note/application/application-mongodb-reactive/src/main/java/com/example/note/package-info.java` — [REVIEW]
+- `note/application/application-mongodb-reactive/src/main/java/com/example/note/NoteMongoReactiveApplication.java` — [REVIEW]
+- `note/application/application-mongodb-reactive/compose.yaml` — [REVIEW] — восстановлен 2026-07-23 (Testcontainers/Compose для Mongo вернули, теперь симметрично с PostgreSQL/MySQL)
 
 #### note/ — предлагаемые отсутствующие файлы (`[ADD]`, 19)
-- `note/webmvc/src/test/java/com/example/note/webmvc/NoteExceptionHandlerTest.java` — [ADD]
-- `note/webmvc/src/test/java/com/example/note/webmvc/NoteControllerTest.java` — [ADD]
-- `note/webflux/src/test/java/com/example/note/webflux/NoteExceptionHandlerTest.java` — [ADD]
-- `note/webflux/src/test/java/com/example/note/webflux/NoteControllerTest.java` — [ADD]
-- `note/domain/src/test/java/com/example/note/domain/NoteNotFoundExceptionTest.java` — [ADD]
-- `note/data-r2dbc/src/test/java/com/example/note/data/r2dbc/mapper/NoteR2dbcMapperTest.java` — [ADD]
-- `note/data-r2dbc/src/test/java/com/example/note/data/r2dbc/adapter/NoteR2dbcAdapterIntegrationTest.java` — [ADD]
-- `note/data-mongodb/src/test/java/com/example/note/data/mongodb/mapper/NoteMongoMapperTest.java` — [ADD]
-- `note/data-mongodb/src/test/java/com/example/note/data/mongodb/adapter/NoteMongoAdapterIntegrationTest.java` — [ADD]
-- `note/data-mongodb-reactive/src/test/java/com/example/note/data/mongodb/reactive/mapper/NoteMongoReactiveMapperTest.java` — [ADD]
-- `note/data-mongodb-reactive/src/test/java/com/example/note/data/mongodb/reactive/adapter/NoteMongoReactiveAdapterIntegrationTest.java` — [ADD]
-- `note/data-jpa/src/test/java/com/example/note/data/jpa/mapper/NoteJpaMapperTest.java` — [ADD]
-- `note/data-jpa/src/test/java/com/example/note/data/jpa/adapter/NoteJpaAdapterIntegrationTest.java` — [ADD]
-- `note/data-jdbc/src/test/java/com/example/note/data/jdbc/mapper/NoteJdbcMapperTest.java` — [ADD]
-- `note/data-jdbc/src/test/java/com/example/note/data/jdbc/adapter/NoteJdbcAdapterIntegrationTest.java` — [ADD]
-- `note/application-h2-jpa/src/test/java/com/example/note/NoteCreateEndpointIntegrationTest.java` — [ADD]
+- `note/presentation/webmvc/src/test/java/com/example/note/webmvc/NoteExceptionHandlerTest.java` — [ADD]
+- `note/presentation/webmvc/src/test/java/com/example/note/webmvc/NoteControllerTest.java` — [ADD]
+- `note/presentation/webflux/src/test/java/com/example/note/webflux/NoteExceptionHandlerTest.java` — [ADD]
+- `note/presentation/webflux/src/test/java/com/example/note/webflux/NoteControllerTest.java` — [ADD]
+- `note/domain/domain/src/test/java/com/example/note/domain/NoteNotFoundExceptionTest.java` — [ADD]
+- `note/persistence/data-r2dbc/src/test/java/com/example/note/data/r2dbc/mapper/NoteR2dbcMapperTest.java` — [ADD]
+- `note/persistence/data-r2dbc/src/test/java/com/example/note/data/r2dbc/adapter/NoteR2dbcAdapterIntegrationTest.java` — [ADD]
+- `note/persistence/data-mongodb/src/test/java/com/example/note/data/mongodb/mapper/NoteMongoMapperTest.java` — [ADD]
+- `note/persistence/data-mongodb/src/test/java/com/example/note/data/mongodb/adapter/NoteMongoAdapterIntegrationTest.java` — [ADD]
+- `note/persistence/data-mongodb-reactive/src/test/java/com/example/note/data/mongodb/reactive/mapper/NoteMongoReactiveMapperTest.java` — [ADD]
+- `note/persistence/data-mongodb-reactive/src/test/java/com/example/note/data/mongodb/reactive/adapter/NoteMongoReactiveAdapterIntegrationTest.java` — [ADD]
+- `note/persistence/data-jpa/src/test/java/com/example/note/data/jpa/mapper/NoteJpaMapperTest.java` — [ADD]
+- `note/persistence/data-jpa/src/test/java/com/example/note/data/jpa/adapter/NoteJpaAdapterIntegrationTest.java` — [ADD]
+- `note/persistence/data-jdbc/src/test/java/com/example/note/data/jdbc/mapper/NoteJdbcMapperTest.java` — [ADD]
+- `note/persistence/data-jdbc/src/test/java/com/example/note/data/jdbc/adapter/NoteJdbcAdapterIntegrationTest.java` — [ADD]
+- `note/application/application-h2-jpa/src/test/java/com/example/note/NoteCreateEndpointIntegrationTest.java` — [ADD]
 
 ### gradle/ (4 файлов)
 

@@ -37,6 +37,7 @@
 - **Диспетчеризация нескольких `@GetMapping` на одном пути** — `@RequestParam` не участвует в регистрации маппинга, нужен атрибут `params` (`@GetMapping(params = "userId")`), иначе `Ambiguous mapping` при старте контекста
 - Reactive `findById`/`findBy*` бросают `{Entity}NotFoundException` вместо пустого `Mono` (пересмотрено 2026-07-13) — проверка перенесена из контроллера в сервис/адаптер, консистентно с sync
 - `note/webflux`/`user/webflux`: `findAll()` оборачивает в `ResponseEntity<Flux<X>>` (было голый `Flux`)
+- **Группировка модулей по слою в подпапку** (2026-08-01) — физический путь листового модуля для `note`/`user`/`user-note` сгруппирован по слою: `{service}/domain/{domain,contract,contract-reactive}/`, `{service}/persistence/data-*/`, `{service}/presentation/{webmvc,webflux}/`, `{service}/application/application-*/` (было плоско `{service}/{module}/`). Инициировано пользователем вручную в `user-note/` (`git mv`, с опечаткой `pestistence`), доведено агентом до всех трёх сервисов с исправленной опечаткой. Gradle project path и typesafe-accessor не меняются (`:{service}:{module}`, `projects.{service}.{module}`) — только `projectDir` каждого модуля переопределён в `settings.gradle.kts` на новый физический путь. Пересматривает более узкое отклонённое решение «каталог `data/` на уровне сервиса» (было: оставить плоско, см. CLAUDE.md → «Открытые решения») — на практике цена оказалась ниже ожидаемой именно благодаря `projectDir`-переопределению, не требующему менять форму accessor'ов
 
 ### HTTP / Ошибки
 
