@@ -520,12 +520,10 @@
 - `user/application/application-mongodb-reactive/src/main/java/com/example/user/UserMongoReactiveApplication.java` — [REVIEW]
 - `user/application/application-mongodb-reactive/compose.yaml` — [REVIEW] — восстановлен 2026-07-23 (Testcontainers/Compose для Mongo вернули, теперь симметрично с PostgreSQL/MySQL)
 
-#### user/ — предлагаемые отсутствующие файлы (`[ADD]`, 13)
+#### user/ — предлагаемые отсутствующие файлы (`[ADD]`, 11)
 - `user/presentation/webmvc/src/test/java/com/example/user/webmvc/UserControllerTest.java` — [ADD]
-- `user/presentation/webmvc/src/main/java/com/example/user/webmvc/UserController.java` — [ADD]
 - `user/presentation/webflux/src/test/java/com/example/user/webflux/UserControllerTest.java` — [ADD]
-- `user/presentation/webflux/src/main/java/com/example/user/webflux/UserController.java` — [ADD]
-- `user/domain/domain/src/test/java/com/example/user/domain/UserNotFoundExceptionTest.java` — [ADD]
+- `user/domain/domain/src/test/java/com/example/user/domain/UserNotFoundExceptionTest.java` — [ADD] — исправлено 2026-08-02: убраны 2 устаревшие строки `UserController.java` (webmvc/webflux) — файлы реально уже существуют и учтены отдельно как `[REVIEW]`, счётчик раздела скорректирован 13→11
 - `user/persistence/data-r2dbc/src/test/java/com/example/user/data/r2dbc/adapter/UserR2dbcAdapterTest.java` — [ADD]
 - `user/persistence/data-mongodb/src/test/java/com/example/user/data/mongodb/adapter/UserMongoAdapterTest.java` — [ADD]
 - `user/persistence/data-mongodb-reactive/src/test/java/com/example/user/data/mongodb/reactive/adapter/UserMongoReactiveAdapterTest.java` — [ADD]
