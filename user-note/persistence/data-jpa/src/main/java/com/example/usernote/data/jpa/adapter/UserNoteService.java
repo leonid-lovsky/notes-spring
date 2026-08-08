@@ -1,15 +1,21 @@
 package com.example.usernote.data.jpa.adapter;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
+
 import com.example.usernote.contract.UserNoteServiceInterface;
 import com.example.usernote.data.jpa.mapper.UserNoteJpaMapperContract;
 import com.example.usernote.data.jpa.model.UserNoteEntity;
 import com.example.usernote.data.jpa.repository.UserNoteJpaRepository;
-import com.example.usernote.domain.*;
-import org.springframework.stereotype.Service;
+import com.example.usernote.domain.NoteNotFoundException;
+import com.example.usernote.domain.UserNotFoundException;
+import com.example.usernote.domain.UserNoteNotFoundException;
+import com.example.usernote.domain.UserNoteRequest;
+import com.example.usernote.domain.UserNoteResponse;
+import com.example.usernote.domain.UserNoteRole;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import org.springframework.stereotype.Service;
 
 @Service
 class UserNoteService implements UserNoteServiceInterface {

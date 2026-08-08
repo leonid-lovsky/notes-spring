@@ -4,19 +4,19 @@ import java.util.UUID;
 
 import com.example.user.domain.UserRequest;
 
-public interface UserInterface {
+public interface UserInterface<B, S, L> {
 
-    Object existsById(UUID id);
+    B existsById(UUID id);
 
-    Object add(UserRequest request);
+    S add(UserRequest request);
 
-    Object findAll();
+    L findAll();
 
-    Object findById(UUID id);
+    S findById(UUID id);
 
-    Object replace(UUID id, UserRequest request);
+    S replace(UUID id, UserRequest request);
 
-    Object merge(UUID id, UserRequest request);
+    S merge(UUID id, UserRequest request);
 
-    Object remove(UUID id);
+    S remove(UUID id);
 }

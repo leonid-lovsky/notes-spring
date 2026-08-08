@@ -4,19 +4,19 @@ import java.util.UUID;
 
 import com.example.note.domain.NoteRequest;
 
-public interface NoteInterface {
+public interface NoteInterface<B, S, L> {
 
-    Object existsById(UUID id);
+    B existsById(UUID id);
 
-    Object add(NoteRequest request);
+    S add(NoteRequest request);
 
-    Object findAll();
+    L findAll();
 
-    Object findById(UUID id);
+    S findById(UUID id);
 
-    Object replace(UUID id, NoteRequest request);
+    S replace(UUID id, NoteRequest request);
 
-    Object merge(UUID id, NoteRequest request);
+    S merge(UUID id, NoteRequest request);
 
-    Object remove(UUID id);
+    S remove(UUID id);
 }

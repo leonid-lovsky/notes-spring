@@ -1,38 +1,38 @@
 package com.example.usernote.contract.reactive;
 
-import com.example.usernote.domain.UserNoteRequest;
-
 import java.util.UUID;
 
-public interface UserNoteReactiveInterface {
+import com.example.usernote.domain.UserNoteRequest;
 
-    Object existsByUserNoteId(UUID userNoteId);
+public interface UserNoteReactiveInterface<B, S, L, V> {
 
-    Object existsByUserId(UUID userId);
+    B existsByUserNoteId(UUID userNoteId);
 
-    Object existsByNoteId(UUID noteId);
+    B existsByUserId(UUID userId);
 
-    Object existsByUserIdAndNoteId(UUID userId, UUID noteId);
+    B existsByNoteId(UUID noteId);
 
-    Object add(UserNoteRequest request);
+    B existsByUserIdAndNoteId(UUID userId, UUID noteId);
 
-    Object findByUserNoteId(UUID userNoteId);
+    S add(UserNoteRequest request);
 
-    Object findByUserId(UUID userId);
+    S findByUserNoteId(UUID userNoteId);
 
-    Object findByNoteId(UUID noteId);
+    L findByUserId(UUID userId);
 
-    Object findByUserIdAndNoteId(UUID userId, UUID noteId);
+    L findByNoteId(UUID noteId);
 
-    Object replaceByUserNoteId(UUID userNoteId, UserNoteRequest request);
+    S findByUserIdAndNoteId(UUID userId, UUID noteId);
 
-    Object replaceByUserIdAndNoteId(UUID userId, UUID noteId, UserNoteRequest request);
+    S replaceByUserNoteId(UUID userNoteId, UserNoteRequest request);
 
-    Object mergeByUserNoteId(UUID userNoteId, UserNoteRequest request);
+    S replaceByUserIdAndNoteId(UUID userId, UUID noteId, UserNoteRequest request);
 
-    Object mergeByUserIdAndNoteId(UUID userId, UUID noteId, UserNoteRequest request);
+    S mergeByUserNoteId(UUID userNoteId, UserNoteRequest request);
 
-    Object deleteByUserNoteId(UUID userNoteId);
+    S mergeByUserIdAndNoteId(UUID userId, UUID noteId, UserNoteRequest request);
 
-    Object deleteByUserIdAndNoteId(UUID userId, UUID noteId);
+    V deleteByUserNoteId(UUID userNoteId);
+
+    V deleteByUserIdAndNoteId(UUID userId, UUID noteId);
 }
