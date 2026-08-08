@@ -1,24 +1,14 @@
 package com.example.usernote.webmvc;
 
-import java.util.List;
-import java.util.UUID;
-
 import com.example.usernote.contract.UserNoteServiceInterface;
 import com.example.usernote.domain.UserNoteRequest;
 import com.example.usernote.domain.UserNoteResponse;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/user-notes")
@@ -28,34 +18,6 @@ class UserNoteController implements UserNoteControllerInterface {
 
     UserNoteController(UserNoteServiceInterface userNoteService) {
         this.userNoteService = userNoteService;
-    }
-
-    @Override
-    @GetMapping("/{userNoteId}/exists")
-    public ResponseEntity<Boolean> existsByUserNoteId(@PathVariable UUID userNoteId) {
-        Boolean response = this.userNoteService.existsByUserNoteId(userNoteId);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
-
-    @Override
-    @GetMapping(path = "/exists", params = "userId")
-    public ResponseEntity<Boolean> existsByUserId(@RequestParam UUID userId) {
-        Boolean response = this.userNoteService.existsByUserId(userId);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
-
-    @Override
-    @GetMapping(path = "/exists", params = "noteId")
-    public ResponseEntity<Boolean> existsByNoteId(@RequestParam UUID noteId) {
-        Boolean response = this.userNoteService.existsByNoteId(noteId);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
-
-    @Override
-    @GetMapping(path = "/exists", params = { "userId", "noteId" })
-    public ResponseEntity<Boolean> existsByUserIdAndNoteId(@RequestParam UUID userId, @RequestParam UUID noteId) {
-        Boolean response = this.userNoteService.existsByUserIdAndNoteId(userId, noteId);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @Override

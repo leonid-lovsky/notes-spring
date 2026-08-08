@@ -1,38 +1,32 @@
 package com.example.usernote.contract;
 
-import java.util.UUID;
-
 import com.example.usernote.domain.UserNoteRequest;
+import com.example.usernote.domain.UserNoteResponse;
+
+import java.util.List;
+import java.util.UUID;
 
 public interface UserNoteInterface {
 
-    Object existsByUserNoteId(UUID userNoteId);
+    UserNoteResponse create(UserNoteRequest request);
 
-    Object existsByUserId(UUID userId);
+    UserNoteResponse findByUserIdAndNoteId(UUID userId, UUID noteId);
 
-    Object existsByNoteId(UUID noteId);
+    UserNoteResponse findByUserNoteId(UUID userNoteId);
 
-    Object existsByUserIdAndNoteId(UUID userId, UUID noteId);
+    List<UserNoteResponse> findByUserId(UUID userId);
 
-    Object create(UserNoteRequest request);
+    List<UserNoteResponse> findByNoteId(UUID noteId);
 
-    Object findByUserNoteId(UUID userNoteId);
+    UserNoteResponse replaceByUserIdAndNoteId(UUID userId, UUID noteId, UserNoteRequest request);
 
-    Object findByUserId(UUID userId);
+    UserNoteResponse replaceByUserNoteId(UUID userNoteId, UserNoteRequest request);
 
-    Object findByNoteId(UUID noteId);
+    UserNoteResponse mergeByUserIdAndNoteId(UUID userId, UUID noteId, UserNoteRequest request);
 
-    Object findByUserIdAndNoteId(UUID userId, UUID noteId);
+    UserNoteResponse mergeByUserNoteId(UUID userNoteId, UserNoteRequest request);
 
-    Object replaceByUserNoteId(UUID userNoteId, UserNoteRequest request);
+    UserNoteResponse deleteByUserIdAndNoteId(UUID userId, UUID noteId);
 
-    Object replaceByUserIdAndNoteId(UUID userId, UUID noteId, UserNoteRequest request);
-
-    Object mergeByUserNoteId(UUID userNoteId, UserNoteRequest request);
-
-    Object mergeByUserIdAndNoteId(UUID userId, UUID noteId, UserNoteRequest request);
-
-    Object deleteByUserNoteId(UUID userNoteId);
-
-    Object deleteByUserIdAndNoteId(UUID userId, UUID noteId);
+    UserNoteResponse deleteByUserNoteId(UUID userNoteId);
 }
