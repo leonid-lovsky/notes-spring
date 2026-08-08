@@ -1,8 +1,8 @@
 package com.example.usernote.contract.reactive;
 
-import java.util.UUID;
-
 import com.example.usernote.domain.UserNoteRequest;
+
+import java.util.UUID;
 
 public interface UserNoteReactiveInterface {
 

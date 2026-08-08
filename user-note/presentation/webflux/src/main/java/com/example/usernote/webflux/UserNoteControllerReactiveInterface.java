@@ -1,14 +1,13 @@
 package com.example.usernote.webflux;
 
-import java.util.UUID;
-
 import com.example.usernote.contract.reactive.UserNoteReactiveInterface;
 import com.example.usernote.domain.UserNoteRequest;
 import com.example.usernote.domain.UserNoteResponse;
+import org.springframework.http.ResponseEntity;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import org.springframework.http.ResponseEntity;
+import java.util.UUID;
 
 public interface UserNoteControllerReactiveInterface extends UserNoteReactiveInterface {
 
@@ -44,7 +43,7 @@ public interface UserNoteControllerReactiveInterface extends UserNoteReactiveInt
 
     @Override
     Mono<ResponseEntity<UserNoteResponse>> replaceByUserIdAndNoteId(UUID userId, UUID noteId,
-            UserNoteRequest request);
+        UserNoteRequest request);
 
     @Override
     Mono<ResponseEntity<UserNoteResponse>> mergeByUserNoteId(UUID userNoteId, UserNoteRequest request);

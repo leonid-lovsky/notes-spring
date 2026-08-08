@@ -1,25 +1,15 @@
 package com.example.usernote.webflux;
 
-import java.util.UUID;
-
 import com.example.usernote.contract.reactive.UserNoteServiceReactiveInterface;
 import com.example.usernote.domain.UserNoteRequest;
 import com.example.usernote.domain.UserNoteResponse;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/user-notes")
@@ -53,9 +43,9 @@ class UserNoteController implements UserNoteControllerReactiveInterface {
     }
 
     @Override
-    @GetMapping(path = "/exists", params = { "userId", "noteId" })
+    @GetMapping(path = "/exists", params = {"userId", "noteId"})
     public Mono<ResponseEntity<Boolean>> existsByUserIdAndNoteId(@RequestParam UUID userId,
-            @RequestParam UUID noteId) {
+        @RequestParam UUID noteId) {
         return this.userNoteService.existsByUserIdAndNoteId(userId, noteId)
             .map((exists) -> ResponseEntity.status(HttpStatus.OK).body(exists));
     }
@@ -87,9 +77,9 @@ class UserNoteController implements UserNoteControllerReactiveInterface {
     }
 
     @Override
-    @GetMapping(params = { "userId", "noteId" })
+    @GetMapping(params = {"userId", "noteId"})
     public Mono<ResponseEntity<UserNoteResponse>> findByUserIdAndNoteId(@RequestParam UUID userId,
-            @RequestParam UUID noteId) {
+        @RequestParam UUID noteId) {
         return this.userNoteService.findByUserIdAndNoteId(userId, noteId)
             .map((userNote) -> ResponseEntity.status(HttpStatus.OK).body(userNote));
     }
@@ -97,7 +87,7 @@ class UserNoteController implements UserNoteControllerReactiveInterface {
     @Override
     @PutMapping("/{userNoteId}")
     public Mono<ResponseEntity<UserNoteResponse>> replaceByUserNoteId(@PathVariable UUID userNoteId,
-            @RequestBody UserNoteRequest request) {
+        @RequestBody UserNoteRequest request) {
         return this.userNoteService.replaceByUserNoteId(userNoteId, request)
             .map((userNote) -> ResponseEntity.status(HttpStatus.OK).body(userNote));
     }
@@ -105,7 +95,7 @@ class UserNoteController implements UserNoteControllerReactiveInterface {
     @Override
     @PutMapping
     public Mono<ResponseEntity<UserNoteResponse>> replaceByUserIdAndNoteId(@RequestParam UUID userId,
-            @RequestParam UUID noteId, @RequestBody UserNoteRequest request) {
+        @RequestParam UUID noteId, @RequestBody UserNoteRequest request) {
         return this.userNoteService.replaceByUserIdAndNoteId(userId, noteId, request)
             .map((userNote) -> ResponseEntity.status(HttpStatus.OK).body(userNote));
     }
@@ -113,7 +103,7 @@ class UserNoteController implements UserNoteControllerReactiveInterface {
     @Override
     @PatchMapping("/{userNoteId}")
     public Mono<ResponseEntity<UserNoteResponse>> mergeByUserNoteId(@PathVariable UUID userNoteId,
-            @RequestBody UserNoteRequest request) {
+        @RequestBody UserNoteRequest request) {
         return this.userNoteService.mergeByUserNoteId(userNoteId, request)
             .map((userNote) -> ResponseEntity.status(HttpStatus.OK).body(userNote));
     }
@@ -121,7 +111,7 @@ class UserNoteController implements UserNoteControllerReactiveInterface {
     @Override
     @PatchMapping
     public Mono<ResponseEntity<UserNoteResponse>> mergeByUserIdAndNoteId(@RequestParam UUID userId,
-            @RequestParam UUID noteId, @RequestBody UserNoteRequest request) {
+        @RequestParam UUID noteId, @RequestBody UserNoteRequest request) {
         return this.userNoteService.mergeByUserIdAndNoteId(userId, noteId, request)
             .map((userNote) -> ResponseEntity.status(HttpStatus.OK).body(userNote));
     }

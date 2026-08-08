@@ -1,22 +1,16 @@
 package com.example.usernote.data.r2dbc.adapter;
 
-import java.util.Objects;
-import java.util.UUID;
-
 import com.example.usernote.contract.reactive.UserNoteServiceReactiveInterface;
 import com.example.usernote.data.r2dbc.mapper.UserNoteR2dbcMapperContract;
 import com.example.usernote.data.r2dbc.model.UserNoteR2dbcEntity;
 import com.example.usernote.data.r2dbc.repository.UserNoteR2dbcRepository;
-import com.example.usernote.domain.NoteNotFoundException;
-import com.example.usernote.domain.UserNotFoundException;
-import com.example.usernote.domain.UserNoteNotFoundException;
-import com.example.usernote.domain.UserNoteRequest;
-import com.example.usernote.domain.UserNoteResponse;
-import com.example.usernote.domain.UserNoteRole;
+import com.example.usernote.domain.*;
+import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import org.springframework.stereotype.Service;
+import java.util.Objects;
+import java.util.UUID;
 
 @Service
 class UserNoteService implements UserNoteServiceReactiveInterface {
@@ -66,15 +60,15 @@ class UserNoteService implements UserNoteServiceReactiveInterface {
     @Override
     public Flux<UserNoteResponse> findByUserId(UUID userId) {
         return this.userNoteR2dbcRepository.existsByUserId(userId).flatMapMany((exists) -> exists
-                ? this.userNoteR2dbcRepository.findByUserId(userId).map(this.userNoteR2dbcMapper::toResponse)
-                : Flux.error(new UserNotFoundException(userId)));
+            ? this.userNoteR2dbcRepository.findByUserId(userId).map(this.userNoteR2dbcMapper::toResponse)
+            : Flux.error(new UserNotFoundException(userId)));
     }
 
     @Override
     public Flux<UserNoteResponse> findByNoteId(UUID noteId) {
         return this.userNoteR2dbcRepository.existsByNoteId(noteId).flatMapMany((exists) -> exists
-                ? this.userNoteR2dbcRepository.findByNoteId(noteId).map(this.userNoteR2dbcMapper::toResponse)
-                : Flux.error(new NoteNotFoundException(noteId)));
+            ? this.userNoteR2dbcRepository.findByNoteId(noteId).map(this.userNoteR2dbcMapper::toResponse)
+            : Flux.error(new NoteNotFoundException(noteId)));
     }
 
     @Override
@@ -88,9 +82,9 @@ class UserNoteService implements UserNoteServiceReactiveInterface {
     public Mono<UserNoteResponse> replaceByUserNoteId(UUID userNoteId, UserNoteRequest request) {
         return this.userNoteR2dbcRepository.existsById(userNoteId)
             .flatMap((exists) -> exists
-                    ? this.userNoteR2dbcRepository.save(this.userNoteR2dbcMapper.toExistingEntity(userNoteId, request))
-                        .map(this.userNoteR2dbcMapper::toResponse)
-                    : Mono.error(new UserNoteNotFoundException(userNoteId)));
+                ? this.userNoteR2dbcRepository.save(this.userNoteR2dbcMapper.toExistingEntity(userNoteId, request))
+                .map(this.userNoteR2dbcMapper::toResponse)
+                : Mono.error(new UserNoteNotFoundException(userNoteId)));
     }
 
     @Override
@@ -129,14 +123,14 @@ class UserNoteService implements UserNoteServiceReactiveInterface {
     public Mono<Void> deleteByUserNoteId(UUID userNoteId) {
         return this.userNoteR2dbcRepository.existsById(userNoteId)
             .flatMap((exists) -> exists ? this.userNoteR2dbcRepository.deleteById(userNoteId)
-                    : Mono.error(new UserNoteNotFoundException(userNoteId)));
+                : Mono.error(new UserNoteNotFoundException(userNoteId)));
     }
 
     @Override
     public Mono<Void> deleteByUserIdAndNoteId(UUID userId, UUID noteId) {
         return this.userNoteR2dbcRepository.existsByUserIdAndNoteId(userId, noteId)
             .flatMap((exists) -> exists ? this.userNoteR2dbcRepository.deleteByUserIdAndNoteId(userId, noteId)
-                    : Mono.error(new UserNoteNotFoundException(userId, noteId)));
+                : Mono.error(new UserNoteNotFoundException(userId, noteId)));
     }
 
     private static UserNoteRequest merge(UserNoteR2dbcEntity existing, UserNoteRequest request) {

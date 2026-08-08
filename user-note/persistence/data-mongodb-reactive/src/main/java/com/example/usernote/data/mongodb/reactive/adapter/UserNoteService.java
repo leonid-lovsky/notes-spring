@@ -1,21 +1,15 @@
 package com.example.usernote.data.mongodb.reactive.adapter;
 
-import java.util.UUID;
-
 import com.example.usernote.contract.reactive.UserNoteServiceReactiveInterface;
 import com.example.usernote.data.mongodb.reactive.mapper.UserNoteMongoReactiveMapperContract;
 import com.example.usernote.data.mongodb.reactive.model.UserNoteReactiveDocument;
 import com.example.usernote.data.mongodb.reactive.repository.UserNoteMongoReactiveRepository;
-import com.example.usernote.domain.NoteNotFoundException;
-import com.example.usernote.domain.UserNotFoundException;
-import com.example.usernote.domain.UserNoteNotFoundException;
-import com.example.usernote.domain.UserNoteRequest;
-import com.example.usernote.domain.UserNoteResponse;
-import com.example.usernote.domain.UserNoteRole;
+import com.example.usernote.domain.*;
+import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import org.springframework.stereotype.Service;
+import java.util.UUID;
 
 @Service
 class UserNoteService implements UserNoteServiceReactiveInterface {
@@ -24,8 +18,7 @@ class UserNoteService implements UserNoteServiceReactiveInterface {
 
     private final UserNoteMongoReactiveMapperContract userNoteMongoReactiveMapper;
 
-    UserNoteService(UserNoteMongoReactiveRepository userNoteMongoReactiveRepository,
-            UserNoteMongoReactiveMapperContract userNoteMongoReactiveMapper) {
+    UserNoteService(UserNoteMongoReactiveRepository userNoteMongoReactiveRepository, UserNoteMongoReactiveMapperContract userNoteMongoReactiveMapper) {
         this.userNoteMongoReactiveRepository = userNoteMongoReactiveRepository;
         this.userNoteMongoReactiveMapper = userNoteMongoReactiveMapper;
     }
@@ -67,18 +60,18 @@ class UserNoteService implements UserNoteServiceReactiveInterface {
     public Flux<UserNoteResponse> findByUserId(UUID userId) {
         return this.userNoteMongoReactiveRepository.existsByUserId(userId)
             .flatMapMany((exists) -> exists
-                    ? this.userNoteMongoReactiveRepository.findByUserId(userId)
-                        .map(this.userNoteMongoReactiveMapper::toResponse)
-                    : Flux.error(new UserNotFoundException(userId)));
+                ? this.userNoteMongoReactiveRepository.findByUserId(userId)
+                .map(this.userNoteMongoReactiveMapper::toResponse)
+                : Flux.error(new UserNotFoundException(userId)));
     }
 
     @Override
     public Flux<UserNoteResponse> findByNoteId(UUID noteId) {
         return this.userNoteMongoReactiveRepository.existsByNoteId(noteId)
             .flatMapMany((exists) -> exists
-                    ? this.userNoteMongoReactiveRepository.findByNoteId(noteId)
-                        .map(this.userNoteMongoReactiveMapper::toResponse)
-                    : Flux.error(new NoteNotFoundException(noteId)));
+                ? this.userNoteMongoReactiveRepository.findByNoteId(noteId)
+                .map(this.userNoteMongoReactiveMapper::toResponse)
+                : Flux.error(new NoteNotFoundException(noteId)));
     }
 
     @Override
@@ -91,10 +84,10 @@ class UserNoteService implements UserNoteServiceReactiveInterface {
     @Override
     public Mono<UserNoteResponse> replaceByUserNoteId(UUID userNoteId, UserNoteRequest request) {
         return this.userNoteMongoReactiveRepository.existsById(userNoteId).flatMap((exists) -> exists
-                ? this.userNoteMongoReactiveRepository
-                    .save(this.userNoteMongoReactiveMapper.toExistingDocument(userNoteId, request))
-                    .map(this.userNoteMongoReactiveMapper::toResponse)
-                : Mono.error(new UserNoteNotFoundException(userNoteId)));
+            ? this.userNoteMongoReactiveRepository
+            .save(this.userNoteMongoReactiveMapper.toExistingDocument(userNoteId, request))
+            .map(this.userNoteMongoReactiveMapper::toResponse)
+            : Mono.error(new UserNoteNotFoundException(userNoteId)));
     }
 
     @Override
@@ -134,15 +127,15 @@ class UserNoteService implements UserNoteServiceReactiveInterface {
     public Mono<Void> deleteByUserNoteId(UUID userNoteId) {
         return this.userNoteMongoReactiveRepository.existsById(userNoteId)
             .flatMap((exists) -> exists ? this.userNoteMongoReactiveRepository.deleteById(userNoteId)
-                    : Mono.error(new UserNoteNotFoundException(userNoteId)));
+                : Mono.error(new UserNoteNotFoundException(userNoteId)));
     }
 
     @Override
     public Mono<Void> deleteByUserIdAndNoteId(UUID userId, UUID noteId) {
         return this.userNoteMongoReactiveRepository.existsByUserIdAndNoteId(userId, noteId)
             .flatMap((exists) -> exists
-                    ? this.userNoteMongoReactiveRepository.deleteByUserIdAndNoteId(userId, noteId)
-                    : Mono.error(new UserNoteNotFoundException(userId, noteId)));
+                ? this.userNoteMongoReactiveRepository.deleteByUserIdAndNoteId(userId, noteId)
+                : Mono.error(new UserNoteNotFoundException(userId, noteId)));
     }
 
     private static UserNoteRequest merge(UserNoteReactiveDocument existing, UserNoteRequest request) {

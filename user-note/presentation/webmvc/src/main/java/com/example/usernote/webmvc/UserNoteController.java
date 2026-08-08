@@ -49,7 +49,7 @@ class UserNoteController implements UserNoteControllerInterface {
     }
 
     @Override
-    @GetMapping(params = { "userId", "noteId" })
+    @GetMapping(params = {"userId", "noteId"})
     public ResponseEntity<UserNoteResponse> findByUserIdAndNoteId(@RequestParam UUID userId, @RequestParam UUID noteId) {
         UserNoteResponse response = this.userNoteService.findByUserIdAndNoteId(userId, noteId);
         return ResponseEntity.status(HttpStatus.OK).body(response);

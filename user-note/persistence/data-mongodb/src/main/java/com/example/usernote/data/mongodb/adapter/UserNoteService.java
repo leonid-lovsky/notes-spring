@@ -1,21 +1,15 @@
 package com.example.usernote.data.mongodb.adapter;
 
-import java.util.List;
-import java.util.UUID;
-
 import com.example.usernote.contract.UserNoteServiceInterface;
 import com.example.usernote.data.mongodb.mapper.UserNoteMongoMapperContract;
 import com.example.usernote.data.mongodb.model.UserNoteDocument;
 import com.example.usernote.data.mongodb.repository.UserNoteMongoRepository;
-import com.example.usernote.domain.NoteNotFoundException;
-import com.example.usernote.domain.UserNotFoundException;
-import com.example.usernote.domain.UserNoteNotFoundException;
-import com.example.usernote.domain.UserNoteRequest;
-import com.example.usernote.domain.UserNoteResponse;
-import com.example.usernote.domain.UserNoteRole;
-
+import com.example.usernote.domain.*;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.UUID;
 
 @Service
 class UserNoteService implements UserNoteServiceInterface {
@@ -26,8 +20,7 @@ class UserNoteService implements UserNoteServiceInterface {
 
     private final UserNoteMongoMapperContract userNoteMongoMapper;
 
-    UserNoteService(MongoTemplate mongoTemplate, UserNoteMongoRepository userNoteMongoRepository,
-            UserNoteMongoMapperContract userNoteMongoMapper) {
+    UserNoteService(MongoTemplate mongoTemplate, UserNoteMongoRepository userNoteMongoRepository, UserNoteMongoMapperContract userNoteMongoMapper) {
         this.mongoTemplate = mongoTemplate;
         this.userNoteMongoRepository = userNoteMongoRepository;
         this.userNoteMongoMapper = userNoteMongoMapper;
