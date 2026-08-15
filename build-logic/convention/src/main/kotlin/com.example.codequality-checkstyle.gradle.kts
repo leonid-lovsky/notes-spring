@@ -4,14 +4,9 @@ plugins {
 
 val libs = extensions.getByType(VersionCatalogsExtension::class.java).named("libs")
 
-repositories {
-    maven { url = uri("https://repo.spring.io/snapshot") }
-}
-
 checkstyle {
     toolVersion = libs.findVersion("checkstyle").get().requiredVersion
     configFile = rootProject.file("gradle/checkstyle/checkstyle.xml")
-    configProperties = mapOf("projectRootPackage" to "com.example")
 }
 
 dependencies {
