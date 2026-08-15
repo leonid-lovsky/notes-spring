@@ -1,13 +1,15 @@
 # Каталог файлов проекта
 
-> Вынесено из CLAUDE.md 2026-07-14 (см. [../CLAUDE.md](../CLAUDE.md) → «Правила» → лимит размера файла). Полный git-отслеживаемый список файлов; статусы: [DONE] — утверждено, [REVIEW] — требует пересмотра (по умолчанию), [ADD] — файла нет, предложен, [REMOVED] — удалён (строка сохранена для истории). Список путей/статусов не трогать без прямого запроса (см. CLAUDE.md → «Правила» → лимит размера файла).
+> Вынесено из `CLAUDE.md` 2026-07-14 (см. `CLAUDE.md` → «Правила» → «Лимит размера файла»). Полный git-отслеживаемый список файлов; статусы: [DONE] — утверждено, [REVIEW] — требует пересмотра (по умолчанию), [ADD] — файла нет, предложен, [REMOVED] — удалён (строка сохранена для истории). Список путей/статусов не трогать без прямого запроса (см. `CLAUDE.md` → «Правила» → «Лимит размера файла»).
+
+Схема каждой строки: путь (относительно ближайшего заголовка `### сервис/`/`#### модуль/` выше по файлу) — [СТАТУС] — комментарий (опционален).
 
 ### Корень репозитория (8 файлов)
 - `settings.gradle.kts` — [DONE]
 - `gradlew.bat` — [DONE]
 - `gradlew` — [DONE]
 - `gradle.properties` — [DONE]
-- `CLAUDE.md` — [DONE] — единственный документационный файл в корне, обязательное условие автозагрузки Claude Code; остальные документационные файлы — `docs/`, см. ниже
+- `CLAUDE.md` — [DONE] — единственный документационный файл в корне, обязательное условие автозагрузки Claude Code; остальные документационные файлы — в каталоге `docs/` (см. разделы «Корень репозитория» и `docs/` ниже в этом же файле)
 - `.java-version` — [DONE]
 - `.springjavaformatconfig` — [REMOVED]
 - `.gitignore` — [DONE]
@@ -885,7 +887,7 @@
 - `build-logic/com.example.codequality.gradle.kts` — [REMOVED] — убран 2026-08-01, чистый список из 5 id без своей конфигурации и с единственным потребителем (`base`/`java`) — инлайнирован напрямую в `java.gradle.kts`, см. decisions-log.md
 - `build-logic/com.example.codequality-checkstyle.gradle.kts` — [REVIEW] — применяется напрямую из `java.gradle.kts` с 2026-08-01, был через `codequality`-агрегатор
 - `build-logic/com.example.base.gradle.kts` — [REMOVED] — переименован 2026-08-01 в `java.gradle.kts` (id совпадает с обёрнутым ядровым Gradle-плагином `java`, было именем роли, не технологии)
-- `build-logic/com.example.java.gradle.kts` — [REVIEW] — новый 2026-08-01 (переименование `base.gradle.kts`, см. выше); дополнительно инлайнирует 5 `codequality-*` id вместо снятого агрегатора
+- `build-logic/com.example.java.gradle.kts` — [REVIEW] — новый 2026-08-01, переименование предыдущей строки `com.example.base.gradle.kts`; дополнительно инлайнирует 5 `codequality-*` id вместо снятого агрегатора
 - `build-logic/com.example.spring-boot-validation.gradle.kts` — [REVIEW] — новый 2026-08-01, вынесен из `spring-boot.gradle.kts` в атомарный плагин (`spring-boot-starter-validation`+test), применяется явно в `webmvc`/`webflux`/`data-jpa` × 3 сервиса — закрывает CLAUDE.md → «Открытые решения» → «Область подключения spring-boot-starter-validation»
 
 ### auth/ (6 файлов)
