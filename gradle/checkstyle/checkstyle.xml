@@ -7,6 +7,7 @@
         <property name="excludes"
             value="io.spring.javaformat.checkstyle.check.SpringHeaderCheck,
                    com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocPackageCheck,
+                   com.puppycrawl.tools.checkstyle.checks.javadoc.MissingJavadocPackageCheck,
                    com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTypeCheck,
                    com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocMethodCheck,
                    com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocVariableCheck,
