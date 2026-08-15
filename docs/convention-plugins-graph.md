@@ -18,12 +18,15 @@
 
 - `com.example.java-library` — `java` — + `java-library` (ядро Gradle, не Spring) — 6 применений (`contract`/`contract-reactive` × 3 сервиса — единственные модули, где `api(projects.*.domain)` реально нужен потребителям)
 - `com.example.project-reactor` — `java` — переименован 2026-08-01 из `reactor` (точное имя технологии «Project Reactor») — + `reactor-core`(implementation) + `reactor-tools`(implementation) + `reactor-test`(test) — 3 применения (`contract-reactive` × 3 сервиса)
-- `com.example.spring-boot` — `java` — + `io.spring.dependency-management` + Spring Boot BOM + `spring-boot-starter`(+test) — 0 прямых применений (только как родитель 30 плагинов уровня 2)
+- `com.example.spring-boot` — `java` — + `io.spring.dependency-management` + Spring Boot BOM + `spring-boot-starter`(+test) — 0 прямых применений (только как родитель 33 плагинов уровня 2, из них 3 новых — `spring-boot-batch`/`-batch-jdbc`/`-batch-data-mongodb`, 2026-08-15)
 
 ## Уровень 2 — родитель `spring-boot` (технологические плагины, каждый = 1 Spring Boot стартер/концерн)
 
 - `com.example.spring-boot-application` — `spring-boot` + `id("org.springframework.boot")` (bootable-ось, только это — actuator вынесен, см. `spring-boot-actuator` ниже) — 34 применения (все composition-root модули note/user/user-note/auth)
 - `com.example.spring-boot-actuator` — `spring-boot` — новый 2026-08-01 (воссоздан — существовал до 2026-07-14, был слит в `spring-boot-application`) — + `spring-boot-starter-actuator`(+test) — 37 применений (34 листа с `spring-boot-application` + `registry/application`/`config/application`/`gateway/application`, где раньше приходил транзитивно через `spring-cloud-application`). В отличие от `spring-boot-validation` — расхождения в потребности нет (100% bootable-модулей хотят actuator), поэтому выбрана явная композиция на каждом листе (вид 2), а не встраивание в `spring-boot-application` вторым родителем (вид 1, тоже обсуждался — отклонён в пользу максимальной атомарности без диаманта, несмотря на больший объём правок)
+- `com.example.spring-boot-batch` — `spring-boot` — новый 2026-08-15 — + `spring-boot-starter-batch`(+test) — 0 применений (ОТЛОЖЕНО, впервые появившаяся в проекте технология — см. `docs/decisions-log.md` → «Синхронизация версий»)
+- `com.example.spring-boot-batch-data-mongodb` — `spring-boot` — новый 2026-08-15 — + `spring-boot-starter-batch-data-mongodb`(+test) — 0 применений (ОТЛОЖЕНО, применяется в композиции с `spring-boot-batch` на листе, не как родитель — тот же паттерн вид 2, что `spring-boot-application`+`spring-boot-database-h2`)
+- `com.example.spring-boot-batch-jdbc` — `spring-boot` — новый 2026-08-15 — + `spring-boot-starter-batch-jdbc`(+test) — 0 применений (ОТЛОЖЕНО, композиция с `spring-boot-batch` на листе, см. выше)
 - `com.example.spring-boot-client-restclient` — `spring-boot` — + `spring-boot-starter-restclient`(+test) — 0 применений (ОТЛОЖЕНО)
 - `com.example.spring-boot-client-webclient` — `spring-boot` — + `spring-boot-starter-webclient`(+test) — 0 применений (ОТЛОЖЕНО)
 - `com.example.spring-boot-data-elasticsearch` — `spring-boot` — + `spring-boot-starter-data-elasticsearch`(+test) + `spring-boot-starter-elasticsearch`(+test) — 0 применений (ОТЛОЖЕНО)
