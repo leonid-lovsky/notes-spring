@@ -2,7 +2,7 @@ pluginManagement {
     includeBuild("build-logic")
 }
 
-rootProject.name = "Notes Spring Boot"
+rootProject.name = "notes-spring"
 
 include(":user-note:application:JDBC:JDBC-H2")
 include(":user-note:application:JDBC:JDBC-MySQL")
