@@ -11,7 +11,6 @@
                    com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTypeCheck,
                    com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocMethodCheck,
                    com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocVariableCheck,
-                   com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocStyleCheck,
                    io.spring.javaformat.checkstyle.check.SpringJavadocCheck,
                    io.spring.javaformat.checkstyle.check.SpringLeadingWhitespaceCheck"/>
     </module>
