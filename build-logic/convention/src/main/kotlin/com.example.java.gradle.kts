@@ -1,6 +1,7 @@
 plugins {
     id("java")
     id("com.example.codequality-checkstyle")
+    id("com.example.codequality-spotless")
     id("com.example.codequality-jspecify")
     id("com.example.codequality-nullaway")
     id("com.example.codequality-jacoco")

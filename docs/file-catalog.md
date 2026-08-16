@@ -834,7 +834,7 @@
 - `build-logic/settings.gradle.kts` — [REVIEW]
 - `build-logic/convention/build.gradle.kts` — [REVIEW]
 
-#### build-logic/convention/src/main/kotlin/ — precompiled script plugins (49 файлов, было 38)
+#### build-logic/convention/src/main/kotlin/ — precompiled script plugins (52 файла на диске, было 49 — точная синхронизация подраздела не поддерживалась с 2026-08-15, не проведена полностью в этой правке, см. CLAUDE.md → «Задачи»; +1 строка ниже — `com.example.codequality-spotless`, 2026-08-16)
 - `build-logic/com.example.spring-boot-database-postgresql.gradle.kts` — [REVIEW] — новый 2026-07-23, вендорная ось для JPA/JDBC (`runtimeOnly org.postgresql:postgresql`), активируется через Spring-профиль
 - `build-logic/com.example.spring-boot-database-mysql.gradle.kts` — [REVIEW] — новый 2026-07-23, `runtimeOnly com.mysql:mysql-connector-j`
 - `build-logic/com.example.spring-boot-database-postgresql-r2dbc.gradle.kts` — [REVIEW] — новый 2026-07-23, `runtimeOnly org.postgresql:r2dbc-postgresql`; переименован 2026-07-24 из `-r2dbc-postgresql` (вендор-впереди-технологии, группировка с `database-postgresql`)
@@ -886,6 +886,7 @@
 - `build-logic/com.example.codequality-jacoco-report-aggregation.gradle.kts` — [REVIEW] — применяется напрямую из `java.gradle.kts` с 2026-08-01, был через `codequality`-агрегатор
 - `build-logic/com.example.codequality.gradle.kts` — [REMOVED] — убран 2026-08-01, чистый список из 5 id без своей конфигурации и с единственным потребителем (`base`/`java`) — инлайнирован напрямую в `java.gradle.kts`, см. decisions-log.md
 - `build-logic/com.example.codequality-checkstyle.gradle.kts` — [REVIEW] — применяется напрямую из `java.gradle.kts` с 2026-08-01, был через `codequality`-агрегатор
+- `build-logic/com.example.codequality-spotless.gradle.kts` — [REVIEW] — новый 2026-08-16, автофикс порядка импортов под ту же группировку, что проверяет `SpringImportOrderCheck` в `codequality-checkstyle`; `spotlessApply` подключён как зависимость `compileJava` — фикс автоматический при обычной сборке, без ручного вызова; применяется напрямую из `java.gradle.kts`, шестой `codequality-*`-фрагмент
 - `build-logic/com.example.base.gradle.kts` — [REMOVED] — переименован 2026-08-01 в `java.gradle.kts` (id совпадает с обёрнутым ядровым Gradle-плагином `java`, было именем роли, не технологии)
 - `build-logic/com.example.java.gradle.kts` — [REVIEW] — новый 2026-08-01, переименование предыдущей строки `com.example.base.gradle.kts`; дополнительно инлайнирует 5 `codequality-*` id вместо снятого агрегатора
 - `build-logic/com.example.spring-boot-validation.gradle.kts` — [REVIEW] — новый 2026-08-01, вынесен из `spring-boot.gradle.kts` в атомарный плагин (`spring-boot-starter-validation`+test), применяется явно в `webmvc`/`webflux`/`data-jpa` × 3 сервиса — закрывает CLAUDE.md → «Открытые решения» → «Область подключения spring-boot-starter-validation»

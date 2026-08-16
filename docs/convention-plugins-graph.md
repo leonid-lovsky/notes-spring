@@ -74,11 +74,12 @@
 
 - `com.example.spring-cloud-application` — `spring-cloud` + прямой `id("org.springframework.boot")` (диамант устранён 2026-08-01 — раньше был вторым родителем через `spring-boot-application`, см. decisions-log.md → «Диамант `spring-cloud-application` устранён окончательно») — сам не добавляет зависимостей, только bootable-композиция — 3 прямых применения (`config/application`, `registry/application`, `gateway/application` — везде явно рядом со своим `spring-cloud-*`-технологическим плагином, тот же паттерн, что `spring-boot-application`+`spring-boot-database-h2` у реляционных composition-root)
 
-## `codequality-*` — 5 приватных фрагментов, применяются напрямую из `java` (не через отдельный агрегатор)
+## `codequality-*` — 6 приватных фрагментов, применяются напрямую из `java` (не через отдельный агрегатор)
 
-До 2026-08-01 между `base`(ныне `java`) и этими 5 плагинами стоял отдельный `com.example.codequality` — чистый список из 5 `id(...)`, без собственной конфигурации, с единственным потребителем (`base`). Убран как враппер без переиспользования — 5 id перенесены напрямую в `plugins{}` `com.example.java.gradle.kts` (см. decisions-log.md → «Пересмотрено 2026-08-01»). Ни один из 5 не применяется напрямую ни в одном листовом модуле — только каскадом через `java`:
+До 2026-08-01 между `base`(ныне `java`) и этими плагинами стоял отдельный `com.example.codequality` — чистый список `id(...)`, без собственной конфигурации, с единственным потребителем (`base`). Убран как враппер без переиспользования — id перенесены напрямую в `plugins{}` `com.example.java.gradle.kts` (см. decisions-log.md → «Пересмотрено 2026-08-01»). Ни один из 6 не применяется напрямую ни в одном листовом модуле — только каскадом через `java`:
 
 - `com.example.codequality-checkstyle` — `id("checkstyle")`, без `com.example.*` родителя — `SpringChecks` + `checkstyle.xml` + `spring-javaformat-checkstyle` — 0 прямых
+- `com.example.codequality-spotless` — `id("com.diffplug.spotless")`, без `com.example.*` родителя — новый 2026-08-16, `importOrder("java", "javax", "", "org.springframework")` (та же группировка, что проверяет `SpringImportOrderCheck` из `codequality-checkstyle` выше — Spotless умеет чинить автоматически (`spotlessApply`), Checkstyle только диагностирует), `lineEndings = LineEnding.PRESERVE` явно (не трогает отдельную тему CRLF/LF, см. decisions-log.md → «Стиль кода»); `tasks.named("compileJava") { dependsOn("spotlessApply") }` — автофикс встроен в обычную компиляцию, ручной вызов не нужен — 0 прямых
 - `com.example.codequality-jacoco` — `id("jacoco")`, без родителя — `jacocoTestReport` привязан к `test` — 0 прямых
 - `com.example.codequality-jacoco-report-aggregation` — `id("jacoco-report-aggregation")`, без родителя, без своей конфигурации (autoconfig) — 0 прямых
 - `com.example.codequality-jspecify` — `id("java")`, без `com.example.*` родителя — `implementation(jspecify)` — 0 прямых
