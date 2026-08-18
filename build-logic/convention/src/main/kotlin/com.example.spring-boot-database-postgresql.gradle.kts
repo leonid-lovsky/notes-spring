@@ -4,4 +4,5 @@ plugins {
 
 dependencies {
     runtimeOnly("org.postgresql:postgresql")
+    testRuntimeOnly("com.h2database:h2")
 }
