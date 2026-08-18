@@ -1,55 +1,58 @@
 # spring-boot-testing-reference.md
 
-## `@SpringBootTest` и его конфигурация
+## Full-context (`@SpringBootTest`)
 
-- `@SpringBootTest` — поднимает весь контекст; `webEnvironment` = `MOCK` (дефолт, без сервера) / `RANDOM_PORT` / `DEFINED_PORT` / `NONE`
-- `@AutoConfigureMockMvc` — обязателен для `MockMvc`/`MockMvcTester` внутри `@SpringBootTest`
-- `@AutoConfigureWebTestClient` — обязателен для `WebTestClient` внутри `@SpringBootTest`
-- `@AutoConfigureTestRestTemplate` — обязателен для `TestRestTemplate` внутри `@SpringBootTest`
-- `@AutoConfigureRestTestClient` — обязателен для `RestTestClient` внутри `@SpringBootTest`
-- `@AutoConfigureTestDatabase` — подменяет `DataSource` на embedded-БД
-- `@AutoConfigureWebServer` — поднимает embedded web server factory bean
-- `@AutoConfigureJson` — настраивает JSON-тестеры без полного `@JsonTest`
+- `@SpringBootTest`
+- `@AutoConfigureMockMvc` / `MockMvc` / `MockMvcTester`
+- `@AutoConfigureWebTestClient` / `WebTestClient`
+- `@AutoConfigureTestRestTemplate` / `TestRestTemplate`
+- `@AutoConfigureRestTestClient` / `RestTestClient`
+- `@AutoConfigureTestDatabase`
+- `@AutoConfigureWebServer`
+- `@AutoConfigureJson`
 
-## HTTP-тестовые клиенты
-
-- `MockMvc`
-- `MockMvcTester`
-- `WebTestClient`
-- `RestTestClient`
-- `TestRestTemplate`
-
-## Мокирование
+## Мокирование бинов
 
 - `@MockitoBean`
 - `@MockitoSpyBean`
 - `@MockBean`/`@SpyBean` — удалены в Boot 4.0
 - `MockitoExtension`
 
-## Слайс-тесты по технологии
+## Слайс-тесты по слою
+
+### Web
 
 - `@WebMvcTest`
 - `@WebFluxTest`
+
+### Persistence
+
 - `@DataJpaTest`
 - `@JdbcTest`
 - `@DataJdbcTest`
 - `@DataR2dbcTest`
 - `@DataMongoTest`
-- `@JsonTest`
-- `@RestClientTest`
-- `@WebClientTest`
 - `@DataCassandraTest`
 - `@DataCouchbaseTest`
 - `@DataElasticsearchTest`
 - `@DataLdapTest`
 - `@DataNeo4jTest`
 - `@DataRedisTest`
-- `@GraphQlTest`
 - `@JooqTest`
+
+### Client / внешние сервисы
+
+- `@RestClientTest`
+- `@WebClientTest`
 - `@WebServiceClientTest`
 - `@WebServiceServerTest`
 
-## Testcontainers-слой
+### Прочее
+
+- `@JsonTest`
+- `@GraphQlTest`
+
+## Testcontainers
 
 - `@Testcontainers`
 - `@Container`
