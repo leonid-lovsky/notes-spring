@@ -5,8 +5,10 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 import org.assertj.core.api.Assertions;
+
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.mysql.MySQLContainer;
@@ -24,9 +26,14 @@ class UserNoteApplicationTests {
     @ActiveProfiles("h2")
     class H2 {
 
-        @Test
-        void contextLoads() {
+        @Autowired
+        DataSource dataSource;
 
+        @Test
+        void contextLoads() throws SQLException {
+            Assertions
+                .assertThat(this.dataSource.getConnection().getMetaData().getDatabaseProductName())
+                .isEqualTo("H2");
         }
     }
 
