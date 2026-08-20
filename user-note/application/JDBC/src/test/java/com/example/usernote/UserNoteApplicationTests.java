@@ -40,11 +40,11 @@ class UserNoteApplicationTests {
     @Nested
     @ActiveProfiles("mysql")
     @Testcontainers
-    class Mysql {
+    class MySQL {
 
         @Container
         @ServiceConnection
-        static MySQLContainer mysqlContainer = new MySQLContainer("mysql:9");
+        static MySQLContainer mySQLContainer = new MySQLContainer("mysql:9");
 
         @Autowired
         DataSource dataSource;
@@ -60,11 +60,11 @@ class UserNoteApplicationTests {
     @Nested
     @ActiveProfiles("postgresql")
     @Testcontainers
-    class Postgresql {
+    class PostgreSQL {
 
         @Container
         @ServiceConnection
-        static PostgreSQLContainer postgresqlContainer = new PostgreSQLContainer("postgres:18");
+        static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:18");
 
         @Autowired
         DataSource dataSource;
