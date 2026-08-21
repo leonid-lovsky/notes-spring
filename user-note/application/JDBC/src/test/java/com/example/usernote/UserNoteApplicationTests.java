@@ -22,58 +22,58 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest
 class UserNoteApplicationTests {
 
-    @Nested
-    @ActiveProfiles("h2")
-    class H2 {
+    abstract static class DatabaseProductNameTests {
 
         @Autowired
         DataSource dataSource;
+
+        abstract String expectedProductName();
 
         @Test
         void contextLoads() throws SQLException {
             Assertions
                 .assertThat(this.dataSource.getConnection().getMetaData().getDatabaseProductName())
-                .isEqualTo("H2");
+                .isEqualTo(this.expectedProductName());
+        }
+    }
+
+    @Nested
+    @ActiveProfiles("h2")
+    class H2 extends DatabaseProductNameTests {
+
+        @Override
+        String expectedProductName() {
+            return "H2";
         }
     }
 
     @Nested
     @ActiveProfiles("mysql")
     @Testcontainers
-    class MySQL {
+    class MySQL extends DatabaseProductNameTests {
 
         @Container
         @ServiceConnection
         static MySQLContainer mySQLContainer = new MySQLContainer("mysql:9");
 
-        @Autowired
-        DataSource dataSource;
-
-        @Test
-        void contextLoads() throws SQLException {
-            Assertions
-                .assertThat(this.dataSource.getConnection().getMetaData().getDatabaseProductName())
-                .isEqualTo("MySQL");
+        @Override
+        String expectedProductName() {
+            return "MySQL";
         }
     }
 
     @Nested
     @ActiveProfiles("postgresql")
     @Testcontainers
-    class PostgreSQL {
+    class PostgreSQL extends DatabaseProductNameTests {
 
         @Container
         @ServiceConnection
         static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:18");
 
-        @Autowired
-        DataSource dataSource;
-
-        @Test
-        void contextLoads() throws SQLException {
-            Assertions
-                .assertThat(this.dataSource.getConnection().getMetaData().getDatabaseProductName())
-                .isEqualTo("PostgreSQL");
+        @Override
+        String expectedProductName() {
+            return "PostgreSQL";
         }
     }
 }
