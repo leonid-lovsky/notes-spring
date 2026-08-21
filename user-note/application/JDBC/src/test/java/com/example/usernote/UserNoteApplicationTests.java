@@ -9,17 +9,13 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.mysql.MySQLContainer;
-import org.testcontainers.postgresql.PostgreSQLContainer;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
+@Import(UserNoteTestConfigutation.class)
 class UserNoteApplicationTests {
 
     @Nested
@@ -34,12 +30,7 @@ class UserNoteApplicationTests {
 
     @Nested
     @ActiveProfiles("mysql")
-    @Testcontainers
     class MySQL extends DatabaseProductNameTests {
-
-        @Container
-        @ServiceConnection
-        static MySQLContainer mySQLContainer = new MySQLContainer("mysql:9");
 
         @Override
         String expectedProductName() {
@@ -49,12 +40,7 @@ class UserNoteApplicationTests {
 
     @Nested
     @ActiveProfiles("postgresql")
-    @Testcontainers
     class PostgreSQL extends DatabaseProductNameTests {
-
-        @Container
-        @ServiceConnection
-        static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:18");
 
         @Override
         String expectedProductName() {
