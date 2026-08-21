@@ -22,21 +22,6 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest
 class UserNoteApplicationTests {
 
-    abstract static class DatabaseProductNameTests {
-
-        @Autowired
-        DataSource dataSource;
-
-        abstract String expectedProductName();
-
-        @Test
-        void contextLoads() throws SQLException {
-            Assertions
-                .assertThat(this.dataSource.getConnection().getMetaData().getDatabaseProductName())
-                .isEqualTo(this.expectedProductName());
-        }
-    }
-
     @Nested
     @ActiveProfiles("h2")
     class H2 extends DatabaseProductNameTests {
@@ -74,6 +59,21 @@ class UserNoteApplicationTests {
         @Override
         String expectedProductName() {
             return "PostgreSQL";
+        }
+    }
+
+    abstract static class DatabaseProductNameTests {
+
+        @Autowired
+        DataSource dataSource;
+
+        abstract String expectedProductName();
+
+        @Test
+        void contextLoads() throws SQLException {
+            Assertions
+                .assertThat(this.dataSource.getConnection().getMetaData().getDatabaseProductName())
+                .isEqualTo(this.expectedProductName());
         }
     }
 }
