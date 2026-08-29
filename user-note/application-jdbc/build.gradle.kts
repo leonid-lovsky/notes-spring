@@ -1,0 +1,14 @@
+plugins {
+    id("com.example.spring-boot-application")
+    id("com.example.spring-boot-webmvc")
+
+    id("com.example.spring-boot-data-jdbc")
+
+    id("com.example.spring-boot-database-h2")
+    id("com.example.spring-boot-database-mysql")
+    id("com.example.spring-boot-database-postgresql")
+
+    id("com.example.spring-boot-testcontainers")
+    id("com.example.spring-boot-testcontainers-mysql")
+    id("com.example.spring-boot-testcontainers-postgresql")
+}

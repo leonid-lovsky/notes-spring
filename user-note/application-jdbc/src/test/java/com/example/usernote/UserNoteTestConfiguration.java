@@ -15,7 +15,7 @@ class UserNoteTestConfiguration {
     @Bean
     @Profile("mysql")
     @ServiceConnection
-    MySQLContainer mysqlContainer() {
+    MySQLContainer mySQLContainer() {
         return new MySQLContainer(DockerImageName.parse("mysql:latest"));
     }
 

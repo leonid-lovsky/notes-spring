@@ -10,7 +10,7 @@ import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
@@ -20,12 +20,12 @@ class UserNoteApplicationTests {
     abstract static class ServerInfoTests {
 
         @Autowired
-        MongoTemplate mongoTemplate;
+        ReactiveMongoTemplate reactiveMongoTemplate;
 
         @Test
         void contextLoads() {
             Assertions
-                .assertThat(this.mongoTemplate.executeCommand(new Document("buildInfo", 1)))
+                .assertThat(this.reactiveMongoTemplate.executeCommand(new Document("buildInfo", 1)).block())
                 .containsKey("version");
         }
     }
