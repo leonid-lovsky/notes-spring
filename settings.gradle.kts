@@ -9,3 +9,4 @@ plugins {
 rootProject.name = "notes-spring"
 
 include(":user-note:application")
+include(":user-note:application-mongodb")
