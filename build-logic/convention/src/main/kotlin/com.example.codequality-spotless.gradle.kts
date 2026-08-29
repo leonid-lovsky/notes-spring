@@ -19,6 +19,7 @@ spotless {
             "",
             "org.springframework",
         )
+        replaceRegex("collapseEmptyBraces", "\\{\\s*\\}", "{}")
     }
 }
 

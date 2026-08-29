@@ -13,7 +13,8 @@
                    com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocVariableCheck,
                    io.spring.javaformat.checkstyle.check.SpringJavadocCheck,
                    io.spring.javaformat.checkstyle.check.SpringLeadingWhitespaceCheck,
-                   io.spring.javaformat.checkstyle.check.SpringImportOrderCheck"/>
+                   io.spring.javaformat.checkstyle.check.SpringImportOrderCheck,
+                   com.puppycrawl.tools.checkstyle.checks.whitespace.WhitespaceAroundCheck"/>
     </module>
 
     <module name="com.puppycrawl.tools.checkstyle.checks.whitespace.FileTabCharacterCheck">
@@ -23,11 +24,6 @@
     <module name="com.puppycrawl.tools.checkstyle.checks.regexp.RegexpMultilineCheck">
         <property name="format" value="[^\s{][ \t]*\n[ \t]*\n[ \t]*\}"/>
         <property name="message" value="Пустая строка перед закрывающей скобкой не допускается"/>
-    </module>
-
-    <module name="com.puppycrawl.tools.checkstyle.checks.regexp.RegexpMultilineCheck">
-        <property name="format" value="\{[ \t]*(\n[ \t]*)?\}"/>
-        <property name="message" value="Пустое тело должно содержать ровно одну пустую строку внутри"/>
     </module>
 
     <module name="com.puppycrawl.tools.checkstyle.TreeWalker">
@@ -51,6 +47,14 @@
             <property name="tokens" value="METHOD_DEF"/>
             <property name="allowMultipleEmptyLines" value="false"/>
             <property name="allowMultipleEmptyLinesInsideClassMembers" value="false"/>
+        </module>
+        <module name="com.puppycrawl.tools.checkstyle.checks.whitespace.WhitespaceAroundCheck">
+            <property name="allowEmptyConstructors" value="true"/>
+            <property name="allowEmptyMethods" value="true"/>
+            <property name="allowEmptyTypes" value="true"/>
+            <property name="allowEmptyLoops" value="true"/>
+            <property name="allowEmptyCatches" value="true"/>
+            <property name="allowEmptyLambdas" value="true"/>
         </module>
     </module>
 </module>

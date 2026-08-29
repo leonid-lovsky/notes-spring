@@ -15,8 +15,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
-@Import(TestUserNoteConfiguration.class)
-class UserNoteApplicationTest {
+@Import(UserNoteTestConfiguration.class)
+class UserNoteApplicationTests {
 
     abstract static class DatabaseProductNameTests {
 
