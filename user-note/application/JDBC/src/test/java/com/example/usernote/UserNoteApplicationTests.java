@@ -15,8 +15,23 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
-@Import(UserNoteTestConfigutation.class)
-class UserNoteApplicationTests {
+@Import(TestUserNoteConfiguration.class)
+class UserNoteApplicationTest {
+
+    abstract static class DatabaseProductNameTests {
+
+        @Autowired
+        DataSource dataSource;
+
+        abstract String expectedProductName();
+
+        @Test
+        void contextLoads() throws SQLException {
+            Assertions
+                .assertThat(this.dataSource.getConnection().getMetaData().getDatabaseProductName())
+                .isEqualTo(this.expectedProductName());
+        }
+    }
 
     @Nested
     @ActiveProfiles("h2")
@@ -45,21 +60,6 @@ class UserNoteApplicationTests {
         @Override
         String expectedProductName() {
             return "PostgreSQL";
-        }
-    }
-
-    abstract static class DatabaseProductNameTests {
-
-        @Autowired
-        DataSource dataSource;
-
-        abstract String expectedProductName();
-
-        @Test
-        void contextLoads() throws SQLException {
-            Assertions
-                .assertThat(this.dataSource.getConnection().getMetaData().getDatabaseProductName())
-                .isEqualTo(this.expectedProductName());
         }
     }
 }
