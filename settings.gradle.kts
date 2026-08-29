@@ -8,11 +8,4 @@ plugins {
 
 rootProject.name = "notes-spring"
 
-include(":user-note:application:JDBC")
-
-include(":user-note:application:JPA")
-
-include(":user-note:application:MongoDB")
-include(":user-note:application:MongoDB-reactive")
-
-include(":user-note:application:R2DBC")
+include(":user-note:application")

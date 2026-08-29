@@ -1,7 +1,0 @@
-services:
-  mongodb:
-    image: 'mongo:8'
-    environment:
-      - 'MONGO_INITDB_DATABASE=notedb'
-    ports:
-      - '27017'

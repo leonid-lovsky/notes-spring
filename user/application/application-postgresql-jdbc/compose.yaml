@@ -1,9 +1,0 @@
-services:
-  postgresql:
-    image: 'postgres:18'
-    environment:
-      - 'POSTGRES_DB=userdb'
-      - 'POSTGRES_USER=userdb'
-      - 'POSTGRES_PASSWORD=userdb'
-    ports:
-      - '5432'
