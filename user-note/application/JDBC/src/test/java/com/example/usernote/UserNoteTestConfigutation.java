@@ -2,6 +2,7 @@ package com.example.usernote;
 
 import org.testcontainers.mysql.MySQLContainer;
 import org.testcontainers.postgresql.PostgreSQLContainer;
+import org.testcontainers.utility.DockerImageName;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
@@ -15,13 +16,13 @@ class UserNoteTestConfigutation {
     @Profile("mysql")
     @ServiceConnection
     MySQLContainer mysqlContainer() {
-        return new MySQLContainer("mysql:9");
+        return new MySQLContainer(DockerImageName.parse("mysql:latest"));
     }
 
     @Bean
     @Profile("postgresql")
     @ServiceConnection
     PostgreSQLContainer postgreSQLContainer() {
-        return new PostgreSQLContainer("postgres:18");
+        return new PostgreSQLContainer(DockerImageName.parse("postgres:latest"));
     }
 }
