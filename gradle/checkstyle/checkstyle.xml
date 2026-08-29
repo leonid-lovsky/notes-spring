@@ -23,7 +23,7 @@
 
     <module name="com.puppycrawl.tools.checkstyle.checks.regexp.RegexpMultilineCheck">
         <property name="format" value="[^\s{][ \t]*\n[ \t]*\n[ \t]*\}"/>
-        <property name="message" value="Пустая строка перед закрывающей скобкой не допускается"/>
+        <property name="message" value="A blank line before the closing brace is not allowed"/>
     </module>
 
     <module name="com.puppycrawl.tools.checkstyle.TreeWalker">
