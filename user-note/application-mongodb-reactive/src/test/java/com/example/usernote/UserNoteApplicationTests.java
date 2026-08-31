@@ -17,7 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 @Import(UserNoteTestConfiguration.class)
 class UserNoteApplicationTests {
 
-    abstract static class ServerInfoTests {
+    abstract static class ReactiveMongoTemplateTests {
 
         @Autowired
         ReactiveMongoTemplate reactiveMongoTemplate;
@@ -32,5 +32,5 @@ class UserNoteApplicationTests {
 
     @Nested
     @ActiveProfiles("mongodb")
-    class MongoDB extends ServerInfoTests {}
+    class MongoDB extends ReactiveMongoTemplateTests {}
 }

@@ -18,7 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 @Import(UserNoteTestConfiguration.class)
 class UserNoteApplicationTests {
 
-    abstract static class DatabaseProductNameTests {
+    abstract static class DataSourceTests {
 
         @Autowired
         DataSource dataSource;
@@ -35,7 +35,7 @@ class UserNoteApplicationTests {
 
     @Nested
     @ActiveProfiles("h2")
-    class H2 extends DatabaseProductNameTests {
+    class H2 extends DataSourceTests {
 
         @Override
         String expectedDatabaseProductName() {
@@ -45,7 +45,7 @@ class UserNoteApplicationTests {
 
     @Nested
     @ActiveProfiles("mysql")
-    class MySQL extends DatabaseProductNameTests {
+    class MySQL extends DataSourceTests {
 
         @Override
         String expectedDatabaseProductName() {
@@ -55,7 +55,7 @@ class UserNoteApplicationTests {
 
     @Nested
     @ActiveProfiles("postgresql")
-    class PostgreSQL extends DatabaseProductNameTests {
+    class PostgreSQL extends DataSourceTests {
 
         @Override
         String expectedDatabaseProductName() {

@@ -14,6 +14,7 @@
                    io.spring.javaformat.checkstyle.check.SpringJavadocCheck,
                    io.spring.javaformat.checkstyle.check.SpringLeadingWhitespaceCheck,
                    io.spring.javaformat.checkstyle.check.SpringImportOrderCheck,
+                   io.spring.javaformat.checkstyle.check.SpringLambdaCheck,
                    com.puppycrawl.tools.checkstyle.checks.whitespace.WhitespaceAroundCheck"/>
     </module>
 
@@ -47,6 +48,9 @@
             <property name="tokens" value="METHOD_DEF"/>
             <property name="allowMultipleEmptyLines" value="false"/>
             <property name="allowMultipleEmptyLinesInsideClassMembers" value="false"/>
+        </module>
+        <module name="io.spring.javaformat.checkstyle.check.SpringLambdaCheck">
+            <property name="singleArgumentParentheses" value="false"/>
         </module>
         <module name="com.puppycrawl.tools.checkstyle.checks.whitespace.WhitespaceAroundCheck">
             <property name="allowEmptyConstructors" value="true"/>

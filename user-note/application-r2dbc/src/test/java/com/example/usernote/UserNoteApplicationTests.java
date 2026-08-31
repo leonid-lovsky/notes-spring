@@ -17,7 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 @Import(UserNoteTestConfiguration.class)
 class UserNoteApplicationTests {
 
-    abstract static class DatabaseProductNameTests {
+    abstract static class DatabaseClientTests {
 
         @Autowired
         DatabaseClient databaseClient;
@@ -27,7 +27,7 @@ class UserNoteApplicationTests {
         @Test
         void contextLoads() {
             String databaseProductName = this.databaseClient
-                .inConnection((connection) -> Mono.just(connection.getMetadata().getDatabaseProductName()))
+                .inConnection(connection -> Mono.just(connection.getMetadata().getDatabaseProductName()))
                 .block();
             Assertions.assertThat(databaseProductName).contains(this.expectedDatabaseProductName());
         }
@@ -35,7 +35,7 @@ class UserNoteApplicationTests {
 
     @Nested
     @ActiveProfiles("h2")
-    class H2 extends DatabaseProductNameTests {
+    class H2 extends DatabaseClientTests {
 
         @Override
         String expectedDatabaseProductName() {
@@ -45,7 +45,7 @@ class UserNoteApplicationTests {
 
     @Nested
     @ActiveProfiles("mysql")
-    class MySQL extends DatabaseProductNameTests {
+    class MySQL extends DatabaseClientTests {
 
         @Override
         String expectedDatabaseProductName() {
@@ -55,7 +55,7 @@ class UserNoteApplicationTests {
 
     @Nested
     @ActiveProfiles("postgresql")
-    class PostgreSQL extends DatabaseProductNameTests {
+    class PostgreSQL extends DatabaseClientTests {
 
         @Override
         String expectedDatabaseProductName() {
