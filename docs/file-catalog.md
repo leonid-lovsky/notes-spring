@@ -30,7 +30,7 @@
 - `.claude/settings.json` — [REMOVED] — регистрировал SessionStart hook; удалён 2026-07-24 вместе со всем `.claude/` (`.gitignore` уже содержал `.claude/` — по факту был случайно закоммичен ранее, теперь untracked навсегда)
 - `.claude/hooks/session-start.sh` — [REMOVED] — автоустановка JDK 25 в облачных сессиях; удалён 2026-07-24 из-за CRLF-порчи файла на диске (`bad interpreter` при старте сессии), не восстановлен
 
-### user-note/ (35 файлов) — весь гексагональный слой (`domain/`·`persistence/`·`presentation/`·`application/application-{vendor}-{tech}/`) + сервисы `note/`·`user/` удалены целиком 2026-08-29 (`git rm`, см. CLAUDE.md → «Активная нить» → «2026-08-29 (вечер)»); осталось 5 плоских composition-root модулей-скелетов без `dependencies {}`
+### user-note/ (43 файлов, было 35 — тесты 2026-09-04 разбиты с `@Nested` на отдельные top-level классы по вендору) — весь гексагональный слой (`domain/`·`persistence/`·`presentation/`·`application/application-{vendor}-{tech}/`) + сервисы `note/`·`user/` удалены целиком 2026-08-29 (`git rm`, см. CLAUDE.md → «Активная нить» → «2026-08-29 (вечер)»); осталось 5 плоских composition-root модулей-скелетов без `dependencies {}`
 
 #### user-note/ — удалённый гексагональный слой — [REMOVED] 2026-08-29
 - `user-note/domain/{domain,contract,contract-reactive}/**` — [REMOVED] — records/enums/exceptions + порт-интерфейсы sync+reactive
@@ -38,7 +38,7 @@
 - `user-note/presentation/{webmvc,webflux}/**` — [REMOVED] — driving-адаптеры (контроллеры, exception handler, порт-интерфейсы)
 - `user-note/application/**` — [REMOVED] — старые composition-root модули (11 вложенных `application-{vendor}-{tech}/` + `application-mongodb[-reactive]/`)
 
-#### user-note/application-jdbc/ (7 файлов) — sync реляционный скелет: webmvc + data-jdbc + database-{h2,mysql,postgresql} + testcontainers-{mysql,postgresql}
+#### user-note/application-jdbc/ (9 файлов, было 7) — sync реляционный скелет: webmvc + data-jdbc + database-{h2,mysql,postgresql} + testcontainers-{mysql,postgresql}
 - `user-note/application-jdbc/build.gradle.kts` — [REVIEW]
 - `user-note/application-jdbc/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`
 - `user-note/application-jdbc/src/main/java/com/example/usernote/package-info.java` — [REVIEW]
@@ -46,11 +46,14 @@
 - `user-note/application-jdbc/src/main/resources/application-h2.properties` — [REMOVED] 2026-08-31 (было `spring.h2.console.enabled=true`)
 - `user-note/application-jdbc/src/main/resources/application-mysql.properties` — [REMOVED] 2026-08-31 (connection-строки, в тестах перекрывались `@ServiceConnection`)
 - `user-note/application-jdbc/src/main/resources/application-postgresql.properties` — [REMOVED] 2026-08-31
-- `user-note/application-jdbc/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — `@Nested` h2/mysql/postgresql через `abstract DataSourceTests`
+- `user-note/application-jdbc/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REMOVED] 2026-09-04 (было `@Nested` h2/mysql/postgresql через `abstract DataSourceTests`)
+- `user-note/application-jdbc/src/test/java/com/example/usernote/UserNoteApplicationDefaultTest.java` — [REVIEW] — новый 2026-09-04, голый `contextLoads(){}` без активного профиля (embedded H2)
+- `user-note/application-jdbc/src/test/java/com/example/usernote/UserNoteApplicationMySQLTest.java` — [REVIEW] — новый 2026-09-04, `@ActiveProfiles("MySQL")`, голый `contextLoads(){}` (ассерт на `DataSource`/product-name снят)
+- `user-note/application-jdbc/src/test/java/com/example/usernote/UserNoteApplicationPostgreSQLTest.java` — [REVIEW] — новый 2026-09-04, `@ActiveProfiles("PostgreSQL")`
 - `user-note/application-jdbc/src/test/java/com/example/usernote/UserNoteTestApplication.java` — [REVIEW]
 - `user-note/application-jdbc/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — `@Bean @Profile @ServiceConnection` MySQLContainer/PostgreSQLContainer
 
-#### user-note/application-jpa/ (7 файлов) — sync реляционный скелет: то же, что application-jdbc/, но data-jpa вместо data-jdbc (единственное различие)
+#### user-note/application-jpa/ (9 файлов, было 7) — sync реляционный скелет: то же, что application-jdbc/, но data-jpa вместо data-jdbc (единственное различие)
 - `user-note/application-jpa/build.gradle.kts` — [REVIEW]
 - `user-note/application-jpa/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`
 - `user-note/application-jpa/src/main/java/com/example/usernote/package-info.java` — [REVIEW]
@@ -58,38 +61,48 @@
 - `user-note/application-jpa/src/main/resources/application-h2.properties` — [REMOVED] 2026-08-31 (было `spring.h2.console.enabled=true`)
 - `user-note/application-jpa/src/main/resources/application-mysql.properties` — [REMOVED] 2026-08-31 (connection-строки, в тестах перекрывались `@ServiceConnection`)
 - `user-note/application-jpa/src/main/resources/application-postgresql.properties` — [REMOVED] 2026-08-31
-- `user-note/application-jpa/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — `@Nested` h2/mysql/postgresql через `abstract DataSourceTests`
+- `user-note/application-jpa/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REMOVED] 2026-09-04 (было `@Nested` h2/mysql/postgresql через `abstract DataSourceTests`)
+- `user-note/application-jpa/src/test/java/com/example/usernote/UserNoteApplicationDefaultTest.java` — [REVIEW] — новый 2026-09-04, голый `contextLoads(){}` без активного профиля (embedded H2)
+- `user-note/application-jpa/src/test/java/com/example/usernote/UserNoteApplicationMySQLTest.java` — [REVIEW] — новый 2026-09-04, `@ActiveProfiles("MySQL")`
+- `user-note/application-jpa/src/test/java/com/example/usernote/UserNoteApplicationPostgreSQLTest.java` — [REVIEW] — новый 2026-09-04, `@ActiveProfiles("PostgreSQL")`
 - `user-note/application-jpa/src/test/java/com/example/usernote/UserNoteTestApplication.java` — [REVIEW]
 - `user-note/application-jpa/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — `@Bean @Profile @ServiceConnection` MySQLContainer/PostgreSQLContainer
 
-#### user-note/application-mongodb/ (7 файлов) — sync Mongo скелет: webmvc + data-mongodb + testcontainers-mongodb
+#### user-note/application-mongodb/ (8 файлов, было 7) — sync Mongo скелет: webmvc + data-mongodb + testcontainers-mongodb
 - `user-note/application-mongodb/build.gradle.kts` — [REVIEW]
 - `user-note/application-mongodb/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`
 - `user-note/application-mongodb/src/main/java/com/example/usernote/package-info.java` — [REVIEW]
 - `user-note/application-mongodb/src/main/resources/application.properties` — [REVIEW] — только `spring.mvc.problemdetails.enabled=true`
 - `user-note/application-mongodb/src/main/resources/application-mongodb.properties` — [REMOVED] 2026-08-31 (`spring.mongodb.*` connection-строки, в тестах перекрывались `@ServiceConnection`)
-- `user-note/application-mongodb/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — `@Nested @ActiveProfiles("mongodb")` через `abstract MongoTemplateTests`
+- `user-note/application-mongodb/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REMOVED] 2026-09-04 (было `@Nested @ActiveProfiles("mongodb")` через `abstract MongoTemplateTests`)
+- `user-note/application-mongodb/src/test/java/com/example/usernote/UserNoteApplicationDefaultTest.java` — [REVIEW] — новый 2026-09-04, голый `contextLoads(){}` без активного профиля
+- `user-note/application-mongodb/src/test/java/com/example/usernote/UserNoteApplicationMongoDBTest.java` — [REVIEW] — новый 2026-09-04, `@ActiveProfiles("MongoDB")`
 - `user-note/application-mongodb/src/test/java/com/example/usernote/UserNoteTestApplication.java` — [REVIEW]
 - `user-note/application-mongodb/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — `@Bean @Profile("mongodb") @ServiceConnection MongoDBContainer`
 
-#### user-note/application-mongodb-reactive/ (7 файлов) — reactive Mongo скелет: webflux + data-mongodb-reactive + testcontainers-mongodb
+#### user-note/application-mongodb-reactive/ (8 файлов, было 7) — reactive Mongo скелет: webflux + data-mongodb-reactive + testcontainers-mongodb
 - `user-note/application-mongodb-reactive/build.gradle.kts` — [REVIEW]
 - `user-note/application-mongodb-reactive/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`
 - `user-note/application-mongodb-reactive/src/main/java/com/example/usernote/package-info.java` — [REVIEW]
 - `user-note/application-mongodb-reactive/src/main/resources/application.properties` — [REVIEW] — только `spring.webflux.problemdetails.enabled=true`
 - `user-note/application-mongodb-reactive/src/main/resources/application-mongodb.properties` — [REMOVED] 2026-08-31 (`spring.mongodb.*` connection-строки, в тестах перекрывались `@ServiceConnection`)
-- `user-note/application-mongodb-reactive/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — `@Nested @ActiveProfiles("mongodb")` через `abstract ReactiveMongoTemplateTests`
+- `user-note/application-mongodb-reactive/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REMOVED] 2026-09-04 (было `@Nested @ActiveProfiles("mongodb")` через `abstract ReactiveMongoTemplateTests`)
+- `user-note/application-mongodb-reactive/src/test/java/com/example/usernote/UserNoteApplicationDefaultTest.java` — [REVIEW] — новый 2026-09-04, голый `contextLoads(){}` без активного профиля
+- `user-note/application-mongodb-reactive/src/test/java/com/example/usernote/UserNoteApplicationMongoDBTest.java` — [REVIEW] — новый 2026-09-04, `@ActiveProfiles("MongoDB")`
 - `user-note/application-mongodb-reactive/src/test/java/com/example/usernote/UserNoteTestApplication.java` — [REVIEW]
 - `user-note/application-mongodb-reactive/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — `@Bean @Profile("mongodb") @ServiceConnection MongoDBContainer`
 
-#### user-note/application-r2dbc/ (7 файлов) — reactive реляционный скелет: webflux + data-r2dbc + database-r2dbc-{h2,mysql,postgresql} + testcontainers(+-r2dbc)-{mysql,postgresql}
+#### user-note/application-r2dbc/ (9 файлов, было 7) — reactive реляционный скелет: webflux + data-r2dbc + database-r2dbc-{h2,mysql,postgresql} + testcontainers(+-r2dbc)-{mysql,postgresql}
 - `user-note/application-r2dbc/build.gradle.kts` — [REVIEW]
 - `user-note/application-r2dbc/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`
 - `user-note/application-r2dbc/src/main/java/com/example/usernote/package-info.java` — [REVIEW]
 - `user-note/application-r2dbc/src/main/resources/application.properties` — [REVIEW] — только `spring.webflux.problemdetails.enabled=true`
 - `user-note/application-r2dbc/src/main/resources/application-mysql.properties` — [REMOVED] 2026-08-31 (`spring.r2dbc.*` connection-строки, в тестах перекрывались `@ServiceConnection`)
 - `user-note/application-r2dbc/src/main/resources/application-postgresql.properties` — [REMOVED] 2026-08-31
-- `user-note/application-r2dbc/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — `@Nested` h2/mysql/postgresql через `abstract DatabaseClientTests` (ассерт `.contains`, R2DBC product name не нормализован); `application-h2.properties` нет — h2 = embedded-fallback
+- `user-note/application-r2dbc/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REMOVED] 2026-09-04 (было `@Nested` h2/mysql/postgresql через `abstract DatabaseClientTests`, ассерт `.contains`); переименован (git rename) в `UserNoteApplicationDefaultTest.java`
+- `user-note/application-r2dbc/src/test/java/com/example/usernote/UserNoteApplicationDefaultTest.java` — [REVIEW] — новый 2026-09-04, голый `contextLoads(){}` без активного профиля (embedded H2)
+- `user-note/application-r2dbc/src/test/java/com/example/usernote/UserNoteApplicationMySQLTest.java` — [REVIEW] — новый 2026-09-04, `@ActiveProfiles("MySQL")`
+- `user-note/application-r2dbc/src/test/java/com/example/usernote/UserNoteApplicationPostgreSQLTest.java` — [REVIEW] — новый 2026-09-04, `@ActiveProfiles("PostgreSQL")`
 - `user-note/application-r2dbc/src/test/java/com/example/usernote/UserNoteTestApplication.java` — [REVIEW]
 - `user-note/application-r2dbc/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — `@Bean @Profile @ServiceConnection` MySQLContainer/PostgreSQLContainer (в R2DBC-модуле дают `R2dbcConnectionDetails`)
 
@@ -613,7 +626,8 @@
 - `gradle/wrapper/gradle-wrapper.jar` — [REVIEW]
 
 #### gradle/checkstyle/ (1 файл)
-- `gradle/checkstyle/checkstyle.xml` — [REVIEW] — с 2026-09-04 база `google_checks.xml` (было `io.spring.javaformat.checkstyle.SpringChecks`), только `LineLength.max=120`+`Indentation.basicOffset=4` переопределены, остальное дословно из бандла
+- `gradle/checkstyle/checkstyle.xml` — [REMOVED] 2026-09-04 (вечер) — заменён на `google_checks.xml` без переопределений (см. ниже); до этого днём был копией `google_checks.xml` с `LineLength.max=120`+`Indentation.basicOffset=4`
+- `gradle/checkstyle/google_checks.xml` — [REVIEW] — новый 2026-09-04 (вечер), дословная нетронутая копия бандла `checkstyle-13.10.0.jar` (было `io.spring.javaformat.checkstyle.SpringChecks` до этого же дня днём) — 0 переопределений: `severity=warning` по умолчанию (Gradle Checkstyle-таск не валит `check` на warning, только репортит), отступ 2 пробела, `LineLength.max=100`
 
 ### gateway/ (6 файлов)
 
@@ -692,7 +706,7 @@
 - `build-logic/com.example.codequality-jacoco.gradle.kts` — [REVIEW] — применяется напрямую из `java.gradle.kts` с 2026-08-01, был через `codequality`-агрегатор
 - `build-logic/com.example.codequality-jacoco-report-aggregation.gradle.kts` — [REVIEW] — применяется напрямую из `java.gradle.kts` с 2026-08-01, был через `codequality`-агрегатор
 - `build-logic/com.example.codequality.gradle.kts` — [REMOVED] — убран 2026-08-01, чистый список из 5 id без своей конфигурации и с единственным потребителем (`base`/`java`) — инлайнирован напрямую в `java.gradle.kts`, см. decisions-log.md
-- `build-logic/com.example.codequality-checkstyle.gradle.kts` — [REVIEW] — применяется напрямую из `java.gradle.kts` с 2026-08-01, был через `codequality`-агрегатор; с 2026-09-04 без `spring-javaformat-checkstyle`-зависимости (база `checkstyle.xml` больше не Spring-бандл, см. `gradle/checkstyle/`)
+- `build-logic/com.example.codequality-checkstyle.gradle.kts` — [REVIEW] — применяется напрямую из `java.gradle.kts` с 2026-08-01, был через `codequality`-агрегатор; с 2026-09-04 без `spring-javaformat-checkstyle`-зависимости, `configFile` указывает на `gradle/checkstyle/google_checks.xml` (см. `gradle/checkstyle/`)
 - `build-logic/com.example.codequality-spotless.gradle.kts` — [REVIEW] — новый 2026-08-16, до 2026-09-04 был кастомный `importOrder`+regex-автофикс на `compileJava`; с 2026-09-04 днём — штатный `java { googleJavaFormat().aosp() }` без ручной привязки; тем же вечером `compileJava.dependsOn(spotlessApply)` возвращён по явному запросу — автофикс снова срабатывает сам при каждой сборке; применяется напрямую из `java.gradle.kts`, шестой `codequality-*`-фрагмент
 - `build-logic/com.example.base.gradle.kts` — [REMOVED] — переименован 2026-08-01 в `java.gradle.kts` (id совпадает с обёрнутым ядровым Gradle-плагином `java`, было именем роли, не технологии)
 - `build-logic/com.example.java.gradle.kts` — [REVIEW] — новый 2026-08-01, переименование предыдущей строки `com.example.base.gradle.kts`; дополнительно инлайнирует 5 `codequality-*` id вместо снятого агрегатора
