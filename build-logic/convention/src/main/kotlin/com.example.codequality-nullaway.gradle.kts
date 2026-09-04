@@ -8,10 +8,6 @@ plugins {
 
 val libs = extensions.getByType(VersionCatalogsExtension::class.java).named("libs")
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     errorprone("com.uber.nullaway:nullaway:${libs.findVersion("nullaway").get().requiredVersion}")
     errorprone("com.google.errorprone:error_prone_core:${libs.findVersion("errorprone-core").get().requiredVersion}")

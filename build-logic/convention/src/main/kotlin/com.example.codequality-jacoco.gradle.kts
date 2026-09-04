@@ -4,10 +4,6 @@ plugins {
 
 val libs = extensions.getByType(VersionCatalogsExtension::class.java).named("libs")
 
-repositories {
-    mavenCentral()
-}
-
 jacoco {
     toolVersion = libs.findVersion("jacoco").get().requiredVersion
 }

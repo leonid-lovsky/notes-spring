@@ -613,7 +613,7 @@
 - `gradle/wrapper/gradle-wrapper.jar` — [REVIEW]
 
 #### gradle/checkstyle/ (1 файл)
-- `gradle/checkstyle/checkstyle.xml` — [REVIEW]
+- `gradle/checkstyle/checkstyle.xml` — [REVIEW] — с 2026-09-04 база `google_checks.xml` (было `io.spring.javaformat.checkstyle.SpringChecks`), только `LineLength.max=120`+`Indentation.basicOffset=4` переопределены, остальное дословно из бандла
 
 ### gateway/ (6 файлов)
 
@@ -692,8 +692,8 @@
 - `build-logic/com.example.codequality-jacoco.gradle.kts` — [REVIEW] — применяется напрямую из `java.gradle.kts` с 2026-08-01, был через `codequality`-агрегатор
 - `build-logic/com.example.codequality-jacoco-report-aggregation.gradle.kts` — [REVIEW] — применяется напрямую из `java.gradle.kts` с 2026-08-01, был через `codequality`-агрегатор
 - `build-logic/com.example.codequality.gradle.kts` — [REMOVED] — убран 2026-08-01, чистый список из 5 id без своей конфигурации и с единственным потребителем (`base`/`java`) — инлайнирован напрямую в `java.gradle.kts`, см. decisions-log.md
-- `build-logic/com.example.codequality-checkstyle.gradle.kts` — [REVIEW] — применяется напрямую из `java.gradle.kts` с 2026-08-01, был через `codequality`-агрегатор
-- `build-logic/com.example.codequality-spotless.gradle.kts` — [REVIEW] — новый 2026-08-16, автофикс порядка импортов под ту же группировку, что проверяет `SpringImportOrderCheck` в `codequality-checkstyle`; `spotlessApply` подключён как зависимость `compileJava` — фикс автоматический при обычной сборке, без ручного вызова; применяется напрямую из `java.gradle.kts`, шестой `codequality-*`-фрагмент
+- `build-logic/com.example.codequality-checkstyle.gradle.kts` — [REVIEW] — применяется напрямую из `java.gradle.kts` с 2026-08-01, был через `codequality`-агрегатор; с 2026-09-04 без `spring-javaformat-checkstyle`-зависимости (база `checkstyle.xml` больше не Spring-бандл, см. `gradle/checkstyle/`)
+- `build-logic/com.example.codequality-spotless.gradle.kts` — [REVIEW] — новый 2026-08-16, до 2026-09-04 был кастомный `importOrder`+regex-автофикс на `compileJava`; с 2026-09-04 днём — штатный `java { googleJavaFormat().aosp() }` без ручной привязки; тем же вечером `compileJava.dependsOn(spotlessApply)` возвращён по явному запросу — автофикс снова срабатывает сам при каждой сборке; применяется напрямую из `java.gradle.kts`, шестой `codequality-*`-фрагмент
 - `build-logic/com.example.base.gradle.kts` — [REMOVED] — переименован 2026-08-01 в `java.gradle.kts` (id совпадает с обёрнутым ядровым Gradle-плагином `java`, было именем роли, не технологии)
 - `build-logic/com.example.java.gradle.kts` — [REVIEW] — новый 2026-08-01, переименование предыдущей строки `com.example.base.gradle.kts`; дополнительно инлайнирует 5 `codequality-*` id вместо снятого агрегатора
 - `build-logic/com.example.spring-boot-validation.gradle.kts` — [REVIEW] — новый 2026-08-01, вынесен из `spring-boot.gradle.kts` в атомарный плагин (`spring-boot-starter-validation`+test), применяется явно в `webmvc`/`webflux`/`data-jpa` × 3 сервиса — закрывает CLAUDE.md → «Открытые решения» → «Область подключения spring-boot-starter-validation»

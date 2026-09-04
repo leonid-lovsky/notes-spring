@@ -16,9 +16,7 @@ repositories {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(
-            providers.fileContents(rootProject.layout.projectDirectory.file(".java-version")).asText.get().trim().toInt()
-        )
+        languageVersion = JavaLanguageVersion.of(providers.fileContents(rootProject.layout.projectDirectory.file(".java-version")).asText.get().trim().toInt())
     }
 }
 
