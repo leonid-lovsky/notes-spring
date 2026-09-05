@@ -1,8 +1,6 @@
 plugins {
     id("com.example.spring-boot-application")
 
-    id("com.example.spring-boot-data-jpa")
-
     id("com.example.spring-boot-database-h2")
     id("com.example.spring-boot-database-mysql")
     id("com.example.spring-boot-database-postgresql")
@@ -10,4 +8,8 @@ plugins {
     id("com.example.spring-boot-testcontainers")
     id("com.example.spring-boot-testcontainers-mysql")
     id("com.example.spring-boot-testcontainers-postgresql")
+}
+
+dependencies {
+    implementation(project(":user-note:data-jpa"))
 }

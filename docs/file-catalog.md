@@ -30,7 +30,7 @@
 - `.claude/settings.json` — [REMOVED] — регистрировал SessionStart hook; удалён 2026-07-24 вместе со всем `.claude/` (`.gitignore` уже содержал `.claude/` — по факту был случайно закоммичен ранее, теперь untracked навсегда)
 - `.claude/hooks/session-start.sh` — [REMOVED] — автоустановка JDK 25 в облачных сессиях; удалён 2026-07-24 из-за CRLF-порчи файла на диске (`bad interpreter` при старте сессии), не восстановлен
 
-### user-note/ (43 файлов, было 35 — тесты 2026-09-04 разбиты с `@Nested` на отдельные top-level классы по вендору) — весь гексагональный слой (`domain/`·`persistence/`·`presentation/`·`application/application-{vendor}-{tech}/`) + сервисы `note/`·`user/` удалены целиком 2026-08-29 (`git rm`, см. CLAUDE.md → «Активная нить» → «2026-08-29 (вечер)»); осталось 5 плоских composition-root модулей-скелетов без `dependencies {}`
+### user-note/ (48 файлов, было 43 — +5: новые `data-{jdbc,jpa,mongodb,mongodb-reactive,r2dbc}/build.gradle.kts` 2026-09-05) — весь гексагональный слой (`domain/`·`persistence/`·`presentation/`·`application/application-{vendor}-{tech}/`) + сервисы `note/`·`user/` удалены целиком 2026-08-29 (`git rm`, см. CLAUDE.md → «Активная нить» → «2026-08-29 (вечер)»); 5 composition-root модулей теперь подключают соответствующий `data-*`-модуль через `dependencies {}`
 
 #### user-note/ — удалённый гексагональный слой — [REMOVED] 2026-08-29
 - `user-note/domain/{domain,contract,contract-reactive}/**` — [REMOVED] — records/enums/exceptions + порт-интерфейсы sync+reactive
@@ -105,6 +105,13 @@
 - `user-note/application-r2dbc/src/test/java/com/example/usernote/UserNoteApplicationPostgreSQLTest.java` — [REVIEW] — новый 2026-09-04, `@ActiveProfiles("PostgreSQL")`
 - `user-note/application-r2dbc/src/test/java/com/example/usernote/UserNoteTestApplication.java` — [REVIEW]
 - `user-note/application-r2dbc/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — `@Bean @Profile @ServiceConnection` MySQLContainer/PostgreSQLContainer (в R2DBC-модуле дают `R2dbcConnectionDetails`)
+
+#### user-note/data-{jdbc,jpa,mongodb,mongodb-reactive,r2dbc}/ (5 файлов) — новые 2026-09-05, по одному на driven-технологию, каждый только `id("com.example.spring-boot-data-{tech}")`, кода нет; включены в `settings.gradle.kts` и подключены к соответствующему `application-*` через `implementation(project(":user-note:data-{tech}"))` (не typesafe-accessor — см. открытый вопрос в «Правила» про расхождение с leaf-purity-грепом)
+- `user-note/data-jdbc/build.gradle.kts` — [REVIEW]
+- `user-note/data-jpa/build.gradle.kts` — [REVIEW]
+- `user-note/data-mongodb/build.gradle.kts` — [REVIEW]
+- `user-note/data-mongodb-reactive/build.gradle.kts` — [REVIEW]
+- `user-note/data-r2dbc/build.gradle.kts` — [REVIEW]
 
 ### user/ (210 файлов, было 150 — +60: 9 вендорных application-*-{h2,mysql,postgresql}/ модулей заменили 3 профильных 2026-07-24)
 
