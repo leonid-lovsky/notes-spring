@@ -30,7 +30,7 @@
 - `.claude/settings.json` — [REMOVED] — регистрировал SessionStart hook; удалён 2026-07-24 вместе со всем `.claude/` (`.gitignore` уже содержал `.claude/` — по факту был случайно закоммичен ранее, теперь untracked навсегда)
 - `.claude/hooks/session-start.sh` — [REMOVED] — автоустановка JDK 25 в облачных сессиях; удалён 2026-07-24 из-за CRLF-порчи файла на диске (`bad interpreter` при старте сессии), не восстановлен
 
-### user-note/ (58 файлов, было 59 — `data-jpa/build.gradle.kts` удалён 2026-09-05, тем же вечером: домен без связей между сущностями, JPA/Hibernate избыточен, см. «Активная нить») — модель application-driver→application-vendor 2026-09-05: `application-{jdbc,jpa,r2dbc}` (27 файлов) заменены на `application-{h2,mysql,postgresql}[-reactive]` (38 файлов) — SQL-модуль = вендор БД, H2 изолирован от mysql/postgresql-модулей; весь гексагональный слой (`domain/`·`persistence/`·`presentation/`) + сервисы `note/`·`user/` удалены целиком 2026-08-29 (`git rm`, см. CLAUDE.md → «Активная нить» → «2026-08-29 (вечер)»); 8 composition-root модулей подключают `data-*`-модуль(и) через `dependencies {}` (SQL sync — только `data-jdbc`, не `data-jdbc`+`data-jpa`)
+### user-note/ (59 файлов — `data-jpa/build.gradle.kts` удалён 2026-09-05 вечером, затем в тот же вечер восстановлен как неподключённый скелет «про запас», см. «Активная нить») — модель application-driver→application-vendor 2026-09-05: `application-{jdbc,jpa,r2dbc}` (27 файлов) заменены на `application-{h2,mysql,postgresql}[-reactive]` (38 файлов) — SQL-модуль = вендор БД, H2 изолирован от mysql/postgresql-модулей; весь гексагональный слой (`domain/`·`persistence/`·`presentation/`) + сервисы `note/`·`user/` удалены целиком 2026-08-29 (`git rm`, см. CLAUDE.md → «Активная нить» → «2026-08-29 (вечер)»); 8 composition-root модулей подключают `data-*`-модуль(и) через `dependencies {}` (SQL sync — только `data-jdbc`, `data-jpa` включён в сборку, но нигде не подключён как зависимость)
 
 #### user-note/ — удалённый гексагональный слой — [REMOVED] 2026-08-29
 - `user-note/domain/{domain,contract,contract-reactive}/**` — [REMOVED] — records/enums/exceptions + порт-интерфейсы sync+reactive
@@ -119,9 +119,9 @@
 - `user-note/application-postgresql-reactive/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — `@Bean @ServiceConnection PostgreSQLContainer`, без `@Profile`
 - `user-note/application-postgresql-reactive/src/test/java/com/example/usernote/UserNoteTestApplication.java` — [REVIEW]
 
-#### user-note/data-{jdbc,mongodb,mongodb-reactive,r2dbc}/ (4 файла, было 5) — новые 2026-09-05, по одному на driven-технологию, каждый только `id("com.example.spring-boot-data-{tech}")`, кода нет; включены в `settings.gradle.kts` и подключены к соответствующему `application-*` через `implementation(project(":user-note:data-{tech}"))` (не typesafe-accessor — см. открытый вопрос в «Правила» про расхождение с leaf-purity-грепом)
-- `user-note/data-jdbc/build.gradle.kts` — [REVIEW]
-- `user-note/data-jpa/build.gradle.kts` — [REMOVED] 2026-09-05 (домен без связей между сущностями, «один сервис — одна сущность» — ценность JPA/Hibernate целиком завязана на графе связей и implicit dirty-checking, порт `UserNoteInterface` и так explicit-call; заодно снимает риск `NoUniqueBeanDefinitionException` от двух конкурирующих адаптеров одного порта в `application-{h2,mysql,postgresql}`)
+#### user-note/data-{jdbc,jpa,mongodb,mongodb-reactive,r2dbc}/ (5 файлов) — по одному на driven-технологию, каждый только `id("com.example.spring-boot-data-{tech}")`, кода нет; включены в `settings.gradle.kts` (не typesafe-accessor для project-зависимостей — см. открытый вопрос в «Правила» про расхождение с leaf-purity-грепом)
+- `user-note/data-jdbc/build.gradle.kts` — [REVIEW] — подключён к `application-{h2,mysql,postgresql}` через `implementation(project(":user-note:data-jdbc"))`
+- `user-note/data-jpa/build.gradle.kts` — [REVIEW] — удалён 2026-09-05 (домен без связей между сущностями, риск `NoUniqueBeanDefinitionException` от двух адаптеров одного порта), тем же вечером восстановлен как скелет «про запас» — **нигде не подключён как зависимость**, ни один `application-*` на него не ссылается
 - `user-note/data-mongodb/build.gradle.kts` — [REVIEW]
 - `user-note/data-mongodb-reactive/build.gradle.kts` — [REVIEW]
 - `user-note/data-r2dbc/build.gradle.kts` — [REVIEW]
