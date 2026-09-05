@@ -30,7 +30,7 @@
 - `.claude/settings.json` — [REMOVED] — регистрировал SessionStart hook; удалён 2026-07-24 вместе со всем `.claude/` (`.gitignore` уже содержал `.claude/` — по факту был случайно закоммичен ранее, теперь untracked навсегда)
 - `.claude/hooks/session-start.sh` — [REMOVED] — автоустановка JDK 25 в облачных сессиях; удалён 2026-07-24 из-за CRLF-порчи файла на диске (`bad interpreter` при старте сессии), не восстановлен
 
-### user-note/ (59 файлов, было 48 — модель application-driver→application-vendor 2026-09-05: `application-{jdbc,jpa,r2dbc}` (27 файлов) заменены на `application-{h2,mysql,postgresql}[-reactive]` (38 файлов) — SQL-модуль теперь = вендор БД, jdbc+jpa подключены оба разом, H2 изолирован от mysql/postgresql-модулей) — весь гексагональный слой (`domain/`·`persistence/`·`presentation/`) + сервисы `note/`·`user/` удалены целиком 2026-08-29 (`git rm`, см. CLAUDE.md → «Активная нить» → «2026-08-29 (вечер)»); 8 composition-root модулей подключают `data-*`-модуль(и) через `dependencies {}`
+### user-note/ (58 файлов, было 59 — `data-jpa/build.gradle.kts` удалён 2026-09-05, тем же вечером: домен без связей между сущностями, JPA/Hibernate избыточен, см. «Активная нить») — модель application-driver→application-vendor 2026-09-05: `application-{jdbc,jpa,r2dbc}` (27 файлов) заменены на `application-{h2,mysql,postgresql}[-reactive]` (38 файлов) — SQL-модуль = вендор БД, H2 изолирован от mysql/postgresql-модулей; весь гексагональный слой (`domain/`·`persistence/`·`presentation/`) + сервисы `note/`·`user/` удалены целиком 2026-08-29 (`git rm`, см. CLAUDE.md → «Активная нить» → «2026-08-29 (вечер)»); 8 composition-root модулей подключают `data-*`-модуль(и) через `dependencies {}` (SQL sync — только `data-jdbc`, не `data-jdbc`+`data-jpa`)
 
 #### user-note/ — удалённый гексагональный слой — [REMOVED] 2026-08-29
 - `user-note/domain/{domain,contract,contract-reactive}/**` — [REMOVED] — records/enums/exceptions + порт-интерфейсы sync+reactive
@@ -42,14 +42,14 @@
 - оба модуля удалены целиком (`git rm`) при переходе с модели application-driver (модуль = технология доступа jdbc/jpa/r2dbc, вендор — Spring-профиль внутри) на модель application-vendor (модуль = вендор БД, jdbc+jpa — оба сразу как зависимости одного SQL-модуля) — явное решение пользователя, разворачивает принцип «вендор = профиль, не модуль» из 2026-08-31
 - заменены на `application-h2`/`application-mysql`/`application-postgresql` ниже
 
-#### user-note/application-h2/ (5 файлов) — новый 2026-09-05, sync SQL по модели application-vendor: data-jdbc+data-jpa разом, только `database-h2` — H2-драйвер изолирован от mysql/postgresql-модулей (явное требование пользователя, проверено `dependencies --configuration runtimeClasspath`), без Testcontainers (embedded)
+#### user-note/application-h2/ (5 файлов) — новый 2026-09-05, sync SQL по модели application-vendor: только `data-jdbc` (JPA убран тем же вечером — см. «Активная нить») + `database-h2` — H2-драйвер изолирован от mysql/postgresql-модулей (явное требование пользователя, проверено `dependencies --configuration runtimeClasspath`), без Testcontainers (embedded)
 - `user-note/application-h2/build.gradle.kts` — [REVIEW]
 - `user-note/application-h2/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`
 - `user-note/application-h2/src/main/java/com/example/usernote/package-info.java` — [REVIEW]
 - `user-note/application-h2/src/main/resources/application.properties` — [REVIEW] — только `spring.mvc.problemdetails.enabled=true`
 - `user-note/application-h2/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — голый `contextLoads(){}`, без `@Import` (нет контейнера)
 
-#### user-note/application-mysql/ (7 файлов) — новый 2026-09-05, sync SQL: data-jdbc+data-jpa+testcontainers-mysql; `@Profile`/`@ActiveProfiles` сняты с теста и `UserNoteTestConfiguration` — вендор теперь граница модуля, не runtime-выбор внутри одного модуля
+#### user-note/application-mysql/ (7 файлов) — новый 2026-09-05, sync SQL: только `data-jdbc` (JPA убран тем же вечером) + testcontainers-mysql; `@Profile`/`@ActiveProfiles` сняты с теста и `UserNoteTestConfiguration` — вендор теперь граница модуля, не runtime-выбор внутри одного модуля
 - `user-note/application-mysql/build.gradle.kts` — [REVIEW]
 - `user-note/application-mysql/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`
 - `user-note/application-mysql/src/main/java/com/example/usernote/package-info.java` — [REVIEW]
@@ -58,7 +58,7 @@
 - `user-note/application-mysql/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — `@Bean @ServiceConnection MySQLContainer`, без `@Profile`
 - `user-note/application-mysql/src/test/java/com/example/usernote/UserNoteTestApplication.java` — [REVIEW]
 
-#### user-note/application-postgresql/ (7 файлов) — новый 2026-09-05, то же, что application-mysql/, но `database-postgresql`+`testcontainers-postgresql`+`PostgreSQLContainer`
+#### user-note/application-postgresql/ (7 файлов) — новый 2026-09-05, то же, что application-mysql/ (только `data-jdbc`, без JPA), но `database-postgresql`+`testcontainers-postgresql`+`PostgreSQLContainer`
 - `user-note/application-postgresql/build.gradle.kts` — [REVIEW]
 - `user-note/application-postgresql/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`
 - `user-note/application-postgresql/src/main/java/com/example/usernote/package-info.java` — [REVIEW]
@@ -119,9 +119,9 @@
 - `user-note/application-postgresql-reactive/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — `@Bean @ServiceConnection PostgreSQLContainer`, без `@Profile`
 - `user-note/application-postgresql-reactive/src/test/java/com/example/usernote/UserNoteTestApplication.java` — [REVIEW]
 
-#### user-note/data-{jdbc,jpa,mongodb,mongodb-reactive,r2dbc}/ (5 файлов) — новые 2026-09-05, по одному на driven-технологию, каждый только `id("com.example.spring-boot-data-{tech}")`, кода нет; включены в `settings.gradle.kts` и подключены к соответствующему `application-*` через `implementation(project(":user-note:data-{tech}"))` (не typesafe-accessor — см. открытый вопрос в «Правила» про расхождение с leaf-purity-грепом)
+#### user-note/data-{jdbc,mongodb,mongodb-reactive,r2dbc}/ (4 файла, было 5) — новые 2026-09-05, по одному на driven-технологию, каждый только `id("com.example.spring-boot-data-{tech}")`, кода нет; включены в `settings.gradle.kts` и подключены к соответствующему `application-*` через `implementation(project(":user-note:data-{tech}"))` (не typesafe-accessor — см. открытый вопрос в «Правила» про расхождение с leaf-purity-грепом)
 - `user-note/data-jdbc/build.gradle.kts` — [REVIEW]
-- `user-note/data-jpa/build.gradle.kts` — [REVIEW]
+- `user-note/data-jpa/build.gradle.kts` — [REMOVED] 2026-09-05 (домен без связей между сущностями, «один сервис — одна сущность» — ценность JPA/Hibernate целиком завязана на графе связей и implicit dirty-checking, порт `UserNoteInterface` и так explicit-call; заодно снимает риск `NoUniqueBeanDefinitionException` от двух конкурирующих адаптеров одного порта в `application-{h2,mysql,postgresql}`)
 - `user-note/data-mongodb/build.gradle.kts` — [REVIEW]
 - `user-note/data-mongodb-reactive/build.gradle.kts` — [REVIEW]
 - `user-note/data-r2dbc/build.gradle.kts` — [REVIEW]

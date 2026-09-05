@@ -9,5 +9,4 @@ plugins {
 
 dependencies {
     implementation(project(":user-note:data-jdbc"))
-    implementation(project(":user-note:data-jpa"))
 }

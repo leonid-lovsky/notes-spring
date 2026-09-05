@@ -18,7 +18,6 @@ include(":user-note:application-mongodb")
 include(":user-note:application-mongodb-reactive")
 
 include(":user-note:data-jdbc")
-include(":user-note:data-jpa")
 include(":user-note:data-mongodb")
 include(":user-note:data-mongodb-reactive")
 include(":user-note:data-r2dbc")
