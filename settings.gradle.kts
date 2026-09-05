@@ -8,11 +8,14 @@ plugins {
 
 rootProject.name = "notes-spring"
 
-include(":user-note:application-jdbc")
-include(":user-note:application-jpa")
+include(":user-note:application-h2")
+include(":user-note:application-mysql")
+include(":user-note:application-postgresql")
+include(":user-note:application-h2-reactive")
+include(":user-note:application-mysql-reactive")
+include(":user-note:application-postgresql-reactive")
 include(":user-note:application-mongodb")
 include(":user-note:application-mongodb-reactive")
-include(":user-note:application-r2dbc")
 
 include(":user-note:data-jdbc")
 include(":user-note:data-jpa")
