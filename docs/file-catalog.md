@@ -680,7 +680,7 @@
 
 #### build-logic/ — корневые файлы (2 файлов)
 - `build-logic/settings.gradle.kts` — [REVIEW]
-- `build-logic/convention/build.gradle.kts` — [REVIEW]
+- `build-logic/convention/build.gradle.kts` — [REVIEW] — 2026-09-06: classpath-зависимости PMD/SpotBugs добавлены (CPD добавлен и в тот же вечер убран — de.aaschmid.cpd не обновлялся 2 года, неофициальная интеграция, не прошёл критерий «стандартный инструмент»)
 
 #### build-logic/convention/src/main/kotlin/ — precompiled script plugins (точная синхронизация подраздела не поддерживалась с 2026-08-15, не проведена полностью — см. CLAUDE.md → «Задачи») — 2026-09-06: `spring-boot-application`/`spring-cloud-application` удалены, `spring-boot-actuator`/`spring-boot-packaging`/`codequality-pmd`/`codequality-spotbugs` добавлены (см. CLAUDE.md → «Активная нить»); `gradle/pmd/quickstart.xml` — новый, кастомный ruleset (bundled quickstart.xml минус `UncommentedEmptyMethodBody`)
 - `build-logic/com.example.spring-boot-database-postgresql.gradle.kts` — [REVIEW] — новый 2026-07-23, вендорная ось для JPA/JDBC (`runtimeOnly org.postgresql:postgresql`), активируется через Spring-профиль
