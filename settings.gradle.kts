@@ -8,6 +8,8 @@ plugins {
 
 rootProject.name = "notes-spring"
 
+include(":user-note:application-core")
+
 include(":user-note:application-h2")
 include(":user-note:application-mysql")
 include(":user-note:application-postgresql")

@@ -5,5 +5,6 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":user-note:application-core"))
     implementation(project(":user-note:data-jdbc"))
 }

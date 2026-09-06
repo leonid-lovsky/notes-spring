@@ -9,5 +9,6 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":user-note:application-core"))
     implementation(project(":user-note:data-r2dbc"))
 }
