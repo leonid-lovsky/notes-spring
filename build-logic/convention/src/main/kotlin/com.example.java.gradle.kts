@@ -6,6 +6,8 @@ plugins {
     id("com.example.codequality-nullaway")
     id("com.example.codequality-jacoco")
     id("com.example.codequality-jacoco-report-aggregation")
+    id("com.example.codequality-pmd")
+    id("com.example.codequality-spotbugs")
 }
 
 val libs = extensions.getByType(VersionCatalogsExtension::class.java).named("libs")

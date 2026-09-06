@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="quickstart"
+         xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+
+    <description>PMD bundled quickstart.xml, with UncommentedEmptyMethodBody excluded — conflicts with the project's
+        established, self-documenting empty-test-method idiom (e.g. void contextLoads() {}) and the project's
+        minimal-comments code style rule.</description>
+
+    <rule ref="rulesets/java/quickstart.xml">
+        <exclude name="UncommentedEmptyMethodBody"/>
+    </rule>
+</ruleset>
