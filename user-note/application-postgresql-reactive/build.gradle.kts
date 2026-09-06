@@ -1,5 +1,7 @@
 plugins {
-    id("com.example.spring-boot-application")
+    id("com.example.spring-boot")
+    id("com.example.spring-boot-actuator")
+    id("com.example.spring-boot-packaging")
 
     id("com.example.spring-boot-database-r2dbc-postgresql")
 
