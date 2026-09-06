@@ -47,12 +47,13 @@
 - `user-note/application-core/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`
 - `user-note/application-core/src/main/java/com/example/usernote/package-info.java` — [REVIEW]
 
-#### user-note/application-h2/ (4 файла, было 5) — новый 2026-09-05, sync SQL по модели application-vendor: только `data-jdbc` (JPA убран тем же вечером — см. «Активная нить») + `database-h2` — H2-драйвер изолирован от mysql/postgresql-модулей (явное требование пользователя, проверено `dependencies --configuration runtimeClasspath`), без Testcontainers (embedded)
+#### user-note/application-h2/ (5 файлов, было 4) — новый 2026-09-05, sync SQL по модели application-vendor: только `data-jdbc` (JPA убран тем же вечером — см. «Активная нить») + `database-h2` — H2-драйвер изолирован от mysql/postgresql-модулей (явное требование пользователя, проверено `dependencies --configuration runtimeClasspath`), без Testcontainers (embedded)
 - `user-note/application-h2/build.gradle.kts` — [REVIEW] — 2026-09-06: добавлена зависимость `implementation(project(":user-note:application-core"))`
 - `user-note/application-h2/src/main/java/com/example/usernote/UserNoteApplication.java` — [REMOVED] 2026-09-06 — вынесен в `application-core` (дедупликация)
 - `user-note/application-h2/src/main/java/com/example/usernote/package-info.java` — [REMOVED] 2026-09-06 — вынесен в `application-core`
 - `user-note/application-h2/src/main/resources/application.properties` — [REVIEW] — только `spring.mvc.problemdetails.enabled=true`
-- `user-note/application-h2/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — голый `contextLoads(){}`, без `@Import` (нет контейнера)
+- `user-note/application-h2/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — 2026-09-06: `@Import(UserNoteTestConfiguration.class)` — унифицирован со всеми 8 модулями (побайтово идентичен)
+- `user-note/application-h2/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — новый 2026-09-06, тривиальный пустой `@TestConfiguration` — только ради унификации `UserNoteApplicationTests.java`
 
 #### user-note/application-mysql/ (6 файлов, было 7) — новый 2026-09-05, sync SQL: только `data-jdbc` (JPA убран тем же вечером) + testcontainers-mysql; `@Profile`/`@ActiveProfiles` сняты с теста и `UserNoteTestConfiguration` — вендор теперь граница модуля, не runtime-выбор внутри одного модуля
 - `user-note/application-mysql/build.gradle.kts` — [REVIEW] — 2026-09-06: добавлена зависимость `implementation(project(":user-note:application-core"))`
@@ -99,12 +100,13 @@
 #### user-note/application-r2dbc/ — модель application-driver — [REMOVED] 2026-09-05
 - удалён целиком (`git rm`), заменён на `application-h2-reactive`/`application-mysql-reactive`/`application-postgresql-reactive` ниже — та же причина, что у `application-{jdbc,jpa}` выше
 
-#### user-note/application-h2-reactive/ (4 файла, было 5) — новый 2026-09-05, reactive SQL по модели application-vendor: только data-r2dbc+`database-r2dbc-h2`, H2-драйвер изолирован от mysql/postgresql-reactive-модулей, без Testcontainers
+#### user-note/application-h2-reactive/ (5 файлов, было 4) — новый 2026-09-05, reactive SQL по модели application-vendor: только data-r2dbc+`database-r2dbc-h2`, H2-драйвер изолирован от mysql/postgresql-reactive-модулей, без Testcontainers
 - `user-note/application-h2-reactive/build.gradle.kts` — [REVIEW] — 2026-09-06: добавлена зависимость `implementation(project(":user-note:application-core"))`
 - `user-note/application-h2-reactive/src/main/java/com/example/usernote/UserNoteApplication.java` — [REMOVED] 2026-09-06 — вынесен в `application-core` (дедупликация)
 - `user-note/application-h2-reactive/src/main/java/com/example/usernote/package-info.java` — [REMOVED] 2026-09-06 — вынесен в `application-core`
 - `user-note/application-h2-reactive/src/main/resources/application.properties` — [REVIEW] — только `spring.webflux.problemdetails.enabled=true`
-- `user-note/application-h2-reactive/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — голый `contextLoads(){}`, без `@Import`
+- `user-note/application-h2-reactive/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — 2026-09-06: `@Import(UserNoteTestConfiguration.class)` — унифицирован со всеми 8 модулями
+- `user-note/application-h2-reactive/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — новый 2026-09-06, тривиальный пустой `@TestConfiguration`
 
 #### user-note/application-mysql-reactive/ (6 файлов, было 7) — новый 2026-09-05, reactive SQL: data-r2dbc+`database-r2dbc-mysql`+testcontainers(-r2dbc)-mysql; `@Profile`/`@ActiveProfiles` сняты, как и у sync-вендорных модулей
 - `user-note/application-mysql-reactive/build.gradle.kts` — [REVIEW] — 2026-09-06: добавлена зависимость `implementation(project(":user-note:application-core"))`
