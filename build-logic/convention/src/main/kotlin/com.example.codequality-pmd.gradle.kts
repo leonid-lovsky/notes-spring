@@ -6,6 +6,4 @@ val libs = extensions.getByType(VersionCatalogsExtension::class.java).named("lib
 
 pmd {
     toolVersion = libs.findVersion("pmd").get().requiredVersion
-    ruleSets = emptyList()
-    ruleSetFiles = rootProject.files("gradle/pmd/quickstart.xml")
 }

@@ -9,9 +9,9 @@ jacoco {
 }
 
 tasks.named("test") {
-    finalizedBy(tasks.named("jacocoTestReport"))
+    finalizedBy(tasks.named("jacocoTestReport")) // report is always generated after tests run
 }
 
 tasks.named("jacocoTestReport") {
-    dependsOn(tasks.named("test"))
+    dependsOn(tasks.named("test")) // tests are required to run before generating the report
 }
