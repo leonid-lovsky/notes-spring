@@ -127,17 +127,17 @@
 #### user-note/data-{jdbc,jpa,mongodb,mongodb-reactive,r2dbc}/ (13 файлов, было 5) — по одному на driven-технологию, каждый `id("com.example.spring-boot-data-{tech}")`; 2026-09-21 в 4 из 5 (кроме `data-jpa`) появились первые заглушечные `UserNote` (пустой класс) + репозиторий; тот же плагин `spring-boot-data-{tech}` теперь применён и на `application-*` напрямую; включены в `settings.gradle.kts` (не typesafe-accessor для project-зависимостей — см. открытый вопрос в «Правила» про расхождение с leaf-purity-грепом)
 - `user-note/data-jdbc/build.gradle.kts` — [REVIEW] — подключён к `application-{h2,mysql,postgresql}` через `implementation(project(":user-note:data-jdbc"))`
 - `user-note/data-jdbc/src/main/java/com/example/usernote/UserNote.java` — [REVIEW] — пустой класс, 2026-09-21
-- `user-note/data-jdbc/src/main/java/com/example/usernote/UserNoteJDBCRepository.java` — [REVIEW] — `ListCrudRepository<UserNote, UUID>`, 2026-09-21
+- `user-note/data-jdbc/src/main/java/com/example/usernote/UserNoteRepository.java` — [REVIEW] — `ListCrudRepository<UserNote, UUID>`, 2026-09-21
 - `user-note/data-jpa/build.gradle.kts` — [REVIEW] — удалён 2026-09-05 (домен без связей между сущностями, риск `NoUniqueBeanDefinitionException` от двух адаптеров одного порта), тем же вечером восстановлен как скелет «про запас» — **нигде не подключён как зависимость**, ни один `application-*` на него не ссылается
 - `user-note/data-mongodb/build.gradle.kts` — [REVIEW]
 - `user-note/data-mongodb/src/main/java/com/example/usernote/UserNote.java` — [REVIEW] — пустой класс, 2026-09-21
-- `user-note/data-mongodb/src/main/java/com/example/usernote/UserNoteMongoRepository.java` — [REVIEW] — `ListCrudRepository<UserNote, UUID>`, 2026-09-21
+- `user-note/data-mongodb/src/main/java/com/example/usernote/UserNoteRepository.java` — [REVIEW] — `ListCrudRepository<UserNote, UUID>`, 2026-09-21
 - `user-note/data-mongodb-reactive/build.gradle.kts` — [REVIEW]
 - `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/UserNote.java` — [REVIEW] — пустой класс, 2026-09-21
-- `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/UserNoteMongoRepository.java` — [REVIEW] — `ReactiveCrudRepository<UserNote, UUID>`, 2026-09-21
+- `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/UserNoteRepository.java` — [REVIEW] — `ReactiveCrudRepository<UserNote, UUID>`, 2026-09-21
 - `user-note/data-r2dbc/build.gradle.kts` — [REVIEW]
 - `user-note/data-r2dbc/src/main/java/com/example/usernote/UserNote.java` — [REVIEW] — пустой класс, 2026-09-21
-- `user-note/data-r2dbc/src/main/java/com/example/usernote/UserNoteR2DBCRepository.java` — [REVIEW] — `ReactiveCrudRepository<UserNote, UUID>`, 2026-09-21
+- `user-note/data-r2dbc/src/main/java/com/example/usernote/UserNoteRepository.java` — [REVIEW] — `ReactiveCrudRepository<UserNote, UUID>`, 2026-09-21
 
 ### user/ (210 файлов, было 150 — +60: 9 вендорных application-*-{h2,mysql,postgresql}/ модулей заменили 3 профильных 2026-07-24)
 
