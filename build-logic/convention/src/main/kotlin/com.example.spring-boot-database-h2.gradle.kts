@@ -3,6 +3,5 @@ plugins {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-h2console")
     runtimeOnly("com.h2database:h2")
 }

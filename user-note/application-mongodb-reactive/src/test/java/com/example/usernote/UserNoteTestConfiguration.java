@@ -9,9 +9,9 @@ import org.testcontainers.utility.DockerImageName;
 @TestConfiguration(proxyBeanMethods = false)
 class UserNoteTestConfiguration {
 
-    @Bean
-    @ServiceConnection
-    MongoDBContainer mongoDBContainer() {
-        return new MongoDBContainer(DockerImageName.parse("mongo:latest"));
-    }
+  @Bean
+  @ServiceConnection
+  MongoDBContainer mongoDBContainer() {
+    return new MongoDBContainer(DockerImageName.parse("mongo:latest"));
+  }
 }
