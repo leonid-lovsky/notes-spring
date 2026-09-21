@@ -6,6 +6,6 @@ import org.springframework.boot.data.mongodb.test.autoconfigure.DataMongoTest;
 @DataMongoTest
 class UserNoteRepositoryTests {
 
-  @Test
-  void contextLoads() {}
+    @Test
+    void contextLoads() {}
 }

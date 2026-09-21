@@ -6,6 +6,6 @@ import org.springframework.boot.webflux.test.autoconfigure.WebFluxTest;
 @WebFluxTest(UserNoteController.class)
 class UserNoteControllerTests {
 
-  @Test
-  void contextLoads() {}
+    @Test
+    void contextLoads() {}
 }

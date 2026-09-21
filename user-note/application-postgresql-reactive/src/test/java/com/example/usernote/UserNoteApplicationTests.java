@@ -8,6 +8,6 @@ import org.springframework.context.annotation.Import;
 @Import(UserNoteTestConfiguration.class)
 class UserNoteApplicationTests {
 
-  @Test
-  void contextLoads() {}
+    @Test
+    void contextLoads() {}
 }

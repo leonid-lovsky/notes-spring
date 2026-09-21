@@ -6,6 +6,6 @@ import org.springframework.boot.data.jdbc.test.autoconfigure.DataJdbcTest;
 @DataJdbcTest
 class UserNoteRepositoryTests {
 
-  @Test
-  void contextLoads() {}
+    @Test
+    void contextLoads() {}
 }
