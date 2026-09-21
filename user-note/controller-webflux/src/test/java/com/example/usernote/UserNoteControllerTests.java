@@ -1,15 +1,11 @@
 package com.example.usernote;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.webflux.test.autoconfigure.WebFluxTest;
 
-@WebFluxTest
+@WebFluxTest(UserNoteController.class)
 class UserNoteControllerTests {
 
-    @SpringBootApplication
-    static class SliceApplication {}
-
-    @Test
-    void contextLoads() {}
+  @Test
+  void contextLoads() {}
 }

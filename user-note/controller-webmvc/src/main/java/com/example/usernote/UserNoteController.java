@@ -1,3 +1,6 @@
 package com.example.usernote;
 
-class UserNoteController {}
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class UserNoteController {}
