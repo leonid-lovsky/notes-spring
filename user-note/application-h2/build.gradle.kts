@@ -9,5 +9,6 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":user-note:controller-webmvc"))
     implementation(project(":user-note:data-jdbc"))
 }

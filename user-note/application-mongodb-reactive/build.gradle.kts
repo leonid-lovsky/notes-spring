@@ -11,5 +11,6 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":user-note:controller-webflux"))
     implementation(project(":user-note:data-mongodb-reactive"))
 }
