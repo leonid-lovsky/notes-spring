@@ -49,7 +49,7 @@
 - `user-note/application-h2/build.gradle.kts` — [REVIEW]
 - `user-note/application-h2/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`, восстановлен 2026-09-13 (был вынесен в `application-core`, модуль удалён)
 - `user-note/application-h2/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — восстановлен 2026-09-13
-- `user-note/application-h2/src/main/resources/application.properties` — [REVIEW] — `spring.mvc.problemdetails.enabled=true` + DEBUG-логи `org.springframework.{jdbc,data.jdbc}` (2026-09-21)
+- `user-note/application-h2/src/main/resources/application.properties` — [REVIEW] — `spring.mvc.problemdetails.enabled=true` + `logging.level.org.springframework.web=DEBUG` + `spring.profiles.include=data-jdbc` (2026-09-21)
 - `user-note/application-h2/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — 2026-09-06: `@Import(UserNoteTestConfiguration.class)` — унифицирован со всеми 8 модулями (побайтово идентичен)
 - `user-note/application-h2/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — новый 2026-09-06, тривиальный пустой `@TestConfiguration` — только ради унификации `UserNoteApplicationTests.java`
 
@@ -57,7 +57,7 @@
 - `user-note/application-mysql/build.gradle.kts` — [REVIEW]
 - `user-note/application-mysql/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`, восстановлен 2026-09-13 (был вынесен в `application-core`, модуль удалён)
 - `user-note/application-mysql/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — восстановлен 2026-09-13
-- `user-note/application-mysql/src/main/resources/application.properties` — [REVIEW] — `spring.mvc.problemdetails.enabled=true` + DEBUG-логи `org.springframework.{jdbc,data.jdbc}` (2026-09-21)
+- `user-note/application-mysql/src/main/resources/application.properties` — [REVIEW] — `spring.mvc.problemdetails.enabled=true` + `logging.level.org.springframework.web=DEBUG` + `spring.profiles.include=data-jdbc` (2026-09-21)
 - `user-note/application-mysql/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — `@Import(UserNoteTestConfiguration.class)`, без `@ActiveProfiles`
 - `user-note/application-mysql/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — `@Bean @ServiceConnection MySQLContainer`, без `@Profile`
 - `user-note/application-mysql/src/test/java/com/example/usernote/UserNoteTestApplication.java` — [REVIEW]
@@ -66,7 +66,7 @@
 - `user-note/application-postgresql/build.gradle.kts` — [REVIEW]
 - `user-note/application-postgresql/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`, восстановлен 2026-09-13 (был вынесен в `application-core`, модуль удалён)
 - `user-note/application-postgresql/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — восстановлен 2026-09-13
-- `user-note/application-postgresql/src/main/resources/application.properties` — [REVIEW] — `spring.mvc.problemdetails.enabled=true` + DEBUG-логи `org.springframework.{jdbc,data.jdbc}` (2026-09-21)
+- `user-note/application-postgresql/src/main/resources/application.properties` — [REVIEW] — `spring.mvc.problemdetails.enabled=true` + `logging.level.org.springframework.web=DEBUG` + `spring.profiles.include=data-jdbc` (2026-09-21)
 - `user-note/application-postgresql/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — `@Import(UserNoteTestConfiguration.class)`, без `@ActiveProfiles`
 - `user-note/application-postgresql/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — `@Bean @ServiceConnection PostgreSQLContainer`, без `@Profile`
 - `user-note/application-postgresql/src/test/java/com/example/usernote/UserNoteTestApplication.java` — [REVIEW]
@@ -75,7 +75,7 @@
 - `user-note/application-mongodb/build.gradle.kts` — [REVIEW]
 - `user-note/application-mongodb/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`, восстановлен 2026-09-13 (был вынесен в `application-core`, модуль удалён)
 - `user-note/application-mongodb/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — восстановлен 2026-09-13
-- `user-note/application-mongodb/src/main/resources/application.properties` — [REVIEW] — только `spring.mvc.problemdetails.enabled=true`
+- `user-note/application-mongodb/src/main/resources/application.properties` — [REVIEW] — `spring.mvc.problemdetails.enabled=true` + `logging.level.org.springframework.web=DEBUG` + `spring.profiles.include=data-mongodb` (2026-09-21)
 - `user-note/application-mongodb/src/main/resources/application-mongodb.properties` — [REMOVED] 2026-08-31 (`spring.mongodb.*` connection-строки, в тестах перекрывались `@ServiceConnection`)
 - `user-note/application-mongodb/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REMOVED] 2026-09-04 (было `@Nested @ActiveProfiles("mongodb")` через `abstract MongoTemplateTests`)
 - `user-note/application-mongodb/src/test/java/com/example/usernote/UserNoteApplicationDefaultTest.java` — [REVIEW] — новый 2026-09-04, голый `contextLoads(){}` без активного профиля
@@ -87,7 +87,7 @@
 - `user-note/application-mongodb-reactive/build.gradle.kts` — [REVIEW]
 - `user-note/application-mongodb-reactive/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`, восстановлен 2026-09-13 (был вынесен в `application-core`, модуль удалён)
 - `user-note/application-mongodb-reactive/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — восстановлен 2026-09-13
-- `user-note/application-mongodb-reactive/src/main/resources/application.properties` — [REVIEW] — только `spring.webflux.problemdetails.enabled=true`
+- `user-note/application-mongodb-reactive/src/main/resources/application.properties` — [REVIEW] — `spring.webflux.problemdetails.enabled=true` + `logging.level.org.springframework.web=DEBUG` + `spring.profiles.include=data-mongodb-reactive` (2026-09-21)
 - `user-note/application-mongodb-reactive/src/main/resources/application-mongodb.properties` — [REMOVED] 2026-08-31 (`spring.mongodb.*` connection-строки, в тестах перекрывались `@ServiceConnection`)
 - `user-note/application-mongodb-reactive/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REMOVED] 2026-09-04 (было `@Nested @ActiveProfiles("mongodb")` через `abstract ReactiveMongoTemplateTests`)
 - `user-note/application-mongodb-reactive/src/test/java/com/example/usernote/UserNoteApplicationDefaultTest.java` — [REVIEW] — новый 2026-09-04, голый `contextLoads(){}` без активного профиля
@@ -102,7 +102,7 @@
 - `user-note/application-h2-reactive/build.gradle.kts` — [REVIEW]
 - `user-note/application-h2-reactive/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`, восстановлен 2026-09-13 (был вынесен в `application-core`, модуль удалён)
 - `user-note/application-h2-reactive/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — восстановлен 2026-09-13
-- `user-note/application-h2-reactive/src/main/resources/application.properties` — [REVIEW] — только `spring.webflux.problemdetails.enabled=true`
+- `user-note/application-h2-reactive/src/main/resources/application.properties` — [REVIEW] — `spring.webflux.problemdetails.enabled=true` + `logging.level.org.springframework.web=DEBUG` + `spring.profiles.include=data-r2dbc` (2026-09-21)
 - `user-note/application-h2-reactive/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — 2026-09-06: `@Import(UserNoteTestConfiguration.class)` — унифицирован со всеми 8 модулями
 - `user-note/application-h2-reactive/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — новый 2026-09-06, тривиальный пустой `@TestConfiguration`
 
@@ -110,7 +110,7 @@
 - `user-note/application-mysql-reactive/build.gradle.kts` — [REVIEW]
 - `user-note/application-mysql-reactive/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`, восстановлен 2026-09-13 (был вынесен в `application-core`, модуль удалён)
 - `user-note/application-mysql-reactive/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — восстановлен 2026-09-13
-- `user-note/application-mysql-reactive/src/main/resources/application.properties` — [REVIEW] — только `spring.webflux.problemdetails.enabled=true`
+- `user-note/application-mysql-reactive/src/main/resources/application.properties` — [REVIEW] — `spring.webflux.problemdetails.enabled=true` + `logging.level.org.springframework.web=DEBUG` + `spring.profiles.include=data-r2dbc` (2026-09-21)
 - `user-note/application-mysql-reactive/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — `@Import(UserNoteTestConfiguration.class)`, без `@ActiveProfiles`
 - `user-note/application-mysql-reactive/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — `@Bean @ServiceConnection MySQLContainer`, без `@Profile` (в R2DBC-модуле даёт `R2dbcConnectionDetails`)
 - `user-note/application-mysql-reactive/src/test/java/com/example/usernote/UserNoteTestApplication.java` — [REVIEW]
@@ -119,25 +119,29 @@
 - `user-note/application-postgresql-reactive/build.gradle.kts` — [REVIEW]
 - `user-note/application-postgresql-reactive/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`, восстановлен 2026-09-13 (был вынесен в `application-core`, модуль удалён)
 - `user-note/application-postgresql-reactive/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — восстановлен 2026-09-13
-- `user-note/application-postgresql-reactive/src/main/resources/application.properties` — [REVIEW] — только `spring.webflux.problemdetails.enabled=true`
+- `user-note/application-postgresql-reactive/src/main/resources/application.properties` — [REVIEW] — `spring.webflux.problemdetails.enabled=true` + `logging.level.org.springframework.web=DEBUG` + `spring.profiles.include=data-r2dbc` (2026-09-21)
 - `user-note/application-postgresql-reactive/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — `@Import(UserNoteTestConfiguration.class)`, без `@ActiveProfiles`
 - `user-note/application-postgresql-reactive/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — `@Bean @ServiceConnection PostgreSQLContainer`, без `@Profile`
 - `user-note/application-postgresql-reactive/src/test/java/com/example/usernote/UserNoteTestApplication.java` — [REVIEW]
 
-#### user-note/data-{jdbc,mongodb,mongodb-reactive,r2dbc}/ (12 файлов; `data-jpa` удалён повторно 2026-09-13, см. ниже) — по одному на driven-технологию, каждый `id("com.example.spring-boot-data-{tech}")`; 2026-09-21 во всех 4 появились первые заглушечные `UserNote` (пустой класс) + репозиторий; тот же плагин `spring-boot-data-{tech}` теперь применён и на `application-*` напрямую; включены в `settings.gradle.kts` (не typesafe-accessor для project-зависимостей — см. открытый вопрос в «Правила» про расхождение с leaf-purity-грепом)
+#### user-note/data-{jdbc,mongodb,mongodb-reactive,r2dbc}/ (16 файлов; `data-jpa` удалён повторно 2026-09-13, см. ниже) — по одному на driven-технологию, каждый `id("com.example.spring-boot-data-{tech}")`; 2026-09-21 во всех 4 появились первые заглушечные `UserNote` (пустой класс) + репозиторий; тот же плагин `spring-boot-data-{tech}` теперь применён и на `application-*` напрямую; включены в `settings.gradle.kts` (не typesafe-accessor для project-зависимостей — см. открытый вопрос в «Правила» про расхождение с leaf-purity-грепом)
 - `user-note/data-jdbc/build.gradle.kts` — [REVIEW] — подключён к `application-{h2,mysql,postgresql}` через `implementation(project(":user-note:data-jdbc"))`
 - `user-note/data-jdbc/src/main/java/com/example/usernote/UserNote.java` — [REVIEW] — пустой класс, 2026-09-21
 - `user-note/data-jdbc/src/main/java/com/example/usernote/UserNoteRepository.java` — [REVIEW] — `ListCrudRepository<UserNote, UUID>`, 2026-09-21
+- `user-note/data-jdbc/src/main/resources/application-data-jdbc.properties` — [REVIEW] — `logging.level.org.springframework.data=DEBUG` + `...data.jdbc=DEBUG` (2026-09-21); подключается строкой `spring.profiles.include=data-jdbc` в `application.properties` листьев `application-{h2,mysql,postgresql}` — имя `application-data-*` — чтобы IntelliJ IDEA признала файл конфигурацией Spring Boot; одноимённый `application.properties` в модуле не работает, его перекрывает файл листа
 - `user-note/data-jpa/build.gradle.kts` — [REMOVED] — удалён 2026-09-05 (домен без связей между сущностями, риск `NoUniqueBeanDefinitionException` от двух адаптеров одного порта), тем же вечером восстановлен как скелет «про запас», удалён повторно 2026-09-13 коммитом `6c84440` вместе с `include` в `settings.gradle.kts`; в дереве вариантов (CLAUDE.md → «Архитектура и структура проекта») JPA — возможная будущая ветка, сегодня её нет
 - `user-note/data-mongodb/build.gradle.kts` — [REVIEW]
 - `user-note/data-mongodb/src/main/java/com/example/usernote/UserNote.java` — [REVIEW] — пустой класс, 2026-09-21
 - `user-note/data-mongodb/src/main/java/com/example/usernote/UserNoteRepository.java` — [REVIEW] — `ListCrudRepository<UserNote, UUID>`, 2026-09-21
+- `user-note/data-mongodb/src/main/resources/application-data-mongodb.properties` — [REVIEW] — `logging.level.org.springframework.data=DEBUG` + `...data.mongodb=DEBUG` (2026-09-21); подключается строкой `spring.profiles.include=data-mongodb` в `application.properties` листьев `application-mongodb` — имя `application-data-*` — чтобы IntelliJ IDEA признала файл конфигурацией Spring Boot; одноимённый `application.properties` в модуле не работает, его перекрывает файл листа
 - `user-note/data-mongodb-reactive/build.gradle.kts` — [REVIEW]
 - `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/UserNote.java` — [REVIEW] — пустой класс, 2026-09-21
 - `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/UserNoteRepository.java` — [REVIEW] — `ReactiveCrudRepository<UserNote, UUID>`, 2026-09-21
+- `user-note/data-mongodb-reactive/src/main/resources/application-data-mongodb-reactive.properties` — [REVIEW] — `logging.level.org.springframework.data=DEBUG` + `...data.mongodb=DEBUG` (2026-09-21); подключается строкой `spring.profiles.include=data-mongodb-reactive` в `application.properties` листьев `application-mongodb-reactive` — имя `application-data-*` — чтобы IntelliJ IDEA признала файл конфигурацией Spring Boot; одноимённый `application.properties` в модуле не работает, его перекрывает файл листа
 - `user-note/data-r2dbc/build.gradle.kts` — [REVIEW]
 - `user-note/data-r2dbc/src/main/java/com/example/usernote/UserNote.java` — [REVIEW] — пустой класс, 2026-09-21
 - `user-note/data-r2dbc/src/main/java/com/example/usernote/UserNoteRepository.java` — [REVIEW] — `ReactiveCrudRepository<UserNote, UUID>`, 2026-09-21
+- `user-note/data-r2dbc/src/main/resources/application-data-r2dbc.properties` — [REVIEW] — `logging.level.org.springframework.data=DEBUG` + `...data.r2dbc=DEBUG` (2026-09-21); подключается строкой `spring.profiles.include=data-r2dbc` в `application.properties` листьев `application-{h2,mysql,postgresql}-reactive` — имя `application-data-*` — чтобы IntelliJ IDEA признала файл конфигурацией Spring Boot; одноимённый `application.properties` в модуле не работает, его перекрывает файл листа
 
 ### user/ (210 файлов, было 150 — +60: 9 вендорных application-*-{h2,mysql,postgresql}/ модулей заменили 3 профильных 2026-07-24)
 
