@@ -30,7 +30,7 @@
 - `.claude/settings.json` — [REMOVED] — регистрировал SessionStart hook; удалён 2026-07-24 вместе со всем `.claude/` (`.gitignore` уже содержал `.claude/` — по факту был случайно закоммичен ранее, теперь untracked навсегда)
 - `.claude/hooks/session-start.sh` — [REMOVED] — автоустановка JDK 25 в облачных сессиях; удалён 2026-07-24 из-за CRLF-порчи файла на диске (`bad interpreter` при старте сессии), не восстановлен
 
-### user-note/ (60 файлов — `application-core/` добавлен и в тот же цикл сессий удалён 2026-09-13, см. ниже; `data-jpa/build.gradle.kts` удалён 2026-09-05 вечером, затем в тот же вечер восстановлен как неподключённый скелет «про запас», см. «Активная нить») — модель application-driver→application-vendor 2026-09-05: `application-{jdbc,jpa,r2dbc}` (27 файлов) заменены на `application-{h2,mysql,postgresql}[-reactive]` (38 файлов) — SQL-модуль = вендор БД, H2 изолирован от mysql/postgresql-модулей; весь гексагональный слой (`domain/`·`persistence/`·`presentation/`) + сервисы `note/`·`user/` удалены целиком 2026-08-29 (`git rm`, см. CLAUDE.md → «Активная нить» → «2026-08-29 (вечер)»); 8 composition-root модулей подключают `data-*`-модуль(и) напрямую через `dependencies {}` (SQL sync — только `data-jdbc`, `data-jpa` включён в сборку, но нигде не подключён как зависимость)
+### user-note/ (68 файлов, было 60 — `application-core/` добавлен и в тот же цикл сессий удалён 2026-09-13, см. ниже; `data-jpa/build.gradle.kts` удалён 2026-09-05 вечером, затем в тот же вечер восстановлен как неподключённый скелет «про запас», см. «Активная нить») — модель application-driver→application-vendor 2026-09-05: `application-{jdbc,jpa,r2dbc}` (27 файлов) заменены на `application-{h2,mysql,postgresql}[-reactive]` (38 файлов) — SQL-модуль = вендор БД, H2 изолирован от mysql/postgresql-модулей; весь гексагональный слой (`domain/`·`persistence/`·`presentation/`) + сервисы `note/`·`user/` удалены целиком 2026-08-29 (`git rm`, см. CLAUDE.md → «Активная нить» → «2026-08-29 (вечер)»); 8 composition-root модулей подключают `data-*`-модуль(и) напрямую через `dependencies {}` (SQL sync — только `data-jdbc`, `data-jpa` включён в сборку, но нигде не подключён как зависимость)
 
 #### user-note/ — удалённый гексагональный слой — [REMOVED] 2026-08-29
 - `user-note/domain/{domain,contract,contract-reactive}/**` — [REMOVED] — records/enums/exceptions + порт-интерфейсы sync+reactive
@@ -49,7 +49,7 @@
 - `user-note/application-h2/build.gradle.kts` — [REVIEW]
 - `user-note/application-h2/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`, восстановлен 2026-09-13 (был вынесен в `application-core`, модуль удалён)
 - `user-note/application-h2/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — восстановлен 2026-09-13
-- `user-note/application-h2/src/main/resources/application.properties` — [REVIEW] — только `spring.mvc.problemdetails.enabled=true`
+- `user-note/application-h2/src/main/resources/application.properties` — [REVIEW] — `spring.mvc.problemdetails.enabled=true` + DEBUG-логи `org.springframework.{jdbc,data.jdbc}` (2026-09-21)
 - `user-note/application-h2/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — 2026-09-06: `@Import(UserNoteTestConfiguration.class)` — унифицирован со всеми 8 модулями (побайтово идентичен)
 - `user-note/application-h2/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — новый 2026-09-06, тривиальный пустой `@TestConfiguration` — только ради унификации `UserNoteApplicationTests.java`
 
@@ -57,7 +57,7 @@
 - `user-note/application-mysql/build.gradle.kts` — [REVIEW]
 - `user-note/application-mysql/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`, восстановлен 2026-09-13 (был вынесен в `application-core`, модуль удалён)
 - `user-note/application-mysql/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — восстановлен 2026-09-13
-- `user-note/application-mysql/src/main/resources/application.properties` — [REVIEW] — только `spring.mvc.problemdetails.enabled=true`
+- `user-note/application-mysql/src/main/resources/application.properties` — [REVIEW] — `spring.mvc.problemdetails.enabled=true` + DEBUG-логи `org.springframework.{jdbc,data.jdbc}` (2026-09-21)
 - `user-note/application-mysql/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — `@Import(UserNoteTestConfiguration.class)`, без `@ActiveProfiles`
 - `user-note/application-mysql/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — `@Bean @ServiceConnection MySQLContainer`, без `@Profile`
 - `user-note/application-mysql/src/test/java/com/example/usernote/UserNoteTestApplication.java` — [REVIEW]
@@ -66,7 +66,7 @@
 - `user-note/application-postgresql/build.gradle.kts` — [REVIEW]
 - `user-note/application-postgresql/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`, восстановлен 2026-09-13 (был вынесен в `application-core`, модуль удалён)
 - `user-note/application-postgresql/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — восстановлен 2026-09-13
-- `user-note/application-postgresql/src/main/resources/application.properties` — [REVIEW] — только `spring.mvc.problemdetails.enabled=true`
+- `user-note/application-postgresql/src/main/resources/application.properties` — [REVIEW] — `spring.mvc.problemdetails.enabled=true` + DEBUG-логи `org.springframework.{jdbc,data.jdbc}` (2026-09-21)
 - `user-note/application-postgresql/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — `@Import(UserNoteTestConfiguration.class)`, без `@ActiveProfiles`
 - `user-note/application-postgresql/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — `@Bean @ServiceConnection PostgreSQLContainer`, без `@Profile`
 - `user-note/application-postgresql/src/test/java/com/example/usernote/UserNoteTestApplication.java` — [REVIEW]
@@ -124,12 +124,20 @@
 - `user-note/application-postgresql-reactive/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — `@Bean @ServiceConnection PostgreSQLContainer`, без `@Profile`
 - `user-note/application-postgresql-reactive/src/test/java/com/example/usernote/UserNoteTestApplication.java` — [REVIEW]
 
-#### user-note/data-{jdbc,jpa,mongodb,mongodb-reactive,r2dbc}/ (5 файлов) — по одному на driven-технологию, каждый только `id("com.example.spring-boot-data-{tech}")`, кода нет; включены в `settings.gradle.kts` (не typesafe-accessor для project-зависимостей — см. открытый вопрос в «Правила» про расхождение с leaf-purity-грепом)
+#### user-note/data-{jdbc,jpa,mongodb,mongodb-reactive,r2dbc}/ (13 файлов, было 5) — по одному на driven-технологию, каждый `id("com.example.spring-boot-data-{tech}")`; 2026-09-21 в 4 из 5 (кроме `data-jpa`) появились первые заглушечные `UserNote` (пустой класс) + репозиторий; тот же плагин `spring-boot-data-{tech}` теперь применён и на `application-*` напрямую; включены в `settings.gradle.kts` (не typesafe-accessor для project-зависимостей — см. открытый вопрос в «Правила» про расхождение с leaf-purity-грепом)
 - `user-note/data-jdbc/build.gradle.kts` — [REVIEW] — подключён к `application-{h2,mysql,postgresql}` через `implementation(project(":user-note:data-jdbc"))`
+- `user-note/data-jdbc/src/main/java/com/example/usernote/UserNote.java` — [REVIEW] — пустой класс, 2026-09-21
+- `user-note/data-jdbc/src/main/java/com/example/usernote/UserNoteJDBCRepository.java` — [REVIEW] — `ListCrudRepository<UserNote, UUID>`, 2026-09-21
 - `user-note/data-jpa/build.gradle.kts` — [REVIEW] — удалён 2026-09-05 (домен без связей между сущностями, риск `NoUniqueBeanDefinitionException` от двух адаптеров одного порта), тем же вечером восстановлен как скелет «про запас» — **нигде не подключён как зависимость**, ни один `application-*` на него не ссылается
 - `user-note/data-mongodb/build.gradle.kts` — [REVIEW]
+- `user-note/data-mongodb/src/main/java/com/example/usernote/UserNote.java` — [REVIEW] — пустой класс, 2026-09-21
+- `user-note/data-mongodb/src/main/java/com/example/usernote/UserNoteMongoRepository.java` — [REVIEW] — `ListCrudRepository<UserNote, UUID>`, 2026-09-21
 - `user-note/data-mongodb-reactive/build.gradle.kts` — [REVIEW]
+- `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/UserNote.java` — [REVIEW] — пустой класс, 2026-09-21
+- `user-note/data-mongodb-reactive/src/main/java/com/example/usernote/UserNoteMongoRepository.java` — [REVIEW] — `ReactiveCrudRepository<UserNote, UUID>`, 2026-09-21
 - `user-note/data-r2dbc/build.gradle.kts` — [REVIEW]
+- `user-note/data-r2dbc/src/main/java/com/example/usernote/UserNote.java` — [REVIEW] — пустой класс, 2026-09-21
+- `user-note/data-r2dbc/src/main/java/com/example/usernote/UserNoteR2DBCRepository.java` — [REVIEW] — `ReactiveCrudRepository<UserNote, UUID>`, 2026-09-21
 
 ### user/ (210 файлов, было 150 — +60: 9 вендорных application-*-{h2,mysql,postgresql}/ модулей заменили 3 профильных 2026-07-24)
 

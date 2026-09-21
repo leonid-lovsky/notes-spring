@@ -4,6 +4,7 @@ plugins {
     id("com.example.spring-boot-actuator")
     id("com.example.spring-boot-webflux")
 
+    id("com.example.spring-boot-data-r2dbc")
     id("com.example.spring-boot-database-r2dbc-h2")
 }
 
