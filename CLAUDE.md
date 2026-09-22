@@ -1,6 +1,6 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: Mon Sep 21 21:22:47 IDT 2026 **Всё временно** — любое решение подлежит обсуждению и изменению.
+> Последнее обновление: Tue Sep 22 13:52:44 IDT 2026 **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 > **⚠️ Проект в процессе полного переписывания (начато пользователем 2026-08-14)** — состояние ниже смешивает зрелое «старое» описание (note/·user/·часть user-note/) с реальным на данный момент WIP. Детали и что именно уже изменилось — см. «Задачи» → «В процессе 2026-08-14».
 
@@ -16,6 +16,7 @@
 - `docs/convention-plugins-graph.md` — снимок ТЕКУЩЕГО графа родитель→потомок всех convention-плагинов (не история решений — та в `docs/decisions-log.md`), читать при правке/добавлении convention-плагина вместо реконструкции графа по хронологии
 - `docs/spring-boot-starters-full-matrix.md` — сырой снимок ВСЕХ 205 зависимостей Initializr (не куратированный список, в отличие от `docs/spring-boot-starters-reference.md`) по 4 комбинациям Boot 4.0.7/4.1.0 × Java 21/25, справочник общего кругозора, не источник для convention-плагинов
 - `docs/spring-boot-testing-reference.md` — справочник тестовых уровней/аннотаций/классов Spring Boot 4.1 с датами появления (проверено по docs.spring.io/GitHub spring-projects, не Maven Central), собран для TDD-переписывания — читать при выборе конкретной тестовой аннотации/клиента
+- `docs/spring-data-repository-reference.md` — иерархия репозиториев Spring Data (`Repository`→`CrudRepository`/`PagingAndSortingRepository`→list-варианты, `QueryByExampleExecutor`) по вендорам проекта (JDBC/R2DBC/MongoDB sync+reactive, JPA для сравнения) с классами-реализациями и источниками (Javadoc/GitHub issue), собран 2026-09-22
 
 ---
 
