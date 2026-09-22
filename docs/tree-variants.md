@@ -1,0 +1,19 @@
+# Дерево вариантов
+
+> ASCII-рендер корневого дерева вариантов архитектуры. Присылать в этом виде по запросу «дерево вариантов». **Источник истины и полное обсуждение** (зачем оно нужно, как им пользоваться, ограничения, текущее состояние 8 листьев) — `CLAUDE.md` → «Архитектура и структура проекта» → «Корневое дерево вариантов»; при правке дерева (новая ветка/вендор/технология) обновлять сначала там, потом здесь.
+
+```
+общее — порты, прикладное поведение, тесты на порт: всё, что обязано быть одним для всех веток (сегодня пусто)
+├── синхронное (webmvc) — driving-модуль controller-webmvc
+│   ├── JDBC — data-jdbc
+│   │   ├── H2 — application-h2
+│   │   ├── MySQL — application-mysql
+│   │   └── PostgreSQL — application-postgresql
+│   └── Mongo — data-mongodb — application-mongodb
+└── реактивное (webflux) — driving-модуль controller-webflux
+    ├── R2DBC — data-r2dbc
+    │   ├── H2 — application-h2-reactive
+    │   ├── MySQL — application-mysql-reactive
+    │   └── PostgreSQL — application-postgresql-reactive
+    └── Mongo — data-mongodb-reactive — application-mongodb-reactive
+```

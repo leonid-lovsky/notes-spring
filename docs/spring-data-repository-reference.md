@@ -11,47 +11,9 @@
 - `QueryByExampleExecutor<T>` / `ReactiveQueryByExampleExecutor<T>` — НЕ наследуют `Repository` вообще, отдельная ветка (один type-параметр, без `ID`), примешивается вендорными интерфейсами через множественный `extends`
 - вне интереса проекта (не используются): `RevisionRepository<T, ID, N>` (auditing/versioning), `RxJava3CrudRepository<T, ID>`/`RxJava3SortingRepository<T, ID>` (стек RxJava3 — у проекта Reactor/WebFlux)
 
-## Дерево (наглядный вид, по запросу пользователя 2026-09-22 — присылать в этом виде по запросу «дерево репозиториев Spring Data»)
+## Дерево (наглядный вид)
 
-```
-Repository<T, ID>                                   [spring-data-commons, маркер, без методов]
-│
-├── CrudRepository<T, ID>
-│   └── ListCrudRepository<T, ID>
-│
-├── PagingAndSortingRepository<T, ID>
-│   └── ListPagingAndSortingRepository<T, ID>
-│
-├── ReactiveCrudRepository<T, ID>
-│
-└── ReactiveSortingRepository<T, ID>
-
-QueryByExampleExecutor<T>                            [отдельно, Repository не наследует]
-ReactiveQueryByExampleExecutor<T>                    [отдельно, реактивный аналог]
-
-
-────────── вендорные интерфейсы (композиция веток выше) ──────────
-
-JPA (data-jpa) — в сборке сейчас нет (удалён 2026-09-13), дерево — для сравнения
-  JpaRepository<T, ID> = ListCrudRepository<T,ID> + ListPagingAndSortingRepository<T,ID> + QueryByExampleExecutor<T>
-  └── impl: SimpleJpaRepository<T, ID>
-
-JDBC (data-jdbc) — вендорного интерфейса нет
-  CrudRepository<T,ID> + PagingAndSortingRepository<T,ID> + QueryByExampleExecutor<T>
-  └── impl: SimpleJdbcRepository<T, ID>
-
-R2DBC (data-r2dbc)
-  R2dbcRepository<T, ID> = ReactiveCrudRepository<T,ID> + ReactiveSortingRepository<T,ID> + ReactiveQueryByExampleExecutor<T>
-  └── impl: SimpleR2dbcRepository<T, ID>
-
-MongoDB sync (data-mongodb)
-  MongoRepository<T, ID> = ListCrudRepository<T,ID> + ListPagingAndSortingRepository<T,ID> + QueryByExampleExecutor<T>
-  └── impl: SimpleMongoRepository<T, ID>
-
-MongoDB reactive (data-mongodb-reactive)
-  ReactiveMongoRepository<T, ID> = ReactiveCrudRepository<T,ID> + ReactiveSortingRepository<T,ID> + ReactiveQueryByExampleExecutor<T>
-  └── impl: SimpleReactiveMongoRepository<T, ID extends Serializable>
-```
+Вынесено в отдельный файл `docs/tree-repositories.md` 2026-09-22 («дерево репозиториев») — присылать дословно оттуда по соответствующему запросу.
 
 ## По вендорам проекта
 Схема: вендор (модуль) — интерфейс — состав (`extends`) — класс-реализация:
