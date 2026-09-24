@@ -8,6 +8,8 @@
 
 ## data-jpa · data-jdbc (blocking JDBC, H2)
 
+> ⚠️ `data-jpa` удалён из сборки повторно 2026-09-13 (найдено 2026-09-24) — сегодня в `user-note/` есть только `data-jdbc`; JPA — возможная будущая ветка корневого дерева вариантов (`CLAUDE.md` → «Архитектура и структура проекта»), не существующий сейчас модуль. Ниже — рассуждение остаётся верным для одного `data-jdbc`, не трогать до отдельного запроса.
+
 Оба адаптера используют обычное blocking JDBC-подключение к H2 — инструмент миграции для них идентичен и не зависит от того, ORM это (JPA) или Spring Data JDBC.
 
 - **Flyway** — официальный Spring Boot 4 стартер `spring-boot-starter-flyway` (+ `spring-boot-starter-flyway-test`, оба подтверждены в `spring-boot-starters-reference.md`) — версионированные `.sql`-файлы (`V1__init.sql`), H2 поддерживается `flyway-core` из коробки, отдельный `flyway-database-*`-модуль (есть для db2/derby/hsqldb/oracle/postgresql/mysql/sqlserver) для H2 не нужен
