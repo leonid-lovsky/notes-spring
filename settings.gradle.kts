@@ -17,6 +17,9 @@ include(":user-note:application-mysql-reactive")
 include(":user-note:application-postgresql")
 include(":user-note:application-postgresql-reactive")
 
+include(":user-note:contract")
+include(":user-note:contract-reactive")
+
 include(":user-note:controller-webmvc")
 include(":user-note:controller-webflux")
 
