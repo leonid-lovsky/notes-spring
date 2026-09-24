@@ -1,96 +1,101 @@
 # Снимок графа convention-плагинов
 
-> Новый 2026-08-01, снимок ТЕКУЩЕГО состояния (не история решений — история и обоснования «почему» остаются в `docs/decisions-log.md` → «Convention plugins — принцип именования и структура»). Причина создания — граф разбросан по нескольким хронологическим правкам `docs/decisions-log.md`, реконструировать текущее состояние оттуда занимает больше времени, чем прочитать один плоский список. Обновлять при каждом добавлении/удалении/переименовании convention-плагина или изменении его `plugins{}`-блока — в той же правке, не откладывая.
+> Новый 2026-08-01, снимок ТЕКУЩЕГО состояния (не история решений — история и обоснования «почему» остаются в `docs/decisions-log.md` → «Convention plugins — принцип именования и структура», сам этот лог не пополнялся с 2026-08-16, см. его собственную пометку). Причина создания — граф разбросан по нескольким хронологическим правкам, реконструировать текущее состояние оттуда занимает больше времени, чем прочитать один плоский список. Обновлять при каждом добавлении/удалении/переименовании convention-плагина или изменении его `plugins{}`-блока — в той же правке, не откладывая.
 >
-> **⚠️ УСТАРЕЛ с 2026-08-01 — не обновлялся ни разу с тех пор, вопреки правилу выше** (найдено 2026-09-24): описывает `note`/`user`/`user-note`×3 сервиса, `spring-boot-application`, `data-jpa`, `application-h2-jpa` и другие модули, удалённые/переструктурированные при переписывании (см. `CLAUDE.md` → «Задачи» → «В процессе 2026-08-14» и далее); не отражает ни возврат `spring-boot-bootable`/`spring-boot-actuator` (2026-09-06), ни сегодняшние `com.example.contract`/`contract-reactive`/`codequality`, ни переименование `com.example.java`→`com.example.base` (2026-09-24), ни удаление `com.example.java-library` (2026-09-24). Актуальный, но более узкий снимок для 16 листьев `user-note/` — `docs/tree-modules.md` («дерево модулей»). Требуется полный пересбор этого файла отдельной задачей, не точечными правками поверх устаревшего содержимого.
+> **Полностью пересобран 2026-09-24** — предыдущая версия не обновлялась с 2026-08-01 и описывала `note`/`user`/`user-note`×3, `spring-boot-application`, `data-jpa`, `application-h2-jpa` и другие модули, удалённые/переструктурированные при переписывании. Область применения сузилась: сегодня единственный сервис с исходным кодом — `user-note/` (16 листьев по модели application-vendor, см. `CLAUDE.md` → «Архитектура и структура проекта» → «Корневое дерево вариантов»), `note`/`user`/`auth`/`registry`/`config`/`gateway` удалены из репозитория целиком — отсюда 0 применений у всех `spring-cloud-*`/batch/security-oauth2/graphql/elasticsearch/client-*-плагинов ниже (были рассчитаны на сервисы, которых больше нет, не единое отставание).
 
-Проверочная команда (перегенерировать граф родитель→потомок по факту из файлов, свериться со списком ниже): `for f in build-logic/convention/src/main/kotlin/*.gradle.kts; do echo "$f: $(grep -oE 'id\("com\.example\.[a-zA-Z0-9.-]+"\)' "$f" | tr '\n' ' ')"; done`
+Проверочная команда (перегенерировать граф родитель→потомок по факту из файлов, свериться со списком ниже): `for f in build-logic/convention/src/main/kotlin/com.example.*.gradle.kts; do id=$(basename "$f" .gradle.kts); echo "$id :: $(grep -oE 'id\("[^"]+"\)' "$f" | tr '\n' ' ')"; done`
 
-Проверочная команда (число применений плагина в листовых модулях): `grep -rl 'id("com.example.{id}")' --include="build.gradle.kts" note user user-note auth registry config gateway | wc -l`
+Проверочная команда (число применений плагина, только `user-note` — единственный сервис с кодом): `grep -rl 'id("com.example.{id}")' --include="build.gradle.kts" user-note | wc -l`
 
-Схема каждой строки: **id плагина** — родитель(и) — что добавляет — число применений в листовых модулях сегодня (2026-08-01).
+Схема каждой строки: **id плагина** — родитель(и) — что добавляет — число применений в `user-note/` сегодня (2026-09-24).
 
 ---
 
 ## Уровень 0 — корень
 
-- `com.example.java` — родителя нет (сам применяет `id("java")` + 5 фрагментов `codequality-*` напрямую, без промежуточного агрегатора — см. «`codequality-*`» ниже) — toolchain из `.java-version`, `jakarta.validation-api`(implementation, делает аннотации видимыми в `domain/`), `junit-jupiter`(test) — 3 прямых применения (`note`/`user`/`user-note` → `domain/domain/build.gradle.kts`, единственные модули без Boot/reactor/java-library) + родитель 3 плагинов уровня 1
+- `com.example.base` — родителя нет (сам применяет `id("java")` + `id("com.example.codequality")`) — toolchain из `.java-version`, `jakarta.validation-api`(implementation), `junit-jupiter`(test) + JUnit Platform Launcher(testRuntimeOnly) — 0 прямых применений (переименован из `com.example.java` 2026-09-24 по прямому запросу пользователя — откат решения 2026-08-01 «id = имя технологии»; ни один лист `user-note` не применяет его напрямую — только каскадом через `contract`/`project-reactor`/`spring-boot`, см. уровень 1)
 
-## Уровень 1 — родитель `java`
+## Уровень 1 — родитель `base`
 
-- `com.example.java-library` — `java` — + `java-library` (ядро Gradle, не Spring) — 6 применений (`contract`/`contract-reactive` × 3 сервиса — единственные модули, где `api(projects.*.domain)` реально нужен потребителям)
-- `com.example.project-reactor` — `java` — переименован 2026-08-01 из `reactor` (точное имя технологии «Project Reactor») — + `reactor-core`(implementation) + `reactor-tools`(implementation) + `reactor-test`(test) — 3 применения (`contract-reactive` × 3 сервиса)
-- `com.example.spring-boot` — `java` — + `io.spring.dependency-management` + Spring Boot BOM + `spring-boot-starter`(+test) — 0 прямых применений (только как родитель 33 плагинов уровня 2, из них 3 новых — `spring-boot-batch`/`-batch-jdbc`/`-batch-data-mongodb`, 2026-08-15)
+- `com.example.codequality` — `base` — агрегатор 8 `codequality-*` (см. ниже) — 0 прямых применений (воссоздан 2026-09-24 по прямому запросу — тот же паттерн, что был убран 2026-08-01 как «обёртка без переиспользования, один потребитель»; сегодня потребитель по-прежнему один — `base` — но фрагментов 8, не 5)
+- `com.example.contract` — `base` — не добавляет зависимостей, чистый алиас — 1 применение (`contract`) — введён 2026-09-24: `user-note/contract` не собирался (`plugins{}` был пуст, без единого `id(...)`), это единственный способ дать листу свою роль вместо голого `base` напрямую (см. `CLAUDE.md` → «Правила» → исключения из правила именования плагинов)
+- `com.example.project-reactor` — `base` — + `reactor-core`(implementation) + `reactor-tools`(implementation) + `reactor-test`(test) — 0 прямых применений (родитель `contract-reactive`)
+- `com.example.spring-boot` — `base` — + `io.spring.dependency-management` + Spring Boot BOM + `spring-boot-starter`(+test) — 0 прямых применений (родитель 24 технологических плагинов уровня 2 + `spring-cloud`)
 
-## Уровень 2 — родитель `spring-boot` (технологические плагины, каждый = 1 Spring Boot стартер/концерн)
+## Уровень 2 — родитель `project-reactor`
 
-- `com.example.spring-boot-application` — `spring-boot` + `id("org.springframework.boot")` (bootable-ось, только это — actuator вынесен, см. `spring-boot-actuator` ниже) — 34 применения (все composition-root модули note/user/user-note/auth)
-- `com.example.spring-boot-actuator` — `spring-boot` — новый 2026-08-01 (воссоздан — существовал до 2026-07-14, был слит в `spring-boot-application`) — + `spring-boot-starter-actuator`(+test) — 37 применений (34 листа с `spring-boot-application` + `registry/application`/`config/application`/`gateway/application`, где раньше приходил транзитивно через `spring-cloud-application`). В отличие от `spring-boot-validation` — расхождения в потребности нет (100% bootable-модулей хотят actuator), поэтому выбрана явная композиция на каждом листе (вид 2), а не встраивание в `spring-boot-application` вторым родителем (вид 1, тоже обсуждался — отклонён в пользу максимальной атомарности без диаманта, несмотря на больший объём правок)
-- `com.example.spring-boot-batch` — `spring-boot` — новый 2026-08-15 — + `spring-boot-starter-batch`(+test) — 0 применений (ОТЛОЖЕНО, впервые появившаяся в проекте технология — см. `docs/decisions-log.md` → «Синхронизация версий»)
-- `com.example.spring-boot-batch-data-mongodb` — `spring-boot` — новый 2026-08-15 — + `spring-boot-starter-batch-data-mongodb`(+test) — 0 применений (ОТЛОЖЕНО, применяется в композиции с `spring-boot-batch` на листе, не как родитель — тот же паттерн вид 2, что `spring-boot-application`+`spring-boot-database-h2`)
-- `com.example.spring-boot-batch-jdbc` — `spring-boot` — новый 2026-08-15 — + `spring-boot-starter-batch-jdbc`(+test) — 0 применений (ОТЛОЖЕНО, композиция с `spring-boot-batch` на листе, см. выше)
+- `com.example.contract-reactive` — `project-reactor` — не добавляет зависимостей, чистый алиас — 1 применение (`contract-reactive`) — симметрично `contract` выше, введён в той же сессии
+
+## Уровень 2 — родитель `codequality` (8 фрагментов; каждый физически применяет бare Gradle/внешний id в своём файле — не `com.example.*` — см. «Как читать этот граф»)
+
+- `com.example.codequality-checkstyle` — `id("checkstyle")` — `configFile` на `gradle/checkstyle/google_checks.xml`, дословная копия Google Checks + 2 переопределения (`LineLength.max` 120, `Indentation.basicOffset` 4) — 0 прямых
+- `com.example.codequality-jacoco` — `id("jacoco")` — `jacocoTestReport` привязан к `test` — 0 прямых
+- `com.example.codequality-jacoco-report-aggregation` — `id("jacoco-report-aggregation")` — без своей конфигурации (autoconfig) — 0 прямых
+- `com.example.codequality-jspecify` — `id("java")` — `implementation(jspecify)` — 0 прямых
+- `com.example.codequality-nullaway` — `id("java")` + `id("net.ltgt.errorprone")` — NullAway как error — 0 прямых
+- `com.example.codequality-pmd` — `id("pmd")` — только `toolVersion` из каталога, без кастомного ruleset — 0 прямых
+- `com.example.codequality-spotbugs` — `id("com.github.spotbugs")` — дефолтная конфигурация — 0 прямых
+- `com.example.codequality-spotless` — `id("com.diffplug.spotless")` — `importOrder()`+`removeUnusedImports()`+`googleJavaFormat().aosp()`+`leadingTabsToSpaces()`; `compileJava.dependsOn(spotlessApply)` — автофикс при любой сборке — 0 прямых
+
+## Уровень 2 — родитель `spring-boot` (технологические плагины, каждый = 1 Spring Boot стартер/концерн; `spring-boot-application`/`spring-cloud-application` удалены 2026-09-04/06 — bootable-ось несёт отдельный атомарный `spring-boot-bootable`, композиция на листе)
+
+- `com.example.spring-boot-actuator` — `spring-boot` — + `spring-boot-starter-actuator`(+test) — 8 применений (все 8 листьев `application-*`)
+- `com.example.spring-boot-batch` — `spring-boot` — + `spring-boot-starter-batch`(+test) — 0 применений (ОТЛОЖЕНО)
+- `com.example.spring-boot-batch-data-mongodb` — `spring-boot` — + `spring-boot-starter-batch-data-mongodb`(+test) — 0 применений (ОТЛОЖЕНО)
+- `com.example.spring-boot-batch-jdbc` — `spring-boot` — + `spring-boot-starter-batch-jdbc`(+test) — 0 применений (ОТЛОЖЕНО)
+- `com.example.spring-boot-bootable` — `spring-boot` + `id("org.springframework.boot")` (bootable-ось, единственная причина второго id — typed-аксессор `bootJar`/`developmentOnly`) — читает `mainClass` из `user-note/.main-class` — 8 применений (все 8 листьев). Имя — не заимствовано у Spring Boot (официальный термин — «executable jar/archive», не «bootable», проверено `docs.spring.io/spring-boot/gradle-plugin/packaging.html` 2026-09-24) — одно из 5 исключений из правила именования, см. `CLAUDE.md` → «Правила»
 - `com.example.spring-boot-client-restclient` — `spring-boot` — + `spring-boot-starter-restclient`(+test) — 0 применений (ОТЛОЖЕНО)
 - `com.example.spring-boot-client-webclient` — `spring-boot` — + `spring-boot-starter-webclient`(+test) — 0 применений (ОТЛОЖЕНО)
-- `com.example.spring-boot-data-elasticsearch` — `spring-boot` — + `spring-boot-starter-data-elasticsearch`(+test) — 0 применений (ОТЛОЖЕНО). Голый `spring-boot-starter-elasticsearch`(+test) убран 2026-08-15 явным решением пользователя («не используем голый API при наличии обёртки») — несмотря на то, что технически он не избыточен (несёт реальный `elasticsearch-java`-драйвер, которого `data-elasticsearch` транзитивно не тянет, см. `docs/decisions-log.md`). Риск непокрытого функционала в рантайме принят осознанно, проверка отложена до реального обращения к Elasticsearch
-- `com.example.spring-boot-data-jdbc` — `spring-boot` — + `spring-boot-starter-data-jdbc`(+test) — 3 применения (`data-jdbc` × 3 сервиса). Голый `spring-boot-starter-jdbc`(+test) убран 2026-08-15 — избыточен, `data-jdbc` уже тянет его транзитивно (проверено POM+`dependencies`-выводом), см. `docs/decisions-log.md`
-- `com.example.spring-boot-data-jpa` — `spring-boot` — + `spring-boot-starter-data-jpa`(+test) — 3 применения (`data-jpa` × 3 сервиса, каждый композирует ещё `spring-boot-validation` — см. запись ниже)
-- `com.example.spring-boot-data-mongodb` — `spring-boot` — + `spring-boot-starter-data-mongodb`(+test) — 3 применения (`data-mongodb` × 3 сервиса). Голый `spring-boot-starter-mongodb`(+test) убран 2026-08-15 — избыточен, см. `docs/decisions-log.md`
-- `com.example.spring-boot-data-mongodb-reactive` — `spring-boot` — + `spring-boot-starter-data-mongodb-reactive`(+test) — 3 применения (`data-mongodb-reactive` × 3 сервиса). Никогда не имел голого варианта — на Initializr «mongodb-reactive» без «data-» не существует
-- `com.example.spring-boot-data-r2dbc` — `spring-boot` — + `spring-boot-starter-data-r2dbc`(+test) — 3 применения (`data-r2dbc` × 3 сервиса). Голый `spring-boot-starter-r2dbc`(+test) убран 2026-08-15 — избыточен, см. `docs/decisions-log.md`
-- `com.example.spring-boot-database-h2` — `spring-boot` — + `h2database`(runtimeOnly) (`spring-boot-h2console` убран пользователем 2026-09-21) — 6 применений (`application-h2-jpa`/`-jdbc` × 3 сервиса)
-- `com.example.spring-boot-database-h2-r2dbc` — `spring-boot` — + `r2dbc-h2`(runtimeOnly) — 3 применения (`application-h2-r2dbc` × 3 сервиса)
-- `com.example.spring-boot-database-mysql` — `spring-boot` — + `mysql-connector-j`(runtimeOnly) — 6 применений (`application-mysql-jpa`/`-jdbc` × 3 сервиса)
-- `com.example.spring-boot-database-mysql-r2dbc` — `spring-boot` — + `r2dbc-mysql`(runtimeOnly, io.asyncer) — 3 применения (`application-mysql-r2dbc` × 3 сервиса)
-- `com.example.spring-boot-database-postgresql` — `spring-boot` — + `postgresql`(runtimeOnly) — 6 применений (`application-postgresql-jpa`/`-jdbc` × 3 сервиса)
-- `com.example.spring-boot-database-postgresql-r2dbc` — `spring-boot` — + `r2dbc-postgresql`(runtimeOnly) — 3 применения (`application-postgresql-r2dbc` × 3 сервиса)
-- `com.example.spring-boot-docker-compose` — `spring-boot` + `id("org.springframework.boot")` (bootable-ось, прямой id — не через `spring-boot-application` как родителя) — + `spring-boot-docker-compose`(developmentOnly) — 24 применения (все MySQL/PostgreSQL composition-root модули + `application-mongodb`/`-mongodb-reactive`, не H2 — embedded, не нуждается)
+- `com.example.spring-boot-data-elasticsearch` — `spring-boot` — + `spring-boot-starter-data-elasticsearch`(+test) — 0 применений (ОТЛОЖЕНО)
+- `com.example.spring-boot-data-jdbc` — `spring-boot` — + `spring-boot-starter-data-jdbc`(+test) — 4 применения (`data-jdbc` + листья `application-{h2,mysql,postgresql}` — применяется и на самом `data-jdbc`, и напрямую на каждом потребляющем его листе)
+- `com.example.spring-boot-data-jpa` — `spring-boot` — + `spring-boot-starter-data-jpa`(+test) — 0 применений (`data-jpa` удалён из сборки повторно 2026-09-13; JPA — возможная будущая ветка корневого дерева вариантов, сегодня её нет)
+- `com.example.spring-boot-data-mongodb` — `spring-boot` — + `spring-boot-starter-data-mongodb`(+test) — 2 применения (`data-mongodb`, `application-mongodb`)
+- `com.example.spring-boot-data-mongodb-reactive` — `spring-boot` — + `spring-boot-starter-data-mongodb-reactive`(+test) — 2 применения (`data-mongodb-reactive`, `application-mongodb-reactive`)
+- `com.example.spring-boot-data-r2dbc` — `spring-boot` — + `spring-boot-starter-data-r2dbc`(+test) — 4 применения (`data-r2dbc` + листья `application-{h2,mysql,postgresql}-reactive`)
+- `com.example.spring-boot-database-h2` — `spring-boot` — + `h2database`(runtimeOnly) — 1 применение (`application-h2`)
+- `com.example.spring-boot-database-mysql` — `spring-boot` — + `mysql-connector-j`(runtimeOnly) — 1 применение (`application-mysql`)
+- `com.example.spring-boot-database-postgresql` — `spring-boot` — + `postgresql`(runtimeOnly) — 1 применение (`application-postgresql`)
+- `com.example.spring-boot-database-r2dbc-h2` — `spring-boot` — + `r2dbc-h2`(runtimeOnly) — 1 применение (`application-h2-reactive`)
+- `com.example.spring-boot-database-r2dbc-mysql` — `spring-boot` — + `r2dbc-mysql`(runtimeOnly, io.asyncer) — 1 применение (`application-mysql-reactive`)
+- `com.example.spring-boot-database-r2dbc-postgresql` — `spring-boot` — + `r2dbc-postgresql`(runtimeOnly) — 1 применение (`application-postgresql-reactive`)
+- `com.example.spring-boot-docker-compose` — `spring-boot` + `id("org.springframework.boot")` (тот же приём, что `bootable`, для typed-аксессора `developmentOnly`) — + `spring-boot-docker-compose`(developmentOnly) — 0 применений (ОТЛОЖЕНО — `compose.yaml` ещё не создан, см. `CLAUDE.md` → «Задачи» → п.2 «Docker Compose»)
 - `com.example.spring-boot-graphql` — `spring-boot` — + `spring-boot-starter-graphql`(+test) — 0 применений (ОТЛОЖЕНО)
 - `com.example.spring-boot-security-oauth2-authorization-server` — `spring-boot` — + `spring-boot-starter-security-oauth2-authorization-server`(+test) — 0 применений (ОТЛОЖЕНО)
 - `com.example.spring-boot-security-oauth2-client` — `spring-boot` — + `spring-boot-starter-security-oauth2-client`(+test) — 0 применений (ОТЛОЖЕНО)
 - `com.example.spring-boot-security-oauth2-resource-server` — `spring-boot` — + `spring-boot-starter-security-oauth2-resource-server`(+test) — 0 применений (ОТЛОЖЕНО)
-- `com.example.spring-boot-testcontainers` — `spring-boot` — нейтральная обвязка: + `spring-boot-testcontainers`(test) + `testcontainers-junit-jupiter`(test) — 24 применения (все MySQL/PostgreSQL/Mongo composition-root модули, симметрично `docker-compose`)
-- `com.example.spring-boot-testcontainers-mongodb` — `spring-boot` — + `testcontainers-mongodb`(test) — 6 применений (`application-mongodb`/`-mongodb-reactive` × 3 сервиса)
-- `com.example.spring-boot-testcontainers-mysql` — `spring-boot` — + `testcontainers-mysql`(test) + `mysql-connector-j`(testRuntimeOnly, нужен `MySQLContainer` для JDBC-based wait-strategy) — 9 применений (`application-mysql-{jpa,jdbc,r2dbc}` × 3 сервиса)
-- `com.example.spring-boot-testcontainers-postgresql` — `spring-boot` — + `testcontainers-postgresql`(test) — 9 применений (`application-postgresql-{jpa,jdbc,r2dbc}` × 3 сервиса)
-- `com.example.spring-boot-testcontainers-r2dbc` — `spring-boot` — + `testcontainers-r2dbc`(test) — 6 применений (`application-{mysql,postgresql}-r2dbc` × 3 сервиса)
-- `com.example.spring-boot-test-h2` — `spring-boot` — новый 2026-09-21, + `h2`(testRuntimeOnly) — встроенная БД по умолчанию для `@DataJdbcTest`, только test-scope (не утекает в потребителей `data-jdbc`, в отличие от `runtimeOnly` у `spring-boot-database-h2`) — 1 применение (`data-jdbc`)
-- `com.example.spring-boot-test-r2dbc-h2` — `spring-boot` — новый 2026-09-21, + `r2dbc-h2`(testRuntimeOnly) — встроенная БД по умолчанию для `@DataR2dbcTest`, только test-scope, зеркальная пара к `spring-boot-test-h2` — 1 применение (`data-r2dbc`)
-- `com.example.spring-boot-validation` — `spring-boot` — новый 2026-08-01, + `spring-boot-starter-validation`(+test) — 9 применений (`webmvc`/`webflux`/`data-jpa` × 3 сервиса — единственные технологии с реальным автотриггером Bean Validation: `@Valid` на входящих данных и Hibernate pre-persist/pre-update соответственно; закрывает CLAUDE.md → «Открытые решения» → «Область подключения spring-boot-starter-validation», см. decisions-log.md → «Пересмотрено 2026-08-01»). Композиция с `spring-boot-webmvc`/`-webflux`/`-data-jpa` на этих 9 листовых модулях — вид 2 (осознанная композиция, не диамант, см. «Как читать этот граф» ниже)
-- `com.example.spring-boot-webflux` — `spring-boot` — + `spring-boot-starter-webflux`(+test) — 3 применения (`webflux` × 3 сервиса, каждый композирует ещё `spring-boot-validation`)
-- `com.example.spring-boot-webmvc` — `spring-boot` — + `spring-boot-starter-webmvc`(+test) — 3 применения (`webmvc` × 3 сервиса, каждый композирует ещё `spring-boot-validation`)
-- `com.example.spring-cloud` — `spring-boot` — + Spring Cloud BOM (`spring-cloud-dependencies`) — 0 прямых применений (родитель 9 плагинов уровня 3 + `spring-cloud-application` ниже)
+- `com.example.spring-boot-test-h2` — `spring-boot` — + `h2`(testRuntimeOnly) — 1 применение (`data-jdbc`) — встроенная БД по умолчанию для `@DataJdbcTest`, только test-scope, не утекает в потребителей `data-jdbc`
+- `com.example.spring-boot-test-r2dbc-h2` — `spring-boot` — + `r2dbc-h2`(testRuntimeOnly) — 1 применение (`data-r2dbc`) — зеркальная пара к `spring-boot-test-h2`
+- `com.example.spring-boot-testcontainers` — `spring-boot` — + `spring-boot-testcontainers`(test) + `testcontainers-junit-jupiter`(test) — 6 применений (все листья кроме H2: `application-{mysql,postgresql}[-reactive]`, `application-mongodb[-reactive]`)
+- `com.example.spring-boot-testcontainers-mongodb` — `spring-boot` — + `testcontainers-mongodb`(test) — 2 применения (`application-mongodb[-reactive]`)
+- `com.example.spring-boot-testcontainers-mysql` — `spring-boot` — + `testcontainers-mysql`(test) + `mysql-connector-j`(testRuntimeOnly, нужен `MySQLContainer` для JDBC-based wait-strategy) — 2 применения (`application-mysql[-reactive]`)
+- `com.example.spring-boot-testcontainers-postgresql` — `spring-boot` — + `testcontainers-postgresql`(test) — 2 применения (`application-postgresql[-reactive]`)
+- `com.example.spring-boot-testcontainers-r2dbc` — `spring-boot` — + `testcontainers-r2dbc`(test) — 2 применения (`application-{mysql,postgresql}-reactive` — законная асимметрия: `PostgreSQLContainer` log-based wait-strategy не требует JDBC-драйвера, но R2DBC-фабрики Boot 4.1 всё равно вызывают `XR2DBCDatabaseContainer.getOptions(...)`, документация Testcontainers требует модуль на classpath для обеих R2DBC-веток)
+- `com.example.spring-boot-validation` — `spring-boot` — + `spring-boot-starter-validation`(+test) — 0 применений (закрывало `webmvc`/`webflux`/`data-jpa` в старой архитектуре `note`/`user`; `controller-webmvc`/`controller-webflux`/`data-jdbc` сегодня его не применяют — не перепроверялось, нужна ли явная валидация в текущей плоской структуре `user-note`, см. `CLAUDE.md` → «Открытые решения» → «Область подключения `spring-boot-starter-validation`»)
+- `com.example.spring-boot-webflux` — `spring-boot` — + `spring-boot-starter-webflux`(+test) — 5 применений (`controller-webflux` + листья `application-{h2,mysql,postgresql}-reactive`, `application-mongodb-reactive` — применяется и на модуле-адаптере, и напрямую на каждом потребляющем его листе)
+- `com.example.spring-boot-webmvc` — `spring-boot` — + `spring-boot-starter-webmvc`(+test) — 5 применений (`controller-webmvc` + листья `application-{h2,mysql,postgresql,mongodb}`)
+- `com.example.spring-cloud` — `spring-boot` — + Spring Cloud BOM (`spring-cloud-dependencies`) — 0 применений (родитель 9 плагинов уровня 3; `gateway`/`config`/`registry` — единственные потребители — удалены из репозитория 2026-08-14)
 
-## Уровень 3 — родитель `spring-cloud` (9 плагинов, все — «чистая технология», без bootable)
+## Уровень 3 — родитель `spring-cloud` (9 плагинов, 0 применений — все потребители удалены 2026-08-14)
 
-Пересмотрено 2026-08-01: раньше 4 из этих 9 (`config-server`/`eureka-server`/`gateway-server-webflux`/`gateway-server-webmvc`) брали `spring-cloud-application` в родители — единственное место в графе, где технологический плагин сам нёс bootable-ось. Приведено к общему для всего проекта паттерну: технология — отдельно (родитель `spring-cloud`, только BOM), bootable — явной композицией на листе (см. `spring-cloud-application` ниже), см. decisions-log.md → «`spring-cloud-*`-server-плагины приведены к общему паттерну композиции»:
-
-- `com.example.spring-cloud-circuit-breaker` — `spring-cloud` — + `spring-cloud-starter-circuitbreaker-reactor-resilience4j` — 0 применений (ОТЛОЖЕНО)
-- `com.example.spring-cloud-config-client` — `spring-cloud` — + `spring-cloud-starter-config` — 1 применение (`gateway/application`)
-- `com.example.spring-cloud-config-server` — `spring-cloud` — переехал с родителя `spring-cloud-application` 2026-08-01 — + `spring-cloud-config-server` — 1 применение (`config/application`, вместе с явным `spring-cloud-application`)
-- `com.example.spring-cloud-eureka-client` — `spring-cloud` — + `spring-cloud-starter-netflix-eureka-client` — 1 применение (`gateway/application`)
-- `com.example.spring-cloud-eureka-server` — `spring-cloud` — переехал с родителя `spring-cloud-application` 2026-08-01 — + `spring-cloud-starter-netflix-eureka-server` — 1 применение (`registry/application`, вместе с явным `spring-cloud-application`)
-- `com.example.spring-cloud-gateway-server-webflux` — `spring-cloud` — переименован из `spring-cloud-gateway-webflux` (точное имя артефакта) и переехал с родителя `spring-cloud-application`, оба — 2026-08-01 — + `spring-cloud-starter-gateway-server-webflux` — 1 применение (`gateway/application`, вместе с явным `spring-cloud-application`)
-- `com.example.spring-cloud-gateway-server-webmvc` — `spring-cloud` — переименован из `spring-cloud-gateway-webmvc` и переехал с родителя `spring-cloud-application`, оба — 2026-08-01 — + `spring-cloud-starter-gateway-server-webmvc` — 0 применений (альтернатива webflux-варианту в gateway, не выбрана)
-- `com.example.spring-cloud-loadbalancer` — `spring-cloud` — + `spring-cloud-starter-loadbalancer` — 0 применений (ОТЛОЖЕНО)
-- `com.example.spring-cloud-openfeign` — `spring-cloud` — + `spring-cloud-starter-openfeign` — 0 применений (ОТЛОЖЕНО)
-
-## `spring-cloud-application` — bootable-ось для spring-cloud-модулей (симметрично `spring-boot-application`)
-
-- `com.example.spring-cloud-application` — `spring-cloud` + прямой `id("org.springframework.boot")` (диамант устранён 2026-08-01 — раньше был вторым родителем через `spring-boot-application`, см. decisions-log.md → «Диамант `spring-cloud-application` устранён окончательно») — сам не добавляет зависимостей, только bootable-композиция — 3 прямых применения (`config/application`, `registry/application`, `gateway/application` — везде явно рядом со своим `spring-cloud-*`-технологическим плагином, тот же паттерн, что `spring-boot-application`+`spring-boot-database-h2` у реляционных composition-root)
-
-## `codequality-*` — 6 приватных фрагментов, применяются напрямую из `java` (не через отдельный агрегатор)
-
-До 2026-08-01 между `base`(ныне `java`) и этими плагинами стоял отдельный `com.example.codequality` — чистый список `id(...)`, без собственной конфигурации, с единственным потребителем (`base`). Убран как враппер без переиспользования — id перенесены напрямую в `plugins{}` `com.example.java.gradle.kts` (см. decisions-log.md → «Пересмотрено 2026-08-01»). Ни один из 6 не применяется напрямую ни в одном листовом модуле — только каскадом через `java`:
-
-- `com.example.codequality-checkstyle` — `id("checkstyle")`, без `com.example.*` родителя — `SpringChecks` + `checkstyle.xml` + `spring-javaformat-checkstyle` — 0 прямых
-- `com.example.codequality-spotless` — `id("com.diffplug.spotless")`, без `com.example.*` родителя — новый 2026-08-16, `importOrder("java", "javax", "", "org.springframework")` (та же группировка, что проверяет `SpringImportOrderCheck` из `codequality-checkstyle` выше — Spotless умеет чинить автоматически (`spotlessApply`), Checkstyle только диагностирует), `lineEndings = LineEnding.PRESERVE` явно (не трогает отдельную тему CRLF/LF, см. decisions-log.md → «Стиль кода»); `tasks.named("compileJava") { dependsOn("spotlessApply") }` — автофикс встроен в обычную компиляцию, ручной вызов не нужен — 0 прямых
-- `com.example.codequality-jacoco` — `id("jacoco")`, без родителя — `jacocoTestReport` привязан к `test` — 0 прямых
-- `com.example.codequality-jacoco-report-aggregation` — `id("jacoco-report-aggregation")`, без родителя, без своей конфигурации (autoconfig) — 0 прямых
-- `com.example.codequality-jspecify` — `id("java")`, без `com.example.*` родителя — `implementation(jspecify)` — 0 прямых
-- `com.example.codequality-nullaway` — `id("java")` + `id("net.ltgt.errorprone")`, без `com.example.*` родителя — NullAway как error — 0 прямых
+- `com.example.spring-cloud-circuit-breaker` — `spring-cloud` — + `spring-cloud-starter-circuitbreaker-reactor-resilience4j` — 0
+- `com.example.spring-cloud-config-client` — `spring-cloud` — + `spring-cloud-starter-config` — 0 (был в `gateway/application`)
+- `com.example.spring-cloud-config-server` — `spring-cloud` — + `spring-cloud-config-server` — 0 (был в `config/application`)
+- `com.example.spring-cloud-eureka-client` — `spring-cloud` — + `spring-cloud-starter-netflix-eureka-client` — 0 (был в `gateway/application`)
+- `com.example.spring-cloud-eureka-server` — `spring-cloud` — + `spring-cloud-starter-netflix-eureka-server` — 0 (был в `registry/application`)
+- `com.example.spring-cloud-gateway-server-webflux` — `spring-cloud` — + `spring-cloud-starter-gateway-server-webflux` — 0 (был в `gateway/application`)
+- `com.example.spring-cloud-gateway-server-webmvc` — `spring-cloud` — + `spring-cloud-starter-gateway-server-webmvc` — 0 (альтернатива webflux-варианту, не выбиралась)
+- `com.example.spring-cloud-loadbalancer` — `spring-cloud` — + `spring-cloud-starter-loadbalancer` — 0 (ОТЛОЖЕНО)
+- `com.example.spring-cloud-openfeign` — `spring-cloud` — + `spring-cloud-starter-openfeign` — 0 (ОТЛОЖЕНО)
 
 ---
 
 ## Как читать этот граф
 
-Одна ось — BOM-цепочка (`java → java-library/reactor/spring-boot → spring-cloud → tech-плагин`, всегда 1 родитель по построению, без единого исключения) и одна ортогональная — bootable (`org.springframework.boot`, второй `id(...)` там, где нужен `bootJar`: `spring-boot-application`, `spring-cloud-application`, `docker-compose` — все три прямо, ни один не через другой). **Диамантов вида 1 (2+ `com.example.*`-родителя внутри одного convention-плагина, сходящихся в общем предке) в графе не осталось ни одного** — последний (`spring-cloud-application`) устранён 2026-08-01, см. decisions-log.md; исторически он же был единственным. Композиция 2+ convention-плагинов НА ЛИСТОВОМ модуле (вид 2 — например `application-h2-jpa` — `spring-boot-application`+`spring-boot-actuator`+`spring-boot-database-h2`, `webmvc`/`webflux`/`data-jpa` — своя технология + `spring-boot-validation`, `gateway/application` — `spring-cloud-application`+3 `spring-cloud-*`+`spring-boot-actuator`, или `application-mongodb` — `spring-boot-application`+`spring-boot-actuator`+`spring-boot-testcontainers`+`spring-boot-testcontainers-mongodb`+`spring-boot-docker-compose`) — не диамант для устранения, а штатный способ использования системы, применяемый теперь единообразно везде, включая `spring-cloud-*`-server-плагины (см. CLAUDE.md → «Правила» → «Кольцевые/ромбовидные зависимости» → вид 2).
+**Одна ось** — BOM/toolchain-цепочка (`base → codequality/project-reactor/spring-boot/contract → …`, всегда 1 `com.example.*`-родитель по построению, без единого исключения — проверено сегодняшним прогоном проверочной команды выше) и **одна ортогональная** — bootable (`org.springframework.boot`, второй `id(...)` только там, где нужен typed-аксессор: `spring-boot-bootable`, `spring-boot-docker-compose`). **Диамантов вида 1 (2+ `com.example.*`-родителя внутри одного convention-плагина) в графе нет ни одного** — не было с 2026-08-01.
+
+**Композиция 2+ convention-плагинов НА ЛИСТОВОМ модуле** (вид 2 — не диамант, штатный способ использования системы) — каждый из 8 `application-*` листьев компонует минимум 6 плагинов: `spring-boot`+`spring-boot-bootable`+`spring-boot-actuator`+свой веб-стартер (`webmvc`/`webflux`)+свой data-стартер+свой database/testcontainers-набор. Лист дополнительно применяет ТОТ ЖЕ `spring-boot-webmvc`/`-webflux`, что уже применён его модулем-зависимостью `controller-webmvc`/`controller-webflux` — не диамант (у каждого модуля свой собственный `plugins{}`, схождения путей внутри одного плагина нет), а следствие того, что `implementation(project(...))` не транслирует зависимости транзитивно на compile classpath потребителя.
+
+**5 исключений из правила «имя плагина = официальное имя технологии»** (`base`/`contract`/`contract-reactive`/`codequality`/`spring-boot-bootable`) — полный разбор в `CLAUDE.md` → «Правила».
+
+**Пустые (0 применений) плагины делятся на два класса**: (1) технология, для которой в проекте пока нет сервиса/модуля (`spring-cloud-*`, `spring-boot-batch*`, `spring-boot-security-oauth2-*`, `spring-boot-graphql`, `spring-boot-data-elasticsearch`, `spring-boot-client-*`, `spring-boot-docker-compose`) — готовы в `build-logic/`, ждут явного запроса; (2) технология, чей единственный потребитель в `user-note` удалён/переструктурирован (`spring-boot-data-jpa`, `spring-boot-validation`) — код плагина не удалён, т.к. может понадобиться снова (JPA — явная будущая ветка дерева вариантов).
