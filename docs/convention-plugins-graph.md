@@ -29,7 +29,7 @@
 
 ## Уровень 2 — родитель `codequality` (8 фрагментов; каждый физически применяет бare Gradle/внешний id в своём файле — не `com.example.*` — см. «Как читать этот граф»)
 
-- `com.example.codequality-checkstyle` — `id("checkstyle")` — `configFile` на `gradle/checkstyle/google_checks.xml`, дословная копия Google Checks + 2 переопределения (`LineLength.max` 120, `Indentation.basicOffset` 4) — 0 прямых
+- `com.example.codequality-checkstyle` — `id("checkstyle")` — `configFile` на `gradle/checkstyle/checkstyle.xml` (2026-09-25 переименован из `google_checks.xml`), `maxWarnings = 0` (2026-09-25), дословная копия Google Checks + 2 переопределения (`LineLength.max` 120, `Indentation.basicOffset` 4) — 0 прямых
 - `com.example.codequality-jacoco` — `id("jacoco")` — `jacocoTestReport` привязан к `test` — 0 прямых
 - `com.example.codequality-jacoco-report-aggregation` — `id("jacoco-report-aggregation")` — без своей конфигурации (autoconfig) — 0 прямых
 - `com.example.codequality-jspecify` — `id("java")` — `implementation(jspecify)` — 0 прямых

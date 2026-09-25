@@ -6,7 +6,8 @@ val libs = extensions.getByType(VersionCatalogsExtension::class.java).named("lib
 
 checkstyle {
     toolVersion = libs.findVersion("checkstyle").get().requiredVersion
-    configFile = rootProject.file("gradle/checkstyle/google_checks.xml")
+    configFile = rootProject.file("gradle/checkstyle/checkstyle.xml")
+    maxWarnings = 0
 }
 
 dependencies {
