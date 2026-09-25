@@ -22,9 +22,9 @@
 - `PermissionRequirements` — `Map<Permission, Set<Permission>>` «право → что ему нужно» (`COMMENT→READ`, `EDIT→READ`, `DELETE→EDIT`, `DELETE_COMMENTS→COMMENT`), `getOrDefault(p, Set.of())`
 - `RolePermissions` — `Map<Role, Set<Permission>>` «роль → её права»
 - `Permissions` — record-объект-значение над `Set<Permission>`; в компактном конструкторе два охранных `if`: READ обязателен; для каждого права `containsAll(PermissionRequirements.of(p))`; метод `has(p)`. Недопустимый набор не создаётся (always-valid, «parse, don't validate»)
-- `UserNote(UUID id, UUID userId, UUID noteId, Permissions permissions)` — сам ничего не проверяет
+- `UserNote(UUID userId, UUID noteId, Permissions permissions)` — сам ничего не проверяет; без `id` (уточнено 2026-09-25 в «Итоговая модель целиком»): личность — пара, суррогатный `id` только в сущностях хранилища
 - проверка в прикладном сервисе: `findByUserIdAndNoteId(...).orElseThrow(NoteNotFoundException)` → 404 (существование заметки не раскрывается); `!has(p)` → `PermissionDeniedException` → 403. Имя `AccessDeniedException` не брать — совпадает с `org.springframework.security.access.AccessDeniedException`
-- хранение: права строкой `"COMMENT,EDIT,READ"` (отсортировано) во всех 4 `data-*`, включая Mongo — одинаковые сущности и мапперы (зеркальность сиблингов); перевод обычной Java в маппере (`Permissions.fromText`/`toText`), без регистрации конвертеров Spring; уникальная пара (`user_id`, `note_id`) — индекс в SQL и Mongo; для JDBC/R2DBC при id от приложения нужен `Persistable.isNew()`, иначе `save` делает UPDATE; FK на роль нет (ролей в хранилище нет)
+- хранение: права строкой `"COMMENT,EDIT,READ"` (отсортировано) во всех 4 `data-*`, включая Mongo — одинаковые сущности и мапперы (зеркальность сиблингов); перевод обычной Java в маппере (`Permissions.fromText`/`toText`), без регистрации конвертеров Spring; уникальная пара (`user_id`, `note_id`) — индекс в SQL и Mongo; признак новой записи — `@Version Long version` в сущности (`null` = новая) одинаково у JDBC/R2DBC/Mongo, вместо `Persistable.isNew()` (иначе `save` с заполненным id делает UPDATE); заодно оптимистическая блокировка → 409; FK на роль нет (ролей в хранилище нет)
 - API: `GET /access-model` (`permissions` с `requires` + `roles` с наборами — строки таблицы и выпадающий список, новое право/роль появляется в UI без правки клиента); `GET`/`PUT`/`DELETE /notes/{noteId}/users/{userId}` с телом `{"permissions": [...]}`; недопустимый набор → 400
 - UI: выбор роли → флажки = набор роли; ручная правка → отображается «Особая» (как «Особые разрешения» NTFS), если набор не совпал ни с одной ролью; отметка права может автоматически отмечать его `requires` — удобство, гарантию даёт сервер
 - JWT: в токене только `sub` = userId (+ возможно глобальные scope); права на заметки в токен не кладутся — их много, выданный JWT не отозвать
@@ -33,15 +33,466 @@
 - цена изменений: новое право — константа + строка в `PermissionRequirements`; новая роль — константа + строка в `RolePermissions`; изменение набора роли касается только будущих выдач; роли, создаваемые пользователями, — `Role` из enum в таблицу того же формата в `/access-model`, `UserNote` не меняется; смена формы хранения — только `data-*`
 - что теряется с плоскими enum: компилятор больше не запрещает цикл зависимостей (раньше `A(B), B(A)` — `illegal forward reference`) и не ловит роль, забытую в `RolePermissions` (`get` вернёт `null`) — закрывается unit-тестами на `contract`: каждая роль есть в таблице и её набор проходит `new Permissions(...)`; обход зависимостей не возвращается к исходному праву
 
+## Итоговая модель целиком — код по модулям (2026-09-25, консультация, в репозиторий не записан)
+
+Уточнения относительно «Точки остановки» (внесены в неё же): (1) доменный `UserNote` без `id` — личность = пара (`userId`, `noteId`), суррогатный `id` нужен только хранилищу (в Cassandra/DynamoDB был бы лишним); (2) вместо `Persistable.isNew()` — `@Version Long version`: Spring Data JDBC, R2DBC и Mongo одинаково считают сущность новой при `version == null`, заодно оптимистическая блокировка. Константы в таблицах — через `import static ...Permission.*`/`Role.*`.
+
+### `contract` — модель (чистая Java)
+
+```java
+public enum Permission {
+    READ,
+    COMMENT,
+    EDIT,
+    DELETE,
+    DELETE_COMMENTS
+}
+
+public enum Role {
+    VIEWER,
+    COMMENTER,
+    EDITOR,
+    OWNER
+}
+
+public final class PermissionRequirements {
+
+    private static final Map<Permission, Set<Permission>> REQUIRES = Map.of(
+            COMMENT, Set.of(READ),
+            EDIT, Set.of(READ),
+            DELETE, Set.of(EDIT),
+            DELETE_COMMENTS, Set.of(COMMENT));
+
+    private PermissionRequirements() {}
+
+    public static Set<Permission> of(Permission permission) {
+        return REQUIRES.getOrDefault(permission, Set.of());
+    }
+}
+
+public final class RolePermissions {
+
+    private static final Map<Role, Set<Permission>> PERMISSIONS = Map.of(
+            VIEWER, Set.of(READ),
+            COMMENTER, Set.of(READ, COMMENT),
+            EDITOR, Set.of(READ, COMMENT, EDIT, DELETE_COMMENTS),
+            OWNER, Set.of(READ, COMMENT, EDIT, DELETE, DELETE_COMMENTS));
+
+    private RolePermissions() {}
+
+    public static Set<Permission> of(Role role) {
+        return PERMISSIONS.get(role);
+    }
+}
+
+public record Permissions(Set<Permission> values) {
+
+    public Permissions {
+        values = Set.copyOf(values);
+        if (!values.contains(READ)) {
+            throw new InvalidPermissionsException("READ is required");
+        }
+        for (Permission permission : values) {
+            if (!values.containsAll(PermissionRequirements.of(permission))) {
+                throw new InvalidPermissionsException(
+                        permission + " requires " + PermissionRequirements.of(permission));
+            }
+        }
+    }
+
+    public boolean has(Permission permission) {
+        return values.contains(permission);
+    }
+
+    public List<Permission> sorted() {
+        return values.stream().sorted().toList();
+    }
+
+    public static Permissions fromText(String text) {
+        return new Permissions(Arrays.stream(text.split(","))
+                .map(Permission::valueOf)
+                .collect(Collectors.toSet()));
+    }
+
+    public String toText() {
+        return sorted().stream()
+                .map(Permission::name)
+                .collect(Collectors.joining(","));
+    }
+}
+
+public record UserNote(UUID userId, UUID noteId, Permissions permissions) {}
+
+public interface UserNoteStorage {
+    Optional<UserNote> find(UUID userId, UUID noteId);
+    void save(UserNote userNote);           // создать или заменить права
+    void delete(UUID userId, UUID noteId);
+}
+```
+
+Исключения — три `RuntimeException` с сообщением: `InvalidPermissionsException` (недопустимый набор), `NoteNotFoundException` (нет доступа — снаружи «заметка не найдена»), `PermissionDeniedException` (доступ есть, нужного права нет).
+
+### `contract-reactive` — порт
+
+```java
+public interface UserNoteReactiveStorage {
+    Mono<UserNote> find(UUID userId, UUID noteId);
+    Mono<Void> save(UserNote userNote);
+    Mono<Void> delete(UUID userId, UUID noteId);
+}
+```
+
+### Прикладной сервис (модуль — не решён)
+
+```java
+public class UserNoteService {
+
+    private final UserNoteStorage storage;
+
+    public UserNoteService(UserNoteStorage storage) {
+        this.storage = storage;
+    }
+
+    public UserNote requireAccess(UUID userId, UUID noteId, Permission permission) {
+        UserNote userNote = storage.find(userId, noteId)
+                .orElseThrow(() -> new NoteNotFoundException(noteId));
+        if (!userNote.permissions().has(permission)) {
+            throw new PermissionDeniedException(permission);
+        }
+        return userNote;
+    }
+
+    public Permissions permissionsOf(UUID userId, UUID noteId) {
+        return storage.find(userId, noteId)
+                .map(UserNote::permissions)
+                .orElseThrow(() -> new NoteNotFoundException(noteId));
+    }
+
+    public void grant(UUID userId, UUID noteId, Permissions permissions) {
+        storage.save(new UserNote(userId, noteId, permissions));
+    }
+
+    public void revoke(UUID userId, UUID noteId) {
+        storage.delete(userId, noteId);
+    }
+}
+```
+
+Reactive-двойник — та же форма: `switchIfEmpty(Mono.error(...))`, затем `flatMap` с `Mono.error(new PermissionDeniedException(...))` при отсутствии права. `grant`/`revoke` не проверяют право вызывающего — «Нерешённое».
+
+### `data-jdbc` / `data-r2dbc` — сущность одинаковая
+
+```java
+@Table("user_note")
+public record UserNoteRow(
+        @Id UUID id,
+        UUID userId,
+        UUID noteId,
+        String permissions,
+        @Version Long version) {
+
+    public UserNoteRow withPermissions(String newPermissions) {
+        return new UserNoteRow(id, userId, noteId, newPermissions, version);
+    }
+
+    public UserNote toDomain() {
+        return new UserNote(userId, noteId, Permissions.fromText(permissions));
+    }
+}
+
+// data-jdbc
+public interface UserNoteRepository extends ListCrudRepository<UserNoteRow, UUID> {
+    Optional<UserNoteRow> findByUserIdAndNoteId(UUID userId, UUID noteId);
+}
+
+@Component
+public class UserNoteStorageAdapter implements UserNoteStorage {
+
+    private final UserNoteRepository repository;
+
+    public UserNoteStorageAdapter(UserNoteRepository repository) {
+        this.repository = repository;
+    }
+
+    @Override
+    public Optional<UserNote> find(UUID userId, UUID noteId) {
+        return repository.findByUserIdAndNoteId(userId, noteId).map(UserNoteRow::toDomain);
+    }
+
+    @Override
+    public void save(UserNote userNote) {
+        String text = userNote.permissions().toText();
+        UserNoteRow row = repository.findByUserIdAndNoteId(userNote.userId(), userNote.noteId())
+                .map(existing -> existing.withPermissions(text))
+                .orElseGet(() -> new UserNoteRow(UUID.randomUUID(), userNote.userId(), userNote.noteId(), text, null));
+        repository.save(row);
+    }
+
+    @Override
+    public void delete(UUID userId, UUID noteId) {
+        repository.findByUserIdAndNoteId(userId, noteId).ifPresent(repository::delete);
+    }
+}
+
+// data-r2dbc
+public interface UserNoteRepository extends ReactiveCrudRepository<UserNoteRow, UUID> {
+    Mono<UserNoteRow> findByUserIdAndNoteId(UUID userId, UUID noteId);
+}
+
+// адаптер (методы)
+public Mono<UserNote> find(UUID userId, UUID noteId) {
+    return repository.findByUserIdAndNoteId(userId, noteId).map(UserNoteRow::toDomain);
+}
+
+public Mono<Void> save(UserNote userNote) {
+    String text = userNote.permissions().toText();
+    return repository.findByUserIdAndNoteId(userNote.userId(), userNote.noteId())
+            .map(existing -> existing.withPermissions(text))
+            .defaultIfEmpty(new UserNoteRow(UUID.randomUUID(), userNote.userId(), userNote.noteId(), text, null))
+            .flatMap(repository::save)
+            .then();
+}
+
+public Mono<Void> delete(UUID userId, UUID noteId) {
+    return repository.findByUserIdAndNoteId(userId, noteId).flatMap(repository::delete);
+}
+```
+
+### `data-mongodb` / `data-mongodb-reactive`
+
+Отличается только сущность; репозитории и адаптеры — как у JDBC (sync) и R2DBC (reactive). Уникальный индекс Boot сам не создаёт — явно или включить автосоздание свойством (точное имя свойства в Boot 4.1 сверить по метаданным jar).
+
+```java
+@Document("userNote")
+@CompoundIndex(def = "{'userId': 1, 'noteId': 1}", unique = true)
+public record UserNoteDocument(
+        @Id UUID id,
+        UUID userId,
+        UUID noteId,
+        String permissions,
+        @Version Long version) {
+
+    // withPermissions и toDomain — как у UserNoteRow
+}
+```
+
+### `application-<vendor>` — схемы
+
+```sql
+-- application-h2, application-postgresql (и -reactive)
+CREATE TABLE user_note (
+    id          UUID         PRIMARY KEY,
+    user_id     UUID         NOT NULL,
+    note_id     UUID         NOT NULL,
+    permissions VARCHAR(200) NOT NULL,
+    version     BIGINT       NOT NULL,
+    UNIQUE (user_id, note_id)
+);
+
+-- application-mysql (и -reactive); отображение UUID на CHAR(36) драйверами не проверено
+CREATE TABLE user_note (
+    id          CHAR(36)     PRIMARY KEY,
+    user_id     CHAR(36)     NOT NULL,
+    note_id     CHAR(36)     NOT NULL,
+    permissions VARCHAR(200) NOT NULL,
+    version     BIGINT       NOT NULL,
+    UNIQUE (user_id, note_id)
+);
+```
+
+### `controller-webmvc`
+
+```java
+public record PermissionsRequest(List<Permission> permissions) {}
+
+public record PermissionsResponse(List<Permission> permissions) {}
+
+public record AccessModelResponse(List<PermissionView> permissions, List<RoleView> roles) {
+
+    public record PermissionView(Permission name, List<Permission> requires) {}
+
+    public record RoleView(Role name, List<Permission> permissions) {}
+
+    public static AccessModelResponse create() {
+        return new AccessModelResponse(
+                Arrays.stream(Permission.values())
+                        .map(p -> new PermissionView(p, PermissionRequirements.of(p).stream().sorted().toList()))
+                        .toList(),
+                Arrays.stream(Role.values())
+                        .map(r -> new RoleView(r, RolePermissions.of(r).stream().sorted().toList()))
+                        .toList());
+    }
+}
+
+@RestController
+public class UserNoteController {
+
+    private final UserNoteService service;
+
+    public UserNoteController(UserNoteService service) {
+        this.service = service;
+    }
+
+    @GetMapping("/access-model")
+    public AccessModelResponse accessModel() {
+        return AccessModelResponse.create();
+    }
+
+    @GetMapping("/notes/{noteId}/my-permissions")
+    public PermissionsResponse myPermissions(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID noteId) {
+        UUID userId = UUID.fromString(jwt.getSubject());
+        return new PermissionsResponse(service.permissionsOf(userId, noteId).sorted());
+    }
+
+    @PutMapping("/notes/{noteId}/users/{userId}")
+    public void grant(@PathVariable UUID noteId, @PathVariable UUID userId, @RequestBody PermissionsRequest request) {
+        service.grant(userId, noteId, new Permissions(Set.copyOf(request.permissions())));
+    }
+
+    @DeleteMapping("/notes/{noteId}/users/{userId}")
+    public void revoke(@PathVariable UUID noteId, @PathVariable UUID userId) {
+        service.revoke(userId, noteId);
+    }
+}
+
+@RestControllerAdvice
+public class AccessExceptionHandler {
+
+    @ExceptionHandler(NoteNotFoundException.class)
+    public ProblemDetail notFound(NoteNotFoundException e) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
+    }
+
+    @ExceptionHandler(PermissionDeniedException.class)
+    public ProblemDetail denied(PermissionDeniedException e) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, e.getMessage());
+    }
+
+    @ExceptionHandler(InvalidPermissionsException.class)
+    public ProblemDetail invalid(InvalidPermissionsException e) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    @ExceptionHandler(OptimisticLockingFailureException.class)
+    public ProblemDetail conflict(OptimisticLockingFailureException e) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, e.getMessage());
+    }
+}
+
+@Configuration
+public class SecurityConfiguration {
+
+    @Bean
+    public SecurityFilterChain security(HttpSecurity http) throws Exception {
+        return http
+                .authorizeHttpRequests(requests -> requests.anyRequest().authenticated())
+                .oauth2ResourceServer(server -> server.jwt(Customizer.withDefaults()))
+                .build();
+    }
+}
+```
+
+`application-controller-webmvc.properties`: `spring.security.oauth2.resourceserver.jwt.issuer-uri=<адрес сервера авторизации>`.
+
+### `controller-webflux`
+
+Зеркально webmvc: те же DTO и `AccessExceptionHandler` (не зависят от стека — побайтово одинаковы в двух `controller-*`, кандидат на общее место, решение пользователя), контроллер возвращает `Mono`. Отличается безопасность:
+
+```java
+@Bean
+public SecurityWebFilterChain security(ServerHttpSecurity http) {
+    return http
+            .authorizeExchange(exchanges -> exchanges.anyExchange().authenticated())
+            .oauth2ResourceServer(server -> server.jwt(Customizer.withDefaults()))
+            .build();
+}
+```
+
+### UI
+
+```js
+const model = await fetch("/access-model").then(r => r.json());
+let checked = new Set();
+
+function applyRole(role) {
+  checked = new Set(role.permissions);
+}
+
+function check(name) {
+  checked.add(name);
+  model.permissions.find(p => p.name === name).requires.forEach(check);
+}
+
+function uncheck(name) {
+  checked.delete(name);
+  model.permissions
+    .filter(p => p.requires.includes(name))
+    .forEach(p => uncheck(p.name));
+}
+
+function currentRole() {
+  const match = model.roles.find(role =>
+    role.permissions.length === checked.size &&
+    role.permissions.every(p => checked.has(p)));
+  return match ? match.name : "CUSTOM";
+}
+
+function save(noteId, userId) {
+  return fetch(`/notes/${noteId}/users/${userId}`, {
+    method: "PUT",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({permissions: [...checked]}),
+  });
+}
+```
+
+### Тесты на таблицы (`contract`, без Spring)
+
+```java
+class AccessTablesTest {
+
+    @Test
+    void everyRoleHasValidPermissions() {
+        for (Role role : Role.values()) {
+            assertNotNull(RolePermissions.of(role), role + " is missing in RolePermissions");
+            assertDoesNotThrow(() -> new Permissions(RolePermissions.of(role)), role.name());
+        }
+    }
+
+    @Test
+    void requirementsHaveNoCycles() {
+        for (Permission permission : Permission.values()) {
+            assertFalse(reachable(permission).contains(permission), permission + " requires itself");
+        }
+    }
+
+    private Set<Permission> reachable(Permission start) {
+        Set<Permission> seen = new HashSet<>();
+        Deque<Permission> queue = new ArrayDeque<>(PermissionRequirements.of(start));
+        while (!queue.isEmpty()) {
+            Permission next = queue.poll();
+            if (seen.add(next)) {
+                queue.addAll(PermissionRequirements.of(next));
+            }
+        }
+        return seen;
+    }
+}
+```
+
 ## Нерешённое на 2026-09-25
 
 - где живёт прикладной сервис (в `contract` рядом с портом или отдельный модуль; модуля прикладного слоя сегодня нет, корень «общее» дерева вариантов пуст)
 - project-зависимости лист→`controller-*`→`contract` и лист→`data-*`→`contract` сходятся в листе — по аналогии «вид 2» допустимо, но правило про диаманты сформулировано и для project-зависимостей, нужно явное решение пользователя
-- кто выдаёт/отзывает доступ — вероятно, понадобится право «управлять доступом»
 - состав `requires` и наборы ролей — пример ассистента, не утверждён (в т. ч. требует ли модерация комментариев права комментировать)
 - поиск по праву средствами БД («все заметки, которые я могу править») строкой не индексируется — выборка по `userId` + фильтр в памяти; если понадобится — переход на одну запись на право (только `data-*`)
 - вводить ли механическую проверку отсутствия `if`/`switch` (grep `'\b(if|switch)\s*\('` или своё XPath-правило PMD) — предложено, не решено; решено ли запрещать и `switch` по `sealed`-типам (проверка полноты компилятором) — не обсуждено
 - версия с id от приложения против id от БД — расхождение механизмов генерации по веткам (CLAUDE.md → «Открытые решения» → «Поведенческая аналогичность» п.3)
+- кто может вызывать `grant`/`revoke` — в коде итоговой модели право вызывающего не проверяется: нужно право вроде «управлять доступом» или правило «только владелец» (связано с вопросом «доступ потерян у всех» ниже)
+- где живут общие для двух `controller-*` DTO и `AccessExceptionHandler` (побайтово одинаковы, не зависят от стека)
+- гонка двух одновременных первых выдач одной паре: поиск и вставка раздельны, вторая вставка падает на уникальности (`user_id`, `note_id`) → `DuplicateKeyException`, обработчика нет — вернуть 409 или повторить операцию
+- новый атомарный convention-плагин для OAuth2 resource server и конкретный сервер авторизации (`issuer-uri`)
+- **⚠️ ВАЖНЫЙ ВОПРОС (поставлен пользователем 2026-09-25) — как избежать состояния, когда все пользователи лишились доступа к заметке** (последний, кто может управлять доступом, отозвал себя/понизил себе права, или его учётная запись удалена в другом сервисе — заметка становится «сиротой»: читать, править, выдавать доступ некому). Это инвариант на несколько записей («у заметки всегда есть хотя бы один управляющий») — в отличие от `Permissions`, одной записью не держится. Варианты, не выбрано: (а) владелец — отдельная запись (`noteId` уникальный, `ownerId`), создаётся вместе с заметкой, отозвать нельзя, только передать (обновление одной записи); инвариант держит обычный уникальный индекс одинаково на всех 8 листьях, гонок нет — **рекомендация ассистента**; это возврат к ранее снятому варианту «владение отдельной записью», снятому вместе с отказом от понятия владельца; (б) проверка в `revoke`/`save`: «не убирать последнего с правом управления» — гонка: два одновременных отзыва двух управляющих видят по 2 и оба проходят → 0; нужна либо блокировка строк (`SELECT … FOR UPDATE` — синтаксис и поддержка различаются по вендорам и R2DBC; в Mongo — транзакция на replica set), либо одна строка-«версия доступа заметки», которую каждое изменение доступа обновляет с `@Version` — одновременные изменения конфликтуют оптимистической блокировкой, работает одинаково везде; (в) агрегат «доступ заметки» со всеми выдачами внутри и одной версией — в JDBC дочерняя таблица, в Mongo массив, в R2DBC коллекций нет — ломает зеркальность; (г) путь восстановления — администратор (глобальный scope в JWT) возвращает доступ, как администратор Google Workspace передаёт файлы удалённого пользователя — дополняет, не предотвращает; (д) заметка без управляющих удаляется (Google Drive удаляет файлы удалённой учётной записи, если их не передали) — меняет смысл, данные теряются. Отдельная грань: удаление пользователя в другом сервисе оставляет его выдачи — межсервисное событие (`UserDeleted`), см. CLAUDE.md → «Открытые решения» → «Межсервисная консистентность»
 
 ## Рассмотренные и отклонённые варианты (с причиной)
 
@@ -81,7 +532,7 @@
 
 ## Связь с деревом вариантов (CLAUDE.md → «Архитектура и структура проекта» → «Корневое дерево вариантов»)
 
-- модель проверена на все 8 листьев: домен, проверка доступа, API одни; различия — тип UUID в схеме вендора (у MySQL нет `UUID`, `CHAR(36)` — отображение драйверами не проверено) и `Persistable.isNew()` у JDBC/R2DBC против upsert у Mongo
+- модель проверена на все 8 листьев: домен, проверка доступа, API одни; различия — тип UUID в схеме вендора (у MySQL нет `UUID`, `CHAR(36)` — отображение драйверами не проверено) (признак новой записи — `@Version`, одинаков у JDBC/R2DBC/Mongo)
 - враждебные данные для варианта Б центрального вопроса: duplicate-key на паре (`userId`, `noteId`), представление UUID, строка прав
 - каскадное удаление (заметка → её `UserNote`) — кодом в прикладном сервисе, не `ON DELETE CASCADE`: у Mongo FK нет, иначе поведение разойдётся; атомарность в Mongo требует replica set (`.withReplicaSet()` — точка возврата 2026-09-21)
 
