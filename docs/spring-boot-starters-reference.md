@@ -1,3 +1,11 @@
+# Spring Boot стартеры — эталон Spring Initializr
+
+> **Назначение:** дословная копия Spring Initializr — все стартеры/зависимости, плагины, BOM и `-test`-пары, отслеживаемые convention-плагинами
+> **Когда читать:** при вопросе «существует ли стартер X / как называется / есть ли `-test`-пара» — grep по точной строке артефакта (не Maven Central, не рассуждение по имени), при добавлении зависимости или convention-плагина
+> **Статус:** эталон полноты для convention-плагинов; ⛔ список зависимостей и gradle-код не сокращать и не удалять строки (только проверка на дубликаты) — CLAUDE.md → «Правила» → «Лимит размера файла», «Источник истины для Spring-фактов»
+> **Разделы:** единый `build.gradle`-блок — `plugins`, версии, `dependencies` (`implementation`/`developmentOnly`/`runtimeOnly`/`testImplementation`), BOM
+> **Связано:** `docs/spring-boot-starters-full-matrix.md` (сырой снимок всех 205), `docs/convention-plugins-graph.md`
+
 ```gradle
 plugins {
 	id 'java'

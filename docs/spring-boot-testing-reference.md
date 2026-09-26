@@ -1,4 +1,10 @@
-# spring-boot-testing-reference.md
+# Тестирование Spring Boot 4.1 — аннотации и классы
+
+> **Назначение:** тестовые уровни, аннотации и классы Spring Boot 4.1 с датами появления (проверено по docs.spring.io/GitHub spring-projects)
+> **Когда читать:** при выборе тестовой аннотации или клиента — полный контекст, слайсы (web, persistence, client), мокирование, Testcontainers
+> **Статус:** справочник, собран для TDD-переписывания `user-note/`
+> **Разделы:** «Аннотации» (Full-context, Мокирование бинов, Слайс-тесты — Web/Persistence/Client/прочее, Testcontainers), «Классы» (HTTP-клиенты, Мокирование, Testcontainers)
+> **Связано:** CLAUDE.md → «Архитектура и структура проекта» → «Модули по уровням и контексты тестов», `docs/spring-boot-starters-reference.md` (`-test`-стартеры)
 
 ## Аннотации
 

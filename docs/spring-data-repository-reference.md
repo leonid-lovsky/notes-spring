@@ -1,5 +1,11 @@
 # Справочник: иерархия репозиториев Spring Data по вендорам проекта
 
+> **Назначение:** иерархия интерфейсов репозиториев Spring Data (`Repository`→`CrudRepository`/`PagingAndSortingRepository`→list-варианты, `QueryByExampleExecutor`) по вендорам проекта с классами-реализациями
+> **Когда читать:** при выборе базового интерфейса репозитория для `data-*`, при вопросе об общем generic-репозитории
+> **Статус:** справочник 2026-09-22 по Javadoc и исходникам spring-projects
+> **Разделы:** «Базовые интерфейсы», «Дерево (наглядный вид)», «По вендорам проекта», «Почему у JDBC нет своего интерфейса, а у Mongo/R2DBC есть», «Что реально использует проект», «Источники»
+> **Связано:** `docs/tree-repositories.md` (краткое дерево для вывода по запросу)
+
 > Собрано 2026-09-22 по официальным источникам — Javadoc `docs.spring.io` (секции «All Superinterfaces»/«All Known Implementing Classes», читаны дословно) и исходники `github.com/spring-projects/spring-data-{commons,relational,mongodb}`. Повод — вопрос «почему у JDBC нет своего интерфейса репозитория, а у Mongo/R2DBC есть» и разбор возможности общего generic-репозитория для `data-jdbc`/`data-r2dbc`/`data-mongodb`/`data-mongodb-reactive`, см. `CLAUDE.md` → «Открытые решения» → центральный вопрос архитектуры и «Граница порта».
 
 ## Базовые интерфейсы (`spring-data-commons`)
