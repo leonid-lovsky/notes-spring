@@ -42,7 +42,7 @@
 - `com.example.codequality-nullaway` — `id("java")` + `id("net.ltgt.errorprone")` — NullAway как error — 0 прямых
 - `com.example.codequality-pmd` — `id("pmd")` — только `toolVersion` из каталога, без кастомного ruleset — 0 прямых
 - `com.example.codequality-spotbugs` — `id("com.github.spotbugs")` — дефолтная конфигурация — 0 прямых
-- `com.example.codequality-spotless` — `id("com.diffplug.spotless")` — `importOrder()`+`removeUnusedImports()`+`googleJavaFormat().aosp()`+`leadingTabsToSpaces()`; `compileJava.dependsOn(spotlessApply)` — автофикс при любой сборке — 0 прямых
+- `com.example.codequality-spotless` — `id("com.diffplug.spotless")` — `importOrder()`+`removeUnusedImports()`+`leadingTabsToSpaces()`+`trimTrailingWhitespace()`+`endWithNewline()` (google-java-format снят 2026-09-29 — строки без переносов); `compileJava.dependsOn(spotlessApply)` — автофикс при любой сборке — 0 прямых
 
 ## Уровень 2 — родитель `spring-boot` (технологические плагины, каждый = 1 Spring Boot стартер/концерн; `spring-boot-application`/`spring-cloud-application` удалены 2026-09-04/06 — bootable-ось несёт отдельный атомарный `spring-boot-bootable`, композиция на листе)
 
