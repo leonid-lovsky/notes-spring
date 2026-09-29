@@ -8,22 +8,22 @@ plugins {
 
 rootProject.name = "notes-spring"
 
-include(":user-note:application-h2")
-include(":user-note:application-h2-reactive")
-include(":user-note:application-mongodb")
-include(":user-note:application-mongodb-reactive")
-include(":user-note:application-mysql")
-include(":user-note:application-mysql-reactive")
-include(":user-note:application-postgresql")
-include(":user-note:application-postgresql-reactive")
+include(":note-user:application-h2")
+include(":note-user:application-h2-reactive")
+include(":note-user:application-mongodb")
+include(":note-user:application-mongodb-reactive")
+include(":note-user:application-mysql")
+include(":note-user:application-mysql-reactive")
+include(":note-user:application-postgresql")
+include(":note-user:application-postgresql-reactive")
 
-include(":user-note:contract")
-include(":user-note:contract-reactive")
+include(":note-user:contract")
+include(":note-user:contract-reactive")
 
-include(":user-note:controller-webmvc")
-include(":user-note:controller-webflux")
+include(":note-user:controller-webmvc")
+include(":note-user:controller-webflux")
 
-include(":user-note:data-jdbc")
-include(":user-note:data-mongodb")
-include(":user-note:data-mongodb-reactive")
-include(":user-note:data-r2dbc")
+include(":note-user:data-jdbc")
+include(":note-user:data-mongodb")
+include(":note-user:data-mongodb-reactive")
+include(":note-user:data-r2dbc")

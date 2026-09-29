@@ -35,7 +35,7 @@
 │   ├── checkstyle/google_checks.xml
 │   ├── wrapper/{gradle-wrapper.jar,gradle-wrapper.properties}
 │   └── libs.versions.toml
-├── user-note/
+├── note-user/
 │   ├── application-h2/                    (sync SQL, embedded, без Testcontainers)
 │   ├── application-h2-reactive/           (reactive SQL, embedded)
 │   ├── application-mysql/                 (sync SQL, Testcontainers)
@@ -44,12 +44,12 @@
 │   ├── application-postgresql-reactive/   (reactive SQL, Testcontainers)
 │   ├── application-mongodb/               (sync, Testcontainers)
 │   ├── application-mongodb-reactive/      (reactive, Testcontainers)
-│   ├── controller-webmvc/                 (пустой UserNoteController, @WebMvcTest)
-│   ├── controller-webflux/                (пустой UserNoteController, @WebFluxTest)
-│   ├── data-jdbc/                         (UserNote + UserNoteRepository, @DataJdbcTest)
-│   ├── data-r2dbc/                        (UserNote + UserNoteRepository, @DataR2dbcTest)
-│   ├── data-mongodb/                      (UserNote + UserNoteRepository, @DataMongoTest)
-│   ├── data-mongodb-reactive/             (UserNote + UserNoteRepository, @DataMongoTest)
+│   ├── controller-webmvc/                 (пустой NoteUserController, @WebMvcTest)
+│   ├── controller-webflux/                (пустой NoteUserController, @WebFluxTest)
+│   ├── data-jdbc/                         (NoteUser + NoteUserRepository, @DataJdbcTest)
+│   ├── data-r2dbc/                        (NoteUser + NoteUserRepository, @DataR2dbcTest)
+│   ├── data-mongodb/                      (NoteUser + NoteUserRepository, @DataMongoTest)
+│   ├── data-mongodb-reactive/             (NoteUser + NoteUserRepository, @DataMongoTest)
 │   └── .main-class
 ├── .editorconfig
 ├── .gitattributes
