@@ -1,0 +1,8 @@
+plugins {
+    id("com.example.spring-boot-webmvc")
+}
+
+dependencies {
+    implementation(project(":user:contract:contract-common"))
+    implementation(project(":user:contract:contract-synchronous"))
+}
