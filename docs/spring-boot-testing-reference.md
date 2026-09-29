@@ -2,7 +2,7 @@
 
 > **Назначение:** тестовые уровни, аннотации и классы Spring Boot 4.1 с датами появления (проверено по docs.spring.io/GitHub spring-projects)
 > **Когда читать:** при выборе тестовой аннотации или клиента — полный контекст, слайсы (web, persistence, client), мокирование, Testcontainers
-> **Статус:** справочник, собран для TDD-переписывания `user-note/`
+> **Статус:** справочник, собран для TDD-переписывания сервисов `note`/`user`/`user-note`; выбор клиента ограничен правилом CLAUDE.md → «Полная изоляция стеков» (в sync-ветке без `spring-webflux`)
 > **Разделы:** «Аннотации тестовых классов верхнего уровня — перечень (сверено 2026-09-29)», «Аннотации» (Full-context, Мокирование бинов, Слайс-тесты — Web/Persistence/Client/прочее, Testcontainers), «Классы» (HTTP-клиенты, Мокирование, Testcontainers)
 > **Связано:** CLAUDE.md → «Архитектура и структура проекта» → «Модули по уровням и контексты тестов», `docs/spring-boot-starters-reference.md` (`-test`-стартеры)
 
@@ -118,6 +118,7 @@ Spring Framework (без Spring Boot):
 - `MockMvcTester` — AssertJ-обёртка над `MockMvc`
 - `WebTestClient` — HTTP-тестирование для WebFlux
 - `RestTestClient` — универсальный HTTP-клиент, 4 режима биндинга (контроллер/MockMvc/context/сервер)
+- привязка `WebTestClient` в Boot 4.1.1 (исходник `WebTestClientAutoConfiguration`, проверено 2026-09-29): при запущенном сервере — `bindToServer` (любой стек); в WebFlux-контексте — к контексту; в MVC-контексте — к `MockMvc` (`MockMvcWebTestClient`); условие — `WebClient`/`WebTestClient` на classpath, то есть `spring-webflux` + `spring-boot-webtestclient`; `@WebMvcTest` сам его не подключает (его `MockMvcWebClientAutoConfiguration` — HtmlUnit `WebClient`) — в проекте для sync-ветки недопустим по правилу изоляции стеков
 - `TestRestTemplate` — HTTP-клиент против реального порта (`RANDOM_PORT`/`DEFINED_PORT`)
 
 ### Мокирование
