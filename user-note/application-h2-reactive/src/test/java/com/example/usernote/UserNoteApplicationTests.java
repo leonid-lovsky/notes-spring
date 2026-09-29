@@ -9,5 +9,7 @@ import org.springframework.context.annotation.Import;
 class UserNoteApplicationTests {
 
     @Test
-    void contextLoads() {}
+    void contextLoads() {
+        /* context startup is the assertion */
+    }
 }

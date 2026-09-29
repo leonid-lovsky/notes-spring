@@ -7,5 +7,7 @@ import org.springframework.boot.data.r2dbc.test.autoconfigure.DataR2dbcTest;
 class NoteRepositoryTests {
 
     @Test
-    void contextLoads() {}
+    void contextLoads() {
+        /* context startup is the assertion */
+    }
 }

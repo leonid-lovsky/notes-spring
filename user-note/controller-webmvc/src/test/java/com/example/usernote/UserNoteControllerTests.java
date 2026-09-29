@@ -7,5 +7,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 class UserNoteControllerTests {
 
     @Test
-    void contextLoads() {}
+    void contextLoads() {
+        /* context startup is the assertion */
+    }
 }

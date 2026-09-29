@@ -7,5 +7,7 @@ import org.springframework.boot.webflux.test.autoconfigure.WebFluxTest;
 class UserControllerTests {
 
     @Test
-    void contextLoads() {}
+    void contextLoads() {
+        /* context startup is the assertion */
+    }
 }

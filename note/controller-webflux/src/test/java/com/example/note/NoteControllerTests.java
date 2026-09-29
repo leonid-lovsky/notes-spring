@@ -7,5 +7,7 @@ import org.springframework.boot.webflux.test.autoconfigure.WebFluxTest;
 class NoteControllerTests {
 
     @Test
-    void contextLoads() {}
+    void contextLoads() {
+        /* context startup is the assertion */
+    }
 }

@@ -7,5 +7,7 @@ import org.springframework.boot.data.mongodb.test.autoconfigure.DataMongoTest;
 class UserNoteRepositoryTests {
 
     @Test
-    void contextLoads() {}
+    void contextLoads() {
+        /* context startup is the assertion */
+    }
 }
