@@ -36,12 +36,12 @@
 │   ├── wrapper/{gradle-wrapper.jar,gradle-wrapper.properties}
 │   └── libs.versions.toml
 ├── note/                                  (с 2026-09-29 — копия структуры user-note/, классы Note*)
-│   ├── contract/, contract-reactive/
+│   ├── contract-common/, contract-synchronous/, contract-reactive/
 │   ├── controller-webmvc/, controller-webflux/
 │   ├── data-jdbc/, data-r2dbc/, data-mongodb/, data-mongodb-reactive/
 │   └── application-{h2,mysql,postgresql,mongodb}[-reactive]/
 ├── user/                                  (с 2026-09-29 — копия структуры user-note/, классы User*)
-│   ├── contract/, contract-reactive/
+│   ├── contract-common/, contract-synchronous/, contract-reactive/
 │   ├── controller-webmvc/, controller-webflux/
 │   ├── data-jdbc/, data-r2dbc/, data-mongodb/, data-mongodb-reactive/
 │   └── application-{h2,mysql,postgresql,mongodb}[-reactive]/

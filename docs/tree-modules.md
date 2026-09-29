@@ -11,7 +11,7 @@
 ```
 com.example.usernote
 │
-├── contract                          — id("com.example.contract")
+├── contract-synchronous              — id("com.example.contract")
 ├── contract-reactive                 — id("com.example.contract-reactive")
 │
 ├── controller-webmvc                 — id("com.example.spring-boot-webmvc")
