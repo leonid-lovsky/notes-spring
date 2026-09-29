@@ -1,9 +1,9 @@
 # HTTP API `notes-spring` — справочник по объявлению методов контроллера (сессия 2026-09-29)
 
-> **Назначение:** итог обсуждения 2026-09-29 объявления `createNote` в `NoteController` — стандарты HTTP, итоговая сигнатура, все рассмотренные варианты по осям, `Location` и `UriComponentsBuilder`, gateway, аргументы методов контроллера
+> **Назначение:** итог обсуждения 2026-09-29 объявления `createNote` в `NoteController` — стандарты HTTP, итоговая сигнатура, семантика `replace`/`update`, все рассмотренные варианты по осям, `Location` и `UriComponentsBuilder`, gateway, аргументы методов контроллера
 > **Когда читать:** при объявлении/изменении любого метода `controller-webmvc`/`controller-webflux` (`note`/`user`/`user-note`), при вопросах о кодах ответа, `Location`, gateway и путях
-> **Статус:** решено пользователем 2026-09-29 — следовать стандартам (RFC 9110, RFC 9457), `Location` относительный, gateway без переписывания путей; открыто — место и состав `NoteRequest`/`NoteResponse` (CLAUDE.md → «Задачи» → «Решения, которые нужно принять» пп.1, 5), префикс `/api`, `@Valid` (п.7); код пишет пользователь
-> **Разделы:** «Стандарты», «Итог для `createNote`», «Все варианты объявления по осям», «`Location`», «`UriComponentsBuilder`», «Gateway и пути», «Аргументы метода контроллера»
+> **Статус:** решено пользователем 2026-09-29 — следовать стандартам (RFC 9110, RFC 9457), `Location` относительный, gateway без переписывания путей, семантика `replace` (замена целиком) и `update` (слияние, `null` игнорируется); открыто — место и состав `NoteRequest`/`NoteResponse` (CLAUDE.md → «Задачи» → «Решения, которые нужно принять» пп.1, 5), префикс `/api`, `@Valid` (п.7); код пишет пользователь
+> **Разделы:** «Стандарты», «Итог для `createNote`», «Семантика `replace` и `update`», «Отступления семантики `replace`/`update` от принципов», «Все варианты объявления по осям», «`Location`», «`UriComponentsBuilder`», «Gateway и пути», «Аргументы метода контроллера»
 > **Связано:** CLAUDE.md → «Правила» → «Придерживаемся стандартов, паттернов проектирования и лучших практик»; CLAUDE.md → «Задачи» → «Решения, которые нужно принять» п.4; CLAUDE.md → «Открытые решения» → «⚠️ ОСНОВНОЙ ВОПРОС МИКРОСЕРВИСНОЙ АРХИТЕКТУРЫ»; `docs/microservices-reference.md` → «Компоненты Spring Cloud — подробности» (Gateway)
 
 ## Стандарты
@@ -48,6 +48,73 @@ return ResponseEntity.created(location).body(response);
 - `Location` — относительный; статический `UriComponentsBuilder.fromPath(...)` (не параметр метода) вместо `URI.create("/notes/" + id)` — шаблон в той же форме, что `@GetMapping("/{id}")`, значения кодируются, без ручной склейки строк; оба варианта по стандарту, рекомендация ассистента — шаблон
 - ошибки не в сигнатуре — `ProblemDetail` (RFC 9457) из общего `@RestControllerAdvice`
 - сиблинги различаются только обёрткой `Mono` — зеркальность сохранена
+
+## Семантика `replace` и `update`
+
+Задана пользователем 2026-09-29 — буквальное понимание: `replace` — замена целиком, `update` — слияние; обе совпадают с общепринятым смыслом. Где живёт логика (interactor или адаптер) — зависит от варианта чистой архитектуры (CLAUDE.md → «Открытые решения» → «Чистая архитектура»); ответ 200 + `{Entity}Response` у обеих — рекомендация ассистента (204 без тела тоже по стандарту, выбор за пользователем).
+
+`replace` — `PUT /notes/{id}`, `replaceNoteByID`:
+- берёт `id` из пути; ищет сущность по `id`; не найдена — выходим (404 `ProblemDetail`); найдена — полностью заменяем сущность на переданную в запросе
+- поле, пришедшее `null` (или отсутствующее — для record это одно и то же), очищает поле в сущности/документе; обязательное поле с `null` — ошибка валидации 400 ещё до поиска сущности
+- стандарт: RFC 9110 §9.3.4 — новое состояние равно присланному представлению; при замене существующего ресурса — MUST 200 или 204; `PUT` не создаёт (рекомендация п.4) — RFC это допускает
+- модель запроса — та же, что у создания (`NoteRequest`, без `id`): расхождение «`id` в пути ≠ `id` в теле» невозможно; обязательные поля — `@NotNull`/`@NotBlank`, будущие необязательные — `@Nullable` (замена их очищает)
+- старое состояние не нужно — `existsById`, не `findById`
+
+```java
+@PutMapping("/{id}")
+public ResponseEntity<NoteResponse> replaceNoteByID(
+        @PathVariable("id") UUID id, @RequestBody NoteRequest request)
+// webflux — Mono<ResponseEntity<NoteResponse>>
+
+// logic sketch (sync)
+if (!repository.existsById(id)) {
+    throw new NoteNotFoundException(id);
+}
+Note saved = repository.save(new Note(id, request.content()));
+return new NoteResponse(saved.id(), saved.content());
+
+// reactive: repository.existsById(id).flatMap(exists -> exists ? repository.save(...) : Mono.error(new NoteNotFoundException(id)))
+```
+
+`update` (слияние) — `PATCH /notes/{id}`, `updateNoteByID`:
+- берёт `id` из пути; ищет сущность по `id`; не найдена — выходим (404 `ProblemDetail`); найдена — заменяем только переданные в запросе поля, `null`-поля игнорируем (поле не меняется)
+- сегодня необязательных полей нет — описание на будущее
+- стандарт: RFC 5789 (`PATCH`) правила слияния не задаёт — их определяет тип содержимого; «`null` игнорируем» при `application/json` — **названное отступление** от JSON Merge Patch (RFC 7396, `application/merge-patch+json`, где `null` = удалить поле); цена — клиент не может очистить необязательное поле; при появлении таких полей — перейти на RFC 7396 или различать «не передано»/«передан `null`» (`JsonNullable`, `Optional`-поля) — record этого не различает
+- отдельная модель запроса (рабочее имя `NotePatchRequest`, не утверждено): все поля `@Nullable` (пакеты `@NullMarked`, иначе NullAway не пропустит); `@Nullable` в общем `NoteRequest` ослабил бы создание и замену
+- нужно старое состояние — `findById`; пустой запрос `{}` — ничего не меняется, возвращается текущее состояние
+- имя метода — `update…`, не `merge…`: `EntityManager.merge` в JPA значит другое (присоединить отсоединённую сущность — «сохранить или обновить»)
+
+```java
+@PatchMapping("/{id}")
+public ResponseEntity<NoteResponse> updateNoteByID(
+        @PathVariable("id") UUID id, @RequestBody NotePatchRequest request)
+// webflux — Mono<ResponseEntity<NoteResponse>>
+
+// logic sketch (sync)
+Note current = repository.findById(id)
+        .orElseThrow(() -> new NoteNotFoundException(id));
+Note merged = new Note(id,
+        request.content() != null ? request.content() : current.content());
+return toResponse(repository.save(merged));
+
+// reactive: findById(id).switchIfEmpty(Mono.error(...)).map(current -> merge(current, request)).flatMap(repository::save)
+```
+
+Общее для обеих:
+- «не найдено» — исключение (рабочее имя `NoteNotFoundException`) → один `@RestControllerAdvice` → 404 `ProblemDetail` (RFC 9457); одно правило для `find`/`replace`/`update`/`delete`, контроллер не ветвится (не `Optional.empty()`)
+- валидация — Bean Validation на границе: `@Valid` на аргументе + ограничения на полях модели; Spring на обоих стеках отдаёт 400 (`MethodArgumentNotValidException` / `WebExchangeBindException`), при включённых `problemdetails` — `ProblemDetail`, своего кода не нужно (AutoConfiguration); нужен `spring-boot-validation` в `controller-*` (CLAUDE.md п.7, пока нигде не применён). Без неё: `@NullMarked` при выполнении ничего не гарантирует (JSpecify/NullAway — только компиляция), Jackson положит `null`; на SQL — 500 от `NOT NULL`, на Mongo — тихая запись `null`, ветки дерева разойдутся
+- известные расхождения по дереву, приняты по правилу «Принципы — прагматично» (CLAUDE.md → «Правила»): (1) параллельный `DELETE` между проверкой и `save` — Spring Data JDBC/R2DBC с непустым `id` делают `UPDATE`, 0 строк → исключение (по памяти `IncorrectUpdateSemanticsDataAccessException` для JDBC, не проверено ни для JDBC, ни для R2DBC), Mongo `save` — upsert, тихо создаёт документ заново; (2) у `update` — потерянное обновление: чтение-изменение-запись, два параллельных `PATCH` перезаписывают друг друга (сегодня поле одно — теоретически). Закрывает оба `@Version` в модели хранения + условный запрос `If-Match`/ETag (RFC 9110); поддержка `@Version` во всех 4 технологиях Spring Data — по памяти, не проверено; вернуться при втором поле или реальной конкурентной нагрузке
+
+## Отступления семантики `replace`/`update` от принципов
+
+Консультация ассистента 2026-09-29 по вопросу пользователя «где мой подход отходит от принципов» (CLAUDE.md → «Правила» → «Принципы — прагматично»), от главного к второстепенному; решений не принято:
+- (1) логика снаружи модели — OOP, DDD, Tell Don't Ask: «найти → поменять поля → сохранить» — Transaction Script (Фаулер), `request.content() != null ? … : current.content()` решает за объект; для CRUD уместно (Фаулер — Transaction Script для простой логики, Эванс — DDD для сложных доменов), но перенос правила в модель почти бесплатен и снимает три отступления сразу: DRY (правило слияния иначе повторится в sync/reactive-сценарии и в `note`/`user`, копий больше с каждым полем; в модели — одно на обе ветки, первый код узла «общее» дерева), OOP/DDD, Clean (метод принимает значения полей, не `NotePatchRequest` — иначе внутренний круг зависит от внешнего); эскиз — `public Note withContent(@Nullable String newContent) { return new Note(id, newContent != null ? newContent : content); }` в `record Note`; применимо после решения п.1 (сегодня `Note` в 4 `data-*` с `@Id` — метод оказался бы в 4 копиях) — **главный практический вывод**
+- (2) CRUD-глаголы вместо языка предметной области (DDD) — «изменить текст заметки», «переименовать пользователя» вместо `replace`/`update`; для CRUD — оправданное упрощение по KISS, только назвать
+- (3) `null` в двух смыслах — «очистить» в `replace`, «не трогать» в `update`; названное отступление от RFC 7396, отдельные модели запроса удерживают путаницу в рамках
+- (4) проверка-и-действие без атомарности (корректность; DDD — агрегат как граница согласованности) — `existsById`/`findById` → `save`; принято, см. «Семантика `replace` и `update`» → «известные расхождения по дереву»
+- (5) Clean Architecture, уже названные — модель в `data-*` с аннотацией Spring Data (п.1), `NoteRequest` одновременно модель сценария и JSON (вариант (Б))
+- (6) SOLID — риск, не отступление: логика в контроллере нарушила бы SRP и Clean; в interactor или модели — нет
+- соответствует: RFC 9110/5789 (семантика `PUT`/`PATCH`), RFC 9457 + DRY (одно правило 404 `ProblemDetail`), ISP (отдельная модель слияния, общая — создания и замены), неизменяемые records, Bean Validation на границе (Spring по умолчанию), `existsById` в `replace` (KISS)
 
 ## Все варианты объявления по осям
 
