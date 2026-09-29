@@ -24,8 +24,8 @@ public class UserController {
         return Mono.error(new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED));
     }
 
-    @PostMapping
-    public Mono<ResponseEntity<UserResponse>> createUser(@RequestBody UserRequest request) {
+    @PostMapping("/{id}")
+    public Mono<ResponseEntity<UserResponse>> createUserById(@PathVariable("id") UUID id, @RequestBody UserRequest request) {
         return Mono.error(new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED));
     }
 
@@ -40,7 +40,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public Mono<ResponseEntity<Void>> deleteUserById(@PathVariable("id") UUID id) {
+    public Mono<ResponseEntity<UserResponse>> deleteUserById(@PathVariable("id") UUID id) {
         return Mono.error(new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED));
     }
 }

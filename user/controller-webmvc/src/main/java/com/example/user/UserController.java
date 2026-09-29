@@ -23,8 +23,8 @@ public class UserController {
         throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    @PostMapping
-    public ResponseEntity<UserResponse> createUser(@RequestBody UserRequest request) {
+    @PostMapping("/{id}")
+    public ResponseEntity<UserResponse> createUserById(@PathVariable("id") UUID id, @RequestBody UserRequest request) {
         throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -39,7 +39,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUserById(@PathVariable("id") UUID id) {
+    public ResponseEntity<UserResponse> deleteUserById(@PathVariable("id") UUID id) {
         throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
     }
 }

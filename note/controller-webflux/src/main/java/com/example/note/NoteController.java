@@ -24,8 +24,8 @@ public class NoteController {
         return Mono.error(new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED));
     }
 
-    @PostMapping
-    public Mono<ResponseEntity<NoteResponse>> createNote(@RequestBody NoteRequest request) {
+    @PostMapping("/{id}")
+    public Mono<ResponseEntity<NoteResponse>> createNoteById(@PathVariable("id") UUID id, @RequestBody NoteRequest request) {
         return Mono.error(new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED));
     }
 
@@ -40,7 +40,7 @@ public class NoteController {
     }
 
     @DeleteMapping("/{id}")
-    public Mono<ResponseEntity<Void>> deleteNoteById(@PathVariable("id") UUID id) {
+    public Mono<ResponseEntity<NoteResponse>> deleteNoteById(@PathVariable("id") UUID id) {
         return Mono.error(new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED));
     }
 }

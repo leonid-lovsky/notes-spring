@@ -23,8 +23,8 @@ public class NoteController {
         throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    @PostMapping
-    public ResponseEntity<NoteResponse> createNote(@RequestBody NoteRequest request) {
+    @PostMapping("/{id}")
+    public ResponseEntity<NoteResponse> createNoteById(@PathVariable("id") UUID id, @RequestBody NoteRequest request) {
         throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -39,7 +39,7 @@ public class NoteController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteNoteById(@PathVariable("id") UUID id) {
+    public ResponseEntity<NoteResponse> deleteNoteById(@PathVariable("id") UUID id) {
         throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
     }
 }
