@@ -3,8 +3,38 @@
 > **Назначение:** тестовые уровни, аннотации и классы Spring Boot 4.1 с датами появления (проверено по docs.spring.io/GitHub spring-projects)
 > **Когда читать:** при выборе тестовой аннотации или клиента — полный контекст, слайсы (web, persistence, client), мокирование, Testcontainers
 > **Статус:** справочник, собран для TDD-переписывания `user-note/`
-> **Разделы:** «Аннотации» (Full-context, Мокирование бинов, Слайс-тесты — Web/Persistence/Client/прочее, Testcontainers), «Классы» (HTTP-клиенты, Мокирование, Testcontainers)
+> **Разделы:** «Аннотации тестовых классов верхнего уровня — перечень (сверено 2026-09-29)», «Аннотации» (Full-context, Мокирование бинов, Слайс-тесты — Web/Persistence/Client/прочее, Testcontainers), «Классы» (HTTP-клиенты, Мокирование, Testcontainers)
 > **Связано:** CLAUDE.md → «Архитектура и структура проекта» → «Модули по уровням и контексты тестов», `docs/spring-boot-starters-reference.md` (`-test`-стартеры)
+
+## Аннотации тестовых классов верхнего уровня — перечень (сверено 2026-09-29)
+
+Составные аннотации вида `@…Test`, которые ставятся на тестовый класс и сами определяют контекст теста; вспомогательные (`@Import`, `@MockitoBean`, `@AutoConfigure*`, `@TestConfiguration` и т. п.) сюда не входят. Сверено с официальной документацией Spring Boot 4.1.1: приложение «Test Slices» (`docs.spring.io/spring-boot/appendix/test-auto-configuration/slices.html`) — 19 слайсов; раздел «Testing Spring Boot Applications» (`docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html`) — `@SpringBootTest` (полный контекст, не слайс) и `@JsonTest` (в приложении «Test Slices» отсутствует, но описан в разделе о тестировании: «you can use the `@JsonTest` annotation from the `spring-boot-test-autoconfigure` module»). Итого 21; в проекте применяются 6 (помечены).
+
+Полный контекст:
+- `@SpringBootTest` — весь `ApplicationContext` — в проекте: листья `application-*`
+
+Слайс — веб:
+- `@WebMvcTest` — контроллеры Spring MVC — в проекте: `controller-webmvc`
+- `@WebFluxTest` — контроллеры Spring WebFlux — в проекте: `controller-webflux`
+- `@GraphQlTest` — GraphQL-контроллеры
+
+Слайс — хранение:
+- `@DataJdbcTest` — репозитории Spring Data JDBC — в проекте: `data-jdbc`
+- `@DataR2dbcTest` — репозитории Spring Data R2DBC — в проекте: `data-r2dbc`
+- `@DataMongoTest` — Spring Data MongoDB, одна аннотация для blocking и reactive — в проекте: `data-mongodb`, `data-mongodb-reactive`
+- `@DataJpaTest` — репозитории Spring Data JPA
+- `@JdbcTest` — голый `DataSource` + `JdbcTemplate`, без Spring Data
+- `@JooqTest` — запросы jOOQ
+- `@DataCassandraTest`, `@DataCouchbaseTest`, `@DataElasticsearchTest`, `@DataLdapTest`, `@DataNeo4jTest`, `@DataRedisTest` — репозитории соответствующих Spring Data
+
+Слайс — клиенты внешних сервисов:
+- `@RestClientTest` — клиенты `RestClient`/`RestTemplate`
+- `@WebClientTest` — реактивный клиент `WebClient`
+- `@WebServiceClientTest` — SOAP-клиенты
+- `@WebServiceServerTest` — SOAP-эндпоинты
+
+Слайс — прочее:
+- `@JsonTest` — JSON-сериализация (Jackson/Gson/JSON-B)
 
 ## Аннотации
 
