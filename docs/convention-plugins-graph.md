@@ -2,7 +2,7 @@
 
 > **Назначение:** снимок текущего графа родитель→потомок всех convention-плагинов `build-logic/` по уровням
 > **Когда читать:** перед добавлением/правкой/удалением convention-плагина, при вопросе «какой плагин уже есть»
-> **Статус:** снимок текущего состояния (пересобран 2026-09-24), обновлять в той же правке, что и плагин; история «почему» — `docs/decisions-log.md` → «Convention plugins…»
+> **Статус:** снимок текущего состояния (пересобран 2026-09-24, числа применений сверены с `build.gradle.kts` 2026-09-29), обновлять в той же правке, что и плагин; история «почему» — `docs/decisions-log.md` → «Convention plugins…»
 > **Разделы:** «Уровень 0 — корень», «Уровень 1…», «Уровень 2…» (по родителям `project-reactor`, `codequality`, `spring-boot`), «Уровень 3 — родитель `spring-cloud`», «Как читать этот граф»
 > **Связано:** `docs/tree-modules.md` (какие плагины применены на модулях), `docs/spring-boot-starters-reference.md` (что подключает плагин), CLAUDE.md → «Правила» (атомарность, диаманты, именование плагинов)
 
@@ -12,9 +12,9 @@
 
 Проверочная команда (перегенерировать граф родитель→потомок по факту из файлов, свериться со списком ниже): `for f in build-logic/convention/src/main/kotlin/com.example.*.gradle.kts; do id=$(basename "$f" .gradle.kts); echo "$id :: $(grep -oE 'id\("[^"]+"\)' "$f" | tr '\n' ' ')"; done`
 
-Проверочная команда (число применений плагина, только `user-note` — единственный сервис с кодом): `grep -rl 'id("com.example.{id}")' --include="build.gradle.kts" user-note | wc -l`
+Проверочная команда (число применений плагина в `user-note`; `note`/`user` устроены так же — у каждого те же числа): `grep -rl 'id("com.example.{id}")' --include="build.gradle.kts" user-note | wc -l`
 
-Схема каждой строки: **id плагина** — родитель(и) — что добавляет — число применений в `user-note/` сегодня (2026-09-24).
+Схема каждой строки: **id плагина** — родитель(и) — что добавляет — число применений в `user-note/` (сверено 2026-09-29).
 
 ---
 
@@ -25,9 +25,9 @@
 ## Уровень 1 — родитель `base`
 
 - `com.example.codequality` — `base` — агрегатор 8 `codequality-*` (см. ниже) — 0 прямых применений (воссоздан 2026-09-24 по прямому запросу — тот же паттерн, что был убран 2026-08-01 как «обёртка без переиспользования, один потребитель»; сегодня потребитель по-прежнему один — `base` — но фрагментов 8, не 5)
-- `com.example.contract` — `base` — не добавляет зависимостей, чистый алиас — 1 применение (`contract`) — введён 2026-09-24: `user-note/contract` не собирался (`plugins{}` был пуст, без единого `id(...)`), это единственный способ дать листу свою роль вместо голого `base` напрямую (см. `CLAUDE.md` → «Правила» → исключения из правила именования плагинов)
+- `com.example.contract` — `base` — не добавляет зависимостей, чистый алиас — 2 применения (`contract-common`, `contract-synchronous`; до 2026-09-29 — один `contract`) — введён 2026-09-24: `user-note/contract` не собирался (`plugins{}` был пуст, без единого `id(...)`), это единственный способ дать листу свою роль вместо голого `base` напрямую (см. `CLAUDE.md` → «Правила» → исключения из правила именования плагинов)
 - `com.example.project-reactor` — `base` — + `reactor-core`(implementation) + `reactor-tools`(implementation) + `reactor-test`(test) — 0 прямых применений (родитель `contract-reactive`)
-- `com.example.spring-boot` — `base` — + `io.spring.dependency-management` + Spring Boot BOM + `spring-boot-starter`(+test) — 0 прямых применений (родитель 24 технологических плагинов уровня 2 + `spring-cloud`)
+- `com.example.spring-boot` — `base` — + `io.spring.dependency-management` + Spring Boot BOM + `spring-boot-starter`(+test) — 8 прямых применений (все 8 листьев `application-*` явным `id(...)`; сверено 2026-09-29) — родитель 24 технологических плагинов уровня 2 + `spring-cloud`
 
 ## Уровень 2 — родитель `project-reactor`
 
