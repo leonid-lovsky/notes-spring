@@ -6,8 +6,9 @@ spotless {
     java {
         importOrder()
         removeUnusedImports()
-        googleJavaFormat().aosp()
         leadingTabsToSpaces()
+        trimTrailingWhitespace()
+        endWithNewline()
     }
 }
 
