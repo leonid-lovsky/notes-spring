@@ -8,7 +8,8 @@ plugins {
 
 rootProject.name = "notes-spring"
 
-include(":note:contract")
+include(":note:contract-common")
+include(":note:contract-synchronous")
 include(":note:contract-reactive")
 
 include(":note:controller-webmvc")
@@ -28,7 +29,8 @@ include(":note:application-postgresql-reactive")
 include(":note:application-mongodb")
 include(":note:application-mongodb-reactive")
 
-include(":user:contract")
+include(":user:contract-common")
+include(":user:contract-synchronous")
 include(":user:contract-reactive")
 
 include(":user:controller-webmvc")
@@ -48,7 +50,7 @@ include(":user:application-postgresql-reactive")
 include(":user:application-mongodb")
 include(":user:application-mongodb-reactive")
 
-include(":user-note:contract")
+include(":user-note:contract-synchronous")
 include(":user-note:contract-reactive")
 
 include(":user-note:controller-webmvc")

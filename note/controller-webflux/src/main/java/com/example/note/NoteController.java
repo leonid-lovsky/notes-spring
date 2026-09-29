@@ -1,7 +1,6 @@
 package com.example.note;
 
 import java.util.UUID;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,35 +11,48 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/notes")
 public class NoteController {
 
+    private final FindNoteByIdReactive findNoteById;
+    private final CreateNoteByIdReactive createNoteById;
+    private final ReplaceNoteByIdReactive replaceNoteById;
+    private final UpdateNoteByIdReactive updateNoteById;
+    private final DeleteNoteByIdReactive deleteNoteById;
+
+    public NoteController(FindNoteByIdReactive findNoteById, CreateNoteByIdReactive createNoteById, ReplaceNoteByIdReactive replaceNoteById, UpdateNoteByIdReactive updateNoteById, DeleteNoteByIdReactive deleteNoteById) {
+        this.findNoteById = findNoteById;
+        this.createNoteById = createNoteById;
+        this.replaceNoteById = replaceNoteById;
+        this.updateNoteById = updateNoteById;
+        this.deleteNoteById = deleteNoteById;
+    }
+
     @GetMapping("/{id}")
     public Mono<ResponseEntity<NoteResponse>> findNoteById(@PathVariable("id") UUID id) {
-        return Mono.error(new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED));
+        return findNoteById.execute(id).map(ResponseEntity::ok);
     }
 
     @PostMapping("/{id}")
     public Mono<ResponseEntity<NoteResponse>> createNoteById(@PathVariable("id") UUID id, @RequestBody NoteRequest request) {
-        return Mono.error(new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED));
+        return createNoteById.execute(id, request).map(ResponseEntity::ok);
     }
 
     @PutMapping("/{id}")
     public Mono<ResponseEntity<NoteResponse>> replaceNoteById(@PathVariable("id") UUID id, @RequestBody NoteRequest request) {
-        return Mono.error(new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED));
+        return replaceNoteById.execute(id, request).map(ResponseEntity::ok);
     }
 
     @PatchMapping(path = "/{id}")
     public Mono<ResponseEntity<NoteResponse>> updateNoteById(@PathVariable("id") UUID id, @RequestBody NoteRequest request) {
-        return Mono.error(new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED));
+        return updateNoteById.execute(id, request).map(ResponseEntity::ok);
     }
 
     @DeleteMapping("/{id}")
     public Mono<ResponseEntity<NoteResponse>> deleteNoteById(@PathVariable("id") UUID id) {
-        return Mono.error(new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED));
+        return deleteNoteById.execute(id).map(ResponseEntity::ok);
     }
 }
