@@ -23,7 +23,7 @@
 
 ## Слои hexagonal architecture — по аналогии с `note/`
 
-- `contract`/`contract-reactive` — порты синхронного и реактивного доступа, как у существующих сервисов
+- `contract-synchronous`/`contract-reactive` (+ `contract-common` для моделей) — порты синхронного и реактивного доступа, как у существующих сервисов
 - `webmvc`/`webflux` — HTTP driving-адаптеры для CRUD части (создание документа, права, комментарии); для real-time слоя HTTP не подходит — нужен отдельный driving-адаптер поверх WebSocket/STOMP, вне текущей `webmvc`/`webflux` пары
 - `data-*` — driven-адаптеры хранения; для Document/Permission/Comment годится обычный JPA/MongoDB, но поток Operation/Revision (append-only, высокая частота записи) скорее ложится на MongoDB/событийное хранилище, чем на реляционную БД
 - `application-*` — composition root; здесь же должен подключаться WebSocket-слой, которого в текущей технологической матрице (5 composition root на сервис) нет ни в одном из трёх существующих сервисов
