@@ -50,6 +50,7 @@ include(":user:application-postgresql-reactive")
 include(":user:application-mongodb")
 include(":user:application-mongodb-reactive")
 
+include(":user-note:contract-common")
 include(":user-note:contract-synchronous")
 include(":user-note:contract-reactive")
 

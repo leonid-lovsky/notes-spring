@@ -3,3 +3,8 @@ plugins {
 
     id("com.example.spring-boot-test-h2")
 }
+
+dependencies {
+    implementation(project(":user-note:contract-common"))
+    implementation(project(":user-note:contract-synchronous"))
+}
