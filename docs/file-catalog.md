@@ -42,6 +42,7 @@
 - `docs/microservices-reference.md` — [REVIEW] — новый 2026-09-26, справочный снимок итогов сессии по микросервисной архитектуре
 - `docs/reference-index.md` — [REVIEW] — новый 2026-09-26, путеводитель по файлам docs/
 - `docs/user-note-access-model.md` — [REVIEW] — новый 2026-09-25, модель доступа `UserNote` (права на заметку, роли-шаблоны для UI, инварианты, хранение SQL/NoSQL, JWT/Spring Security, механизмы инвариантов по слоям UI/Framework/Model/Storage, ключевые выводы, итоговая модель кодом, вопрос «доступ потерян у всех») — ход обсуждения и точка остановки, не решение, по прямому запросу пользователя
+- `docs/http-api-reference.md` — [REVIEW] — новый 2026-09-29, справочник по объявлению методов контроллера (стандарты HTTP, `createNote`, варианты, `Location`, gateway, аргументы)
 
 ### .claude/ (0 файлов, добавлено 2026-07-24, весь каталог удалён из репозитория и с диска в тот же день)
 - `.claude/settings.json` — [REMOVED] — регистрировал SessionStart hook; удалён 2026-07-24 вместе со всем `.claude/` (`.gitignore` уже содержал `.claude/` — по факту был случайно закоммичен ранее, теперь untracked навсегда)
@@ -264,9 +265,11 @@
 - `user/application-postgresql-reactive/src/test/java/com/example/user/UserApplicationTests.java` — [REVIEW] — новый 2026-09-29
 - `user/application-postgresql-reactive/src/test/java/com/example/user/UserTestConfiguration.java` — [REVIEW] — новый 2026-09-29
 
-#### user/contract/ (2 файлов) — новый 2026-09-29, копия структуры `user-note/contract/` (пакет `com.example.user`)
+#### user/contract/ (4 файла) — новый 2026-09-29, копия структуры `user-note/contract/` (пакет `com.example.user`)
 - `user/contract/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `user/contract/src/main/java/com/example/user/package-info.java` — [REVIEW] — новый 2026-09-29
+- `user/contract/src/main/java/com/example/user/UserRequest.java` — [REVIEW] — новый 2026-09-29, модель запроса создания для `createUser` (`docs/http-api-reference.md`)
+- `user/contract/src/main/java/com/example/user/UserResponse.java` — [REVIEW] — новый 2026-09-29, модель ответа 201 для `createUser`
 
 #### user/contract-reactive/ (2 файлов) — новый 2026-09-29, копия структуры `user-note/contract-reactive/` (пакет `com.example.user`)
 - `user/contract-reactive/build.gradle.kts` — [REVIEW] — новый 2026-09-29
@@ -644,9 +647,11 @@
 - `note/application-postgresql-reactive/src/test/java/com/example/note/NoteApplicationTests.java` — [REVIEW] — новый 2026-09-29
 - `note/application-postgresql-reactive/src/test/java/com/example/note/NoteTestConfiguration.java` — [REVIEW] — новый 2026-09-29
 
-#### note/contract/ (2 файлов) — новый 2026-09-29, копия структуры `user-note/contract/` (пакет `com.example.note`)
+#### note/contract/ (4 файла) — новый 2026-09-29, копия структуры `user-note/contract/` (пакет `com.example.note`)
 - `note/contract/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `note/contract/src/main/java/com/example/note/package-info.java` — [REVIEW] — новый 2026-09-29
+- `note/contract/src/main/java/com/example/note/NoteRequest.java` — [REVIEW] — новый 2026-09-29, модель запроса создания для `createNote` (`docs/http-api-reference.md`)
+- `note/contract/src/main/java/com/example/note/NoteResponse.java` — [REVIEW] — новый 2026-09-29, модель ответа 201 для `createNote`
 
 #### note/contract-reactive/ (2 файлов) — новый 2026-09-29, копия структуры `user-note/contract-reactive/` (пакет `com.example.note`)
 - `note/contract-reactive/build.gradle.kts` — [REVIEW] — новый 2026-09-29

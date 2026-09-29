@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -18,7 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class NoteController {
 
     @PostMapping
-    public ResponseEntity<Void> createNote() {
+    public ResponseEntity<NoteResponse> createNote(@RequestBody NoteRequest request) {
         throw notImplemented();
     }
 
