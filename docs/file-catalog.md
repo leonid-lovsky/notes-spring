@@ -971,7 +971,7 @@
 - `gradle/checkstyle/google_checks.xml` — [REMOVED] 2026-09-25 — переименован в `gradle/checkstyle/checkstyle.xml`; до этого: новый 2026-09-04 (вечер), дословная нетронутая копия бандла `checkstyle-13.10.0.jar` (было `io.spring.javaformat.checkstyle.SpringChecks` до этого же дня днём) — 0 переопределений: `severity=warning` по умолчанию (Gradle Checkstyle-таск не валит `check` на warning, только репортит), отступ 2 пробела, `LineLength.max=100`
 
 #### gradle/pmd/ (1 файл)
-- `gradle/pmd/pmd.xml` — [REVIEW] — новый 2026-09-29, по прямому запросу пользователя: набор правил Gradle по умолчанию (`category/java/errorprone.xml`, проверено по `gradle-code-quality-9.7.1.jar`) без `AvoidDuplicateLiterals`; подключён через `ruleSetFiles` в `com.example.codequality-pmd`
+- `gradle/pmd/pmd.xml` — [REMOVED] 2026-09-29 — в тот же день удалён по прямому запросу пользователя «стандартные настройки PMD» (плагин снова без `ruleSets`/`ruleSetFiles`); был: набор правил Gradle по умолчанию (`category/java/errorprone.xml`, проверено по `gradle-code-quality-9.7.1.jar`) без `AvoidDuplicateLiterals`; подключён через `ruleSetFiles` в `com.example.codequality-pmd`
 
 ### gateway/ (6 файлов)
 
