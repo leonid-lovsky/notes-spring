@@ -35,31 +35,21 @@
 │   ├── checkstyle/google_checks.xml
 │   ├── wrapper/{gradle-wrapper.jar,gradle-wrapper.properties}
 │   └── libs.versions.toml
-├── note/                                  (с 2026-09-29 — копия структуры user-note/, классы Note*)
-│   ├── contract-common/, contract-synchronous/, contract-reactive/
-│   ├── controller-webmvc/, controller-webflux/
-│   ├── data-jdbc/, data-r2dbc/, data-mongodb/, data-mongodb-reactive/
-│   └── application-{h2,mysql,postgresql,mongodb}[-reactive]/
-├── user/                                  (с 2026-09-29 — копия структуры user-note/, классы User*)
-│   ├── contract-common/, contract-synchronous/, contract-reactive/
-│   ├── controller-webmvc/, controller-webflux/
-│   ├── data-jdbc/, data-r2dbc/, data-mongodb/, data-mongodb-reactive/
-│   └── application-{h2,mysql,postgresql,mongodb}[-reactive]/
-├── user-note/
-│   ├── application-h2/                    (sync SQL, embedded, без Testcontainers)
-│   ├── application-h2-reactive/           (reactive SQL, embedded)
-│   ├── application-mysql/                 (sync SQL, Testcontainers)
-│   ├── application-mysql-reactive/        (reactive SQL, Testcontainers)
-│   ├── application-postgresql/            (sync SQL, Testcontainers)
-│   ├── application-postgresql-reactive/   (reactive SQL, Testcontainers)
-│   ├── application-mongodb/               (sync, Testcontainers)
-│   ├── application-mongodb-reactive/      (reactive, Testcontainers)
-│   ├── controller-webmvc/                 (пустой UserNoteController, @WebMvcTest)
-│   ├── controller-webflux/                (пустой UserNoteController, @WebFluxTest)
-│   ├── data-jdbc/                         (UserNote + UserNoteRepository, @DataJdbcTest)
-│   ├── data-r2dbc/                        (UserNote + UserNoteRepository, @DataR2dbcTest)
-│   ├── data-mongodb/                      (UserNote + UserNoteRepository, @DataMongoTest)
-│   └── data-mongodb-reactive/             (UserNote + UserNoteRepository, @DataMongoTest)
+├── note/                                  (с 2026-09-29 — группы модулей в подкаталогах, путь проекта `:note:<группа>:<модуль>`)
+│   ├── contract/     contract-common/ (модели), contract-synchronous/, contract-reactive/ (порты)
+│   ├── controller/   controller-webmvc/, controller-webflux/ (контроллер, слайс-тест)
+│   ├── data/         data-jdbc/, data-r2dbc/, data-mongodb/, data-mongodb-reactive/ (сущность, репозиторий, реализации портов)
+│   └── application/  application-{h2,mysql,postgresql,mongodb}[-reactive]/ (8 листьев, composition root)
+├── user/                                  (с 2026-09-29 — группы модулей в подкаталогах, путь проекта `:user:<группа>:<модуль>`)
+│   ├── contract/     contract-common/ (модели), contract-synchronous/, contract-reactive/ (порты)
+│   ├── controller/   controller-webmvc/, controller-webflux/ (контроллер, слайс-тест)
+│   ├── data/         data-jdbc/, data-r2dbc/, data-mongodb/, data-mongodb-reactive/ (сущность, репозиторий, реализации портов)
+│   └── application/  application-{h2,mysql,postgresql,mongodb}[-reactive]/ (8 листьев, composition root)
+├── user-note/                                  (с 2026-09-29 — группы модулей в подкаталогах, путь проекта `:user-note:<группа>:<модуль>`)
+│   ├── contract/     contract-common/ (модели), contract-synchronous/, contract-reactive/ (порты)
+│   ├── controller/   controller-webmvc/, controller-webflux/ (контроллер, слайс-тест)
+│   ├── data/         data-jdbc/, data-r2dbc/, data-mongodb/, data-mongodb-reactive/ (сущность, репозиторий, реализации портов)
+│   └── application/  application-{h2,mysql,postgresql,mongodb}[-reactive]/ (8 листьев, composition root)
 ├── .editorconfig
 ├── .gitattributes
 ├── .gitignore
