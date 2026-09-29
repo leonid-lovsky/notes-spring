@@ -8,33 +8,33 @@
 
 ## Аннотации тестовых классов верхнего уровня — перечень (сверено 2026-09-29)
 
-Составные аннотации вида `@…Test`, которые ставятся на тестовый класс и сами определяют контекст теста; вспомогательные (`@Import`, `@MockitoBean`, `@AutoConfigure*`, `@TestConfiguration` и т. п.) сюда не входят. Сверено с официальной документацией Spring Boot 4.1.1: приложение «Test Slices» (`docs.spring.io/spring-boot/appendix/test-auto-configuration/slices.html`) — 19 слайсов; раздел «Testing Spring Boot Applications» (`docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html`) — `@SpringBootTest` (полный контекст, не слайс) и `@JsonTest` (в приложении «Test Slices» отсутствует, но описан в разделе о тестировании: «you can use the `@JsonTest` annotation from the `spring-boot-test-autoconfigure` module»). Итого 21; в проекте применяются 6 (помечены).
+Составные аннотации вида `@…Test`, которые ставятся на тестовый класс и сами определяют контекст теста; вспомогательные (`@Import`, `@MockitoBean`, `@AutoConfigure*`, `@TestConfiguration` и т. п.) сюда не входят. Сверено с официальной документацией Spring Boot 4.1.1: приложение «Test Slices» (`docs.spring.io/spring-boot/appendix/test-auto-configuration/slices.html`) — 19 слайсов; раздел «Testing Spring Boot Applications» (`docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html`) — `@SpringBootTest` (полный контекст, не слайс) и `@JsonTest` (в приложении «Test Slices» отсутствует, но описан в разделе о тестировании: «you can use the `@JsonTest` annotation from the `spring-boot-test-autoconfigure` module»). Итого 21; в проекте применяются 6 (помечены «У нас»). Список ниже — дословно в форме, утверждённой пользователем 2026-09-29, не переформатировать.
 
 Полный контекст:
-- `@SpringBootTest` — весь `ApplicationContext` — в проекте: листья `application-*`
+- @SpringBootTest — весь ApplicationContext. У нас — в 24 листьях application-*.
 
 Слайс — веб:
-- `@WebMvcTest` — контроллеры Spring MVC — в проекте: `controller-webmvc`
-- `@WebFluxTest` — контроллеры Spring WebFlux — в проекте: `controller-webflux`
-- `@GraphQlTest` — GraphQL-контроллеры
+- @WebMvcTest — контроллеры Spring MVC. У нас — controller-webmvc.
+- @WebFluxTest — контроллеры Spring WebFlux. У нас — controller-webflux.
+- @GraphQlTest — GraphQL-контроллеры.
 
 Слайс — хранение:
-- `@DataJdbcTest` — репозитории Spring Data JDBC — в проекте: `data-jdbc`
-- `@DataR2dbcTest` — репозитории Spring Data R2DBC — в проекте: `data-r2dbc`
-- `@DataMongoTest` — Spring Data MongoDB, одна аннотация для blocking и reactive — в проекте: `data-mongodb`, `data-mongodb-reactive`
-- `@DataJpaTest` — репозитории Spring Data JPA
-- `@JdbcTest` — голый `DataSource` + `JdbcTemplate`, без Spring Data
-- `@JooqTest` — запросы jOOQ
-- `@DataCassandraTest`, `@DataCouchbaseTest`, `@DataElasticsearchTest`, `@DataLdapTest`, `@DataNeo4jTest`, `@DataRedisTest` — репозитории соответствующих Spring Data
+- @DataJdbcTest — репозитории Spring Data JDBC. У нас — data-jdbc.
+- @DataR2dbcTest — репозитории Spring Data R2DBC. У нас — data-r2dbc.
+- @DataMongoTest — Spring Data MongoDB, одна аннотация для blocking и reactive. У нас — data-mongodb, data-mongodb-reactive.
+- @DataJpaTest — репозитории Spring Data JPA.
+- @JdbcTest — голый DataSource + JdbcTemplate, без Spring Data.
+- @JooqTest — запросы jOOQ.
+- @DataCassandraTest, @DataCouchbaseTest, @DataElasticsearchTest, @DataLdapTest, @DataNeo4jTest, @DataRedisTest — репозитории соответствующих Spring Data.
 
 Слайс — клиенты внешних сервисов:
-- `@RestClientTest` — клиенты `RestClient`/`RestTemplate`
-- `@WebClientTest` — реактивный клиент `WebClient`
-- `@WebServiceClientTest` — SOAP-клиенты
-- `@WebServiceServerTest` — SOAP-эндпоинты
+- @RestClientTest — клиенты RestClient/RestTemplate.
+- @WebClientTest — реактивный клиент WebClient.
+- @WebServiceClientTest — SOAP-клиенты.
+- @WebServiceServerTest — SOAP-эндпоинты.
 
 Слайс — прочее:
-- `@JsonTest` — JSON-сериализация (Jackson/Gson/JSON-B)
+- @JsonTest — JSON-сериализация (Jackson/Gson/JSON-B).
 
 ## Аннотации
 
