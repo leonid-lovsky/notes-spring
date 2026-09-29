@@ -8,7 +8,7 @@
 
 ## Аннотации тестовых классов верхнего уровня — перечень (сверено 2026-09-29)
 
-Составные аннотации вида `@…Test`, которые ставятся на тестовый класс и сами определяют контекст теста; вспомогательные (`@Import`, `@MockitoBean`, `@AutoConfigure*`, `@TestConfiguration` и т. п.) сюда не входят. Сверено с официальной документацией Spring Boot 4.1.1: приложение «Test Slices» (`docs.spring.io/spring-boot/appendix/test-auto-configuration/slices.html`) — 19 слайсов; раздел «Testing Spring Boot Applications» (`docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html`) — `@SpringBootTest` (полный контекст, не слайс) и `@JsonTest` (в приложении «Test Slices» отсутствует, но описан в разделе о тестировании: «you can use the `@JsonTest` annotation from the `spring-boot-test-autoconfigure` module»). Итого 21; в проекте применяются 6 (помечены «У нас»). Список ниже — дословно в форме, утверждённой пользователем 2026-09-29, не переформатировать.
+Составные аннотации вида `@…Test`, которые ставятся на тестовый класс и сами определяют контекст теста; вспомогательные (`@Import`, `@MockitoBean`, `@AutoConfigure*`, `@TestConfiguration` и т. п.) сюда не входят. Сверено с официальной документацией Spring Boot 4.1.1: приложение «Test Slices» (`docs.spring.io/spring-boot/appendix/test-auto-configuration/slices.html`) — 19 слайсов; раздел «Testing Spring Boot Applications» (`docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html`) — `@SpringBootTest` (полный контекст, не слайс) и `@JsonTest` (в приложении «Test Slices» отсутствует, но описан в разделе о тестировании: «you can use the `@JsonTest` annotation from the `spring-boot-test-autoconfigure` module»). Итого 21 аннотация Spring Boot; дополнено 2026-09-29 до полного доступного перечня (по запросу пользователя): составные аннотации Spring Framework — `@SpringJUnitConfig`, `@SpringJUnitWebConfig` (`docs.spring.io/spring-framework/reference/testing/annotations/integration-junit-jupiter.html`), и других проектов Spring — `@ApplicationModuleTest` (`docs.spring.io/spring-modulith/reference/testing.html`), `@SpringBatchTest` (`docs.spring.io/spring-batch/reference/testing.html`), `@ShellTest` (`docs.spring.io/spring-shell/reference/testing.html`); проверены именно эти проекты, перечень по другим проектам экосистемы (Spring Integration, Spring Kafka и т. п.) не собирался — их тестовые аннотации (`@SpringIntegrationTest`, `@EmbeddedKafka`), по памяти, вспомогательные и контекст не определяют — не проверялось. Всего 26; в проекте применяются 6 (помечены «У нас»). Список ниже — дословно в форме, утверждённой пользователем 2026-09-29, не переформатировать.
 
 Полный контекст:
 - @SpringBootTest — весь ApplicationContext. У нас — в 24 листьях application-*.
@@ -25,7 +25,12 @@
 - @DataJpaTest — репозитории Spring Data JPA.
 - @JdbcTest — голый DataSource + JdbcTemplate, без Spring Data.
 - @JooqTest — запросы jOOQ.
-- @DataCassandraTest, @DataCouchbaseTest, @DataElasticsearchTest, @DataLdapTest, @DataNeo4jTest, @DataRedisTest — репозитории соответствующих Spring Data.
+- @DataCassandraTest — репозитории Spring Data Cassandra.
+- @DataCouchbaseTest — репозитории Spring Data Couchbase.
+- @DataElasticsearchTest — репозитории Spring Data Elasticsearch.
+- @DataLdapTest — репозитории Spring Data LDAP.
+- @DataNeo4jTest — репозитории Spring Data Neo4j.
+- @DataRedisTest — репозитории Spring Data Redis.
 
 Слайс — клиенты внешних сервисов:
 - @RestClientTest — клиенты RestClient/RestTemplate.
@@ -35,6 +40,15 @@
 
 Слайс — прочее:
 - @JsonTest — JSON-сериализация (Jackson/Gson/JSON-B).
+
+Spring Framework (без Spring Boot):
+- @SpringJUnitConfig — SpringExtension + @ContextConfiguration: контекст из явно указанной конфигурации, без автоконфигурации Boot.
+- @SpringJUnitWebConfig — то же + @WebAppConfiguration: веб-контекст.
+
+Другие проекты Spring:
+- @ApplicationModuleTest — Spring Modulith: замена @SpringBootTest, контекст ограничен модулем приложения.
+- @SpringBatchTest — Spring Batch: добавляет в контекст тестовые утилиты Batch, ставится вместе с @SpringBootTest или @SpringJUnitConfig.
+- @ShellTest — Spring Shell: слайс для команд оболочки.
 
 ## Аннотации
 
