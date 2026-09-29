@@ -35,7 +35,17 @@
 │   ├── checkstyle/google_checks.xml
 │   ├── wrapper/{gradle-wrapper.jar,gradle-wrapper.properties}
 │   └── libs.versions.toml
-├── note-user/
+├── note/                                  (с 2026-09-29 — копия структуры user-note/, классы Note*)
+│   ├── contract/, contract-reactive/
+│   ├── controller-webmvc/, controller-webflux/
+│   ├── data-jdbc/, data-r2dbc/, data-mongodb/, data-mongodb-reactive/
+│   └── application-{h2,mysql,postgresql,mongodb}[-reactive]/
+├── user/                                  (с 2026-09-29 — копия структуры user-note/, классы User*)
+│   ├── contract/, contract-reactive/
+│   ├── controller-webmvc/, controller-webflux/
+│   ├── data-jdbc/, data-r2dbc/, data-mongodb/, data-mongodb-reactive/
+│   └── application-{h2,mysql,postgresql,mongodb}[-reactive]/
+├── user-note/
 │   ├── application-h2/                    (sync SQL, embedded, без Testcontainers)
 │   ├── application-h2-reactive/           (reactive SQL, embedded)
 │   ├── application-mysql/                 (sync SQL, Testcontainers)
@@ -44,13 +54,12 @@
 │   ├── application-postgresql-reactive/   (reactive SQL, Testcontainers)
 │   ├── application-mongodb/               (sync, Testcontainers)
 │   ├── application-mongodb-reactive/      (reactive, Testcontainers)
-│   ├── controller-webmvc/                 (пустой NoteUserController, @WebMvcTest)
-│   ├── controller-webflux/                (пустой NoteUserController, @WebFluxTest)
-│   ├── data-jdbc/                         (NoteUser + NoteUserRepository, @DataJdbcTest)
-│   ├── data-r2dbc/                        (NoteUser + NoteUserRepository, @DataR2dbcTest)
-│   ├── data-mongodb/                      (NoteUser + NoteUserRepository, @DataMongoTest)
-│   ├── data-mongodb-reactive/             (NoteUser + NoteUserRepository, @DataMongoTest)
-│   └── .main-class
+│   ├── controller-webmvc/                 (пустой UserNoteController, @WebMvcTest)
+│   ├── controller-webflux/                (пустой UserNoteController, @WebFluxTest)
+│   ├── data-jdbc/                         (UserNote + UserNoteRepository, @DataJdbcTest)
+│   ├── data-r2dbc/                        (UserNote + UserNoteRepository, @DataR2dbcTest)
+│   ├── data-mongodb/                      (UserNote + UserNoteRepository, @DataMongoTest)
+│   └── data-mongodb-reactive/             (UserNote + UserNoteRepository, @DataMongoTest)
 ├── .editorconfig
 ├── .gitattributes
 ├── .gitignore

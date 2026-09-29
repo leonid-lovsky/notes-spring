@@ -6,4 +6,6 @@ val libs = extensions.getByType(VersionCatalogsExtension::class.java).named("lib
 
 pmd {
     toolVersion = libs.findVersion("pmd").get().requiredVersion
+    ruleSets = listOf()
+    ruleSetFiles = files(rootProject.file("gradle/pmd/pmd.xml"))
 }

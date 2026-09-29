@@ -35,7 +35,7 @@
 - **R2DBC** — интерфейс есть, но пустой (`extends ReactiveCrudRepository, ReactiveSortingRepository, ReactiveQueryByExampleExecutor {}`, ни одного своего метода); Javadoc и исходник причину не объясняют. Вероятное объяснение (НЕ подтверждено документацией, вывод по косвенным признакам) — единообразие имён между store-модулями Spring Data (`JpaRepository`/`MongoRepository`/`R2dbcRepository` — по одной точке входа на стор), унаследованное с тех пор, когда R2DBC был отдельным от `spring-data-relational` проектом
 
 ## Что реально использует проект
-- Все 4 `data-*`-модуля (`data-jdbc`/`data-mongodb` — sync, `data-r2dbc`/`data-mongodb-reactive` — reactive) объявляют `NoteUserRepository` через голые `ListCrudRepository`/`ReactiveCrudRepository` из `spring-data-commons`, не через вендорные `MongoRepository`/`ReactiveMongoRepository`/`R2dbcRepository` — то есть уже единообразно на самом нижнем общем узле; вендорную «надбавку» (`insert(...)` у Mongo) нигде не используют
+- Все 4 `data-*`-модуля (`data-jdbc`/`data-mongodb` — sync, `data-r2dbc`/`data-mongodb-reactive` — reactive) объявляют `UserNoteRepository` через голые `ListCrudRepository`/`ReactiveCrudRepository` из `spring-data-commons`, не через вендорные `MongoRepository`/`ReactiveMongoRepository`/`R2dbcRepository` — то есть уже единообразно на самом нижнем общем узле; вендорную «надбавку» (`insert(...)` у Mongo) нигде не используют
 - Связано с вопросом общего generic-репозитория для `data-*` (обобщённый предок, параметризованный типом сущности, отдельно sync/reactive из-за `reactor-core`) — см. `CLAUDE.md` → «Открытые решения» → «ОТКРЫТЫЙ ВОПРОС ВСЕЙ АРХИТЕКТУРЫ — как писать тесты и избегать дублирования в мульти-вендорном приложении»
 
 ## Источники
