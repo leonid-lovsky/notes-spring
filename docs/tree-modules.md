@@ -11,6 +11,7 @@
 ```
 com.example.usernote
 │
+├── contract-common                   — id("com.example.contract")
 ├── contract-synchronous              — id("com.example.contract")
 ├── contract-reactive                 — id("com.example.contract-reactive")
 │
