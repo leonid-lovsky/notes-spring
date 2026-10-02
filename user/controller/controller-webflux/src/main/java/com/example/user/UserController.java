@@ -17,13 +17,13 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/users")
 public class UserController {
 
-    private final FindUserByIdReactive findUserById;
-    private final CreateUserByIdReactive createUserById;
-    private final ReplaceUserByIdReactive replaceUserById;
-    private final UpdateUserByIdReactive updateUserById;
-    private final DeleteUserByIdReactive deleteUserById;
+    private final FindUserById findUserById;
+    private final CreateUserById createUserById;
+    private final ReplaceUserById replaceUserById;
+    private final UpdateUserById updateUserById;
+    private final DeleteUserById deleteUserById;
 
-    public UserController(FindUserByIdReactive findUserById, CreateUserByIdReactive createUserById, ReplaceUserByIdReactive replaceUserById, UpdateUserByIdReactive updateUserById, DeleteUserByIdReactive deleteUserById) {
+    public UserController(FindUserById findUserById, CreateUserById createUserById, ReplaceUserById replaceUserById, UpdateUserById updateUserById, DeleteUserById deleteUserById) {
         this.findUserById = findUserById;
         this.createUserById = createUserById;
         this.replaceUserById = replaceUserById;
@@ -33,26 +33,26 @@ public class UserController {
 
     @GetMapping("/{id}")
     public Mono<ResponseEntity<UserResponse>> findUserById(@PathVariable("id") UUID id) {
-        return findUserById.execute(id).map(ResponseEntity::ok);
+        return findUserById.findUserById(id).map(ResponseEntity::ok);
     }
 
     @PostMapping("/{id}")
     public Mono<ResponseEntity<UserResponse>> createUserById(@PathVariable("id") UUID id, @RequestBody UserRequest request) {
-        return createUserById.execute(id, request).map(ResponseEntity::ok);
+        return createUserById.createUserById(id, request).map(ResponseEntity::ok);
     }
 
     @PutMapping("/{id}")
     public Mono<ResponseEntity<UserResponse>> replaceUserById(@PathVariable("id") UUID id, @RequestBody UserRequest request) {
-        return replaceUserById.execute(id, request).map(ResponseEntity::ok);
+        return replaceUserById.replaceUserById(id, request).map(ResponseEntity::ok);
     }
 
     @PatchMapping(path = "/{id}")
     public Mono<ResponseEntity<UserResponse>> updateUserById(@PathVariable("id") UUID id, @RequestBody UserRequest request) {
-        return updateUserById.execute(id, request).map(ResponseEntity::ok);
+        return updateUserById.updateUserById(id, request).map(ResponseEntity::ok);
     }
 
     @DeleteMapping("/{id}")
     public Mono<ResponseEntity<UserResponse>> deleteUserById(@PathVariable("id") UUID id) {
-        return deleteUserById.execute(id).map(ResponseEntity::ok);
+        return deleteUserById.deleteUserById(id).map(ResponseEntity::ok);
     }
 }

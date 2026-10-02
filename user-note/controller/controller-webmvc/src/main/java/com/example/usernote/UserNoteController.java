@@ -16,13 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/user-notes")
 public class UserNoteController {
 
-    private final FindUserNoteByIdSynchronous findUserNoteById;
-    private final CreateUserNoteByIdSynchronous createUserNoteById;
-    private final ReplaceUserNoteByIdSynchronous replaceUserNoteById;
-    private final UpdateUserNoteByIdSynchronous updateUserNoteById;
-    private final DeleteUserNoteByIdSynchronous deleteUserNoteById;
+    private final FindUserNoteById findUserNoteById;
+    private final CreateUserNoteById createUserNoteById;
+    private final ReplaceUserNoteById replaceUserNoteById;
+    private final UpdateUserNoteById updateUserNoteById;
+    private final DeleteUserNoteById deleteUserNoteById;
 
-    public UserNoteController(FindUserNoteByIdSynchronous findUserNoteById, CreateUserNoteByIdSynchronous createUserNoteById, ReplaceUserNoteByIdSynchronous replaceUserNoteById, UpdateUserNoteByIdSynchronous updateUserNoteById, DeleteUserNoteByIdSynchronous deleteUserNoteById) {
+    public UserNoteController(FindUserNoteById findUserNoteById, CreateUserNoteById createUserNoteById, ReplaceUserNoteById replaceUserNoteById, UpdateUserNoteById updateUserNoteById, DeleteUserNoteById deleteUserNoteById) {
         this.findUserNoteById = findUserNoteById;
         this.createUserNoteById = createUserNoteById;
         this.replaceUserNoteById = replaceUserNoteById;
@@ -32,26 +32,26 @@ public class UserNoteController {
 
     @GetMapping("/{id}")
     public ResponseEntity<UserNoteResponse> findUserNoteById(@PathVariable("id") UUID id) {
-        return ResponseEntity.ok(findUserNoteById.execute(id));
+        return ResponseEntity.ok(findUserNoteById.findUserNoteById(id));
     }
 
     @PostMapping("/{id}")
     public ResponseEntity<UserNoteResponse> createUserNoteById(@PathVariable("id") UUID id, @RequestBody UserNoteRequest request) {
-        return ResponseEntity.ok(createUserNoteById.execute(id, request));
+        return ResponseEntity.ok(createUserNoteById.createUserNoteById(id, request));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<UserNoteResponse> replaceUserNoteById(@PathVariable("id") UUID id, @RequestBody UserNoteRequest request) {
-        return ResponseEntity.ok(replaceUserNoteById.execute(id, request));
+        return ResponseEntity.ok(replaceUserNoteById.replaceUserNoteById(id, request));
     }
 
     @PatchMapping(path = "/{id}")
     public ResponseEntity<UserNoteResponse> updateUserNoteById(@PathVariable("id") UUID id, @RequestBody UserNoteRequest request) {
-        return ResponseEntity.ok(updateUserNoteById.execute(id, request));
+        return ResponseEntity.ok(updateUserNoteById.updateUserNoteById(id, request));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<UserNoteResponse> deleteUserNoteById(@PathVariable("id") UUID id) {
-        return ResponseEntity.ok(deleteUserNoteById.execute(id));
+        return ResponseEntity.ok(deleteUserNoteById.deleteUserNoteById(id));
     }
 }

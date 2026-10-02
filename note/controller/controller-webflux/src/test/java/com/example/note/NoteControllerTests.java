@@ -5,7 +5,7 @@ import org.springframework.boot.webflux.test.autoconfigure.WebFluxTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @WebFluxTest(NoteController.class)
-@MockitoBean(types = {FindNoteByIdReactive.class, CreateNoteByIdReactive.class, ReplaceNoteByIdReactive.class, UpdateNoteByIdReactive.class, DeleteNoteByIdReactive.class})
+@MockitoBean(types = {FindNoteById.class, CreateNoteById.class, ReplaceNoteById.class, UpdateNoteById.class, DeleteNoteById.class})
 class NoteControllerTests {
 
     @Test

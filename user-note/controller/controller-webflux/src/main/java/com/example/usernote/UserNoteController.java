@@ -17,13 +17,13 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/user-notes")
 public class UserNoteController {
 
-    private final FindUserNoteByIdReactive findUserNoteById;
-    private final CreateUserNoteByIdReactive createUserNoteById;
-    private final ReplaceUserNoteByIdReactive replaceUserNoteById;
-    private final UpdateUserNoteByIdReactive updateUserNoteById;
-    private final DeleteUserNoteByIdReactive deleteUserNoteById;
+    private final FindUserNoteById findUserNoteById;
+    private final CreateUserNoteById createUserNoteById;
+    private final ReplaceUserNoteById replaceUserNoteById;
+    private final UpdateUserNoteById updateUserNoteById;
+    private final DeleteUserNoteById deleteUserNoteById;
 
-    public UserNoteController(FindUserNoteByIdReactive findUserNoteById, CreateUserNoteByIdReactive createUserNoteById, ReplaceUserNoteByIdReactive replaceUserNoteById, UpdateUserNoteByIdReactive updateUserNoteById, DeleteUserNoteByIdReactive deleteUserNoteById) {
+    public UserNoteController(FindUserNoteById findUserNoteById, CreateUserNoteById createUserNoteById, ReplaceUserNoteById replaceUserNoteById, UpdateUserNoteById updateUserNoteById, DeleteUserNoteById deleteUserNoteById) {
         this.findUserNoteById = findUserNoteById;
         this.createUserNoteById = createUserNoteById;
         this.replaceUserNoteById = replaceUserNoteById;
@@ -33,26 +33,26 @@ public class UserNoteController {
 
     @GetMapping("/{id}")
     public Mono<ResponseEntity<UserNoteResponse>> findUserNoteById(@PathVariable("id") UUID id) {
-        return findUserNoteById.execute(id).map(ResponseEntity::ok);
+        return findUserNoteById.findUserNoteById(id).map(ResponseEntity::ok);
     }
 
     @PostMapping("/{id}")
     public Mono<ResponseEntity<UserNoteResponse>> createUserNoteById(@PathVariable("id") UUID id, @RequestBody UserNoteRequest request) {
-        return createUserNoteById.execute(id, request).map(ResponseEntity::ok);
+        return createUserNoteById.createUserNoteById(id, request).map(ResponseEntity::ok);
     }
 
     @PutMapping("/{id}")
     public Mono<ResponseEntity<UserNoteResponse>> replaceUserNoteById(@PathVariable("id") UUID id, @RequestBody UserNoteRequest request) {
-        return replaceUserNoteById.execute(id, request).map(ResponseEntity::ok);
+        return replaceUserNoteById.replaceUserNoteById(id, request).map(ResponseEntity::ok);
     }
 
     @PatchMapping(path = "/{id}")
     public Mono<ResponseEntity<UserNoteResponse>> updateUserNoteById(@PathVariable("id") UUID id, @RequestBody UserNoteRequest request) {
-        return updateUserNoteById.execute(id, request).map(ResponseEntity::ok);
+        return updateUserNoteById.updateUserNoteById(id, request).map(ResponseEntity::ok);
     }
 
     @DeleteMapping("/{id}")
     public Mono<ResponseEntity<UserNoteResponse>> deleteUserNoteById(@PathVariable("id") UUID id) {
-        return deleteUserNoteById.execute(id).map(ResponseEntity::ok);
+        return deleteUserNoteById.deleteUserNoteById(id).map(ResponseEntity::ok);
     }
 }

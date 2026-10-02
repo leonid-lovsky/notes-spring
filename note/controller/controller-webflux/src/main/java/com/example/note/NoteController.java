@@ -17,13 +17,13 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/notes")
 public class NoteController {
 
-    private final FindNoteByIdReactive findNoteById;
-    private final CreateNoteByIdReactive createNoteById;
-    private final ReplaceNoteByIdReactive replaceNoteById;
-    private final UpdateNoteByIdReactive updateNoteById;
-    private final DeleteNoteByIdReactive deleteNoteById;
+    private final FindNoteById findNoteById;
+    private final CreateNoteById createNoteById;
+    private final ReplaceNoteById replaceNoteById;
+    private final UpdateNoteById updateNoteById;
+    private final DeleteNoteById deleteNoteById;
 
-    public NoteController(FindNoteByIdReactive findNoteById, CreateNoteByIdReactive createNoteById, ReplaceNoteByIdReactive replaceNoteById, UpdateNoteByIdReactive updateNoteById, DeleteNoteByIdReactive deleteNoteById) {
+    public NoteController(FindNoteById findNoteById, CreateNoteById createNoteById, ReplaceNoteById replaceNoteById, UpdateNoteById updateNoteById, DeleteNoteById deleteNoteById) {
         this.findNoteById = findNoteById;
         this.createNoteById = createNoteById;
         this.replaceNoteById = replaceNoteById;
@@ -33,26 +33,26 @@ public class NoteController {
 
     @GetMapping("/{id}")
     public Mono<ResponseEntity<NoteResponse>> findNoteById(@PathVariable("id") UUID id) {
-        return findNoteById.execute(id).map(ResponseEntity::ok);
+        return findNoteById.findNoteById(id).map(ResponseEntity::ok);
     }
 
     @PostMapping("/{id}")
     public Mono<ResponseEntity<NoteResponse>> createNoteById(@PathVariable("id") UUID id, @RequestBody NoteRequest request) {
-        return createNoteById.execute(id, request).map(ResponseEntity::ok);
+        return createNoteById.createNoteById(id, request).map(ResponseEntity::ok);
     }
 
     @PutMapping("/{id}")
     public Mono<ResponseEntity<NoteResponse>> replaceNoteById(@PathVariable("id") UUID id, @RequestBody NoteRequest request) {
-        return replaceNoteById.execute(id, request).map(ResponseEntity::ok);
+        return replaceNoteById.replaceNoteById(id, request).map(ResponseEntity::ok);
     }
 
     @PatchMapping(path = "/{id}")
     public Mono<ResponseEntity<NoteResponse>> updateNoteById(@PathVariable("id") UUID id, @RequestBody NoteRequest request) {
-        return updateNoteById.execute(id, request).map(ResponseEntity::ok);
+        return updateNoteById.updateNoteById(id, request).map(ResponseEntity::ok);
     }
 
     @DeleteMapping("/{id}")
     public Mono<ResponseEntity<NoteResponse>> deleteNoteById(@PathVariable("id") UUID id) {
-        return deleteNoteById.execute(id).map(ResponseEntity::ok);
+        return deleteNoteById.deleteNoteById(id).map(ResponseEntity::ok);
     }
 }

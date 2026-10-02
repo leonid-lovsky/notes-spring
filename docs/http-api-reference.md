@@ -34,12 +34,12 @@
 - `PATCH /{id}` — `update{E}ById(UUID id, {E}Request request)` — меняются только переданные поля, `null` не трогает; нет → 404
 - `DELETE /{id}` — `delete{E}ById(UUID id)` — возвращает удалённую сущность, 200 + `{E}Response` (RFC 9110 §9.3.5 допускает); нет → 404
 - ошибки — исключения сценариев → один `@RestControllerAdvice` на стек → `ProblemDetail` (RFC 9457); ещё не реализовано
-- вид контроллера (задан пользователем): порядок `GET`, `POST`, `PUT`, `PATCH`, `DELETE`; одна строка на метод — `return ResponseEntity.ok(порт.execute(...))` (webflux — `порт.execute(...).map(ResponseEntity::ok)`); без `if` и приватных методов; объявления в одну строку; импорты явные
+- вид контроллера (задан пользователем): порядок `GET`, `POST`, `PUT`, `PATCH`, `DELETE`; одна строка на метод — `return ResponseEntity.ok(порт.метод(...))` (webflux — `порт.метод(...).map(ResponseEntity::ok)`); без `if` и приватных методов; объявления в одну строку; импорты явные
 
 ```java
 @GetMapping("/{id}")
 public ResponseEntity<NoteResponse> findNoteById(@PathVariable("id") UUID id) {
-    return ResponseEntity.ok(findNoteById.execute(id));
+    return ResponseEntity.ok(findNoteById.findNoteById(id));
 }
 ```
 

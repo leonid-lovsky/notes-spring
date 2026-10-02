@@ -5,7 +5,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @WebMvcTest(UserNoteController.class)
-@MockitoBean(types = {FindUserNoteByIdSynchronous.class, CreateUserNoteByIdSynchronous.class, ReplaceUserNoteByIdSynchronous.class, UpdateUserNoteByIdSynchronous.class, DeleteUserNoteByIdSynchronous.class})
+@MockitoBean(types = {FindUserNoteById.class, CreateUserNoteById.class, ReplaceUserNoteById.class, UpdateUserNoteById.class, DeleteUserNoteById.class})
 class UserNoteControllerTests {
 
     @Test

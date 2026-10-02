@@ -65,20 +65,20 @@
 #### user-note/contract/contract-synchronous/ (7 файлов) — не был в каталоге до 2026-09-24; не собирался (`plugins{}` пустой, без единого `id(...)`) до починки в этой сессии
 - `user-note/contract/contract-synchronous/build.gradle.kts` — [REVIEW] — было `plugins { id("com.example.java") }` (собирался, но нарушал паттерн «лист = плагин по роли, не голый `java`»); теперь `id("com.example.contract")`
 - `user-note/contract/contract-synchronous/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-09-24, `@NullMarked`
-- `user-note/contract/contract-synchronous/src/main/java/com/example/usernote/CreateUserNoteByIdSynchronous.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
-- `user-note/contract/contract-synchronous/src/main/java/com/example/usernote/UpdateUserNoteByIdSynchronous.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
-- `user-note/contract/contract-synchronous/src/main/java/com/example/usernote/ReplaceUserNoteByIdSynchronous.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
-- `user-note/contract/contract-synchronous/src/main/java/com/example/usernote/FindUserNoteByIdSynchronous.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
-- `user-note/contract/contract-synchronous/src/main/java/com/example/usernote/DeleteUserNoteByIdSynchronous.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
+- `user-note/contract/contract-synchronous/src/main/java/com/example/usernote/CreateUserNoteById.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
+- `user-note/contract/contract-synchronous/src/main/java/com/example/usernote/UpdateUserNoteById.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
+- `user-note/contract/contract-synchronous/src/main/java/com/example/usernote/ReplaceUserNoteById.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
+- `user-note/contract/contract-synchronous/src/main/java/com/example/usernote/FindUserNoteById.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
+- `user-note/contract/contract-synchronous/src/main/java/com/example/usernote/DeleteUserNoteById.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
 
 #### user-note/contract/contract-reactive/ (7 файлов) — не был в каталоге до 2026-09-24
 - `user-note/contract/contract-reactive/build.gradle.kts` — [REVIEW] — было `id("com.example.project-reactor")` напрямую; теперь `id("com.example.contract-reactive")` (симметрично `contract`)
 - `user-note/contract/contract-reactive/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-09-24, `@NullMarked`
-- `user-note/contract/contract-reactive/src/main/java/com/example/usernote/FindUserNoteByIdReactive.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
-- `user-note/contract/contract-reactive/src/main/java/com/example/usernote/ReplaceUserNoteByIdReactive.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
-- `user-note/contract/contract-reactive/src/main/java/com/example/usernote/CreateUserNoteByIdReactive.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
-- `user-note/contract/contract-reactive/src/main/java/com/example/usernote/UpdateUserNoteByIdReactive.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
-- `user-note/contract/contract-reactive/src/main/java/com/example/usernote/DeleteUserNoteByIdReactive.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
+- `user-note/contract/contract-reactive/src/main/java/com/example/usernote/FindUserNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
+- `user-note/contract/contract-reactive/src/main/java/com/example/usernote/ReplaceUserNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
+- `user-note/contract/contract-reactive/src/main/java/com/example/usernote/CreateUserNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
+- `user-note/contract/contract-reactive/src/main/java/com/example/usernote/UpdateUserNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
+- `user-note/contract/contract-reactive/src/main/java/com/example/usernote/DeleteUserNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
 
 #### user-note/application-{jdbc,jpa}/ — модель application-driver — [REMOVED] 2026-09-05
 - оба модуля удалены целиком (`git rm`) при переходе с модели application-driver (модуль = технология доступа jdbc/jpa/r2dbc, вендор — Spring-профиль внутри) на модель application-vendor (модуль = вендор БД, jdbc+jpa — оба сразу как зависимости одного SQL-модуля) — явное решение пользователя, разворачивает принцип «вендор = профиль, не модуль» из 2026-08-31
@@ -198,26 +198,10 @@
 - `user-note/data/data-r2dbc/src/main/resources/application-data-r2dbc.properties` — [REVIEW] — `logging.level.org.springframework.data=DEBUG` + `...data.r2dbc=DEBUG` (2026-09-21); подключается строкой `spring.profiles.include=data-r2dbc` в `application.properties` листьев …
 - `user-note/data/data-r2dbc/src/test/java/com/example/usernote/UserNoteRepositoryTests.java` — [REVIEW] — smoke: слайс-аннотация технологии (`@DataJdbcTest`/`@DataR2dbcTest`/`@DataMongoTest`) + пустой `contextLoads()`; зеркально остальным data-модулям (2026-09-21) …
 - `user-note/data/data-r2dbc/src/test/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — новый 2026-09-21, test-scope `@SpringBootApplication` (точка входа слайс-теста, как `UserNoteApplication` в `application-*`); побайтово одинаков во всех 6 модулях …
-- `user-note/data/data-jdbc/src/main/java/com/example/usernote/CreateUserNoteByIdSynchronousService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `user-note/data/data-jdbc/src/main/java/com/example/usernote/UpdateUserNoteByIdSynchronousService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `user-note/data/data-jdbc/src/main/java/com/example/usernote/DeleteUserNoteByIdSynchronousService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `user-note/data/data-jdbc/src/main/java/com/example/usernote/ReplaceUserNoteByIdSynchronousService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `user-note/data/data-jdbc/src/main/java/com/example/usernote/FindUserNoteByIdSynchronousService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `user-note/data/data-mongodb/src/main/java/com/example/usernote/CreateUserNoteByIdSynchronousService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `user-note/data/data-mongodb/src/main/java/com/example/usernote/UpdateUserNoteByIdSynchronousService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `user-note/data/data-mongodb/src/main/java/com/example/usernote/DeleteUserNoteByIdSynchronousService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `user-note/data/data-mongodb/src/main/java/com/example/usernote/ReplaceUserNoteByIdSynchronousService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `user-note/data/data-mongodb/src/main/java/com/example/usernote/FindUserNoteByIdSynchronousService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `user-note/data/data-r2dbc/src/main/java/com/example/usernote/CreateUserNoteByIdReactiveService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `user-note/data/data-r2dbc/src/main/java/com/example/usernote/UpdateUserNoteByIdReactiveService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `user-note/data/data-r2dbc/src/main/java/com/example/usernote/ReplaceUserNoteByIdReactiveService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `user-note/data/data-r2dbc/src/main/java/com/example/usernote/DeleteUserNoteByIdReactiveService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `user-note/data/data-r2dbc/src/main/java/com/example/usernote/FindUserNoteByIdReactiveService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `user-note/data/data-mongodb-reactive/src/main/java/com/example/usernote/CreateUserNoteByIdReactiveService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `user-note/data/data-mongodb-reactive/src/main/java/com/example/usernote/UpdateUserNoteByIdReactiveService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `user-note/data/data-mongodb-reactive/src/main/java/com/example/usernote/ReplaceUserNoteByIdReactiveService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `user-note/data/data-mongodb-reactive/src/main/java/com/example/usernote/DeleteUserNoteByIdReactiveService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `user-note/data/data-mongodb-reactive/src/main/java/com/example/usernote/FindUserNoteByIdReactiveService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
+- `user-note/data/data-jdbc/src/main/java/com/example/usernote/UserNoteService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}UserNoteByIdSynchronousService`
+- `user-note/data/data-mongodb/src/main/java/com/example/usernote/UserNoteService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}UserNoteByIdSynchronousService`
+- `user-note/data/data-r2dbc/src/main/java/com/example/usernote/UserNoteService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}UserNoteByIdReactiveService`
+- `user-note/data/data-mongodb-reactive/src/main/java/com/example/usernote/UserNoteService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}UserNoteByIdReactiveService`
 
 #### user-note/controller/controller-webmvc/ (4 файла) — новый 2026-09-21, driving-сторона sync: `id("com.example.spring-boot-webmvc")`; подключён к `application-{h2,mysql,postgresql,mongodb}` через `implementation(project(":user-note:controller:controller-webmvc"))` …
 - `user-note/controller/controller-webmvc/build.gradle.kts` — [REVIEW]
@@ -310,20 +294,20 @@
 #### user/contract/contract-synchronous/ (7 файлов) — новый 2026-09-29, копия структуры `user-note/contract/` (пакет `com.example.user`); 2026-09-29 переименован из `user/contract/` (синхронный контракт, имя выбрано пользователем)
 - `user/contract/contract-synchronous/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `user/contract/contract-synchronous/src/main/java/com/example/user/package-info.java` — [REVIEW] — новый 2026-09-29
-- `user/contract/contract-synchronous/src/main/java/com/example/user/FindUserByIdSynchronous.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
-- `user/contract/contract-synchronous/src/main/java/com/example/user/CreateUserByIdSynchronous.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
-- `user/contract/contract-synchronous/src/main/java/com/example/user/ReplaceUserByIdSynchronous.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
-- `user/contract/contract-synchronous/src/main/java/com/example/user/UpdateUserByIdSynchronous.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
-- `user/contract/contract-synchronous/src/main/java/com/example/user/DeleteUserByIdSynchronous.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
+- `user/contract/contract-synchronous/src/main/java/com/example/user/FindUserById.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
+- `user/contract/contract-synchronous/src/main/java/com/example/user/CreateUserById.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
+- `user/contract/contract-synchronous/src/main/java/com/example/user/ReplaceUserById.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
+- `user/contract/contract-synchronous/src/main/java/com/example/user/UpdateUserById.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
+- `user/contract/contract-synchronous/src/main/java/com/example/user/DeleteUserById.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
 
 #### user/contract/contract-reactive/ (7 файлов) — новый 2026-09-29, копия структуры `user-note/contract/contract-reactive/` (пакет `com.example.user`)
 - `user/contract/contract-reactive/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `user/contract/contract-reactive/src/main/java/com/example/user/package-info.java` — [REVIEW] — новый 2026-09-29
-- `user/contract/contract-reactive/src/main/java/com/example/user/FindUserByIdReactive.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
-- `user/contract/contract-reactive/src/main/java/com/example/user/CreateUserByIdReactive.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
-- `user/contract/contract-reactive/src/main/java/com/example/user/ReplaceUserByIdReactive.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
-- `user/contract/contract-reactive/src/main/java/com/example/user/UpdateUserByIdReactive.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
-- `user/contract/contract-reactive/src/main/java/com/example/user/DeleteUserByIdReactive.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
+- `user/contract/contract-reactive/src/main/java/com/example/user/FindUserById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
+- `user/contract/contract-reactive/src/main/java/com/example/user/CreateUserById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
+- `user/contract/contract-reactive/src/main/java/com/example/user/ReplaceUserById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
+- `user/contract/contract-reactive/src/main/java/com/example/user/UpdateUserById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
+- `user/contract/contract-reactive/src/main/java/com/example/user/DeleteUserById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
 
 #### user/controller/controller-webflux/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/controller/controller-webflux/` (пакет `com.example.user`)
 - `user/controller/controller-webflux/build.gradle.kts` — [REVIEW] — новый 2026-09-29
@@ -349,11 +333,7 @@
 - `user/data/data-jdbc/src/main/resources/application-data-jdbc.properties` — [REVIEW] — новый 2026-09-29
 - `user/data/data-jdbc/src/test/java/com/example/user/UserApplication.java` — [REVIEW] — новый 2026-09-29
 - `user/data/data-jdbc/src/test/java/com/example/user/UserRepositoryTests.java` — [REVIEW] — новый 2026-09-29
-- `user/data/data-jdbc/src/main/java/com/example/user/FindUserByIdSynchronousService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `user/data/data-jdbc/src/main/java/com/example/user/CreateUserByIdSynchronousService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `user/data/data-jdbc/src/main/java/com/example/user/ReplaceUserByIdSynchronousService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `user/data/data-jdbc/src/main/java/com/example/user/UpdateUserByIdSynchronousService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `user/data/data-jdbc/src/main/java/com/example/user/DeleteUserByIdSynchronousService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
+- `user/data/data-jdbc/src/main/java/com/example/user/UserService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}UserByIdSynchronousService`
 
 #### user/data/data-mongodb/ (12 файлов) — новый 2026-09-29, копия структуры `user-note/data/data-mongodb/` (пакет `com.example.user`)
 - `user/data/data-mongodb/build.gradle.kts` — [REVIEW] — новый 2026-09-29
@@ -363,11 +343,7 @@
 - `user/data/data-mongodb/src/main/resources/application-data-mongodb.properties` — [REVIEW] — новый 2026-09-29
 - `user/data/data-mongodb/src/test/java/com/example/user/UserApplication.java` — [REVIEW] — новый 2026-09-29
 - `user/data/data-mongodb/src/test/java/com/example/user/UserRepositoryTests.java` — [REVIEW] — новый 2026-09-29
-- `user/data/data-mongodb/src/main/java/com/example/user/FindUserByIdSynchronousService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `user/data/data-mongodb/src/main/java/com/example/user/CreateUserByIdSynchronousService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `user/data/data-mongodb/src/main/java/com/example/user/ReplaceUserByIdSynchronousService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `user/data/data-mongodb/src/main/java/com/example/user/UpdateUserByIdSynchronousService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `user/data/data-mongodb/src/main/java/com/example/user/DeleteUserByIdSynchronousService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
+- `user/data/data-mongodb/src/main/java/com/example/user/UserService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}UserByIdSynchronousService`
 
 #### user/data/data-mongodb-reactive/ (12 файлов) — новый 2026-09-29, копия структуры `user-note/data/data-mongodb-reactive/` (пакет `com.example.user`)
 - `user/data/data-mongodb-reactive/build.gradle.kts` — [REVIEW] — новый 2026-09-29
@@ -377,11 +353,7 @@
 - `user/data/data-mongodb-reactive/src/main/resources/application-data-mongodb-reactive.properties` — [REVIEW] — новый 2026-09-29
 - `user/data/data-mongodb-reactive/src/test/java/com/example/user/UserApplication.java` — [REVIEW] — новый 2026-09-29
 - `user/data/data-mongodb-reactive/src/test/java/com/example/user/UserRepositoryTests.java` — [REVIEW] — новый 2026-09-29
-- `user/data/data-mongodb-reactive/src/main/java/com/example/user/FindUserByIdReactiveService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `user/data/data-mongodb-reactive/src/main/java/com/example/user/CreateUserByIdReactiveService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `user/data/data-mongodb-reactive/src/main/java/com/example/user/ReplaceUserByIdReactiveService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `user/data/data-mongodb-reactive/src/main/java/com/example/user/UpdateUserByIdReactiveService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `user/data/data-mongodb-reactive/src/main/java/com/example/user/DeleteUserByIdReactiveService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
+- `user/data/data-mongodb-reactive/src/main/java/com/example/user/UserService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}UserByIdReactiveService`
 
 #### user/data/data-r2dbc/ (12 файлов) — новый 2026-09-29, копия структуры `user-note/data/data-r2dbc/` (пакет `com.example.user`)
 - `user/data/data-r2dbc/build.gradle.kts` — [REVIEW] — новый 2026-09-29
@@ -391,11 +363,7 @@
 - `user/data/data-r2dbc/src/main/resources/application-data-r2dbc.properties` — [REVIEW] — новый 2026-09-29
 - `user/data/data-r2dbc/src/test/java/com/example/user/UserApplication.java` — [REVIEW] — новый 2026-09-29
 - `user/data/data-r2dbc/src/test/java/com/example/user/UserRepositoryTests.java` — [REVIEW] — новый 2026-09-29
-- `user/data/data-r2dbc/src/main/java/com/example/user/FindUserByIdReactiveService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `user/data/data-r2dbc/src/main/java/com/example/user/CreateUserByIdReactiveService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `user/data/data-r2dbc/src/main/java/com/example/user/ReplaceUserByIdReactiveService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `user/data/data-r2dbc/src/main/java/com/example/user/UpdateUserByIdReactiveService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `user/data/data-r2dbc/src/main/java/com/example/user/DeleteUserByIdReactiveService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
+- `user/data/data-r2dbc/src/main/java/com/example/user/UserService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}UserByIdReactiveService`
 
 #### user/presentation/webmvc/ (5 файлов)
 - `user/presentation/webmvc/build.gradle.kts` — [DONE]
@@ -726,20 +694,20 @@
 #### note/contract/contract-synchronous/ (7 файлов) — новый 2026-09-29, копия структуры `user-note/contract/` (пакет `com.example.note`); 2026-09-29 переименован из `note/contract/` (синхронный контракт, имя выбрано пользователем)
 - `note/contract/contract-synchronous/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `note/contract/contract-synchronous/src/main/java/com/example/note/package-info.java` — [REVIEW] — новый 2026-09-29
-- `note/contract/contract-synchronous/src/main/java/com/example/note/FindNoteByIdSynchronous.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
-- `note/contract/contract-synchronous/src/main/java/com/example/note/CreateNoteByIdSynchronous.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
-- `note/contract/contract-synchronous/src/main/java/com/example/note/ReplaceNoteByIdSynchronous.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
-- `note/contract/contract-synchronous/src/main/java/com/example/note/UpdateNoteByIdSynchronous.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
-- `note/contract/contract-synchronous/src/main/java/com/example/note/DeleteNoteByIdSynchronous.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
+- `note/contract/contract-synchronous/src/main/java/com/example/note/FindNoteById.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
+- `note/contract/contract-synchronous/src/main/java/com/example/note/CreateNoteById.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
+- `note/contract/contract-synchronous/src/main/java/com/example/note/ReplaceNoteById.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
+- `note/contract/contract-synchronous/src/main/java/com/example/note/UpdateNoteById.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
+- `note/contract/contract-synchronous/src/main/java/com/example/note/DeleteNoteById.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
 
 #### note/contract/contract-reactive/ (7 файлов) — новый 2026-09-29, копия структуры `user-note/contract/contract-reactive/` (пакет `com.example.note`)
 - `note/contract/contract-reactive/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `note/contract/contract-reactive/src/main/java/com/example/note/package-info.java` — [REVIEW] — новый 2026-09-29
-- `note/contract/contract-reactive/src/main/java/com/example/note/FindNoteByIdReactive.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
-- `note/contract/contract-reactive/src/main/java/com/example/note/CreateNoteByIdReactive.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
-- `note/contract/contract-reactive/src/main/java/com/example/note/ReplaceNoteByIdReactive.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
-- `note/contract/contract-reactive/src/main/java/com/example/note/UpdateNoteByIdReactive.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
-- `note/contract/contract-reactive/src/main/java/com/example/note/DeleteNoteByIdReactive.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
+- `note/contract/contract-reactive/src/main/java/com/example/note/FindNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
+- `note/contract/contract-reactive/src/main/java/com/example/note/CreateNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
+- `note/contract/contract-reactive/src/main/java/com/example/note/ReplaceNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
+- `note/contract/contract-reactive/src/main/java/com/example/note/UpdateNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
+- `note/contract/contract-reactive/src/main/java/com/example/note/DeleteNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
 
 #### note/controller/controller-webflux/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/controller/controller-webflux/` (пакет `com.example.note`)
 - `note/controller/controller-webflux/build.gradle.kts` — [REVIEW] — новый 2026-09-29
@@ -765,11 +733,7 @@
 - `note/data/data-jdbc/src/main/resources/application-data-jdbc.properties` — [REVIEW] — новый 2026-09-29
 - `note/data/data-jdbc/src/test/java/com/example/note/NoteApplication.java` — [REVIEW] — новый 2026-09-29
 - `note/data/data-jdbc/src/test/java/com/example/note/NoteRepositoryTests.java` — [REVIEW] — новый 2026-09-29
-- `note/data/data-jdbc/src/main/java/com/example/note/FindNoteByIdSynchronousService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `note/data/data-jdbc/src/main/java/com/example/note/CreateNoteByIdSynchronousService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `note/data/data-jdbc/src/main/java/com/example/note/ReplaceNoteByIdSynchronousService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `note/data/data-jdbc/src/main/java/com/example/note/UpdateNoteByIdSynchronousService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `note/data/data-jdbc/src/main/java/com/example/note/DeleteNoteByIdSynchronousService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
+- `note/data/data-jdbc/src/main/java/com/example/note/NoteService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}NoteByIdSynchronousService`
 
 #### note/data/data-mongodb/ (12 файлов) — новый 2026-09-29, копия структуры `user-note/data/data-mongodb/` (пакет `com.example.note`)
 - `note/data/data-mongodb/build.gradle.kts` — [REVIEW] — новый 2026-09-29
@@ -779,11 +743,7 @@
 - `note/data/data-mongodb/src/main/resources/application-data-mongodb.properties` — [REVIEW] — новый 2026-09-29
 - `note/data/data-mongodb/src/test/java/com/example/note/NoteApplication.java` — [REVIEW] — новый 2026-09-29
 - `note/data/data-mongodb/src/test/java/com/example/note/NoteRepositoryTests.java` — [REVIEW] — новый 2026-09-29
-- `note/data/data-mongodb/src/main/java/com/example/note/FindNoteByIdSynchronousService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `note/data/data-mongodb/src/main/java/com/example/note/CreateNoteByIdSynchronousService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `note/data/data-mongodb/src/main/java/com/example/note/ReplaceNoteByIdSynchronousService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `note/data/data-mongodb/src/main/java/com/example/note/UpdateNoteByIdSynchronousService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `note/data/data-mongodb/src/main/java/com/example/note/DeleteNoteByIdSynchronousService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
+- `note/data/data-mongodb/src/main/java/com/example/note/NoteService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}NoteByIdSynchronousService`
 
 #### note/data/data-mongodb-reactive/ (12 файлов) — новый 2026-09-29, копия структуры `user-note/data/data-mongodb-reactive/` (пакет `com.example.note`)
 - `note/data/data-mongodb-reactive/build.gradle.kts` — [REVIEW] — новый 2026-09-29
@@ -793,11 +753,7 @@
 - `note/data/data-mongodb-reactive/src/main/resources/application-data-mongodb-reactive.properties` — [REVIEW] — новый 2026-09-29
 - `note/data/data-mongodb-reactive/src/test/java/com/example/note/NoteApplication.java` — [REVIEW] — новый 2026-09-29
 - `note/data/data-mongodb-reactive/src/test/java/com/example/note/NoteRepositoryTests.java` — [REVIEW] — новый 2026-09-29
-- `note/data/data-mongodb-reactive/src/main/java/com/example/note/FindNoteByIdReactiveService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `note/data/data-mongodb-reactive/src/main/java/com/example/note/CreateNoteByIdReactiveService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `note/data/data-mongodb-reactive/src/main/java/com/example/note/ReplaceNoteByIdReactiveService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `note/data/data-mongodb-reactive/src/main/java/com/example/note/UpdateNoteByIdReactiveService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `note/data/data-mongodb-reactive/src/main/java/com/example/note/DeleteNoteByIdReactiveService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
+- `note/data/data-mongodb-reactive/src/main/java/com/example/note/NoteService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}NoteByIdReactiveService`
 
 #### note/data/data-r2dbc/ (12 файлов) — новый 2026-09-29, копия структуры `user-note/data/data-r2dbc/` (пакет `com.example.note`)
 - `note/data/data-r2dbc/build.gradle.kts` — [REVIEW] — новый 2026-09-29
@@ -807,11 +763,7 @@
 - `note/data/data-r2dbc/src/main/resources/application-data-r2dbc.properties` — [REVIEW] — новый 2026-09-29
 - `note/data/data-r2dbc/src/test/java/com/example/note/NoteApplication.java` — [REVIEW] — новый 2026-09-29
 - `note/data/data-r2dbc/src/test/java/com/example/note/NoteRepositoryTests.java` — [REVIEW] — новый 2026-09-29
-- `note/data/data-r2dbc/src/main/java/com/example/note/FindNoteByIdReactiveService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `note/data/data-r2dbc/src/main/java/com/example/note/CreateNoteByIdReactiveService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `note/data/data-r2dbc/src/main/java/com/example/note/ReplaceNoteByIdReactiveService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `note/data/data-r2dbc/src/main/java/com/example/note/UpdateNoteByIdReactiveService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
-- `note/data/data-r2dbc/src/main/java/com/example/note/DeleteNoteByIdReactiveService.java` — [REVIEW] — новый 2026-09-29, реализация порта (`@Service`), тело — заглушка `UnsupportedOperationException`
+- `note/data/data-r2dbc/src/main/java/com/example/note/NoteService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}NoteByIdReactiveService`
 
 #### note/presentation/webmvc/ (5 файлов)
 - `note/presentation/webmvc/build.gradle.kts` — [DONE]
