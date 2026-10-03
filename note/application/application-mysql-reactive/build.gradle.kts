@@ -14,5 +14,5 @@ plugins {
 
 dependencies {
     implementation(project(":note:controller:controller-webflux"))
-    implementation(project(":note:data:data-r2dbc"))
+    implementation(project(":note:service:service-reactive"))
 }

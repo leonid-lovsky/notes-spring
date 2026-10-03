@@ -11,15 +11,15 @@
 ```
 общее — модели, порты, прикладное поведение, тесты на порт: всё, что обязано быть одним для всех веток (с 2026-09-29 — contract-common: модели запроса/ответа)
 ├── синхронное (webmvc) — driving-модуль controller-webmvc
-│   ├── JDBC — data-jdbc
+│   ├── JDBC — технология в листе (spring-boot-data-jdbc), код в service-synchronous
 │   │   ├── H2 — application-h2
 │   │   ├── MySQL — application-mysql
 │   │   └── PostgreSQL — application-postgresql
-│   └── Mongo — data-mongodb — application-mongodb
+│   └── Mongo — (spring-boot-data-mongodb) — application-mongodb
 └── реактивное (webflux) — driving-модуль controller-webflux
-    ├── R2DBC — data-r2dbc
+    ├── R2DBC — технология в листе (spring-boot-data-r2dbc), код в service-reactive
     │   ├── H2 — application-h2-reactive
     │   ├── MySQL — application-mysql-reactive
     │   └── PostgreSQL — application-postgresql-reactive
-    └── Mongo — data-mongodb-reactive — application-mongodb-reactive
+    └── Mongo — (spring-boot-data-mongodb-reactive) — application-mongodb-reactive
 ```

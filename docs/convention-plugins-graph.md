@@ -8,7 +8,7 @@
 
 > Новый 2026-08-01, снимок ТЕКУЩЕГО состояния (не история решений — история и обоснования «почему» остаются в `docs/decisions-log.md` → «Convention plugins — принцип именования и структура», лог сокращён 2026-09-25, вехи 2026-08-16→2026-09-24 в нём есть конспективно). Причина создания — граф разбросан по нескольким хронологическим правкам, реконструировать текущее состояние оттуда занимает больше времени, чем прочитать один плоский список. Обновлять при каждом добавлении/удалении/переименовании convention-плагина или изменении его `plugins{}`-блока — в той же правке, не откладывая.
 >
-> **Полностью пересобран 2026-09-24** — предыдущая версия не обновлялась с 2026-08-01 и описывала `note`/`user`/`user-note`×3, `spring-boot-application`, `data-jpa`, `application-h2-jpa` и другие модули, удалённые/переструктурированные при переписывании. Область применения сузилась: на 2026-09-24 единственным сервисом с кодом был `user-note/`; с 2026-09-29 сервисы с кодом — `note/`, `user/`, `user-note/` с одинаковой структурой по 17 модулей (числа применений ниже — для одного сервиса), `auth`/`registry`/`config`/`gateway` удалены из репозитория целиком — отсюда 0 применений у всех `spring-cloud-*`/batch/security-oauth2/graphql/elasticsearch/client-*-плагинов ниже (были рассчитаны на сервисы, которых больше нет, не единое отставание).
+> **Полностью пересобран 2026-09-24** — предыдущая версия не обновлялась с 2026-08-01 и описывала `note`/`user`/`user-note`×3, `spring-boot-application`, `data-jpa`, `application-h2-jpa` и другие модули, удалённые/переструктурированные при переписывании. Область применения сузилась: на 2026-09-24 единственным сервисом с кодом был `user-note/`; с 2026-09-29 сервисы с кодом — `note/`, `user/`, `user-note/` с одинаковой структурой по 15 модулей (с 2026-10-03 `data-*` сведены к `service-*`) (числа применений ниже — для одного сервиса), `auth`/`registry`/`config`/`gateway` удалены из репозитория целиком — отсюда 0 применений у всех `spring-cloud-*`/batch/security-oauth2/graphql/elasticsearch/client-*-плагинов ниже (были рассчитаны на сервисы, которых больше нет, не единое отставание).
 
 Проверочная команда (перегенерировать граф родитель→потомок по факту из файлов, свериться со списком ниже): `for f in build-logic/convention/src/main/kotlin/com.example.*.gradle.kts; do id=$(basename "$f" .gradle.kts); echo "$id :: $(grep -oE 'id\("[^"]+"\)' "$f" | tr '\n' ' ')"; done`
 
@@ -26,7 +26,7 @@
 
 - `com.example.codequality` — `base` — агрегатор 8 `codequality-*` (см. ниже) — 0 прямых применений (воссоздан 2026-09-24 по прямому запросу — тот же паттерн, что был убран 2026-08-01 как «обёртка без переиспользования, один потребитель»; сегодня потребитель по-прежнему один — `base` — но фрагментов 8, не 5)
 - `com.example.contract` — `base` — не добавляет зависимостей, чистый алиас — 2 применения (`contract-common`, `contract-synchronous`; до 2026-09-29 — один `contract`) — введён 2026-09-24: `user-note/contract` не собирался (`plugins{}` был пуст, без единого `id(...)`), это единственный способ дать листу свою роль вместо голого `base` напрямую (см. `CLAUDE.md` → «Правила» → исключения из правила именования плагинов)
-- `com.example.project-reactor` — `base` — + `reactor-core`(implementation) + `reactor-tools`(implementation) + `reactor-test`(test) — 0 прямых применений (родитель `contract-reactive`)
+- `com.example.project-reactor` — `base` — + `reactor-core`(implementation) + `reactor-tools`(implementation) + `reactor-test`(test) — 1 прямое применение (`service-reactive`, с 2026-10-03) + родитель `contract-reactive`
 - `com.example.spring-boot` — `base` — + `io.spring.dependency-management` + Spring Boot BOM + `spring-boot-starter`(+test) — 8 прямых применений (все 8 листьев `application-*` явным `id(...)`; сверено 2026-09-29) — родитель 24 технологических плагинов уровня 2 + `spring-cloud`
 
 ## Уровень 2 — родитель `project-reactor`
@@ -54,11 +54,12 @@
 - `com.example.spring-boot-client-restclient` — `spring-boot` — + `spring-boot-starter-restclient`(+test) — 0 применений (ОТЛОЖЕНО)
 - `com.example.spring-boot-client-webclient` — `spring-boot` — + `spring-boot-starter-webclient`(+test) — 0 применений (ОТЛОЖЕНО)
 - `com.example.spring-boot-data-elasticsearch` — `spring-boot` — + `spring-boot-starter-data-elasticsearch`(+test) — 0 применений (ОТЛОЖЕНО)
-- `com.example.spring-boot-data-jdbc` — `spring-boot` — + `spring-boot-starter-data-jdbc`(+test) — 4 применения (`data-jdbc` + листья `application-{h2,mysql,postgresql}` — применяется и на самом `data-jdbc`, и напрямую на каждом потребляющем его листе)
+- `com.example.spring-boot-data-jdbc` — `spring-boot` — + `spring-boot-starter-data-jdbc`(+test) — 3 применения (листья `application-{h2,mysql,postgresql}`; с 2026-10-03 модуль `data-jdbc` удалён — технологию даёт лист)
 - `com.example.spring-boot-data-jpa` — `spring-boot` — + `spring-boot-starter-data-jpa`(+test) — 0 применений (`data-jpa` удалён из сборки повторно 2026-09-13; JPA — возможная будущая ветка корневого дерева вариантов, сегодня её нет)
-- `com.example.spring-boot-data-mongodb` — `spring-boot` — + `spring-boot-starter-data-mongodb`(+test) — 2 применения (`data-mongodb`, `application-mongodb`)
-- `com.example.spring-boot-data-mongodb-reactive` — `spring-boot` — + `spring-boot-starter-data-mongodb-reactive`(+test) — 2 применения (`data-mongodb-reactive`, `application-mongodb-reactive`)
-- `com.example.spring-boot-data-r2dbc` — `spring-boot` — + `spring-boot-starter-data-r2dbc`(+test) — 4 применения (`data-r2dbc` + листья `application-{h2,mysql,postgresql}-reactive`)
+- `com.example.spring-boot-data-mongodb` — `spring-boot` — + `spring-boot-starter-data-mongodb`(+test) — 1 применение (`application-mongodb`; модуль `data-mongodb` удалён 2026-10-03)
+- `com.example.spring-boot-data-mongodb-reactive` — `spring-boot` — + `spring-boot-starter-data-mongodb-reactive`(+test) — 1 применение (`application-mongodb-reactive`; модуль `data-mongodb-reactive` удалён 2026-10-03)
+- `com.example.spring-boot-data-r2dbc` — `spring-boot` — + `spring-boot-starter-data-r2dbc`(+test) — 3 применения (листья `application-{h2,mysql,postgresql}-reactive`; модуль `data-r2dbc` удалён 2026-10-03)
+- `com.example.spring-boot-data-commons` — `spring-boot` — + `spring-data-commons`(implementation, версия из BOM Boot; технология-нейтральный, стартера нет) — 2 применения (`service-synchronous`, `service-reactive`), новый 2026-10-03
 - `com.example.spring-boot-database-h2` — `spring-boot` — + `h2database`(runtimeOnly) — 1 применение (`application-h2`)
 - `com.example.spring-boot-database-mysql` — `spring-boot` — + `mysql-connector-j`(runtimeOnly) — 1 применение (`application-mysql`)
 - `com.example.spring-boot-database-postgresql` — `spring-boot` — + `postgresql`(runtimeOnly) — 1 применение (`application-postgresql`)
@@ -70,8 +71,8 @@
 - `com.example.spring-boot-security-oauth2-authorization-server` — `spring-boot` — + `spring-boot-starter-security-oauth2-authorization-server`(+test) — 0 применений (ОТЛОЖЕНО)
 - `com.example.spring-boot-security-oauth2-client` — `spring-boot` — + `spring-boot-starter-security-oauth2-client`(+test) — 0 применений (ОТЛОЖЕНО)
 - `com.example.spring-boot-security-oauth2-resource-server` — `spring-boot` — + `spring-boot-starter-security-oauth2-resource-server`(+test) — 0 применений (ОТЛОЖЕНО)
-- `com.example.spring-boot-test-h2` — `spring-boot` — + `h2`(testRuntimeOnly) — 1 применение (`data-jdbc`) — встроенная БД по умолчанию для `@DataJdbcTest`, только test-scope, не утекает в потребителей `data-jdbc`
-- `com.example.spring-boot-test-r2dbc-h2` — `spring-boot` — + `r2dbc-h2`(testRuntimeOnly) — 1 применение (`data-r2dbc`) — зеркальная пара к `spring-boot-test-h2`
+- `com.example.spring-boot-test-h2` — `spring-boot` — + `h2`(testRuntimeOnly) — 0 применений с 2026-10-03 (был в `data-jdbc` для `@DataJdbcTest`; слайс-тесты и модуль убраны)
+- `com.example.spring-boot-test-r2dbc-h2` — `spring-boot` — + `r2dbc-h2`(testRuntimeOnly) — 0 применений с 2026-10-03 (был в `data-r2dbc`; пара к `spring-boot-test-h2`)
 - `com.example.spring-boot-testcontainers` — `spring-boot` — + `spring-boot-testcontainers`(test) + `testcontainers-junit-jupiter`(test) — 6 применений (все листья кроме H2: `application-{mysql,postgresql}[-reactive]`, `application-mongodb[-reactive]`)
 - `com.example.spring-boot-testcontainers-mongodb` — `spring-boot` — + `testcontainers-mongodb`(test) — 2 применения (`application-mongodb[-reactive]`)
 - `com.example.spring-boot-testcontainers-mysql` — `spring-boot` — + `testcontainers-mysql`(test) + `mysql-connector-j`(testRuntimeOnly, нужен `MySQLContainer` для JDBC-based wait-strategy) — 2 применения (`application-mysql[-reactive]`)

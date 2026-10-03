@@ -2,28 +2,26 @@ package com.example.user;
 
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
-    private final FindUserById findUserById;
-    private final CreateUserById createUserById;
-    private final ReplaceUserById replaceUserById;
-    private final UpdateUserById updateUserById;
-    private final DeleteUserById deleteUserById;
+    private final ReactiveFindUserById findUserById;
+    private final ReactiveCreateUserById createUserById;
+    private final ReactiveReplaceUserById replaceUserById;
+    private final ReactiveUpdateUserById updateUserById;
+    private final ReactiveDeleteUserById deleteUserById;
 
-    public UserController(FindUserById findUserById, CreateUserById createUserById, ReplaceUserById replaceUserById, UpdateUserById updateUserById, DeleteUserById deleteUserById) {
+    public UserController(
+        ReactiveFindUserById findUserById,
+        ReactiveCreateUserById createUserById,
+        ReactiveReplaceUserById replaceUserById,
+        ReactiveUpdateUserById updateUserById,
+        ReactiveDeleteUserById deleteUserById
+    ) {
         this.findUserById = findUserById;
         this.createUserById = createUserById;
         this.replaceUserById = replaceUserById;

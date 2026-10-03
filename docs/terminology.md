@@ -1,6 +1,6 @@
 # Термины: парадигма, веб-стек, технология доступа, диалект, драйвер, вендор (набросок 2026-10-03)
 
-> **Назначение:** различение терминов, которые постоянно путаются при обсуждении `data-*` и листьев `application-*`
+> **Назначение:** различение терминов, которые постоянно путаются при обсуждении `service-*` (прежде `data-*`) и листьев `application-*`
 > **Статус:** НАБРОСОК обсуждения 2026-10-03, не источник истины и не решение (пользователь: обсуждения — только наброски и размышления); термины подлежат уточнению
 > **Когда читать:** при вопросах «что такое диалект/драйвер/вендор», «на каком уровне что лежит», «что общее у sync и reactive»
 > **Связано:** `docs/tree-variants.md`, `docs/tree-repositories.md`, `docs/spring-data-repository-reference.md`, CLAUDE.md → «Открытые решения» → центральный вопрос (терминология)
@@ -43,7 +43,7 @@ JPA в проекте нет (`data-jpa` удалён 2026-09-13), в схеме
 | Вендор | сама база | H2 / MySQL / PostgreSQL | H2 / MySQL / PostgreSQL | H2 / MySQL / PostgreSQL | H2 / MySQL / PostgreSQL | MongoDB | MongoDB |
 
 - `JdbcClient` стоит параллельно Spring Data JDBC: общие нижние слои (API, драйвер, вендор), нет верхних (репозиторий, технология, диалект)
-- Spring Data MongoDB и Reactive MongoDB — раздельные технологии (разные стартеры `data-mongodb` и `data-mongodb-reactive`, разные драйверы); слайс-аннотация одна (`docs/spring-boot-testing-reference.md`)
+- Spring Data MongoDB и Reactive MongoDB — раздельные технологии (разные стартеры `spring-boot-starter-data-mongodb` и `-reactive`, разные драйверы; с 2026-10-03 технологию подключает лист `application-*`, код сервиса от неё не зависит — `service-synchronous`/`service-reactive`); слайс-аннотация одна (`docs/spring-boot-testing-reference.md`)
 - Spring Data JPA в проекте нет (`data-jpa` удалён 2026-09-13)
 
 ## Определения в одну строку

@@ -75,11 +75,11 @@
 #### user-note/contract/contract-reactive/ (7 файлов) — не был в каталоге до 2026-09-24
 - `user-note/contract/contract-reactive/build.gradle.kts` — [REVIEW] — было `id("com.example.project-reactor")` напрямую; теперь `id("com.example.contract-reactive")` (симметрично `contract`)
 - `user-note/contract/contract-reactive/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-09-24, `@NullMarked`
-- `user-note/contract/contract-reactive/src/main/java/com/example/usernote/FindUserNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
-- `user-note/contract/contract-reactive/src/main/java/com/example/usernote/ReplaceUserNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
-- `user-note/contract/contract-reactive/src/main/java/com/example/usernote/CreateUserNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
-- `user-note/contract/contract-reactive/src/main/java/com/example/usernote/UpdateUserNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
-- `user-note/contract/contract-reactive/src/main/java/com/example/usernote/DeleteUserNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
+- `user-note/contract/contract-reactive/src/main/java/com/example/usernote/ReactiveFindUserNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
+- `user-note/contract/contract-reactive/src/main/java/com/example/usernote/ReactiveReplaceUserNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
+- `user-note/contract/contract-reactive/src/main/java/com/example/usernote/ReactiveCreateUserNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
+- `user-note/contract/contract-reactive/src/main/java/com/example/usernote/ReactiveUpdateUserNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
+- `user-note/contract/contract-reactive/src/main/java/com/example/usernote/ReactiveDeleteUserNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
 
 #### user-note/application-{jdbc,jpa}/ — модель application-driver — [REMOVED] 2026-09-05
 - оба модуля удалены целиком (`git rm`) при переходе с модели application-driver (модуль = технология доступа jdbc/jpa/r2dbc, вендор — Spring-профиль внутри) на модель application-vendor (модуль = вендор БД, jdbc+jpa — оба сразу как зависимости одного SQL-модуля) — явное решение пользователя, разворачивает принцип «вендор = профиль, не модуль» из 2026-08-31
@@ -92,7 +92,7 @@
 - `user-note/application/application-h2/build.gradle.kts` — [REVIEW]
 - `user-note/application/application-h2/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`, восстановлен 2026-09-13 (был вынесен в `application-core`, модуль удалён)
 - `user-note/application/application-h2/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — восстановлен 2026-09-13
-- `user-note/application/application-h2/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc,data-jdbc` — единственная строка (2026-09-21); `problemdetails` и `logging.level.org.springframework.web` вынесены в `controller-webmvc`
+- `user-note/application/application-h2/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.jdbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `user-note/application/application-h2/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — 2026-09-06: `@Import(UserNoteTestConfiguration.class)` — унифицирован со всеми 8 модулями (побайтово идентичен)
 - `user-note/application/application-h2/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — новый 2026-09-06, тривиальный пустой `@TestConfiguration` — только ради унификации `UserNoteApplicationTests.java`
 
@@ -100,7 +100,7 @@
 - `user-note/application/application-mysql/build.gradle.kts` — [REVIEW]
 - `user-note/application/application-mysql/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`, восстановлен 2026-09-13 (был вынесен в `application-core`, модуль удалён)
 - `user-note/application/application-mysql/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — восстановлен 2026-09-13
-- `user-note/application/application-mysql/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc,data-jdbc` — единственная строка (2026-09-21); `problemdetails` и `logging.level.org.springframework.web` вынесены в `controller-webmvc`
+- `user-note/application/application-mysql/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.jdbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `user-note/application/application-mysql/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — `@Import(UserNoteTestConfiguration.class)`, без `@ActiveProfiles`
 - `user-note/application/application-mysql/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — `@Bean @ServiceConnection MySQLContainer`, без `@Profile`
 - `user-note/application-mysql/src/test/java/com/example/usernote/UserNoteTestApplication.java` — [REMOVED] — удалён пользователем 2026-09-21 (причина не названа; был точкой входа `bootTestRun`)
@@ -109,7 +109,7 @@
 - `user-note/application/application-postgresql/build.gradle.kts` — [REVIEW]
 - `user-note/application/application-postgresql/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`, восстановлен 2026-09-13 (был вынесен в `application-core`, модуль удалён)
 - `user-note/application/application-postgresql/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — восстановлен 2026-09-13
-- `user-note/application/application-postgresql/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc,data-jdbc` — единственная строка (2026-09-21); `problemdetails` и `logging.level.org.springframework.web` вынесены в `controller-webmvc`
+- `user-note/application/application-postgresql/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.jdbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `user-note/application/application-postgresql/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — `@Import(UserNoteTestConfiguration.class)`, без `@ActiveProfiles`
 - `user-note/application/application-postgresql/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — `@Bean @ServiceConnection PostgreSQLContainer`, без `@Profile`
 - `user-note/application-postgresql/src/test/java/com/example/usernote/UserNoteTestApplication.java` — [REMOVED] — удалён пользователем 2026-09-21 (причина не названа; был точкой входа `bootTestRun`)
@@ -118,7 +118,7 @@
 - `user-note/application/application-mongodb/build.gradle.kts` — [REVIEW]
 - `user-note/application/application-mongodb/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`, восстановлен 2026-09-13 (был вынесен в `application-core`, модуль удалён)
 - `user-note/application/application-mongodb/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — восстановлен 2026-09-13
-- `user-note/application/application-mongodb/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc,data-mongodb` — единственная строка (2026-09-21); `problemdetails` и `logging.level.org.springframework.web` вынесены в `controller-webmvc`
+- `user-note/application/application-mongodb/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.mongodb=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `user-note/application-mongodb/src/main/resources/application-mongodb.properties` — [REMOVED] 2026-08-31 (`spring.mongodb.*` connection-строки, в тестах перекрывались `@ServiceConnection`)
 - `user-note/application-mongodb/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REMOVED] 2026-09-04 (было `@Nested @ActiveProfiles("mongodb")` через `abstract MongoTemplateTests`)
 - `user-note/application/application-mongodb/src/test/java/com/example/usernote/UserNoteApplicationDefaultTest.java` — [REVIEW] — новый 2026-09-04, голый `contextLoads(){}` без активного профиля
@@ -131,7 +131,7 @@
 - `user-note/application/application-mongodb-reactive/build.gradle.kts` — [REVIEW]
 - `user-note/application/application-mongodb-reactive/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`, восстановлен 2026-09-13 (был вынесен в `application-core`, модуль удалён)
 - `user-note/application/application-mongodb-reactive/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — восстановлен 2026-09-13
-- `user-note/application/application-mongodb-reactive/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webflux,data-mongodb-reactive` — единственная строка (2026-09-21); `problemdetails` и `logging.level.org.springframework.web` вынесены в `controller-webflux`
+- `user-note/application/application-mongodb-reactive/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webflux` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.mongodb=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `user-note/application-mongodb-reactive/src/main/resources/application-mongodb.properties` — [REMOVED] 2026-08-31 (`spring.mongodb.*` connection-строки, в тестах перекрывались `@ServiceConnection`)
 - `user-note/application-mongodb-reactive/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REMOVED] 2026-09-04 (было `@Nested @ActiveProfiles("mongodb")` через `abstract ReactiveMongoTemplateTests`)
 - `user-note/application/application-mongodb-reactive/src/test/java/com/example/usernote/UserNoteApplicationDefaultTest.java` — [REVIEW] — новый 2026-09-04, голый `contextLoads(){}` без активного профиля
@@ -147,7 +147,7 @@
 - `user-note/application/application-h2-reactive/build.gradle.kts` — [REVIEW]
 - `user-note/application/application-h2-reactive/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`, восстановлен 2026-09-13 (был вынесен в `application-core`, модуль удалён)
 - `user-note/application/application-h2-reactive/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — восстановлен 2026-09-13
-- `user-note/application/application-h2-reactive/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webflux,data-r2dbc` — единственная строка (2026-09-21); `problemdetails` и `logging.level.org.springframework.web` вынесены в `controller-webflux`
+- `user-note/application/application-h2-reactive/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webflux` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.r2dbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `user-note/application/application-h2-reactive/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — 2026-09-06: `@Import(UserNoteTestConfiguration.class)` — унифицирован со всеми 8 модулями
 - `user-note/application/application-h2-reactive/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — новый 2026-09-06, тривиальный пустой `@TestConfiguration`
 
@@ -155,7 +155,7 @@
 - `user-note/application/application-mysql-reactive/build.gradle.kts` — [REVIEW]
 - `user-note/application/application-mysql-reactive/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`, восстановлен 2026-09-13 (был вынесен в `application-core`, модуль удалён)
 - `user-note/application/application-mysql-reactive/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — восстановлен 2026-09-13
-- `user-note/application/application-mysql-reactive/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webflux,data-r2dbc` — единственная строка (2026-09-21); `problemdetails` и `logging.level.org.springframework.web` вынесены в `controller-webflux`
+- `user-note/application/application-mysql-reactive/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webflux` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.r2dbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `user-note/application/application-mysql-reactive/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — `@Import(UserNoteTestConfiguration.class)`, без `@ActiveProfiles`
 - `user-note/application/application-mysql-reactive/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — `@Bean @ServiceConnection MySQLContainer`, без `@Profile` (в R2DBC-модуле даёт `R2dbcConnectionDetails`)
 - `user-note/application-mysql-reactive/src/test/java/com/example/usernote/UserNoteTestApplication.java` — [REMOVED] — удалён пользователем 2026-09-21 (причина не названа; был точкой входа `bootTestRun`)
@@ -164,45 +164,45 @@
 - `user-note/application/application-postgresql-reactive/build.gradle.kts` — [REVIEW]
 - `user-note/application/application-postgresql-reactive/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`, восстановлен 2026-09-13 (был вынесен в `application-core`, модуль удалён)
 - `user-note/application/application-postgresql-reactive/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — восстановлен 2026-09-13
-- `user-note/application/application-postgresql-reactive/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webflux,data-r2dbc` — единственная строка (2026-09-21); `problemdetails` и `logging.level.org.springframework.web` вынесены в `controller-webflux`
+- `user-note/application/application-postgresql-reactive/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webflux` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.r2dbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `user-note/application/application-postgresql-reactive/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — `@Import(UserNoteTestConfiguration.class)`, без `@ActiveProfiles`
 - `user-note/application/application-postgresql-reactive/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — `@Bean @ServiceConnection PostgreSQLContainer`, без `@Profile`
 - `user-note/application-postgresql-reactive/src/test/java/com/example/usernote/UserNoteTestApplication.java` — [REMOVED] — удалён пользователем 2026-09-21 (причина не названа; был точкой входа `bootTestRun`)
 
-#### user-note/data/data-{jdbc,mongodb,mongodb-reactive,r2dbc}/ (49 файлов; `data-jpa` удалён повторно 2026-09-13, см. ниже) — по одному на driven-технологию, каждый `id("com.example.spring-boot-data-{tech}")` …
-- `user-note/data/data-jdbc/build.gradle.kts` — [REVIEW] — подключён к `application-{h2,mysql,postgresql}` через `implementation(project(":user-note:data:data-jdbc"))`
-- `user-note/data/data-jdbc/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-09-24, `@NullMarked`, был пропущен при заведении модуля 2026-09-21
-- `user-note/data/data-jdbc/src/main/java/com/example/usernote/UserNote.java` — [REVIEW] — пустой класс, 2026-09-21
-- `user-note/data/data-jdbc/src/main/java/com/example/usernote/UserNoteRepository.java` — [REVIEW] — `ListCrudRepository<UserNote, UUID>`, 2026-09-21
-- `user-note/data/data-jdbc/src/main/resources/application-data-jdbc.properties` — [REVIEW] — `logging.level.org.springframework.data=DEBUG` + `...data.jdbc=DEBUG` (2026-09-21); подключается строкой `spring.profiles.include=data-jdbc` в `application.properties` листьев `application-{h2,mysql,postgresql}` …
-- `user-note/data/data-jdbc/src/test/java/com/example/usernote/UserNoteRepositoryTests.java` — [REVIEW] — smoke: слайс-аннотация технологии (`@DataJdbcTest`/`@DataR2dbcTest`/`@DataMongoTest`) + пустой `contextLoads()`; зеркально остальным data-модулям (2026-09-21) …
-- `user-note/data/data-jdbc/src/test/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — новый 2026-09-21, test-scope `@SpringBootApplication` (точка входа слайс-теста, как `UserNoteApplication` в `application-*`); побайтово одинаков во всех 6 модулях …
+#### user-note/service/service-{synchronous,reactive}/ — с 2026-10-03 заменили `data-{jdbc,r2dbc,mongodb,mongodb-reactive}` (сущность, репозиторий, сервис без технологии; плагин `spring-boot-data-commons`); строки `data-mongodb*`, тесты и `application-data-*.properties` ниже — [REMOVED]
+- `user-note/service/service-synchronous/build.gradle.kts` — [REVIEW] — подключён к `application-{h2,mysql,postgresql}` через `implementation(project(":user-note:data:data-jdbc"))`
+- `user-note/service/service-synchronous/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-09-24, `@NullMarked`, был пропущен при заведении модуля 2026-09-21
+- `user-note/service/service-synchronous/src/main/java/com/example/usernote/UserNote.java` — [REVIEW] — пустой класс, 2026-09-21
+- `user-note/service/service-synchronous/src/main/java/com/example/usernote/UserNoteRepository.java` — [REVIEW] — `ListCrudRepository<UserNote, UUID>`, 2026-09-21
+- `user-note/data/data-jdbc/src/main/resources/application-data-jdbc.properties` — [REMOVED] — `logging.level.org.springframework.data=DEBUG` + `...data.jdbc=DEBUG` (2026-09-21); подключается строкой `spring.profiles.include=data-jdbc` в `application.properties` листьев `application-{h2,mysql,postgresql}` …; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user-note/data/data-jdbc/src/test/java/com/example/usernote/UserNoteRepositoryTests.java` — [REMOVED] — smoke: слайс-аннотация технологии (`@DataJdbcTest`/`@DataR2dbcTest`/`@DataMongoTest`) + пустой `contextLoads()`; зеркально остальным data-модулям (2026-09-21) …; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user-note/data/data-jdbc/src/test/java/com/example/usernote/UserNoteApplication.java` — [REMOVED] — новый 2026-09-21, test-scope `@SpringBootApplication` (точка входа слайс-теста, как `UserNoteApplication` в `application-*`); побайтово одинаков во всех 6 модулях …; удалён 2026-10-03 (`data-*` сведены к `service-*`)
 - `user-note/data-jpa/build.gradle.kts` — [REMOVED] — удалён 2026-09-05 (домен без связей между сущностями, риск `NoUniqueBeanDefinitionException` от двух адаптеров одного порта), тем же вечером восстановлен как скелет «про запас» …
-- `user-note/data/data-mongodb/build.gradle.kts` — [REVIEW]
-- `user-note/data/data-mongodb/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-09-24, `@NullMarked`, был пропущен при заведении модуля 2026-09-21
-- `user-note/data/data-mongodb/src/main/java/com/example/usernote/UserNote.java` — [REVIEW] — пустой класс, 2026-09-21
-- `user-note/data/data-mongodb/src/main/java/com/example/usernote/UserNoteRepository.java` — [REVIEW] — `ListCrudRepository<UserNote, UUID>`, 2026-09-21
-- `user-note/data/data-mongodb/src/main/resources/application-data-mongodb.properties` — [REVIEW] — `logging.level.org.springframework.data=DEBUG` + `...data.mongodb=DEBUG` (2026-09-21); подключается строкой `spring.profiles.include=data-mongodb` в `application.properties` листьев `application-mongodb` …
-- `user-note/data/data-mongodb/src/test/java/com/example/usernote/UserNoteRepositoryTests.java` — [REVIEW] — smoke: слайс-аннотация технологии (`@DataJdbcTest`/`@DataR2dbcTest`/`@DataMongoTest`) + пустой `contextLoads()`; зеркально остальным data-модулям (2026-09-21) …
-- `user-note/data/data-mongodb/src/test/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — новый 2026-09-21, test-scope `@SpringBootApplication` (точка входа слайс-теста, как `UserNoteApplication` в `application-*`); побайтово одинаков во всех 6 модулях …
-- `user-note/data/data-mongodb-reactive/build.gradle.kts` — [REVIEW]
-- `user-note/data/data-mongodb-reactive/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-09-24, `@NullMarked`, был пропущен при заведении модуля 2026-09-21
-- `user-note/data/data-mongodb-reactive/src/main/java/com/example/usernote/UserNote.java` — [REVIEW] — пустой класс, 2026-09-21
-- `user-note/data/data-mongodb-reactive/src/main/java/com/example/usernote/UserNoteRepository.java` — [REVIEW] — `ReactiveCrudRepository<UserNote, UUID>`, 2026-09-21
-- `user-note/data/data-mongodb-reactive/src/main/resources/application-data-mongodb-reactive.properties` — [REVIEW] — `logging.level.org.springframework.data=DEBUG` + `...data.mongodb=DEBUG` (2026-09-21); подключается строкой `spring.profiles.include=data-mongodb-reactive` в `application.properties` листьев …
-- `user-note/data/data-mongodb-reactive/src/test/java/com/example/usernote/UserNoteRepositoryTests.java` — [REVIEW] — smoke: слайс-аннотация технологии (`@DataJdbcTest`/`@DataR2dbcTest`/`@DataMongoTest`) + пустой `contextLoads()`; зеркально остальным data-модулям (2026-09-21) …
-- `user-note/data/data-mongodb-reactive/src/test/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — новый 2026-09-21, test-scope `@SpringBootApplication` (точка входа слайс-теста, как `UserNoteApplication` в `application-*`); побайтово одинаков во всех 6 модулях …
-- `user-note/data/data-r2dbc/build.gradle.kts` — [REVIEW]
-- `user-note/data/data-r2dbc/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-09-24, `@NullMarked`, был пропущен при заведении модуля 2026-09-21
-- `user-note/data/data-r2dbc/src/main/java/com/example/usernote/UserNote.java` — [REVIEW] — пустой класс, 2026-09-21
-- `user-note/data/data-r2dbc/src/main/java/com/example/usernote/UserNoteRepository.java` — [REVIEW] — `ReactiveCrudRepository<UserNote, UUID>`, 2026-09-21
-- `user-note/data/data-r2dbc/src/main/resources/application-data-r2dbc.properties` — [REVIEW] — `logging.level.org.springframework.data=DEBUG` + `...data.r2dbc=DEBUG` (2026-09-21); подключается строкой `spring.profiles.include=data-r2dbc` в `application.properties` листьев …
-- `user-note/data/data-r2dbc/src/test/java/com/example/usernote/UserNoteRepositoryTests.java` — [REVIEW] — smoke: слайс-аннотация технологии (`@DataJdbcTest`/`@DataR2dbcTest`/`@DataMongoTest`) + пустой `contextLoads()`; зеркально остальным data-модулям (2026-09-21) …
-- `user-note/data/data-r2dbc/src/test/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — новый 2026-09-21, test-scope `@SpringBootApplication` (точка входа слайс-теста, как `UserNoteApplication` в `application-*`); побайтово одинаков во всех 6 модулях …
-- `user-note/data/data-jdbc/src/main/java/com/example/usernote/UserNoteService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}UserNoteByIdSynchronousService`
-- `user-note/data/data-mongodb/src/main/java/com/example/usernote/UserNoteService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}UserNoteByIdSynchronousService`
-- `user-note/data/data-r2dbc/src/main/java/com/example/usernote/UserNoteService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}UserNoteByIdReactiveService`
-- `user-note/data/data-mongodb-reactive/src/main/java/com/example/usernote/UserNoteService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}UserNoteByIdReactiveService`
+- `user-note/data/data-mongodb/build.gradle.kts` — [REMOVED]; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user-note/data/data-mongodb/src/main/java/com/example/usernote/package-info.java` — [REMOVED] — новый 2026-09-24, `@NullMarked`, был пропущен при заведении модуля 2026-09-21; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user-note/data/data-mongodb/src/main/java/com/example/usernote/UserNote.java` — [REMOVED] — пустой класс, 2026-09-21; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user-note/data/data-mongodb/src/main/java/com/example/usernote/UserNoteRepository.java` — [REMOVED] — `ListCrudRepository<UserNote, UUID>`, 2026-09-21; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user-note/data/data-mongodb/src/main/resources/application-data-mongodb.properties` — [REMOVED] — `logging.level.org.springframework.data=DEBUG` + `...data.mongodb=DEBUG` (2026-09-21); подключается строкой `spring.profiles.include=data-mongodb` в `application.properties` листьев `application-mongodb` …; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user-note/data/data-mongodb/src/test/java/com/example/usernote/UserNoteRepositoryTests.java` — [REMOVED] — smoke: слайс-аннотация технологии (`@DataJdbcTest`/`@DataR2dbcTest`/`@DataMongoTest`) + пустой `contextLoads()`; зеркально остальным data-модулям (2026-09-21) …; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user-note/data/data-mongodb/src/test/java/com/example/usernote/UserNoteApplication.java` — [REMOVED] — новый 2026-09-21, test-scope `@SpringBootApplication` (точка входа слайс-теста, как `UserNoteApplication` в `application-*`); побайтово одинаков во всех 6 модулях …; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user-note/data/data-mongodb-reactive/build.gradle.kts` — [REMOVED]; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user-note/data/data-mongodb-reactive/src/main/java/com/example/usernote/package-info.java` — [REMOVED] — новый 2026-09-24, `@NullMarked`, был пропущен при заведении модуля 2026-09-21; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user-note/data/data-mongodb-reactive/src/main/java/com/example/usernote/UserNote.java` — [REMOVED] — пустой класс, 2026-09-21; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user-note/data/data-mongodb-reactive/src/main/java/com/example/usernote/UserNoteRepository.java` — [REMOVED] — `ReactiveCrudRepository<UserNote, UUID>`, 2026-09-21; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user-note/data/data-mongodb-reactive/src/main/resources/application-data-mongodb-reactive.properties` — [REMOVED] — `logging.level.org.springframework.data=DEBUG` + `...data.mongodb=DEBUG` (2026-09-21); подключается строкой `spring.profiles.include=data-mongodb-reactive` в `application.properties` листьев …; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user-note/data/data-mongodb-reactive/src/test/java/com/example/usernote/UserNoteRepositoryTests.java` — [REMOVED] — smoke: слайс-аннотация технологии (`@DataJdbcTest`/`@DataR2dbcTest`/`@DataMongoTest`) + пустой `contextLoads()`; зеркально остальным data-модулям (2026-09-21) …; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user-note/data/data-mongodb-reactive/src/test/java/com/example/usernote/UserNoteApplication.java` — [REMOVED] — новый 2026-09-21, test-scope `@SpringBootApplication` (точка входа слайс-теста, как `UserNoteApplication` в `application-*`); побайтово одинаков во всех 6 модулях …; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user-note/service/service-reactive/build.gradle.kts` — [REVIEW]
+- `user-note/service/service-reactive/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-09-24, `@NullMarked`, был пропущен при заведении модуля 2026-09-21
+- `user-note/service/service-reactive/src/main/java/com/example/usernote/UserNote.java` — [REVIEW] — пустой класс, 2026-09-21
+- `user-note/service/service-reactive/src/main/java/com/example/usernote/UserNoteRepository.java` — [REVIEW] — `ReactiveCrudRepository<UserNote, UUID>`, 2026-09-21
+- `user-note/service/service-reactive/src/main/resources/application-data-r2dbc.properties` — [REVIEW] — `logging.level.org.springframework.data=DEBUG` + `...data.r2dbc=DEBUG` (2026-09-21); подключается строкой `spring.profiles.include=data-r2dbc` в `application.properties` листьев …
+- `user-note/data/data-r2dbc/src/test/java/com/example/usernote/UserNoteRepositoryTests.java` — [REMOVED] — smoke: слайс-аннотация технологии (`@DataJdbcTest`/`@DataR2dbcTest`/`@DataMongoTest`) + пустой `contextLoads()`; зеркально остальным data-модулям (2026-09-21) …; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user-note/data/data-r2dbc/src/test/java/com/example/usernote/UserNoteApplication.java` — [REMOVED] — новый 2026-09-21, test-scope `@SpringBootApplication` (точка входа слайс-теста, как `UserNoteApplication` в `application-*`); побайтово одинаков во всех 6 модулях …; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user-note/service/service-synchronous/src/main/java/com/example/usernote/UserNoteService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}UserNoteByIdSynchronousService`
+- `user-note/data/data-mongodb/src/main/java/com/example/usernote/UserNoteService.java` — [REMOVED] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}UserNoteByIdSynchronousService`; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user-note/service/service-reactive/src/main/java/com/example/usernote/UserNoteService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}UserNoteByIdReactiveService`
+- `user-note/data/data-mongodb-reactive/src/main/java/com/example/usernote/UserNoteService.java` — [REMOVED] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}UserNoteByIdReactiveService`; удалён 2026-10-03 (`data-*` сведены к `service-*`)
 
 #### user-note/controller/controller-webmvc/ (4 файла) — новый 2026-09-21, driving-сторона sync: `id("com.example.spring-boot-webmvc")`; подключён к `application-{h2,mysql,postgresql,mongodb}` через `implementation(project(":user-note:controller:controller-webmvc"))` …
 - `user-note/controller/controller-webmvc/build.gradle.kts` — [REVIEW]
@@ -226,7 +226,7 @@
 - `user/application/application-h2/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `user/application/application-h2/src/main/java/com/example/user/UserApplication.java` — [REVIEW] — новый 2026-09-29
 - `user/application/application-h2/src/main/java/com/example/user/package-info.java` — [REVIEW] — новый 2026-09-29
-- `user/application/application-h2/src/main/resources/application.properties` — [REVIEW] — новый 2026-09-29
+- `user/application/application-h2/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.jdbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `user/application/application-h2/src/test/java/com/example/user/UserApplicationTests.java` — [REVIEW] — новый 2026-09-29
 - `user/application/application-h2/src/test/java/com/example/user/UserTestConfiguration.java` — [REVIEW] — новый 2026-09-29
 
@@ -234,7 +234,7 @@
 - `user/application/application-h2-reactive/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `user/application/application-h2-reactive/src/main/java/com/example/user/UserApplication.java` — [REVIEW] — новый 2026-09-29
 - `user/application/application-h2-reactive/src/main/java/com/example/user/package-info.java` — [REVIEW] — новый 2026-09-29
-- `user/application/application-h2-reactive/src/main/resources/application.properties` — [REVIEW] — новый 2026-09-29
+- `user/application/application-h2-reactive/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webflux` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.r2dbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `user/application/application-h2-reactive/src/test/java/com/example/user/UserApplicationTests.java` — [REVIEW] — новый 2026-09-29
 - `user/application/application-h2-reactive/src/test/java/com/example/user/UserTestConfiguration.java` — [REVIEW] — новый 2026-09-29
 
@@ -242,7 +242,7 @@
 - `user/application/application-mongodb/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `user/application/application-mongodb/src/main/java/com/example/user/UserApplication.java` — [REVIEW] — новый 2026-09-29
 - `user/application/application-mongodb/src/main/java/com/example/user/package-info.java` — [REVIEW] — новый 2026-09-29
-- `user/application/application-mongodb/src/main/resources/application.properties` — [REVIEW] — новый 2026-09-29
+- `user/application/application-mongodb/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.mongodb=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `user/application/application-mongodb/src/test/java/com/example/user/UserApplicationTests.java` — [REVIEW] — новый 2026-09-29
 - `user/application/application-mongodb/src/test/java/com/example/user/UserTestConfiguration.java` — [REVIEW] — новый 2026-09-29
 
@@ -250,7 +250,7 @@
 - `user/application/application-mongodb-reactive/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `user/application/application-mongodb-reactive/src/main/java/com/example/user/UserApplication.java` — [REVIEW] — новый 2026-09-29
 - `user/application/application-mongodb-reactive/src/main/java/com/example/user/package-info.java` — [REVIEW] — новый 2026-09-29
-- `user/application/application-mongodb-reactive/src/main/resources/application.properties` — [REVIEW] — новый 2026-09-29
+- `user/application/application-mongodb-reactive/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webflux` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.mongodb=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `user/application/application-mongodb-reactive/src/test/java/com/example/user/UserApplicationTests.java` — [REVIEW] — новый 2026-09-29
 - `user/application/application-mongodb-reactive/src/test/java/com/example/user/UserTestConfiguration.java` — [REVIEW] — новый 2026-09-29
 
@@ -258,7 +258,7 @@
 - `user/application/application-mysql/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `user/application/application-mysql/src/main/java/com/example/user/UserApplication.java` — [REVIEW] — новый 2026-09-29
 - `user/application/application-mysql/src/main/java/com/example/user/package-info.java` — [REVIEW] — новый 2026-09-29
-- `user/application/application-mysql/src/main/resources/application.properties` — [REVIEW] — новый 2026-09-29
+- `user/application/application-mysql/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.jdbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `user/application/application-mysql/src/test/java/com/example/user/UserApplicationTests.java` — [REVIEW] — новый 2026-09-29
 - `user/application/application-mysql/src/test/java/com/example/user/UserTestConfiguration.java` — [REVIEW] — новый 2026-09-29
 
@@ -266,7 +266,7 @@
 - `user/application/application-mysql-reactive/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `user/application/application-mysql-reactive/src/main/java/com/example/user/UserApplication.java` — [REVIEW] — новый 2026-09-29
 - `user/application/application-mysql-reactive/src/main/java/com/example/user/package-info.java` — [REVIEW] — новый 2026-09-29
-- `user/application/application-mysql-reactive/src/main/resources/application.properties` — [REVIEW] — новый 2026-09-29
+- `user/application/application-mysql-reactive/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webflux` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.r2dbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `user/application/application-mysql-reactive/src/test/java/com/example/user/UserApplicationTests.java` — [REVIEW] — новый 2026-09-29
 - `user/application/application-mysql-reactive/src/test/java/com/example/user/UserTestConfiguration.java` — [REVIEW] — новый 2026-09-29
 
@@ -274,7 +274,7 @@
 - `user/application/application-postgresql/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `user/application/application-postgresql/src/main/java/com/example/user/UserApplication.java` — [REVIEW] — новый 2026-09-29
 - `user/application/application-postgresql/src/main/java/com/example/user/package-info.java` — [REVIEW] — новый 2026-09-29
-- `user/application/application-postgresql/src/main/resources/application.properties` — [REVIEW] — новый 2026-09-29
+- `user/application/application-postgresql/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.jdbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `user/application/application-postgresql/src/test/java/com/example/user/UserApplicationTests.java` — [REVIEW] — новый 2026-09-29
 - `user/application/application-postgresql/src/test/java/com/example/user/UserTestConfiguration.java` — [REVIEW] — новый 2026-09-29
 
@@ -282,7 +282,7 @@
 - `user/application/application-postgresql-reactive/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `user/application/application-postgresql-reactive/src/main/java/com/example/user/UserApplication.java` — [REVIEW] — новый 2026-09-29
 - `user/application/application-postgresql-reactive/src/main/java/com/example/user/package-info.java` — [REVIEW] — новый 2026-09-29
-- `user/application/application-postgresql-reactive/src/main/resources/application.properties` — [REVIEW] — новый 2026-09-29
+- `user/application/application-postgresql-reactive/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webflux` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.r2dbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `user/application/application-postgresql-reactive/src/test/java/com/example/user/UserApplicationTests.java` — [REVIEW] — новый 2026-09-29
 - `user/application/application-postgresql-reactive/src/test/java/com/example/user/UserTestConfiguration.java` — [REVIEW] — новый 2026-09-29
 
@@ -304,11 +304,11 @@
 #### user/contract/contract-reactive/ (7 файлов) — новый 2026-09-29, копия структуры `user-note/contract/contract-reactive/` (пакет `com.example.user`)
 - `user/contract/contract-reactive/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `user/contract/contract-reactive/src/main/java/com/example/user/package-info.java` — [REVIEW] — новый 2026-09-29
-- `user/contract/contract-reactive/src/main/java/com/example/user/FindUserById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
-- `user/contract/contract-reactive/src/main/java/com/example/user/CreateUserById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
-- `user/contract/contract-reactive/src/main/java/com/example/user/ReplaceUserById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
-- `user/contract/contract-reactive/src/main/java/com/example/user/UpdateUserById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
-- `user/contract/contract-reactive/src/main/java/com/example/user/DeleteUserById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
+- `user/contract/contract-reactive/src/main/java/com/example/user/ReactiveFindUserById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
+- `user/contract/contract-reactive/src/main/java/com/example/user/ReactiveCreateUserById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
+- `user/contract/contract-reactive/src/main/java/com/example/user/ReactiveReplaceUserById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
+- `user/contract/contract-reactive/src/main/java/com/example/user/ReactiveUpdateUserById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
+- `user/contract/contract-reactive/src/main/java/com/example/user/ReactiveDeleteUserById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
 
 #### user/controller/controller-webflux/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/controller/controller-webflux/` (пакет `com.example.user`)
 - `user/controller/controller-webflux/build.gradle.kts` — [REVIEW] — новый 2026-09-29
@@ -326,45 +326,45 @@
 - `user/controller/controller-webmvc/src/test/java/com/example/user/UserApplication.java` — [REVIEW] — новый 2026-09-29
 - `user/controller/controller-webmvc/src/test/java/com/example/user/UserControllerTests.java` — [REVIEW] — новый 2026-09-29
 
-#### user/data/data-jdbc/ (12 файлов) — новый 2026-09-29, копия структуры `user-note/data/data-jdbc/` (пакет `com.example.user`)
-- `user/data/data-jdbc/build.gradle.kts` — [REVIEW] — новый 2026-09-29
-- `user/data/data-jdbc/src/main/java/com/example/user/User.java` — [REVIEW] — новый 2026-09-29
-- `user/data/data-jdbc/src/main/java/com/example/user/UserRepository.java` — [REVIEW] — новый 2026-09-29
-- `user/data/data-jdbc/src/main/java/com/example/user/package-info.java` — [REVIEW] — новый 2026-09-29
-- `user/data/data-jdbc/src/main/resources/application-data-jdbc.properties` — [REVIEW] — новый 2026-09-29
-- `user/data/data-jdbc/src/test/java/com/example/user/UserApplication.java` — [REVIEW] — новый 2026-09-29
-- `user/data/data-jdbc/src/test/java/com/example/user/UserRepositoryTests.java` — [REVIEW] — новый 2026-09-29
-- `user/data/data-jdbc/src/main/java/com/example/user/UserService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}UserByIdSynchronousService`
+#### user/service/service-synchronous/ — с 2026-10-03 (был `user/data/data-jdbc/`; плагин `spring-boot-data-commons`, без технологии и слайс-тестов)
+- `user/service/service-synchronous/build.gradle.kts` — [REVIEW] — новый 2026-09-29
+- `user/service/service-synchronous/src/main/java/com/example/user/User.java` — [REVIEW] — новый 2026-09-29
+- `user/service/service-synchronous/src/main/java/com/example/user/UserRepository.java` — [REVIEW] — новый 2026-09-29
+- `user/service/service-synchronous/src/main/java/com/example/user/package-info.java` — [REVIEW] — новый 2026-09-29
+- `user/data/data-jdbc/src/main/resources/application-data-jdbc.properties` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user/data/data-jdbc/src/test/java/com/example/user/UserApplication.java` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user/data/data-jdbc/src/test/java/com/example/user/UserRepositoryTests.java` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user/service/service-synchronous/src/main/java/com/example/user/UserService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}UserByIdSynchronousService`
 
-#### user/data/data-mongodb/ (12 файлов) — новый 2026-09-29, копия структуры `user-note/data/data-mongodb/` (пакет `com.example.user`)
-- `user/data/data-mongodb/build.gradle.kts` — [REVIEW] — новый 2026-09-29
-- `user/data/data-mongodb/src/main/java/com/example/user/User.java` — [REVIEW] — новый 2026-09-29
-- `user/data/data-mongodb/src/main/java/com/example/user/UserRepository.java` — [REVIEW] — новый 2026-09-29
-- `user/data/data-mongodb/src/main/java/com/example/user/package-info.java` — [REVIEW] — новый 2026-09-29
-- `user/data/data-mongodb/src/main/resources/application-data-mongodb.properties` — [REVIEW] — новый 2026-09-29
-- `user/data/data-mongodb/src/test/java/com/example/user/UserApplication.java` — [REVIEW] — новый 2026-09-29
-- `user/data/data-mongodb/src/test/java/com/example/user/UserRepositoryTests.java` — [REVIEW] — новый 2026-09-29
-- `user/data/data-mongodb/src/main/java/com/example/user/UserService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}UserByIdSynchronousService`
+#### user/data/data-mongodb/ — [REMOVED] 2026-10-03, сведён к `user/service/*` (содержимое ниже — строки `[REMOVED]`)
+- `user/data/data-mongodb/build.gradle.kts` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user/data/data-mongodb/src/main/java/com/example/user/User.java` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user/data/data-mongodb/src/main/java/com/example/user/UserRepository.java` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user/data/data-mongodb/src/main/java/com/example/user/package-info.java` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user/data/data-mongodb/src/main/resources/application-data-mongodb.properties` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user/data/data-mongodb/src/test/java/com/example/user/UserApplication.java` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user/data/data-mongodb/src/test/java/com/example/user/UserRepositoryTests.java` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user/data/data-mongodb/src/main/java/com/example/user/UserService.java` — [REMOVED] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}UserByIdSynchronousService`; удалён 2026-10-03 (`data-*` сведены к `service-*`)
 
-#### user/data/data-mongodb-reactive/ (12 файлов) — новый 2026-09-29, копия структуры `user-note/data/data-mongodb-reactive/` (пакет `com.example.user`)
-- `user/data/data-mongodb-reactive/build.gradle.kts` — [REVIEW] — новый 2026-09-29
-- `user/data/data-mongodb-reactive/src/main/java/com/example/user/User.java` — [REVIEW] — новый 2026-09-29
-- `user/data/data-mongodb-reactive/src/main/java/com/example/user/UserRepository.java` — [REVIEW] — новый 2026-09-29
-- `user/data/data-mongodb-reactive/src/main/java/com/example/user/package-info.java` — [REVIEW] — новый 2026-09-29
-- `user/data/data-mongodb-reactive/src/main/resources/application-data-mongodb-reactive.properties` — [REVIEW] — новый 2026-09-29
-- `user/data/data-mongodb-reactive/src/test/java/com/example/user/UserApplication.java` — [REVIEW] — новый 2026-09-29
-- `user/data/data-mongodb-reactive/src/test/java/com/example/user/UserRepositoryTests.java` — [REVIEW] — новый 2026-09-29
-- `user/data/data-mongodb-reactive/src/main/java/com/example/user/UserService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}UserByIdReactiveService`
+#### user/data/data-mongodb-reactive/ — [REMOVED] 2026-10-03, сведён к `user/service/*` (содержимое ниже — строки `[REMOVED]`)
+- `user/data/data-mongodb-reactive/build.gradle.kts` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user/data/data-mongodb-reactive/src/main/java/com/example/user/User.java` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user/data/data-mongodb-reactive/src/main/java/com/example/user/UserRepository.java` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user/data/data-mongodb-reactive/src/main/java/com/example/user/package-info.java` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user/data/data-mongodb-reactive/src/main/resources/application-data-mongodb-reactive.properties` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user/data/data-mongodb-reactive/src/test/java/com/example/user/UserApplication.java` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user/data/data-mongodb-reactive/src/test/java/com/example/user/UserRepositoryTests.java` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user/data/data-mongodb-reactive/src/main/java/com/example/user/UserService.java` — [REMOVED] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}UserByIdReactiveService`; удалён 2026-10-03 (`data-*` сведены к `service-*`)
 
-#### user/data/data-r2dbc/ (12 файлов) — новый 2026-09-29, копия структуры `user-note/data/data-r2dbc/` (пакет `com.example.user`)
-- `user/data/data-r2dbc/build.gradle.kts` — [REVIEW] — новый 2026-09-29
-- `user/data/data-r2dbc/src/main/java/com/example/user/User.java` — [REVIEW] — новый 2026-09-29
-- `user/data/data-r2dbc/src/main/java/com/example/user/UserRepository.java` — [REVIEW] — новый 2026-09-29
-- `user/data/data-r2dbc/src/main/java/com/example/user/package-info.java` — [REVIEW] — новый 2026-09-29
-- `user/data/data-r2dbc/src/main/resources/application-data-r2dbc.properties` — [REVIEW] — новый 2026-09-29
-- `user/data/data-r2dbc/src/test/java/com/example/user/UserApplication.java` — [REVIEW] — новый 2026-09-29
-- `user/data/data-r2dbc/src/test/java/com/example/user/UserRepositoryTests.java` — [REVIEW] — новый 2026-09-29
-- `user/data/data-r2dbc/src/main/java/com/example/user/UserService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}UserByIdReactiveService`
+#### user/service/service-reactive/ — с 2026-10-03 (был `user/data/data-r2dbc/`; плагины `spring-boot-data-commons` + `project-reactor`, без технологии и слайс-тестов)
+- `user/service/service-reactive/build.gradle.kts` — [REVIEW] — новый 2026-09-29
+- `user/service/service-reactive/src/main/java/com/example/user/User.java` — [REVIEW] — новый 2026-09-29
+- `user/service/service-reactive/src/main/java/com/example/user/UserRepository.java` — [REVIEW] — новый 2026-09-29
+- `user/service/service-reactive/src/main/java/com/example/user/package-info.java` — [REVIEW] — новый 2026-09-29
+- `user/service/service-reactive/src/main/resources/application-data-r2dbc.properties` — [REVIEW] — новый 2026-09-29
+- `user/data/data-r2dbc/src/test/java/com/example/user/UserApplication.java` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user/data/data-r2dbc/src/test/java/com/example/user/UserRepositoryTests.java` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user/service/service-reactive/src/main/java/com/example/user/UserService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}UserByIdReactiveService`
 
 #### user/presentation/webmvc/ (5 файлов)
 - `user/presentation/webmvc/build.gradle.kts` — [DONE]
@@ -480,7 +480,7 @@
 - `user/application/application-h2-r2dbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
 - `user/application/application-h2-r2dbc/src/main/java/com/example/user/package-info.java` — [DONE]
 - `user/application/application-h2-r2dbc/src/main/java/com/example/user/UserH2R2dbcApplication.java` — [REVIEW]
-- `user/application/application-h2-r2dbc/src/main/resources/application.properties` — [REVIEW]
+- `user/application/application-h2-r2dbc/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.jdbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `user/application/application-h2-r2dbc/src/test/resources/application.properties` — [REVIEW]
 - `user/application/application-h2-r2dbc/src/test/java/com/example/user/UserH2R2dbcApplicationTests.java` — [REVIEW]
 
@@ -488,7 +488,7 @@
 - `user/application/application-mysql-r2dbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
 - `user/application/application-mysql-r2dbc/src/main/java/com/example/user/package-info.java` — [DONE]
 - `user/application/application-mysql-r2dbc/src/main/java/com/example/user/UserMysqlR2dbcApplication.java` — [REVIEW]
-- `user/application/application-mysql-r2dbc/src/main/resources/application.properties` — [REVIEW]
+- `user/application/application-mysql-r2dbc/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.jdbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `user/application/application-mysql-r2dbc/compose.yaml` — [REVIEW]
 - `user/application/application-mysql-r2dbc/src/test/resources/application.properties` — [REVIEW]
 - `user/application/application-mysql-r2dbc/src/test/java/com/example/user/UserMysqlR2dbcApplicationTests.java` — [REVIEW]
@@ -497,7 +497,7 @@
 - `user/application/application-postgresql-r2dbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
 - `user/application/application-postgresql-r2dbc/src/main/java/com/example/user/package-info.java` — [DONE]
 - `user/application/application-postgresql-r2dbc/src/main/java/com/example/user/UserPostgresqlR2dbcApplication.java` — [REVIEW]
-- `user/application/application-postgresql-r2dbc/src/main/resources/application.properties` — [REVIEW]
+- `user/application/application-postgresql-r2dbc/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.jdbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `user/application/application-postgresql-r2dbc/compose.yaml` — [REVIEW]
 - `user/application/application-postgresql-r2dbc/src/test/resources/application.properties` — [REVIEW]
 - `user/application/application-postgresql-r2dbc/src/test/java/com/example/user/UserPostgresqlR2dbcApplicationTests.java` — [REVIEW]
@@ -520,7 +520,7 @@
 - `user/application/application-h2-jpa/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
 - `user/application/application-h2-jpa/src/main/java/com/example/user/package-info.java` — [DONE]
 - `user/application/application-h2-jpa/src/main/java/com/example/user/UserH2JpaApplication.java` — [REVIEW]
-- `user/application/application-h2-jpa/src/main/resources/application.properties` — [REVIEW]
+- `user/application/application-h2-jpa/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.jdbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `user/application/application-h2-jpa/src/test/resources/application.properties` — [REVIEW]
 - `user/application/application-h2-jpa/src/test/java/com/example/user/UserH2JpaApplicationTests.java` — [REVIEW]
 
@@ -528,7 +528,7 @@
 - `user/application/application-mysql-jpa/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
 - `user/application/application-mysql-jpa/src/main/java/com/example/user/package-info.java` — [DONE]
 - `user/application/application-mysql-jpa/src/main/java/com/example/user/UserMysqlJpaApplication.java` — [REVIEW]
-- `user/application/application-mysql-jpa/src/main/resources/application.properties` — [REVIEW]
+- `user/application/application-mysql-jpa/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.jdbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `user/application/application-mysql-jpa/compose.yaml` — [REVIEW]
 - `user/application/application-mysql-jpa/src/test/resources/application.properties` — [REVIEW]
 - `user/application/application-mysql-jpa/src/test/java/com/example/user/UserMysqlJpaApplicationTests.java` — [REVIEW]
@@ -537,7 +537,7 @@
 - `user/application/application-postgresql-jpa/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
 - `user/application/application-postgresql-jpa/src/main/java/com/example/user/package-info.java` — [DONE]
 - `user/application/application-postgresql-jpa/src/main/java/com/example/user/UserPostgresqlJpaApplication.java` — [REVIEW]
-- `user/application/application-postgresql-jpa/src/main/resources/application.properties` — [REVIEW]
+- `user/application/application-postgresql-jpa/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.jdbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `user/application/application-postgresql-jpa/compose.yaml` — [REVIEW]
 - `user/application/application-postgresql-jpa/src/test/resources/application.properties` — [REVIEW]
 - `user/application/application-postgresql-jpa/src/test/java/com/example/user/UserPostgresqlJpaApplicationTests.java` — [REVIEW]
@@ -560,7 +560,7 @@
 - `user/application/application-h2-jdbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
 - `user/application/application-h2-jdbc/src/main/java/com/example/user/package-info.java` — [DONE]
 - `user/application/application-h2-jdbc/src/main/java/com/example/user/UserH2JdbcApplication.java` — [REVIEW]
-- `user/application/application-h2-jdbc/src/main/resources/application.properties` — [REVIEW]
+- `user/application/application-h2-jdbc/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.jdbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `user/application/application-h2-jdbc/src/test/resources/application.properties` — [REVIEW]
 - `user/application/application-h2-jdbc/src/test/java/com/example/user/UserH2JdbcApplicationTests.java` — [REVIEW]
 
@@ -568,7 +568,7 @@
 - `user/application/application-mysql-jdbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
 - `user/application/application-mysql-jdbc/src/main/java/com/example/user/package-info.java` — [DONE]
 - `user/application/application-mysql-jdbc/src/main/java/com/example/user/UserMysqlJdbcApplication.java` — [REVIEW]
-- `user/application/application-mysql-jdbc/src/main/resources/application.properties` — [REVIEW]
+- `user/application/application-mysql-jdbc/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.jdbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `user/application/application-mysql-jdbc/compose.yaml` — [REVIEW]
 - `user/application/application-mysql-jdbc/src/test/resources/application.properties` — [REVIEW]
 - `user/application/application-mysql-jdbc/src/test/java/com/example/user/UserMysqlJdbcApplicationTests.java` — [REVIEW]
@@ -577,7 +577,7 @@
 - `user/application/application-postgresql-jdbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
 - `user/application/application-postgresql-jdbc/src/main/java/com/example/user/package-info.java` — [DONE]
 - `user/application/application-postgresql-jdbc/src/main/java/com/example/user/UserPostgresqlJdbcApplication.java` — [REVIEW]
-- `user/application/application-postgresql-jdbc/src/main/resources/application.properties` — [REVIEW]
+- `user/application/application-postgresql-jdbc/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.jdbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `user/application/application-postgresql-jdbc/compose.yaml` — [REVIEW]
 - `user/application/application-postgresql-jdbc/src/test/resources/application.properties` — [REVIEW]
 - `user/application/application-postgresql-jdbc/src/test/java/com/example/user/UserPostgresqlJdbcApplicationTests.java` — [REVIEW]
@@ -586,7 +586,7 @@
 - `user/application/application-mongodb/build.gradle.kts` — [REVIEW]
 - `user/application/application-mongodb/src/test/resources/application.properties` — [REVIEW]
 - `user/application/application-mongodb/src/test/java/com/example/user/UserMongoApplicationTests.java` — [REVIEW]
-- `user/application/application-mongodb/src/main/resources/application.properties` — [REVIEW]
+- `user/application/application-mongodb/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.mongodb=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `user/application/application-mongodb/src/main/java/com/example/user/package-info.java` — [REVIEW]
 - `user/application/application-mongodb/src/main/java/com/example/user/UserMongoApplication.java` — [REVIEW]
 - `user/application/application-mongodb/compose.yaml` — [REVIEW] — восстановлен 2026-07-23 (Testcontainers/Compose для Mongo вернули, теперь симметрично с PostgreSQL/MySQL)
@@ -595,7 +595,7 @@
 - `user/application/application-mongodb-reactive/build.gradle.kts` — [REVIEW]
 - `user/application/application-mongodb-reactive/src/test/resources/application.properties` — [REVIEW]
 - `user/application/application-mongodb-reactive/src/test/java/com/example/user/UserMongoReactiveApplicationTests.java` — [REVIEW]
-- `user/application/application-mongodb-reactive/src/main/resources/application.properties` — [REVIEW]
+- `user/application/application-mongodb-reactive/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webflux` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.mongodb=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `user/application/application-mongodb-reactive/src/main/java/com/example/user/package-info.java` — [REVIEW]
 - `user/application/application-mongodb-reactive/src/main/java/com/example/user/UserMongoReactiveApplication.java` — [REVIEW]
 - `user/application/application-mongodb-reactive/compose.yaml` — [REVIEW] — восстановлен 2026-07-23 (Testcontainers/Compose для Mongo вернули, теперь симметрично с PostgreSQL/MySQL)
@@ -626,7 +626,7 @@
 - `note/application/application-h2/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `note/application/application-h2/src/main/java/com/example/note/NoteApplication.java` — [REVIEW] — новый 2026-09-29
 - `note/application/application-h2/src/main/java/com/example/note/package-info.java` — [REVIEW] — новый 2026-09-29
-- `note/application/application-h2/src/main/resources/application.properties` — [REVIEW] — новый 2026-09-29
+- `note/application/application-h2/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.jdbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `note/application/application-h2/src/test/java/com/example/note/NoteApplicationTests.java` — [REVIEW] — новый 2026-09-29
 - `note/application/application-h2/src/test/java/com/example/note/NoteTestConfiguration.java` — [REVIEW] — новый 2026-09-29
 
@@ -634,7 +634,7 @@
 - `note/application/application-h2-reactive/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `note/application/application-h2-reactive/src/main/java/com/example/note/NoteApplication.java` — [REVIEW] — новый 2026-09-29
 - `note/application/application-h2-reactive/src/main/java/com/example/note/package-info.java` — [REVIEW] — новый 2026-09-29
-- `note/application/application-h2-reactive/src/main/resources/application.properties` — [REVIEW] — новый 2026-09-29
+- `note/application/application-h2-reactive/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webflux` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.r2dbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `note/application/application-h2-reactive/src/test/java/com/example/note/NoteApplicationTests.java` — [REVIEW] — новый 2026-09-29
 - `note/application/application-h2-reactive/src/test/java/com/example/note/NoteTestConfiguration.java` — [REVIEW] — новый 2026-09-29
 
@@ -642,7 +642,7 @@
 - `note/application/application-mongodb/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `note/application/application-mongodb/src/main/java/com/example/note/NoteApplication.java` — [REVIEW] — новый 2026-09-29
 - `note/application/application-mongodb/src/main/java/com/example/note/package-info.java` — [REVIEW] — новый 2026-09-29
-- `note/application/application-mongodb/src/main/resources/application.properties` — [REVIEW] — новый 2026-09-29
+- `note/application/application-mongodb/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.mongodb=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `note/application/application-mongodb/src/test/java/com/example/note/NoteApplicationTests.java` — [REVIEW] — новый 2026-09-29
 - `note/application/application-mongodb/src/test/java/com/example/note/NoteTestConfiguration.java` — [REVIEW] — новый 2026-09-29
 
@@ -650,7 +650,7 @@
 - `note/application/application-mongodb-reactive/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `note/application/application-mongodb-reactive/src/main/java/com/example/note/NoteApplication.java` — [REVIEW] — новый 2026-09-29
 - `note/application/application-mongodb-reactive/src/main/java/com/example/note/package-info.java` — [REVIEW] — новый 2026-09-29
-- `note/application/application-mongodb-reactive/src/main/resources/application.properties` — [REVIEW] — новый 2026-09-29
+- `note/application/application-mongodb-reactive/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webflux` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.mongodb=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `note/application/application-mongodb-reactive/src/test/java/com/example/note/NoteApplicationTests.java` — [REVIEW] — новый 2026-09-29
 - `note/application/application-mongodb-reactive/src/test/java/com/example/note/NoteTestConfiguration.java` — [REVIEW] — новый 2026-09-29
 
@@ -658,7 +658,7 @@
 - `note/application/application-mysql/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `note/application/application-mysql/src/main/java/com/example/note/NoteApplication.java` — [REVIEW] — новый 2026-09-29
 - `note/application/application-mysql/src/main/java/com/example/note/package-info.java` — [REVIEW] — новый 2026-09-29
-- `note/application/application-mysql/src/main/resources/application.properties` — [REVIEW] — новый 2026-09-29
+- `note/application/application-mysql/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.jdbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `note/application/application-mysql/src/test/java/com/example/note/NoteApplicationTests.java` — [REVIEW] — новый 2026-09-29
 - `note/application/application-mysql/src/test/java/com/example/note/NoteTestConfiguration.java` — [REVIEW] — новый 2026-09-29
 
@@ -666,7 +666,7 @@
 - `note/application/application-mysql-reactive/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `note/application/application-mysql-reactive/src/main/java/com/example/note/NoteApplication.java` — [REVIEW] — новый 2026-09-29
 - `note/application/application-mysql-reactive/src/main/java/com/example/note/package-info.java` — [REVIEW] — новый 2026-09-29
-- `note/application/application-mysql-reactive/src/main/resources/application.properties` — [REVIEW] — новый 2026-09-29
+- `note/application/application-mysql-reactive/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webflux` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.r2dbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `note/application/application-mysql-reactive/src/test/java/com/example/note/NoteApplicationTests.java` — [REVIEW] — новый 2026-09-29
 - `note/application/application-mysql-reactive/src/test/java/com/example/note/NoteTestConfiguration.java` — [REVIEW] — новый 2026-09-29
 
@@ -674,7 +674,7 @@
 - `note/application/application-postgresql/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `note/application/application-postgresql/src/main/java/com/example/note/NoteApplication.java` — [REVIEW] — новый 2026-09-29
 - `note/application/application-postgresql/src/main/java/com/example/note/package-info.java` — [REVIEW] — новый 2026-09-29
-- `note/application/application-postgresql/src/main/resources/application.properties` — [REVIEW] — новый 2026-09-29
+- `note/application/application-postgresql/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.jdbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `note/application/application-postgresql/src/test/java/com/example/note/NoteApplicationTests.java` — [REVIEW] — новый 2026-09-29
 - `note/application/application-postgresql/src/test/java/com/example/note/NoteTestConfiguration.java` — [REVIEW] — новый 2026-09-29
 
@@ -682,7 +682,7 @@
 - `note/application/application-postgresql-reactive/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `note/application/application-postgresql-reactive/src/main/java/com/example/note/NoteApplication.java` — [REVIEW] — новый 2026-09-29
 - `note/application/application-postgresql-reactive/src/main/java/com/example/note/package-info.java` — [REVIEW] — новый 2026-09-29
-- `note/application/application-postgresql-reactive/src/main/resources/application.properties` — [REVIEW] — новый 2026-09-29
+- `note/application/application-postgresql-reactive/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webflux` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.r2dbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `note/application/application-postgresql-reactive/src/test/java/com/example/note/NoteApplicationTests.java` — [REVIEW] — новый 2026-09-29
 - `note/application/application-postgresql-reactive/src/test/java/com/example/note/NoteTestConfiguration.java` — [REVIEW] — новый 2026-09-29
 
@@ -704,11 +704,11 @@
 #### note/contract/contract-reactive/ (7 файлов) — новый 2026-09-29, копия структуры `user-note/contract/contract-reactive/` (пакет `com.example.note`)
 - `note/contract/contract-reactive/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `note/contract/contract-reactive/src/main/java/com/example/note/package-info.java` — [REVIEW] — новый 2026-09-29
-- `note/contract/contract-reactive/src/main/java/com/example/note/FindNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
-- `note/contract/contract-reactive/src/main/java/com/example/note/CreateNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
-- `note/contract/contract-reactive/src/main/java/com/example/note/ReplaceNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
-- `note/contract/contract-reactive/src/main/java/com/example/note/UpdateNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
-- `note/contract/contract-reactive/src/main/java/com/example/note/DeleteNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
+- `note/contract/contract-reactive/src/main/java/com/example/note/ReactiveFindNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
+- `note/contract/contract-reactive/src/main/java/com/example/note/ReactiveCreateNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
+- `note/contract/contract-reactive/src/main/java/com/example/note/ReactiveReplaceNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
+- `note/contract/contract-reactive/src/main/java/com/example/note/ReactiveUpdateNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
+- `note/contract/contract-reactive/src/main/java/com/example/note/ReactiveDeleteNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
 
 #### note/controller/controller-webflux/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/controller/controller-webflux/` (пакет `com.example.note`)
 - `note/controller/controller-webflux/build.gradle.kts` — [REVIEW] — новый 2026-09-29
@@ -726,45 +726,45 @@
 - `note/controller/controller-webmvc/src/test/java/com/example/note/NoteApplication.java` — [REVIEW] — новый 2026-09-29
 - `note/controller/controller-webmvc/src/test/java/com/example/note/NoteControllerTests.java` — [REVIEW] — новый 2026-09-29
 
-#### note/data/data-jdbc/ (12 файлов) — новый 2026-09-29, копия структуры `user-note/data/data-jdbc/` (пакет `com.example.note`)
-- `note/data/data-jdbc/build.gradle.kts` — [REVIEW] — новый 2026-09-29
-- `note/data/data-jdbc/src/main/java/com/example/note/Note.java` — [REVIEW] — новый 2026-09-29
-- `note/data/data-jdbc/src/main/java/com/example/note/NoteRepository.java` — [REVIEW] — новый 2026-09-29
-- `note/data/data-jdbc/src/main/java/com/example/note/package-info.java` — [REVIEW] — новый 2026-09-29
-- `note/data/data-jdbc/src/main/resources/application-data-jdbc.properties` — [REVIEW] — новый 2026-09-29
-- `note/data/data-jdbc/src/test/java/com/example/note/NoteApplication.java` — [REVIEW] — новый 2026-09-29
-- `note/data/data-jdbc/src/test/java/com/example/note/NoteRepositoryTests.java` — [REVIEW] — новый 2026-09-29
-- `note/data/data-jdbc/src/main/java/com/example/note/NoteService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}NoteByIdSynchronousService`
+#### note/service/service-synchronous/ — с 2026-10-03 (был `note/data/data-jdbc/`; плагин `spring-boot-data-commons`, без технологии и слайс-тестов)
+- `note/service/service-synchronous/build.gradle.kts` — [REVIEW] — новый 2026-09-29
+- `note/service/service-synchronous/src/main/java/com/example/note/Note.java` — [REVIEW] — новый 2026-09-29
+- `note/service/service-synchronous/src/main/java/com/example/note/NoteRepository.java` — [REVIEW] — новый 2026-09-29
+- `note/service/service-synchronous/src/main/java/com/example/note/package-info.java` — [REVIEW] — новый 2026-09-29
+- `note/data/data-jdbc/src/main/resources/application-data-jdbc.properties` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `note/data/data-jdbc/src/test/java/com/example/note/NoteApplication.java` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `note/data/data-jdbc/src/test/java/com/example/note/NoteRepositoryTests.java` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `note/service/service-synchronous/src/main/java/com/example/note/NoteService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}NoteByIdSynchronousService`
 
-#### note/data/data-mongodb/ (12 файлов) — новый 2026-09-29, копия структуры `user-note/data/data-mongodb/` (пакет `com.example.note`)
-- `note/data/data-mongodb/build.gradle.kts` — [REVIEW] — новый 2026-09-29
-- `note/data/data-mongodb/src/main/java/com/example/note/Note.java` — [REVIEW] — новый 2026-09-29
-- `note/data/data-mongodb/src/main/java/com/example/note/NoteRepository.java` — [REVIEW] — новый 2026-09-29
-- `note/data/data-mongodb/src/main/java/com/example/note/package-info.java` — [REVIEW] — новый 2026-09-29
-- `note/data/data-mongodb/src/main/resources/application-data-mongodb.properties` — [REVIEW] — новый 2026-09-29
-- `note/data/data-mongodb/src/test/java/com/example/note/NoteApplication.java` — [REVIEW] — новый 2026-09-29
-- `note/data/data-mongodb/src/test/java/com/example/note/NoteRepositoryTests.java` — [REVIEW] — новый 2026-09-29
-- `note/data/data-mongodb/src/main/java/com/example/note/NoteService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}NoteByIdSynchronousService`
+#### note/data/data-mongodb/ — [REMOVED] 2026-10-03, сведён к `note/service/*` (содержимое ниже — строки `[REMOVED]`)
+- `note/data/data-mongodb/build.gradle.kts` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `note/data/data-mongodb/src/main/java/com/example/note/Note.java` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `note/data/data-mongodb/src/main/java/com/example/note/NoteRepository.java` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `note/data/data-mongodb/src/main/java/com/example/note/package-info.java` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `note/data/data-mongodb/src/main/resources/application-data-mongodb.properties` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `note/data/data-mongodb/src/test/java/com/example/note/NoteApplication.java` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `note/data/data-mongodb/src/test/java/com/example/note/NoteRepositoryTests.java` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `note/data/data-mongodb/src/main/java/com/example/note/NoteService.java` — [REMOVED] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}NoteByIdSynchronousService`; удалён 2026-10-03 (`data-*` сведены к `service-*`)
 
-#### note/data/data-mongodb-reactive/ (12 файлов) — новый 2026-09-29, копия структуры `user-note/data/data-mongodb-reactive/` (пакет `com.example.note`)
-- `note/data/data-mongodb-reactive/build.gradle.kts` — [REVIEW] — новый 2026-09-29
-- `note/data/data-mongodb-reactive/src/main/java/com/example/note/Note.java` — [REVIEW] — новый 2026-09-29
-- `note/data/data-mongodb-reactive/src/main/java/com/example/note/NoteRepository.java` — [REVIEW] — новый 2026-09-29
-- `note/data/data-mongodb-reactive/src/main/java/com/example/note/package-info.java` — [REVIEW] — новый 2026-09-29
-- `note/data/data-mongodb-reactive/src/main/resources/application-data-mongodb-reactive.properties` — [REVIEW] — новый 2026-09-29
-- `note/data/data-mongodb-reactive/src/test/java/com/example/note/NoteApplication.java` — [REVIEW] — новый 2026-09-29
-- `note/data/data-mongodb-reactive/src/test/java/com/example/note/NoteRepositoryTests.java` — [REVIEW] — новый 2026-09-29
-- `note/data/data-mongodb-reactive/src/main/java/com/example/note/NoteService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}NoteByIdReactiveService`
+#### note/data/data-mongodb-reactive/ — [REMOVED] 2026-10-03, сведён к `note/service/*` (содержимое ниже — строки `[REMOVED]`)
+- `note/data/data-mongodb-reactive/build.gradle.kts` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `note/data/data-mongodb-reactive/src/main/java/com/example/note/Note.java` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `note/data/data-mongodb-reactive/src/main/java/com/example/note/NoteRepository.java` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `note/data/data-mongodb-reactive/src/main/java/com/example/note/package-info.java` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `note/data/data-mongodb-reactive/src/main/resources/application-data-mongodb-reactive.properties` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `note/data/data-mongodb-reactive/src/test/java/com/example/note/NoteApplication.java` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `note/data/data-mongodb-reactive/src/test/java/com/example/note/NoteRepositoryTests.java` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `note/data/data-mongodb-reactive/src/main/java/com/example/note/NoteService.java` — [REMOVED] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}NoteByIdReactiveService`; удалён 2026-10-03 (`data-*` сведены к `service-*`)
 
-#### note/data/data-r2dbc/ (12 файлов) — новый 2026-09-29, копия структуры `user-note/data/data-r2dbc/` (пакет `com.example.note`)
-- `note/data/data-r2dbc/build.gradle.kts` — [REVIEW] — новый 2026-09-29
-- `note/data/data-r2dbc/src/main/java/com/example/note/Note.java` — [REVIEW] — новый 2026-09-29
-- `note/data/data-r2dbc/src/main/java/com/example/note/NoteRepository.java` — [REVIEW] — новый 2026-09-29
-- `note/data/data-r2dbc/src/main/java/com/example/note/package-info.java` — [REVIEW] — новый 2026-09-29
-- `note/data/data-r2dbc/src/main/resources/application-data-r2dbc.properties` — [REVIEW] — новый 2026-09-29
-- `note/data/data-r2dbc/src/test/java/com/example/note/NoteApplication.java` — [REVIEW] — новый 2026-09-29
-- `note/data/data-r2dbc/src/test/java/com/example/note/NoteRepositoryTests.java` — [REVIEW] — новый 2026-09-29
-- `note/data/data-r2dbc/src/main/java/com/example/note/NoteService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}NoteByIdReactiveService`
+#### note/service/service-reactive/ — с 2026-10-03 (был `note/data/data-r2dbc/`; плагины `spring-boot-data-commons` + `project-reactor`, без технологии и слайс-тестов)
+- `note/service/service-reactive/build.gradle.kts` — [REVIEW] — новый 2026-09-29
+- `note/service/service-reactive/src/main/java/com/example/note/Note.java` — [REVIEW] — новый 2026-09-29
+- `note/service/service-reactive/src/main/java/com/example/note/NoteRepository.java` — [REVIEW] — новый 2026-09-29
+- `note/service/service-reactive/src/main/java/com/example/note/package-info.java` — [REVIEW] — новый 2026-09-29
+- `note/service/service-reactive/src/main/resources/application-data-r2dbc.properties` — [REVIEW] — новый 2026-09-29
+- `note/data/data-r2dbc/src/test/java/com/example/note/NoteApplication.java` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `note/data/data-r2dbc/src/test/java/com/example/note/NoteRepositoryTests.java` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `note/service/service-reactive/src/main/java/com/example/note/NoteService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}NoteByIdReactiveService`
 
 #### note/presentation/webmvc/ (5 файлов)
 - `note/presentation/webmvc/build.gradle.kts` — [DONE]
@@ -880,7 +880,7 @@
 - `note/application/application-h2-r2dbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
 - `note/application/application-h2-r2dbc/src/main/java/com/example/note/package-info.java` — [DONE]
 - `note/application/application-h2-r2dbc/src/main/java/com/example/note/NoteH2R2dbcApplication.java` — [REVIEW]
-- `note/application/application-h2-r2dbc/src/main/resources/application.properties` — [REVIEW]
+- `note/application/application-h2-r2dbc/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.jdbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `note/application/application-h2-r2dbc/src/test/resources/application.properties` — [REVIEW]
 - `note/application/application-h2-r2dbc/src/test/java/com/example/note/NoteH2R2dbcApplicationTests.java` — [REVIEW]
 
@@ -888,7 +888,7 @@
 - `note/application/application-mysql-r2dbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
 - `note/application/application-mysql-r2dbc/src/main/java/com/example/note/package-info.java` — [DONE]
 - `note/application/application-mysql-r2dbc/src/main/java/com/example/note/NoteMysqlR2dbcApplication.java` — [REVIEW]
-- `note/application/application-mysql-r2dbc/src/main/resources/application.properties` — [REVIEW]
+- `note/application/application-mysql-r2dbc/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.jdbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `note/application/application-mysql-r2dbc/compose.yaml` — [REVIEW]
 - `note/application/application-mysql-r2dbc/src/test/resources/application.properties` — [REVIEW]
 - `note/application/application-mysql-r2dbc/src/test/java/com/example/note/NoteMysqlR2dbcApplicationTests.java` — [REVIEW]
@@ -897,7 +897,7 @@
 - `note/application/application-postgresql-r2dbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
 - `note/application/application-postgresql-r2dbc/src/main/java/com/example/note/package-info.java` — [DONE]
 - `note/application/application-postgresql-r2dbc/src/main/java/com/example/note/NotePostgresqlR2dbcApplication.java` — [REVIEW]
-- `note/application/application-postgresql-r2dbc/src/main/resources/application.properties` — [REVIEW]
+- `note/application/application-postgresql-r2dbc/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.jdbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `note/application/application-postgresql-r2dbc/compose.yaml` — [REVIEW]
 - `note/application/application-postgresql-r2dbc/src/test/resources/application.properties` — [REVIEW]
 - `note/application/application-postgresql-r2dbc/src/test/java/com/example/note/NotePostgresqlR2dbcApplicationTests.java` — [REVIEW]
@@ -920,7 +920,7 @@
 - `note/application/application-h2-jpa/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
 - `note/application/application-h2-jpa/src/main/java/com/example/note/package-info.java` — [DONE]
 - `note/application/application-h2-jpa/src/main/java/com/example/note/NoteH2JpaApplication.java` — [REVIEW]
-- `note/application/application-h2-jpa/src/main/resources/application.properties` — [REVIEW]
+- `note/application/application-h2-jpa/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.jdbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `note/application/application-h2-jpa/src/test/resources/application.properties` — [REVIEW]
 - `note/application/application-h2-jpa/src/test/java/com/example/note/NoteH2JpaApplicationTests.java` — [REVIEW]
 
@@ -928,7 +928,7 @@
 - `note/application/application-mysql-jpa/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
 - `note/application/application-mysql-jpa/src/main/java/com/example/note/package-info.java` — [DONE]
 - `note/application/application-mysql-jpa/src/main/java/com/example/note/NoteMysqlJpaApplication.java` — [REVIEW]
-- `note/application/application-mysql-jpa/src/main/resources/application.properties` — [REVIEW]
+- `note/application/application-mysql-jpa/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.jdbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `note/application/application-mysql-jpa/compose.yaml` — [REVIEW]
 - `note/application/application-mysql-jpa/src/test/resources/application.properties` — [REVIEW]
 - `note/application/application-mysql-jpa/src/test/java/com/example/note/NoteMysqlJpaApplicationTests.java` — [REVIEW]
@@ -937,7 +937,7 @@
 - `note/application/application-postgresql-jpa/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
 - `note/application/application-postgresql-jpa/src/main/java/com/example/note/package-info.java` — [DONE]
 - `note/application/application-postgresql-jpa/src/main/java/com/example/note/NotePostgresqlJpaApplication.java` — [REVIEW]
-- `note/application/application-postgresql-jpa/src/main/resources/application.properties` — [REVIEW]
+- `note/application/application-postgresql-jpa/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.jdbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `note/application/application-postgresql-jpa/compose.yaml` — [REVIEW]
 - `note/application/application-postgresql-jpa/src/test/resources/application.properties` — [REVIEW]
 - `note/application/application-postgresql-jpa/src/test/java/com/example/note/NotePostgresqlJpaApplicationTests.java` — [REVIEW]
@@ -960,7 +960,7 @@
 - `note/application/application-h2-jdbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
 - `note/application/application-h2-jdbc/src/main/java/com/example/note/package-info.java` — [DONE]
 - `note/application/application-h2-jdbc/src/main/java/com/example/note/NoteH2JdbcApplication.java` — [REVIEW]
-- `note/application/application-h2-jdbc/src/main/resources/application.properties` — [REVIEW]
+- `note/application/application-h2-jdbc/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.jdbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `note/application/application-h2-jdbc/src/test/resources/application.properties` — [REVIEW]
 - `note/application/application-h2-jdbc/src/test/java/com/example/note/NoteH2JdbcApplicationTests.java` — [REVIEW]
 
@@ -968,7 +968,7 @@
 - `note/application/application-mysql-jdbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
 - `note/application/application-mysql-jdbc/src/main/java/com/example/note/package-info.java` — [DONE]
 - `note/application/application-mysql-jdbc/src/main/java/com/example/note/NoteMysqlJdbcApplication.java` — [REVIEW]
-- `note/application/application-mysql-jdbc/src/main/resources/application.properties` — [REVIEW]
+- `note/application/application-mysql-jdbc/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.jdbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `note/application/application-mysql-jdbc/compose.yaml` — [REVIEW]
 - `note/application/application-mysql-jdbc/src/test/resources/application.properties` — [REVIEW]
 - `note/application/application-mysql-jdbc/src/test/java/com/example/note/NoteMysqlJdbcApplicationTests.java` — [REVIEW]
@@ -977,7 +977,7 @@
 - `note/application/application-postgresql-jdbc/build.gradle.kts` — [REVIEW] — новый 2026-07-24, вендор БД — граница модуля вместо профиля (устраняет driver bloat: один драйвер на classpath вместо трёх сразу, см. decisions-log.md)
 - `note/application/application-postgresql-jdbc/src/main/java/com/example/note/package-info.java` — [DONE]
 - `note/application/application-postgresql-jdbc/src/main/java/com/example/note/NotePostgresqlJdbcApplication.java` — [REVIEW]
-- `note/application/application-postgresql-jdbc/src/main/resources/application.properties` — [REVIEW]
+- `note/application/application-postgresql-jdbc/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.jdbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `note/application/application-postgresql-jdbc/compose.yaml` — [REVIEW]
 - `note/application/application-postgresql-jdbc/src/test/resources/application.properties` — [REVIEW]
 - `note/application/application-postgresql-jdbc/src/test/java/com/example/note/NotePostgresqlJdbcApplicationTests.java` — [REVIEW]
@@ -986,7 +986,7 @@
 - `note/application/application-mongodb/build.gradle.kts` — [REVIEW]
 - `note/application/application-mongodb/src/test/resources/application.properties` — [REVIEW]
 - `note/application/application-mongodb/src/test/java/com/example/note/NoteMongoApplicationTests.java` — [REVIEW]
-- `note/application/application-mongodb/src/main/resources/application.properties` — [REVIEW]
+- `note/application/application-mongodb/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.mongodb=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `note/application/application-mongodb/src/main/java/com/example/note/package-info.java` — [REVIEW]
 - `note/application/application-mongodb/src/main/java/com/example/note/NoteMongoApplication.java` — [REVIEW]
 - `note/application/application-mongodb/compose.yaml` — [REVIEW] — восстановлен 2026-07-23 (Testcontainers/Compose для Mongo вернули, теперь симметрично с PostgreSQL/MySQL)
@@ -995,7 +995,7 @@
 - `note/application/application-mongodb-reactive/build.gradle.kts` — [REVIEW]
 - `note/application/application-mongodb-reactive/src/test/resources/application.properties` — [REVIEW]
 - `note/application/application-mongodb-reactive/src/test/java/com/example/note/NoteMongoReactiveApplicationTests.java` — [REVIEW]
-- `note/application/application-mongodb-reactive/src/main/resources/application.properties` — [REVIEW]
+- `note/application/application-mongodb-reactive/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webflux` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.mongodb=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `note/application/application-mongodb-reactive/src/main/java/com/example/note/package-info.java` — [REVIEW]
 - `note/application/application-mongodb-reactive/src/main/java/com/example/note/NoteMongoReactiveApplication.java` — [REVIEW]
 - `note/application/application-mongodb-reactive/compose.yaml` — [REVIEW] — восстановлен 2026-07-23 (Testcontainers/Compose для Mongo вернули, теперь симметрично с PostgreSQL/MySQL)
@@ -1097,6 +1097,7 @@
 - `build-logic/com.example.spring-boot-database-h2.gradle.kts` — [REVIEW]
 - `build-logic/com.example.spring-boot-graphql.gradle.kts` — [REVIEW]
 - `build-logic/com.example.spring-boot-data-r2dbc.gradle.kts` — [REVIEW]
+- `build-logic/com.example.spring-boot-data-commons.gradle.kts` — [REVIEW] — новый 2026-10-03: `org.springframework.data:spring-data-commons` (версия из BOM Boot), применяют `service-synchronous`/`service-reactive` всех трёх сервисов; технология-нейтральный, готового стартера для голого commons нет
 - `build-logic/com.example.spring-boot-data-mongodb.gradle.kts` — [REVIEW]
 - `build-logic/com.example.spring-boot-data-mongodb-reactive.gradle.kts` — [REVIEW]
 - `build-logic/com.example.spring-boot-data-jpa.gradle.kts` — [REVIEW]

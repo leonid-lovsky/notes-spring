@@ -12,5 +12,5 @@ plugins {
 
 dependencies {
     implementation(project(":user:controller:controller-webmvc"))
-    implementation(project(":user:data:data-mongodb"))
+    implementation(project(":user:service:service-synchronous"))
 }
