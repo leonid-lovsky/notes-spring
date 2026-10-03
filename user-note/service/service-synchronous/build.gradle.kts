@@ -1,8 +1,9 @@
 plugins {
-    id("com.example.spring-boot-data-commons")
+    id("com.example.commons-synchronous")
 }
 
 dependencies {
-    implementation(project(":user-note:contract:contract-common"))
+    implementation(project(":user-note:service:service-commons"))
+    implementation(project(":user-note:contract:contract-commons"))
     implementation(project(":user-note:contract:contract-synchronous"))
 }

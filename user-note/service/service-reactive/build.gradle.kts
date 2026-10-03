@@ -1,10 +1,9 @@
 plugins {
-    id("com.example.project-reactor")
-
-    id("com.example.spring-boot-data-commons")
+    id("com.example.commons-reactive")
 }
 
 dependencies {
-    implementation(project(":user-note:contract:contract-common"))
+    implementation(project(":user-note:service:service-commons"))
+    implementation(project(":user-note:contract:contract-commons"))
     implementation(project(":user-note:contract:contract-reactive"))
 }

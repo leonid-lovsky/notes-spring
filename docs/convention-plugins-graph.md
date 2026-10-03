@@ -20,18 +20,18 @@
 
 ## Уровень 0 — корень
 
-- `com.example.base` — родителя нет (сам применяет `id("java")` + `id("com.example.codequality")`) — toolchain из `.java-version`, `jakarta.validation-api`(implementation), `junit-jupiter`(test) + JUnit Platform Launcher(testRuntimeOnly) — 0 прямых применений (переименован из `com.example.java` 2026-09-24 по прямому запросу пользователя — откат решения 2026-08-01 «id = имя технологии»; ни один лист `user-note` не применяет его напрямую — только каскадом через `contract`/`project-reactor`/`spring-boot`, см. уровень 1)
+- `com.example.commons` — родителя нет (сам применяет `id("java")` + `id("com.example.codequality")`) — toolchain из `.java-version`, `jakarta.validation-api`(implementation), `junit-jupiter`(test) + JUnit Platform Launcher(testRuntimeOnly) — 2 прямых применения на сервис (`contract-commons`, `service-commons`); корень цепочек `commons-synchronous` и `project-reactor`/`commons-reactive`; с 2026-10-03 заменил `com.example.contract`; переименован из `com.example.base` 2026-10-03 и ранее из `com.example.java` 2026-09-24 по прямому запросу пользователя — откат решения 2026-08-01 «id = имя технологии»; ни один лист `user-note` не применяет его напрямую — только каскадом через `contract`/`project-reactor`/`spring-boot`, см. уровень 1)
 
 ## Уровень 1 — родитель `base`
 
 - `com.example.codequality` — `base` — агрегатор 8 `codequality-*` (см. ниже) — 0 прямых применений (воссоздан 2026-09-24 по прямому запросу — тот же паттерн, что был убран 2026-08-01 как «обёртка без переиспользования, один потребитель»; сегодня потребитель по-прежнему один — `base` — но фрагментов 8, не 5)
-- `com.example.contract` — `base` — не добавляет зависимостей, чистый алиас — 2 применения (`contract-common`, `contract-synchronous`; до 2026-09-29 — один `contract`) — введён 2026-09-24: `user-note/contract` не собирался (`plugins{}` был пуст, без единого `id(...)`), это единственный способ дать листу свою роль вместо голого `base` напрямую (см. `CLAUDE.md` → «Правила» → исключения из правила именования плагинов)
 - `com.example.project-reactor` — `base` — + `reactor-core`(implementation) + `reactor-tools`(implementation) + `reactor-test`(test) — 1 прямое применение (`service-reactive`, с 2026-10-03) + родитель `contract-reactive`
+- `com.example.commons-synchronous` — `commons` — не добавляет зависимостей, чистый алиас sync-ветки — 2 применения на сервис (`contract-synchronous`, `service-synchronous`); симметричен `commons-reactive`; создан 2026-10-03 (схема A: корень `commons`, два алиаса, без ромба)
 - `com.example.spring-boot` — `base` — + `io.spring.dependency-management` + Spring Boot BOM + `spring-boot-starter`(+test) — 8 прямых применений (все 8 листьев `application-*` явным `id(...)`; сверено 2026-09-29) — родитель 24 технологических плагинов уровня 2 + `spring-cloud`
 
 ## Уровень 2 — родитель `project-reactor`
 
-- `com.example.contract-reactive` — `project-reactor` — не добавляет зависимостей, чистый алиас — 1 применение (`contract-reactive`) — симметрично `contract` выше, введён в той же сессии
+- `com.example.commons-reactive` — `project-reactor` — не добавляет зависимостей, чистый алиас — 2 применения (`contract-reactive`, `service-reactive`) — до 2026-10-03 `com.example.contract-reactive`, переименован по запросу пользователя вместе с заменой `contract` на `commons`
 
 ## Уровень 2 — родитель `codequality` (8 фрагментов; каждый физически применяет бare Gradle/внешний id в своём файле — не `com.example.*` — см. «Как читать этот граф»)
 
@@ -59,7 +59,7 @@
 - `com.example.spring-boot-data-mongodb` — `spring-boot` — + `spring-boot-starter-data-mongodb`(+test) — 1 применение (`application-mongodb`; модуль `data-mongodb` удалён 2026-10-03)
 - `com.example.spring-boot-data-mongodb-reactive` — `spring-boot` — + `spring-boot-starter-data-mongodb-reactive`(+test) — 1 применение (`application-mongodb-reactive`; модуль `data-mongodb-reactive` удалён 2026-10-03)
 - `com.example.spring-boot-data-r2dbc` — `spring-boot` — + `spring-boot-starter-data-r2dbc`(+test) — 3 применения (листья `application-{h2,mysql,postgresql}-reactive`; модуль `data-r2dbc` удалён 2026-10-03)
-- `com.example.spring-boot-data-commons` — `spring-boot` — + `spring-data-commons`(implementation, версия из BOM Boot; технология-нейтральный, стартера нет) — 2 применения (`service-synchronous`, `service-reactive`), новый 2026-10-03
+- `com.example.spring-boot-data-commons` — `spring-boot` — + `spring-data-commons`(implementation, версия из BOM Boot; стартера нет) — 0 применений (создан 2026-10-03, в тот же день снят с `service-*`: из них убран весь Spring)
 - `com.example.spring-boot-database-h2` — `spring-boot` — + `h2database`(runtimeOnly) — 1 применение (`application-h2`)
 - `com.example.spring-boot-database-mysql` — `spring-boot` — + `mysql-connector-j`(runtimeOnly) — 1 применение (`application-mysql`)
 - `com.example.spring-boot-database-postgresql` — `spring-boot` — + `postgresql`(runtimeOnly) — 1 применение (`application-postgresql`)
@@ -99,7 +99,7 @@
 
 ## Как читать этот граф
 
-**Одна ось** — BOM/toolchain-цепочка (`base → codequality/project-reactor/spring-boot/contract → …`, всегда 1 `com.example.*`-родитель по построению, без единого исключения — проверено сегодняшним прогоном проверочной команды выше) и **одна ортогональная** — bootable (`org.springframework.boot`, второй `id(...)` только там, где нужен typed-аксессор: `spring-boot-bootable`, `spring-boot-docker-compose`). **Диамантов вида 1 (2+ `com.example.*`-родителя внутри одного convention-плагина) в графе нет ни одного** — не было с 2026-08-01.
+**Одна ось** — BOM/toolchain-цепочка (`base → codequality/project-reactor/spring-boot/contract → …`, всегда 1 `com.example.*`-родитель по построению, без единого исключения — проверено сегодняшним прогоном проверочной команды выше) и **одна ортогональная** — bootable (`org.springframework.boot`, второй `id(...)` только там, где нужен typed-аксессор: `spring-boot-bootable`, `spring-boot-docker-compose`). **Диамантов вида 1 (2+ `com.example.*`-родителя внутри одного convention-плагина) в графе нет ни одного** — не было с 2026-08-01. Перепроверено 2026-10-03 скриптом после схемы `commons`/`commons-synchronous`/`commons-reactive`: вид 1 — нет; вид 2 — только листья `application-*` (`spring-boot` + `bootable`/`actuator`/`webmvc`|`webflux`). Ромбы между `project(...)`-зависимостями модулей — отдельный вопрос, `CLAUDE.md` → «Правила» → «Кольцевые/ромбовидные зависимости».
 
 **Композиция 2+ convention-плагинов НА ЛИСТОВОМ модуле** (вид 2 — не диамант, штатный способ использования системы) — каждый из 8 `application-*` листьев компонует минимум 6 плагинов: `spring-boot`+`spring-boot-bootable`+`spring-boot-actuator`+свой веб-стартер (`webmvc`/`webflux`)+свой data-стартер+свой database/testcontainers-набор. Лист дополнительно применяет ТОТ ЖЕ `spring-boot-webmvc`/`-webflux`, что уже применён его модулем-зависимостью `controller-webmvc`/`controller-webflux` — не диамант (у каждого модуля свой собственный `plugins{}`, схождения путей внутри одного плагина нет), а следствие того, что `implementation(project(...))` не транслирует зависимости транзитивно на compile classpath потребителя.
 

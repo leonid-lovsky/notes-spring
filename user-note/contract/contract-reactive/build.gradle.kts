@@ -1,7 +1,7 @@
 plugins {
-    id("com.example.contract-reactive")
+    id("com.example.commons-reactive")
 }
 
 dependencies {
-    implementation(project(":user-note:contract:contract-common"))
+    implementation(project(":user-note:contract:contract-commons"))
 }

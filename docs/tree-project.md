@@ -36,19 +36,19 @@
 │   ├── wrapper/{gradle-wrapper.jar,gradle-wrapper.properties}
 │   └── libs.versions.toml
 ├── note/                                  (с 2026-09-29 — группы модулей в подкаталогах, путь проекта `:note:<группа>:<модуль>`)
-│   ├── contract/     contract-common/ (модели), contract-synchronous/, contract-reactive/ (порты)
+│   ├── contract/     contract-commons/ (модели), contract-synchronous/, contract-reactive/ (порты)
 │   ├── controller/   controller-webmvc/, controller-webflux/ (контроллер, слайс-тест)
-│   ├── service/      service-synchronous/, service-reactive/ (сущность, репозиторий, реализации портов; технологию даёт лист)
+│   ├── service/      service-commons/ (запись), service-synchronous/, service-reactive/ (репозиторий, реализации портов; цель — чистая Java; технологию даёт лист)
 │   └── application/  application-{h2,mysql,postgresql,mongodb}[-reactive]/ (8 листьев, composition root)
 ├── user/                                  (с 2026-09-29 — группы модулей в подкаталогах, путь проекта `:user:<группа>:<модуль>`)
-│   ├── contract/     contract-common/ (модели), contract-synchronous/, contract-reactive/ (порты)
+│   ├── contract/     contract-commons/ (модели), contract-synchronous/, contract-reactive/ (порты)
 │   ├── controller/   controller-webmvc/, controller-webflux/ (контроллер, слайс-тест)
-│   ├── service/      service-synchronous/, service-reactive/ (сущность, репозиторий, реализации портов; технологию даёт лист)
+│   ├── service/      service-commons/ (запись), service-synchronous/, service-reactive/ (репозиторий, реализации портов; цель — чистая Java; технологию даёт лист)
 │   └── application/  application-{h2,mysql,postgresql,mongodb}[-reactive]/ (8 листьев, composition root)
 ├── user-note/                                  (с 2026-09-29 — группы модулей в подкаталогах, путь проекта `:user-note:<группа>:<модуль>`)
-│   ├── contract/     contract-common/ (модели), contract-synchronous/, contract-reactive/ (порты)
+│   ├── contract/     contract-commons/ (модели), contract-synchronous/, contract-reactive/ (порты)
 │   ├── controller/   controller-webmvc/, controller-webflux/ (контроллер, слайс-тест)
-│   ├── service/      service-synchronous/, service-reactive/ (сущность, репозиторий, реализации портов; технологию даёт лист)
+│   ├── service/      service-commons/ (запись), service-synchronous/, service-reactive/ (репозиторий, реализации портов; цель — чистая Java; технологию даёт лист)
 │   └── application/  application-{h2,mysql,postgresql,mongodb}[-reactive]/ (8 листьев, composition root)
 ├── .editorconfig
 ├── .gitattributes

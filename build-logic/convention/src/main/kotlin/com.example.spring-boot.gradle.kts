@@ -1,7 +1,7 @@
 import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 plugins {
-    id("com.example.base")
+    id("com.example.commons")
     id("io.spring.dependency-management")
 }
 

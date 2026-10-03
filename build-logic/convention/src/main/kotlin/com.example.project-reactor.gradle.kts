@@ -1,5 +1,5 @@
 plugins {
-    id("com.example.base")
+    id("com.example.commons")
 }
 
 val libs = extensions.getByType(VersionCatalogsExtension::class.java).named("libs")

@@ -57,14 +57,14 @@
 - `user-note/presentation/{webmvc,webflux}/**` — [REMOVED] — driving-адаптеры (контроллеры, exception handler, порт-интерфейсы)
 - `user-note/application/**` — [REMOVED] — старые composition-root модули (11 вложенных `application-{vendor}-{tech}/` + `application-mongodb[-reactive]/`)
 
-#### user-note/contract/contract-common/ (4 файла) — новый 2026-09-29, модели запроса и ответа, общие для `contract-synchronous` и `contract-reactive`, по образцу `note`/`user`, `id("com.example.contract")`
-- `user-note/contract/contract-common/build.gradle.kts` — [REVIEW] — новый 2026-09-29
-- `user-note/contract/contract-common/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-09-29, `@NullMarked`
-- `user-note/contract/contract-common/src/main/java/com/example/usernote/UserNoteRequest.java` — [REVIEW] — новый 2026-09-29, модель запроса `(userId, noteId)`
-- `user-note/contract/contract-common/src/main/java/com/example/usernote/UserNoteResponse.java` — [REVIEW] — новый 2026-09-29, модель ответа `(id, userId, noteId)`
+#### user-note/contract/contract-commons/ (4 файла) — новый 2026-09-29, модели запроса и ответа, общие для `contract-synchronous` и `contract-reactive`, по образцу `note`/`user`, `id("com.example.commons")`
+- `user-note/contract/contract-commons/build.gradle.kts` — [REVIEW] — новый 2026-09-29
+- `user-note/contract/contract-commons/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-09-29, `@NullMarked`
+- `user-note/contract/contract-commons/src/main/java/com/example/usernote/UserNoteRequest.java` — [REVIEW] — новый 2026-09-29, модель запроса `(userId, noteId)`
+- `user-note/contract/contract-commons/src/main/java/com/example/usernote/UserNoteResponse.java` — [REVIEW] — новый 2026-09-29, модель ответа `(id, userId, noteId)`
 
 #### user-note/contract/contract-synchronous/ (7 файлов) — не был в каталоге до 2026-09-24; не собирался (`plugins{}` пустой, без единого `id(...)`) до починки в этой сессии
-- `user-note/contract/contract-synchronous/build.gradle.kts` — [REVIEW] — было `plugins { id("com.example.java") }` (собирался, но нарушал паттерн «лист = плагин по роли, не голый `java`»); теперь `id("com.example.contract")`
+- `user-note/contract/contract-synchronous/build.gradle.kts` — [REVIEW] — было `plugins { id("com.example.java") }` (собирался, но нарушал паттерн «лист = плагин по роли, не голый `java`»); теперь `id("com.example.commons")`
 - `user-note/contract/contract-synchronous/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-09-24, `@NullMarked`
 - `user-note/contract/contract-synchronous/src/main/java/com/example/usernote/CreateUserNoteById.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
 - `user-note/contract/contract-synchronous/src/main/java/com/example/usernote/UpdateUserNoteById.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
@@ -73,7 +73,7 @@
 - `user-note/contract/contract-synchronous/src/main/java/com/example/usernote/DeleteUserNoteById.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
 
 #### user-note/contract/contract-reactive/ (7 файлов) — не был в каталоге до 2026-09-24
-- `user-note/contract/contract-reactive/build.gradle.kts` — [REVIEW] — было `id("com.example.project-reactor")` напрямую; теперь `id("com.example.contract-reactive")` (симметрично `contract`)
+- `user-note/contract/contract-reactive/build.gradle.kts` — [REVIEW] — было `id("com.example.project-reactor")` напрямую; теперь `id("com.example.commons-reactive")` (симметрично `contract`)
 - `user-note/contract/contract-reactive/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-09-24, `@NullMarked`
 - `user-note/contract/contract-reactive/src/main/java/com/example/usernote/ReactiveFindUserNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
 - `user-note/contract/contract-reactive/src/main/java/com/example/usernote/ReactiveReplaceUserNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
@@ -172,7 +172,9 @@
 #### user-note/service/service-{synchronous,reactive}/ — с 2026-10-03 заменили `data-{jdbc,r2dbc,mongodb,mongodb-reactive}` (сущность, репозиторий, сервис без технологии; плагин `spring-boot-data-commons`); строки `data-mongodb*`, тесты и `application-data-*.properties` ниже — [REMOVED]
 - `user-note/service/service-synchronous/build.gradle.kts` — [REVIEW] — подключён к `application-{h2,mysql,postgresql}` через `implementation(project(":user-note:data:data-jdbc"))`
 - `user-note/service/service-synchronous/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-09-24, `@NullMarked`, был пропущен при заведении модуля 2026-09-21
-- `user-note/service/service-synchronous/src/main/java/com/example/usernote/UserNote.java` — [REVIEW] — пустой класс, 2026-09-21
+- `user-note/service/service-commons/src/main/java/com/example/usernote/UserNote.java` — [REVIEW] — пустой класс, 2026-09-21; запись без аннотаций (без `@Id`), перенесена из `service-synchronous` 2026-10-03
+- `user-note/service/service-commons/build.gradle.kts` — [REVIEW] — новый 2026-10-03, `id("com.example.commons")`
+- `user-note/service/service-commons/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-10-03, `@NullMarked`
 - `user-note/service/service-synchronous/src/main/java/com/example/usernote/UserNoteRepository.java` — [REVIEW] — `ListCrudRepository<UserNote, UUID>`, 2026-09-21
 - `user-note/data/data-jdbc/src/main/resources/application-data-jdbc.properties` — [REMOVED] — `logging.level.org.springframework.data=DEBUG` + `...data.jdbc=DEBUG` (2026-09-21); подключается строкой `spring.profiles.include=data-jdbc` в `application.properties` листьев `application-{h2,mysql,postgresql}` …; удалён 2026-10-03 (`data-*` сведены к `service-*`)
 - `user-note/data/data-jdbc/src/test/java/com/example/usernote/UserNoteRepositoryTests.java` — [REMOVED] — smoke: слайс-аннотация технологии (`@DataJdbcTest`/`@DataR2dbcTest`/`@DataMongoTest`) + пустой `contextLoads()`; зеркально остальным data-модулям (2026-09-21) …; удалён 2026-10-03 (`data-*` сведены к `service-*`)
@@ -194,14 +196,14 @@
 - `user-note/data/data-mongodb-reactive/src/test/java/com/example/usernote/UserNoteApplication.java` — [REMOVED] — новый 2026-09-21, test-scope `@SpringBootApplication` (точка входа слайс-теста, как `UserNoteApplication` в `application-*`); побайтово одинаков во всех 6 модулях …; удалён 2026-10-03 (`data-*` сведены к `service-*`)
 - `user-note/service/service-reactive/build.gradle.kts` — [REVIEW]
 - `user-note/service/service-reactive/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-09-24, `@NullMarked`, был пропущен при заведении модуля 2026-09-21
-- `user-note/service/service-reactive/src/main/java/com/example/usernote/UserNote.java` — [REVIEW] — пустой класс, 2026-09-21
-- `user-note/service/service-reactive/src/main/java/com/example/usernote/UserNoteRepository.java` — [REVIEW] — `ReactiveCrudRepository<UserNote, UUID>`, 2026-09-21
+- `user-note/service/service-reactive/src/main/java/com/example/usernote/UserNote.java` — [REMOVED] — пустой класс, 2026-09-21; перенесён в `service-commons` 2026-10-03
+- `user-note/service/service-reactive/src/main/java/com/example/usernote/ReactiveUserNoteRepository.java` — [REVIEW] — `ReactiveCrudRepository<UserNote, UUID>`, 2026-09-21
 - `user-note/service/service-reactive/src/main/resources/application-data-r2dbc.properties` — [REVIEW] — `logging.level.org.springframework.data=DEBUG` + `...data.r2dbc=DEBUG` (2026-09-21); подключается строкой `spring.profiles.include=data-r2dbc` в `application.properties` листьев …
 - `user-note/data/data-r2dbc/src/test/java/com/example/usernote/UserNoteRepositoryTests.java` — [REMOVED] — smoke: слайс-аннотация технологии (`@DataJdbcTest`/`@DataR2dbcTest`/`@DataMongoTest`) + пустой `contextLoads()`; зеркально остальным data-модулям (2026-09-21) …; удалён 2026-10-03 (`data-*` сведены к `service-*`)
 - `user-note/data/data-r2dbc/src/test/java/com/example/usernote/UserNoteApplication.java` — [REMOVED] — новый 2026-09-21, test-scope `@SpringBootApplication` (точка входа слайс-теста, как `UserNoteApplication` в `application-*`); побайтово одинаков во всех 6 модулях …; удалён 2026-10-03 (`data-*` сведены к `service-*`)
 - `user-note/service/service-synchronous/src/main/java/com/example/usernote/UserNoteService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}UserNoteByIdSynchronousService`
 - `user-note/data/data-mongodb/src/main/java/com/example/usernote/UserNoteService.java` — [REMOVED] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}UserNoteByIdSynchronousService`; удалён 2026-10-03 (`data-*` сведены к `service-*`)
-- `user-note/service/service-reactive/src/main/java/com/example/usernote/UserNoteService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}UserNoteByIdReactiveService`
+- `user-note/service/service-reactive/src/main/java/com/example/usernote/ReactiveUserNoteService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}UserNoteByIdReactiveService`
 - `user-note/data/data-mongodb-reactive/src/main/java/com/example/usernote/UserNoteService.java` — [REMOVED] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}UserNoteByIdReactiveService`; удалён 2026-10-03 (`data-*` сведены к `service-*`)
 
 #### user-note/controller/controller-webmvc/ (4 файла) — новый 2026-09-21, driving-сторона sync: `id("com.example.spring-boot-webmvc")`; подключён к `application-{h2,mysql,postgresql,mongodb}` через `implementation(project(":user-note:controller:controller-webmvc"))` …
@@ -215,9 +217,9 @@
 #### user-note/controller/controller-webflux/ (4 файла) — новый 2026-09-21, driving-сторона reactive: `id("com.example.spring-boot-webflux")`; подключён к `application-{h2,mysql,postgresql,mongodb}-reactive` через `implementation(project(":user-note:controller:controller-webflux"))`
 - `user-note/controller/controller-webflux/build.gradle.kts` — [REVIEW]
 - `user-note/controller/controller-webflux/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-09-24, `@NullMarked`, был пропущен при заведении модуля 2026-09-21
-- `user-note/controller/controller-webflux/src/main/java/com/example/usernote/UserNoteController.java` — [REVIEW] — пустой `@RestController`, зеркален `controller-webmvc` (2026-09-21)
+- `user-note/controller/controller-webflux/src/main/java/com/example/usernote/ReactiveUserNoteController.java` — [REVIEW] — пустой `@RestController`, зеркален `controller-webmvc` (2026-09-21)
 - `user-note/controller/controller-webflux/src/main/resources/application-controller-webflux.properties` — [REVIEW] — `spring.webflux.problemdetails.enabled=true` + `logging.level.org.springframework.web=DEBUG`, вынесены из `application.properties` 4 reactive-листьев; подключается строкой `spring.profiles.include=controller-webflux`
-- `user-note/controller/controller-webflux/src/test/java/com/example/usernote/UserNoteControllerTests.java` — [REVIEW] — smoke: `@WebFluxTest(UserNoteController.class)` + пустой `contextLoads()`; зеркален `controller-webmvc`; точка входа та же
+- `user-note/controller/controller-webflux/src/test/java/com/example/usernote/ReactiveUserNoteControllerTests.java` — [REVIEW] — smoke: `@WebFluxTest(UserNoteController.class)` + пустой `contextLoads()`; зеркален `controller-webmvc`; точка входа та же
 - `user-note/controller/controller-webflux/src/test/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — новый 2026-09-21, test-scope `@SpringBootApplication` (точка входа слайс-теста, как `UserNoteApplication` в `application-*`); побайтово одинаков во всех 6 модулях …
 
 ### user/ — воссоздан 2026-09-29 копией структуры `user-note/` (92 файлов); ниже новых разделов — прежние файлы, удалённые 2026-08-29 (исторический список)
@@ -286,11 +288,11 @@
 - `user/application/application-postgresql-reactive/src/test/java/com/example/user/UserApplicationTests.java` — [REVIEW] — новый 2026-09-29
 - `user/application/application-postgresql-reactive/src/test/java/com/example/user/UserTestConfiguration.java` — [REVIEW] — новый 2026-09-29
 
-#### user/contract/contract-common/ (4 файла) — новый 2026-09-29, модели запроса и ответа, общие для `contract-synchronous` и `contract-reactive` (правило «Дублирование…» — реально общее в отдельный модуль; имя выбрано пользователем), чистая Java, `id("com.example.contract")`
-- `user/contract/contract-common/build.gradle.kts` — [REVIEW] — новый 2026-09-29
-- `user/contract/contract-common/src/main/java/com/example/user/package-info.java` — [REVIEW] — новый 2026-09-29, `@NullMarked`
-- `user/contract/contract-common/src/main/java/com/example/user/UserRequest.java` — [REVIEW] — 2026-09-29 перенесён из `user/contract/`, модель запроса
-- `user/contract/contract-common/src/main/java/com/example/user/UserResponse.java` — [REVIEW] — 2026-09-29 перенесён из `user/contract/`, модель ответа
+#### user/contract/contract-commons/ (4 файла) — новый 2026-09-29, модели запроса и ответа, общие для `contract-synchronous` и `contract-reactive` (правило «Дублирование…» — реально общее в отдельный модуль; имя выбрано пользователем), чистая Java, `id("com.example.commons")`
+- `user/contract/contract-commons/build.gradle.kts` — [REVIEW] — новый 2026-09-29
+- `user/contract/contract-commons/src/main/java/com/example/user/package-info.java` — [REVIEW] — новый 2026-09-29, `@NullMarked`
+- `user/contract/contract-commons/src/main/java/com/example/user/UserRequest.java` — [REVIEW] — 2026-09-29 перенесён из `user/contract/`, модель запроса
+- `user/contract/contract-commons/src/main/java/com/example/user/UserResponse.java` — [REVIEW] — 2026-09-29 перенесён из `user/contract/`, модель ответа
 
 #### user/contract/contract-synchronous/ (7 файлов) — новый 2026-09-29, копия структуры `user-note/contract/` (пакет `com.example.user`); 2026-09-29 переименован из `user/contract/` (синхронный контракт, имя выбрано пользователем)
 - `user/contract/contract-synchronous/build.gradle.kts` — [REVIEW] — новый 2026-09-29
@@ -312,11 +314,11 @@
 
 #### user/controller/controller-webflux/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/controller/controller-webflux/` (пакет `com.example.user`)
 - `user/controller/controller-webflux/build.gradle.kts` — [REVIEW] — новый 2026-09-29
-- `user/controller/controller-webflux/src/main/java/com/example/user/UserController.java` — [REVIEW] — новый 2026-09-29
+- `user/controller/controller-webflux/src/main/java/com/example/user/ReactiveUserController.java` — [REVIEW] — новый 2026-09-29
 - `user/controller/controller-webflux/src/main/java/com/example/user/package-info.java` — [REVIEW] — новый 2026-09-29
 - `user/controller/controller-webflux/src/main/resources/application-controller-webflux.properties` — [REVIEW] — новый 2026-09-29
 - `user/controller/controller-webflux/src/test/java/com/example/user/UserApplication.java` — [REVIEW] — новый 2026-09-29
-- `user/controller/controller-webflux/src/test/java/com/example/user/UserControllerTests.java` — [REVIEW] — новый 2026-09-29
+- `user/controller/controller-webflux/src/test/java/com/example/user/ReactiveUserControllerTests.java` — [REVIEW] — новый 2026-09-29
 
 #### user/controller/controller-webmvc/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/controller/controller-webmvc/` (пакет `com.example.user`)
 - `user/controller/controller-webmvc/build.gradle.kts` — [REVIEW] — новый 2026-09-29
@@ -328,7 +330,9 @@
 
 #### user/service/service-synchronous/ — с 2026-10-03 (был `user/data/data-jdbc/`; плагин `spring-boot-data-commons`, без технологии и слайс-тестов)
 - `user/service/service-synchronous/build.gradle.kts` — [REVIEW] — новый 2026-09-29
-- `user/service/service-synchronous/src/main/java/com/example/user/User.java` — [REVIEW] — новый 2026-09-29
+- `user/service/service-commons/src/main/java/com/example/user/User.java` — [REVIEW] — новый 2026-09-29; запись без аннотаций (без `@Id`), перенесена из `service-synchronous` 2026-10-03
+- `user/service/service-commons/build.gradle.kts` — [REVIEW] — новый 2026-10-03, `id("com.example.commons")`
+- `user/service/service-commons/src/main/java/com/example/user/package-info.java` — [REVIEW] — новый 2026-10-03, `@NullMarked`
 - `user/service/service-synchronous/src/main/java/com/example/user/UserRepository.java` — [REVIEW] — новый 2026-09-29
 - `user/service/service-synchronous/src/main/java/com/example/user/package-info.java` — [REVIEW] — новый 2026-09-29
 - `user/data/data-jdbc/src/main/resources/application-data-jdbc.properties` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
@@ -358,13 +362,13 @@
 
 #### user/service/service-reactive/ — с 2026-10-03 (был `user/data/data-r2dbc/`; плагины `spring-boot-data-commons` + `project-reactor`, без технологии и слайс-тестов)
 - `user/service/service-reactive/build.gradle.kts` — [REVIEW] — новый 2026-09-29
-- `user/service/service-reactive/src/main/java/com/example/user/User.java` — [REVIEW] — новый 2026-09-29
-- `user/service/service-reactive/src/main/java/com/example/user/UserRepository.java` — [REVIEW] — новый 2026-09-29
+- `user/service/service-reactive/src/main/java/com/example/user/User.java` — [REMOVED] — новый 2026-09-29; перенесён в `service-commons` 2026-10-03
+- `user/service/service-reactive/src/main/java/com/example/user/ReactiveUserRepository.java` — [REVIEW] — новый 2026-09-29
 - `user/service/service-reactive/src/main/java/com/example/user/package-info.java` — [REVIEW] — новый 2026-09-29
 - `user/service/service-reactive/src/main/resources/application-data-r2dbc.properties` — [REVIEW] — новый 2026-09-29
 - `user/data/data-r2dbc/src/test/java/com/example/user/UserApplication.java` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
 - `user/data/data-r2dbc/src/test/java/com/example/user/UserRepositoryTests.java` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
-- `user/service/service-reactive/src/main/java/com/example/user/UserService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}UserByIdReactiveService`
+- `user/service/service-reactive/src/main/java/com/example/user/ReactiveUserService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}UserByIdReactiveService`
 
 #### user/presentation/webmvc/ (5 файлов)
 - `user/presentation/webmvc/build.gradle.kts` — [DONE]
@@ -686,11 +690,11 @@
 - `note/application/application-postgresql-reactive/src/test/java/com/example/note/NoteApplicationTests.java` — [REVIEW] — новый 2026-09-29
 - `note/application/application-postgresql-reactive/src/test/java/com/example/note/NoteTestConfiguration.java` — [REVIEW] — новый 2026-09-29
 
-#### note/contract/contract-common/ (4 файла) — новый 2026-09-29, модели запроса и ответа, общие для `contract-synchronous` и `contract-reactive` (правило «Дублирование…» — реально общее в отдельный модуль; имя выбрано пользователем), чистая Java, `id("com.example.contract")`
-- `note/contract/contract-common/build.gradle.kts` — [REVIEW] — новый 2026-09-29
-- `note/contract/contract-common/src/main/java/com/example/note/package-info.java` — [REVIEW] — новый 2026-09-29, `@NullMarked`
-- `note/contract/contract-common/src/main/java/com/example/note/NoteRequest.java` — [REVIEW] — 2026-09-29 перенесён из `note/contract/`, модель запроса
-- `note/contract/contract-common/src/main/java/com/example/note/NoteResponse.java` — [REVIEW] — 2026-09-29 перенесён из `note/contract/`, модель ответа
+#### note/contract/contract-commons/ (4 файла) — новый 2026-09-29, модели запроса и ответа, общие для `contract-synchronous` и `contract-reactive` (правило «Дублирование…» — реально общее в отдельный модуль; имя выбрано пользователем), чистая Java, `id("com.example.commons")`
+- `note/contract/contract-commons/build.gradle.kts` — [REVIEW] — новый 2026-09-29
+- `note/contract/contract-commons/src/main/java/com/example/note/package-info.java` — [REVIEW] — новый 2026-09-29, `@NullMarked`
+- `note/contract/contract-commons/src/main/java/com/example/note/NoteRequest.java` — [REVIEW] — 2026-09-29 перенесён из `note/contract/`, модель запроса
+- `note/contract/contract-commons/src/main/java/com/example/note/NoteResponse.java` — [REVIEW] — 2026-09-29 перенесён из `note/contract/`, модель ответа
 
 #### note/contract/contract-synchronous/ (7 файлов) — новый 2026-09-29, копия структуры `user-note/contract/` (пакет `com.example.note`); 2026-09-29 переименован из `note/contract/` (синхронный контракт, имя выбрано пользователем)
 - `note/contract/contract-synchronous/build.gradle.kts` — [REVIEW] — новый 2026-09-29
@@ -712,11 +716,11 @@
 
 #### note/controller/controller-webflux/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/controller/controller-webflux/` (пакет `com.example.note`)
 - `note/controller/controller-webflux/build.gradle.kts` — [REVIEW] — новый 2026-09-29
-- `note/controller/controller-webflux/src/main/java/com/example/note/NoteController.java` — [REVIEW] — новый 2026-09-29
+- `note/controller/controller-webflux/src/main/java/com/example/note/ReactiveNoteController.java` — [REVIEW] — новый 2026-09-29
 - `note/controller/controller-webflux/src/main/java/com/example/note/package-info.java` — [REVIEW] — новый 2026-09-29
 - `note/controller/controller-webflux/src/main/resources/application-controller-webflux.properties` — [REVIEW] — новый 2026-09-29
 - `note/controller/controller-webflux/src/test/java/com/example/note/NoteApplication.java` — [REVIEW] — новый 2026-09-29
-- `note/controller/controller-webflux/src/test/java/com/example/note/NoteControllerTests.java` — [REVIEW] — новый 2026-09-29
+- `note/controller/controller-webflux/src/test/java/com/example/note/ReactiveNoteControllerTests.java` — [REVIEW] — новый 2026-09-29
 
 #### note/controller/controller-webmvc/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/controller/controller-webmvc/` (пакет `com.example.note`)
 - `note/controller/controller-webmvc/build.gradle.kts` — [REVIEW] — новый 2026-09-29
@@ -728,7 +732,9 @@
 
 #### note/service/service-synchronous/ — с 2026-10-03 (был `note/data/data-jdbc/`; плагин `spring-boot-data-commons`, без технологии и слайс-тестов)
 - `note/service/service-synchronous/build.gradle.kts` — [REVIEW] — новый 2026-09-29
-- `note/service/service-synchronous/src/main/java/com/example/note/Note.java` — [REVIEW] — новый 2026-09-29
+- `note/service/service-commons/src/main/java/com/example/note/Note.java` — [REVIEW] — новый 2026-09-29; запись без аннотаций (без `@Id`), перенесена из `service-synchronous` 2026-10-03
+- `note/service/service-commons/build.gradle.kts` — [REVIEW] — новый 2026-10-03, `id("com.example.commons")`
+- `note/service/service-commons/src/main/java/com/example/note/package-info.java` — [REVIEW] — новый 2026-10-03, `@NullMarked`
 - `note/service/service-synchronous/src/main/java/com/example/note/NoteRepository.java` — [REVIEW] — новый 2026-09-29
 - `note/service/service-synchronous/src/main/java/com/example/note/package-info.java` — [REVIEW] — новый 2026-09-29
 - `note/data/data-jdbc/src/main/resources/application-data-jdbc.properties` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
@@ -758,13 +764,13 @@
 
 #### note/service/service-reactive/ — с 2026-10-03 (был `note/data/data-r2dbc/`; плагины `spring-boot-data-commons` + `project-reactor`, без технологии и слайс-тестов)
 - `note/service/service-reactive/build.gradle.kts` — [REVIEW] — новый 2026-09-29
-- `note/service/service-reactive/src/main/java/com/example/note/Note.java` — [REVIEW] — новый 2026-09-29
-- `note/service/service-reactive/src/main/java/com/example/note/NoteRepository.java` — [REVIEW] — новый 2026-09-29
+- `note/service/service-reactive/src/main/java/com/example/note/Note.java` — [REMOVED] — новый 2026-09-29; перенесён в `service-commons` 2026-10-03
+- `note/service/service-reactive/src/main/java/com/example/note/ReactiveNoteRepository.java` — [REVIEW] — новый 2026-09-29
 - `note/service/service-reactive/src/main/java/com/example/note/package-info.java` — [REVIEW] — новый 2026-09-29
 - `note/service/service-reactive/src/main/resources/application-data-r2dbc.properties` — [REVIEW] — новый 2026-09-29
 - `note/data/data-r2dbc/src/test/java/com/example/note/NoteApplication.java` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
 - `note/data/data-r2dbc/src/test/java/com/example/note/NoteRepositoryTests.java` — [REMOVED] — новый 2026-09-29; удалён 2026-10-03 (`data-*` сведены к `service-*`)
-- `note/service/service-reactive/src/main/java/com/example/note/NoteService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}NoteByIdReactiveService`
+- `note/service/service-reactive/src/main/java/com/example/note/ReactiveNoteService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}NoteByIdReactiveService`
 
 #### note/presentation/webmvc/ (5 файлов)
 - `note/presentation/webmvc/build.gradle.kts` — [DONE]
@@ -1117,10 +1123,13 @@
 - `build-logic/com.example.codequality.gradle.kts` — [REVIEW] — воссоздан 2026-09-24 по прямому запросу пользователя, тот же паттерн, что был убран 2026-08-01 («чистый список id без своей конфигурации, единственный потребитель») …
 - `build-logic/com.example.codequality-checkstyle.gradle.kts` — [REVIEW] — применялся напрямую из `java.gradle.kts` 2026-08-01→2026-09-24, с 2026-09-24 снова через `codequality`-агрегатор …
 - `build-logic/com.example.codequality-spotless.gradle.kts` — [REVIEW] — новый 2026-08-16, до 2026-09-04 был кастомный `importOrder`+regex-автофикс на `compileJava`; с 2026-09-04 днём — штатный `java { googleJavaFormat().aosp() }` без ручной привязки …
-- `build-logic/com.example.base.gradle.kts` — [REVIEW] — переименован обратно из `java.gradle.kts` 2026-09-24 по прямому запросу пользователя (откат решения 2026-08-01 «id = имя технологии, не роль» …
-- `build-logic/com.example.java.gradle.kts` — [REMOVED] — переименован обратно в `base.gradle.kts` 2026-09-24 (см. запись выше); было — новый 2026-08-01, переименование `com.example.base.gradle.kts`
-- `build-logic/com.example.contract.gradle.kts` — [REVIEW] — новый 2026-09-24, `id("com.example.base")` — починка `user-note/contract` (не собирался: пустой `plugins{}` без единого `id(...)`, найдено при разборе, почему `contract-reactive` собрался, а `contract` нет)
-- `build-logic/com.example.contract-reactive.gradle.kts` — [REVIEW] — новый 2026-09-24, `id("com.example.project-reactor")`, симметрично `com.example.contract` выше
+- `build-logic/com.example.base.gradle.kts` — [REMOVED] — переименован в `com.example.commons` 2026-10-03 (по запросу пользователя)
+- `build-logic/com.example.commons.gradle.kts` — [REVIEW] — с 2026-10-03 (бывший `com.example.base`); переименован обратно из `java.gradle.kts` 2026-09-24 по прямому запросу пользователя (откат решения 2026-08-01 «id = имя технологии, не роль» …
+- `build-logic/com.example.commons-synchronous.gradle.kts` — [REVIEW] — новый 2026-10-03, алиас `id("com.example.commons")` без зависимостей для sync-модулей (`contract-synchronous`, `service-synchronous`), симметричен `commons-reactive`
+- `build-logic/com.example.java.gradle.kts` — [REMOVED] — переименован обратно в `base.gradle.kts` 2026-09-24 (см. запись выше); было — новый 2026-08-01, переименование `com.example.commons.gradle.kts`
+- `build-logic/com.example.contract.gradle.kts` — [REMOVED] — удалён 2026-10-03, объединён с `com.example.commons` (контракт-модули применяют `commons`); был новый 2026-09-24, `id("com.example.base")`
+- `build-logic/com.example.contract-reactive.gradle.kts` — [REMOVED] — переименован в `com.example.commons-reactive` 2026-10-03 (по запросу пользователя)
+- `build-logic/com.example.commons-reactive.gradle.kts` — [REVIEW] — с 2026-10-03 (бывший `com.example.contract-reactive`), `id("com.example.project-reactor")`; применяют `contract-reactive` и `service-reactive`
 - `build-logic/com.example.spring-boot-validation.gradle.kts` — [REVIEW] — новый 2026-08-01, вынесен из `spring-boot.gradle.kts` в атомарный плагин (`spring-boot-starter-validation`+test), применяется явно в `webmvc`/`webflux`/`data-jpa` × 3 сервиса …
 
 ### auth/ (6 файлов)

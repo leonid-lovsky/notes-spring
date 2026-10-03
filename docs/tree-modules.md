@@ -11,15 +11,16 @@
 ```
 com.example.usernote
 │
-├── contract-common                   — id("com.example.contract")
-├── contract-synchronous              — id("com.example.contract")
-├── contract-reactive                 — id("com.example.contract-reactive")
+├── contract-commons                   — id("com.example.commons")
+├── contract-synchronous              — id("com.example.commons-synchronous")
+├── contract-reactive                 — id("com.example.commons-reactive")
 │
 ├── controller-webmvc                 — id("com.example.spring-boot-webmvc")
 ├── controller-webflux                — id("com.example.spring-boot-webflux")
 │
-├── service-synchronous               — id("com.example.spring-boot-data-commons")
-├── service-reactive                  — id("com.example.project-reactor"), id("com.example.spring-boot-data-commons")
+├── service-commons                    — id("com.example.commons")
+├── service-synchronous               — id("com.example.commons-synchronous")
+├── service-reactive                  — id("com.example.commons-reactive")
 │
 ├── application-h2                    — id("com.example.spring-boot"), id("com.example.spring-boot-bootable"), id("com.example.spring-boot-actuator"), id("com.example.spring-boot-webmvc"), id("com.example.spring-boot-data-jdbc"), id("com.example.spring-boot-database-h2")
 ├── application-h2-reactive           — id("com.example.spring-boot"), id("com.example.spring-boot-bootable"), id("com.example.spring-boot-actuator"), id("com.example.spring-boot-webflux"), id("com.example.spring-boot-data-r2dbc"), id("com.example.spring-boot-database-r2dbc-h2")
@@ -31,4 +32,4 @@ com.example.usernote
 └── application-mongodb-reactive      — id("com.example.spring-boot"), id("com.example.spring-boot-bootable"), id("com.example.spring-boot-actuator"), id("com.example.spring-boot-webflux"), id("com.example.spring-boot-data-mongodb-reactive"), id("com.example.spring-boot-testcontainers"), id("com.example.spring-boot-testcontainers-mongodb")
 ```
 
-Каждый лист дополнительно наследует всё поддерево `com.example.base`→`com.example.codequality`→8 `codequality-*` (Checkstyle/JaCoCo(+report-aggregation)/jspecify/NullAway/PMD/SpotBugs/Spotless) транзитивно через свой прямой родитель — не показано отдельной веткой здесь, чтобы не дублировать `docs/convention-plugins-graph.md` (полный граф родитель→потомок всех convention-плагинов, источник истины по составу каждого плагина). 5 исключений из правила «имя плагина = официальное имя технологии» (`base`/`contract`/`contract-reactive`/`codequality`/`spring-boot-bootable` — названы придуманным проектом словом для роли, не заимствованным у технологии; у Spring Boot официальный термин — «executable jar/archive», не «bootable») — `CLAUDE.md` → «Правила».
+Каждый лист дополнительно наследует всё поддерево `com.example.commons`→`com.example.codequality`→8 `codequality-*` (Checkstyle/JaCoCo(+report-aggregation)/jspecify/NullAway/PMD/SpotBugs/Spotless) транзитивно через свой прямой родитель — не показано отдельной веткой здесь, чтобы не дублировать `docs/convention-plugins-graph.md` (полный граф родитель→потомок всех convention-плагинов, источник истины по составу каждого плагина). 5 исключений из правила «имя плагина = официальное имя технологии» (`base`/`contract`/`contract-reactive`/`codequality`/`spring-boot-bootable` — названы придуманным проектом словом для роли, не заимствованным у технологии; у Spring Boot официальный термин — «executable jar/archive», не «bootable») — `CLAUDE.md` → «Правила».

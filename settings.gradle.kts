@@ -8,13 +8,14 @@ plugins {
 
 rootProject.name = "notes-spring"
 
-include(":note:contract:contract-common")
+include(":note:contract:contract-commons")
 include(":note:contract:contract-synchronous")
 include(":note:contract:contract-reactive")
 
 include(":note:controller:controller-webmvc")
 include(":note:controller:controller-webflux")
 
+include(":note:service:service-commons")
 include(":note:service:service-synchronous")
 include(":note:service:service-reactive")
 
@@ -27,13 +28,14 @@ include(":note:application:application-postgresql-reactive")
 include(":note:application:application-mongodb")
 include(":note:application:application-mongodb-reactive")
 
-include(":user:contract:contract-common")
+include(":user:contract:contract-commons")
 include(":user:contract:contract-synchronous")
 include(":user:contract:contract-reactive")
 
 include(":user:controller:controller-webmvc")
 include(":user:controller:controller-webflux")
 
+include(":user:service:service-commons")
 include(":user:service:service-synchronous")
 include(":user:service:service-reactive")
 
@@ -46,13 +48,14 @@ include(":user:application:application-postgresql-reactive")
 include(":user:application:application-mongodb")
 include(":user:application:application-mongodb-reactive")
 
-include(":user-note:contract:contract-common")
+include(":user-note:contract:contract-commons")
 include(":user-note:contract:contract-synchronous")
 include(":user-note:contract:contract-reactive")
 
 include(":user-note:controller:controller-webmvc")
 include(":user-note:controller:controller-webflux")
 
+include(":user-note:service:service-commons")
 include(":user-note:service:service-synchronous")
 include(":user-note:service:service-reactive")
 

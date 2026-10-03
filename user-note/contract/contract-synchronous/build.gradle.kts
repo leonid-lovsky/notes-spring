@@ -1,7 +1,7 @@
 plugins {
-    id("com.example.contract")
+    id("com.example.commons-synchronous")
 }
 
 dependencies {
-    implementation(project(":user-note:contract:contract-common"))
+    implementation(project(":user-note:contract:contract-commons"))
 }

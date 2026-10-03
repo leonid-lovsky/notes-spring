@@ -1,26 +1,13 @@
 package com.example.note;
 
 import java.util.UUID;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.data.repository.query.QueryByExampleExecutor;
-import org.springframework.stereotype.Service;
 
-@Service
 public class NoteService implements FindNoteById, CreateNoteById, ReplaceNoteById, UpdateNoteById, DeleteNoteById {
 
-    private final CrudRepository<Note, UUID> noteCrudRepository;
-    private final PagingAndSortingRepository<Note, UUID> noteSortingRepository;
-    private final QueryByExampleExecutor<Note> noteQueryByExampleExecutor;
+    private final NoteRepository noteRepository;
 
-    public NoteService(
-        CrudRepository<Note, UUID> noteCrudRepository,
-        PagingAndSortingRepository<Note, UUID> noteSortingRepository,
-        QueryByExampleExecutor<Note> noteQueryByExampleExecutor
-    ) {
-        this.noteCrudRepository = noteCrudRepository;
-        this.noteSortingRepository = noteSortingRepository;
-        this.noteQueryByExampleExecutor = noteQueryByExampleExecutor;
+    public NoteService(NoteRepository noteRepository) {
+        this.noteRepository = noteRepository;
     }
 
     @Override

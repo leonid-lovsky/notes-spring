@@ -3,6 +3,6 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":user:contract:contract-common"))
+    implementation(project(":user:contract:contract-commons"))
     implementation(project(":user:contract:contract-synchronous"))
 }
