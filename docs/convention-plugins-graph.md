@@ -20,18 +20,19 @@
 
 ## Уровень 0 — корень
 
-- `com.example.commons` — родителя нет (сам применяет `id("java")` + `id("com.example.codequality")`) — toolchain из `.java-version`, `jakarta.validation-api`(implementation), `junit-jupiter`(test) + JUnit Platform Launcher(testRuntimeOnly) — 2 прямых применения на сервис (`contract-commons`, `service-commons`); корень цепочек `commons-synchronous` и `project-reactor`/`commons-reactive`; с 2026-10-03 заменил `com.example.contract`; переименован из `com.example.base` 2026-10-03 и ранее из `com.example.java` 2026-09-24 по прямому запросу пользователя — откат решения 2026-08-01 «id = имя технологии»; ни один лист `user-note` не применяет его напрямую — только каскадом через `contract`/`project-reactor`/`spring-boot`, см. уровень 1)
+- `com.example.commons` — родителя нет (сам применяет `id("java")` + `id("com.example.codequality")`) — toolchain из `.java-version`, `jakarta.validation-api`(implementation), `junit-jupiter`(test) + JUnit Platform Launcher(testRuntimeOnly) — 0 прямых применений с 2026-10-03 (применяется через алиасы `contract-commons`/`service-commons`); корень цепочек `commons-synchronous` и `project-reactor`/`commons-reactive`; с 2026-10-03 заменил `com.example.contract`; переименован из `com.example.base` 2026-10-03 и ранее из `com.example.java` 2026-09-24 по прямому запросу пользователя — откат решения 2026-08-01 «id = имя технологии»; ни один лист `user-note` не применяет его напрямую — только каскадом через `contract`/`project-reactor`/`spring-boot`, см. уровень 1)
 
 ## Уровень 1 — родитель `base`
 
 - `com.example.codequality` — `base` — агрегатор 8 `codequality-*` (см. ниже) — 0 прямых применений (воссоздан 2026-09-24 по прямому запросу — тот же паттерн, что был убран 2026-08-01 как «обёртка без переиспользования, один потребитель»; сегодня потребитель по-прежнему один — `base` — но фрагментов 8, не 5)
 - `com.example.project-reactor` — `base` — + `reactor-core`(implementation) + `reactor-tools`(implementation) + `reactor-test`(test) — 1 прямое применение (`service-reactive`, с 2026-10-03) + родитель `contract-reactive`
-- `com.example.commons-synchronous` — `commons` — не добавляет зависимостей, чистый алиас sync-ветки — 2 применения на сервис (`contract-synchronous`, `service-synchronous`); симметричен `commons-reactive`; создан 2026-10-03 (схема A: корень `commons`, два алиаса, без ромба)
+- `com.example.commons-synchronous` — `commons` — не добавляет зависимостей, чистый алиас sync-ветки — 0 прямых применений (родитель алиасов `contract-synchronous` и `service-synchronous`); симметричен `commons-reactive`; создан 2026-10-03 (схема A: корень `commons`, два алиаса, без ромба)
 - `com.example.spring-boot` — `base` — + `io.spring.dependency-management` + Spring Boot BOM + `spring-boot-starter`(+test) — 8 прямых применений (все 8 листьев `application-*` явным `id(...)`; сверено 2026-09-29) — родитель 24 технологических плагинов уровня 2 + `spring-cloud`
 
 ## Уровень 2 — родитель `project-reactor`
 
-- `com.example.commons-reactive` — `project-reactor` — не добавляет зависимостей, чистый алиас — 2 применения (`contract-reactive`, `service-reactive`) — до 2026-10-03 `com.example.contract-reactive`, переименован по запросу пользователя вместе с заменой `contract` на `commons`
+- `com.example.commons-reactive` — `project-reactor` — не добавляет зависимостей, чистый алиас — 0 прямых применений (родитель алиасов `contract-reactive` и `service-reactive`); до 2026-10-03 `com.example.contract-reactive`, переименован по запросу пользователя
+- `com.example.contract-commons` / `contract-synchronous` / `contract-reactive` и `com.example.service-commons` / `service-synchronous` / `service-reactive` — родители `commons` / `commons-synchronous` / `commons-reactive` соответственно — не добавляют зависимостей, чистые алиасы роли модуля (имя = имя модуля) — по 1 применению на сервис каждый (одноимённый модуль); созданы 2026-10-03 по запросу пользователя
 
 ## Уровень 2 — родитель `codequality` (8 фрагментов; каждый физически применяет бare Gradle/внешний id в своём файле — не `com.example.*` — см. «Как читать этот граф»)
 

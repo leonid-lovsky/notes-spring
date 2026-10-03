@@ -1,5 +1,5 @@
 plugins {
-    id("com.example.commons-synchronous")
+    id("com.example.contract-synchronous")
 }
 
 dependencies {

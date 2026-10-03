@@ -1,3 +1,3 @@
 plugins {
-    id("com.example.commons")
+    id("com.example.contract-commons")
 }

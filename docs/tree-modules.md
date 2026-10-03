@@ -11,16 +11,16 @@
 ```
 com.example.usernote
 │
-├── contract-commons                   — id("com.example.commons")
-├── contract-synchronous              — id("com.example.commons-synchronous")
-├── contract-reactive                 — id("com.example.commons-reactive")
+├── contract-commons                   — id("com.example.contract-commons")
+├── contract-synchronous              — id("com.example.contract-synchronous")
+├── contract-reactive                 — id("com.example.contract-reactive")
 │
 ├── controller-webmvc                 — id("com.example.spring-boot-webmvc")
 ├── controller-webflux                — id("com.example.spring-boot-webflux")
 │
-├── service-commons                    — id("com.example.commons")
-├── service-synchronous               — id("com.example.commons-synchronous")
-├── service-reactive                  — id("com.example.commons-reactive")
+├── service-commons                    — id("com.example.service-commons")
+├── service-synchronous               — id("com.example.service-synchronous")
+├── service-reactive                  — id("com.example.service-reactive")
 │
 ├── application-h2                    — id("com.example.spring-boot"), id("com.example.spring-boot-bootable"), id("com.example.spring-boot-actuator"), id("com.example.spring-boot-webmvc"), id("com.example.spring-boot-data-jdbc"), id("com.example.spring-boot-database-h2")
 ├── application-h2-reactive           — id("com.example.spring-boot"), id("com.example.spring-boot-bootable"), id("com.example.spring-boot-actuator"), id("com.example.spring-boot-webflux"), id("com.example.spring-boot-data-r2dbc"), id("com.example.spring-boot-database-r2dbc-h2")

@@ -64,7 +64,7 @@
 - `user-note/contract/contract-commons/src/main/java/com/example/usernote/UserNoteResponse.java` — [REVIEW] — новый 2026-09-29, модель ответа `(id, userId, noteId)`
 
 #### user-note/contract/contract-synchronous/ (7 файлов) — не был в каталоге до 2026-09-24; не собирался (`plugins{}` пустой, без единого `id(...)`) до починки в этой сессии
-- `user-note/contract/contract-synchronous/build.gradle.kts` — [REVIEW] — было `plugins { id("com.example.java") }` (собирался, но нарушал паттерн «лист = плагин по роли, не голый `java`»); теперь `id("com.example.commons")`
+- `user-note/contract/contract-synchronous/build.gradle.kts` — [REVIEW] — было `plugins { id("com.example.java") }` (собирался, но нарушал паттерн «лист = плагин по роли, не голый `java`»); теперь `id("com.example.contract-synchronous")`
 - `user-note/contract/contract-synchronous/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-09-24, `@NullMarked`
 - `user-note/contract/contract-synchronous/src/main/java/com/example/usernote/CreateUserNoteById.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
 - `user-note/contract/contract-synchronous/src/main/java/com/example/usernote/UpdateUserNoteById.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
@@ -73,7 +73,7 @@
 - `user-note/contract/contract-synchronous/src/main/java/com/example/usernote/DeleteUserNoteById.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
 
 #### user-note/contract/contract-reactive/ (7 файлов) — не был в каталоге до 2026-09-24
-- `user-note/contract/contract-reactive/build.gradle.kts` — [REVIEW] — было `id("com.example.project-reactor")` напрямую; теперь `id("com.example.commons-reactive")` (симметрично `contract`)
+- `user-note/contract/contract-reactive/build.gradle.kts` — [REVIEW] — было `id("com.example.project-reactor")` напрямую; теперь `id("com.example.contract-reactive")` (симметрично `contract`)
 - `user-note/contract/contract-reactive/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-09-24, `@NullMarked`
 - `user-note/contract/contract-reactive/src/main/java/com/example/usernote/ReactiveFindUserNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
 - `user-note/contract/contract-reactive/src/main/java/com/example/usernote/ReactiveReplaceUserNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
@@ -173,7 +173,7 @@
 - `user-note/service/service-synchronous/build.gradle.kts` — [REVIEW] — подключён к `application-{h2,mysql,postgresql}` через `implementation(project(":user-note:data:data-jdbc"))`
 - `user-note/service/service-synchronous/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-09-24, `@NullMarked`, был пропущен при заведении модуля 2026-09-21
 - `user-note/service/service-commons/src/main/java/com/example/usernote/UserNote.java` — [REVIEW] — пустой класс, 2026-09-21; запись без аннотаций (без `@Id`), перенесена из `service-synchronous` 2026-10-03
-- `user-note/service/service-commons/build.gradle.kts` — [REVIEW] — новый 2026-10-03, `id("com.example.commons")`
+- `user-note/service/service-commons/build.gradle.kts` — [REVIEW] — новый 2026-10-03, `id("com.example.service-commons")`
 - `user-note/service/service-commons/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-10-03, `@NullMarked`
 - `user-note/service/service-synchronous/src/main/java/com/example/usernote/UserNoteRepository.java` — [REVIEW] — `ListCrudRepository<UserNote, UUID>`, 2026-09-21
 - `user-note/data/data-jdbc/src/main/resources/application-data-jdbc.properties` — [REMOVED] — `logging.level.org.springframework.data=DEBUG` + `...data.jdbc=DEBUG` (2026-09-21); подключается строкой `spring.profiles.include=data-jdbc` в `application.properties` листьев `application-{h2,mysql,postgresql}` …; удалён 2026-10-03 (`data-*` сведены к `service-*`)
@@ -331,7 +331,7 @@
 #### user/service/service-synchronous/ — с 2026-10-03 (был `user/data/data-jdbc/`; плагин `spring-boot-data-commons`, без технологии и слайс-тестов)
 - `user/service/service-synchronous/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `user/service/service-commons/src/main/java/com/example/user/User.java` — [REVIEW] — новый 2026-09-29; запись без аннотаций (без `@Id`), перенесена из `service-synchronous` 2026-10-03
-- `user/service/service-commons/build.gradle.kts` — [REVIEW] — новый 2026-10-03, `id("com.example.commons")`
+- `user/service/service-commons/build.gradle.kts` — [REVIEW] — новый 2026-10-03, `id("com.example.service-commons")`
 - `user/service/service-commons/src/main/java/com/example/user/package-info.java` — [REVIEW] — новый 2026-10-03, `@NullMarked`
 - `user/service/service-synchronous/src/main/java/com/example/user/UserRepository.java` — [REVIEW] — новый 2026-09-29
 - `user/service/service-synchronous/src/main/java/com/example/user/package-info.java` — [REVIEW] — новый 2026-09-29
@@ -733,7 +733,7 @@
 #### note/service/service-synchronous/ — с 2026-10-03 (был `note/data/data-jdbc/`; плагин `spring-boot-data-commons`, без технологии и слайс-тестов)
 - `note/service/service-synchronous/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `note/service/service-commons/src/main/java/com/example/note/Note.java` — [REVIEW] — новый 2026-09-29; запись без аннотаций (без `@Id`), перенесена из `service-synchronous` 2026-10-03
-- `note/service/service-commons/build.gradle.kts` — [REVIEW] — новый 2026-10-03, `id("com.example.commons")`
+- `note/service/service-commons/build.gradle.kts` — [REVIEW] — новый 2026-10-03, `id("com.example.service-commons")`
 - `note/service/service-commons/src/main/java/com/example/note/package-info.java` — [REVIEW] — новый 2026-10-03, `@NullMarked`
 - `note/service/service-synchronous/src/main/java/com/example/note/NoteRepository.java` — [REVIEW] — новый 2026-09-29
 - `note/service/service-synchronous/src/main/java/com/example/note/package-info.java` — [REVIEW] — новый 2026-09-29
@@ -1128,8 +1128,13 @@
 - `build-logic/com.example.commons-synchronous.gradle.kts` — [REVIEW] — новый 2026-10-03, алиас `id("com.example.commons")` без зависимостей для sync-модулей (`contract-synchronous`, `service-synchronous`), симметричен `commons-reactive`
 - `build-logic/com.example.java.gradle.kts` — [REMOVED] — переименован обратно в `base.gradle.kts` 2026-09-24 (см. запись выше); было — новый 2026-08-01, переименование `com.example.commons.gradle.kts`
 - `build-logic/com.example.contract.gradle.kts` — [REMOVED] — удалён 2026-10-03, объединён с `com.example.commons` (контракт-модули применяют `commons`); был новый 2026-09-24, `id("com.example.base")`
-- `build-logic/com.example.contract-reactive.gradle.kts` — [REMOVED] — переименован в `com.example.commons-reactive` 2026-10-03 (по запросу пользователя)
 - `build-logic/com.example.commons-reactive.gradle.kts` — [REVIEW] — с 2026-10-03 (бывший `com.example.contract-reactive`), `id("com.example.project-reactor")`; применяют `contract-reactive` и `service-reactive`
+- `build-logic/com.example.contract-commons.gradle.kts` — [REVIEW] — новый 2026-10-03, алиас `id("com.example.commons")` без зависимостей, применяет модуль `contract-commons`
+- `build-logic/com.example.contract-synchronous.gradle.kts` — [REVIEW] — новый 2026-10-03, алиас `id("com.example.commons-synchronous")` без зависимостей, применяет модуль `contract-synchronous`
+- `build-logic/com.example.contract-reactive.gradle.kts` — [REVIEW] — новый 2026-10-03, алиас `id("com.example.commons-reactive")` без зависимостей, применяет модуль `contract-reactive`
+- `build-logic/com.example.service-commons.gradle.kts` — [REVIEW] — новый 2026-10-03, алиас `id("com.example.commons")` без зависимостей, применяет модуль `service-commons`
+- `build-logic/com.example.service-synchronous.gradle.kts` — [REVIEW] — новый 2026-10-03, алиас `id("com.example.commons-synchronous")` без зависимостей, применяет модуль `service-synchronous`
+- `build-logic/com.example.service-reactive.gradle.kts` — [REVIEW] — новый 2026-10-03, алиас `id("com.example.commons-reactive")` без зависимостей, применяет модуль `service-reactive`
 - `build-logic/com.example.spring-boot-validation.gradle.kts` — [REVIEW] — новый 2026-08-01, вынесен из `spring-boot.gradle.kts` в атомарный плагин (`spring-boot-starter-validation`+test), применяется явно в `webmvc`/`webflux`/`data-jpa` × 3 сервиса …
 
 ### auth/ (6 файлов)

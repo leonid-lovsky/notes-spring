@@ -1,5 +1,5 @@
 plugins {
-    id("com.example.commons-reactive")
+    id("com.example.contract-reactive")
 }
 
 dependencies {
