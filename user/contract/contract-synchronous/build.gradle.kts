@@ -3,5 +3,5 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":user:contract:contract-commons"))
+    api(project(":user:contract:contract-commons"))
 }

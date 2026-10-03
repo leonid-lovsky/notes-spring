@@ -1130,8 +1130,8 @@
 - `build-logic/com.example.contract.gradle.kts` — [REMOVED] — удалён 2026-10-03, объединён с `com.example.commons` (контракт-модули применяют `commons`); был новый 2026-09-24, `id("com.example.base")`
 - `build-logic/com.example.commons-reactive.gradle.kts` — [REVIEW] — с 2026-10-03 (бывший `com.example.contract-reactive`), `id("com.example.project-reactor")`; применяют `contract-reactive` и `service-reactive`
 - `build-logic/com.example.contract-commons.gradle.kts` — [REVIEW] — новый 2026-10-03, алиас `id("com.example.commons")` без зависимостей, применяет модуль `contract-commons`
-- `build-logic/com.example.contract-synchronous.gradle.kts` — [REVIEW] — новый 2026-10-03, алиас `id("com.example.commons-synchronous")` без зависимостей, применяет модуль `contract-synchronous`
-- `build-logic/com.example.contract-reactive.gradle.kts` — [REVIEW] — новый 2026-10-03, алиас `id("com.example.commons-reactive")` без зависимостей, применяет модуль `contract-reactive`
+- `build-logic/com.example.contract-synchronous.gradle.kts` — [REVIEW] — новый 2026-10-03, `id("java-library")` + алиас `id("com.example.commons-synchronous")` без своих зависимостей (ради `api(contract-commons)`, 2026-10-03), применяет модуль `contract-synchronous`
+- `build-logic/com.example.contract-reactive.gradle.kts` — [REVIEW] — новый 2026-10-03, `id("java-library")` + алиас `id("com.example.commons-reactive")` без своих зависимостей (ради `api(contract-commons)`, 2026-10-03), применяет модуль `contract-reactive`
 - `build-logic/com.example.service-commons.gradle.kts` — [REVIEW] — новый 2026-10-03, алиас `id("com.example.commons")` без зависимостей, применяет модуль `service-commons`
 - `build-logic/com.example.service-synchronous.gradle.kts` — [REVIEW] — новый 2026-10-03, алиас `id("com.example.commons-synchronous")` без зависимостей, применяет модуль `service-synchronous`
 - `build-logic/com.example.service-reactive.gradle.kts` — [REVIEW] — новый 2026-10-03, алиас `id("com.example.commons-reactive")` без зависимостей, применяет модуль `service-reactive`

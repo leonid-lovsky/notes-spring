@@ -32,7 +32,7 @@
 ## Уровень 2 — родитель `project-reactor`
 
 - `com.example.commons-reactive` — `project-reactor` — не добавляет зависимостей, чистый алиас — 0 прямых применений (родитель алиасов `contract-reactive` и `service-reactive`); до 2026-10-03 `com.example.contract-reactive`, переименован по запросу пользователя
-- `com.example.contract-commons` / `contract-synchronous` / `contract-reactive` и `com.example.service-commons` / `service-synchronous` / `service-reactive` — родители `commons` / `commons-synchronous` / `commons-reactive` соответственно — не добавляют зависимостей, чистые алиасы роли модуля (имя = имя модуля) — по 1 применению на сервис каждый (одноимённый модуль); созданы 2026-10-03 по запросу пользователя
+- `com.example.contract-commons` / `contract-synchronous` / `contract-reactive` и `com.example.service-commons` / `service-synchronous` / `service-reactive` — родители `commons` / `commons-synchronous` / `commons-reactive` соответственно — не добавляют зависимостей, алиасы роли модуля (имя = имя модуля); `contract-synchronous` и `contract-reactive` с 2026-10-03 дополнительно применяют `java-library` (ради `api(contract-commons)`), остальные чистые — по 1 применению на сервис каждый (одноимённый модуль); созданы 2026-10-03 по запросу пользователя
 
 ## Уровень 2 — родитель `codequality` (8 фрагментов; каждый физически применяет бare Gradle/внешний id в своём файле — не `com.example.*` — см. «Как читать этот граф»)
 
