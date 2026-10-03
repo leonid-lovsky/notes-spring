@@ -1,12 +1,12 @@
 package com.example.usernote;
 
 import java.util.UUID;
-import org.springframework.data.repository.ListCrudRepository;
-import org.springframework.data.repository.ListPagingAndSortingRepository;
-import org.springframework.data.repository.query.ListQueryByExampleExecutor;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.query.QueryByExampleExecutor;
 
 public interface UserNoteRepository extends
-    ListCrudRepository<UserNote, UUID>,
-    ListPagingAndSortingRepository<UserNote, UUID>,
-    ListQueryByExampleExecutor<UserNote> {
+    CrudRepository<UserNote, UUID>,
+    PagingAndSortingRepository<UserNote, UUID>,
+    QueryByExampleExecutor<UserNote> {
 }
