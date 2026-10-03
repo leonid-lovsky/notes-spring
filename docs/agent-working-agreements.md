@@ -80,4 +80,4 @@
 - Axon Framework, jMolecules, Kafka — изучение в будущем, не предлагать для текущих задач
 - В Gradle-модулях избегать `api`, зависимости между проектами только `implementation`, ромбы между `project(...)` принимать как осознанные — 2026-10-03
 - Ромбы зависимостей — открытый вопрос: желательно устранять, но не обязательно, пока ромб не ломает проект; ромб, который ломает проект, устранять обязательно; циклы недопустимы — 2026-10-03
-- Порядок зависимостей в `build.gradle.kts` — по слоям, как порядок модулей в `settings.gradle.kts` (contract → service → controller → application; commons → synchronous → reactive; `api` выше `implementation`) — 2026-10-03
+- Порядок зависимостей между проектами в `build.gradle.kts` и `include(...)` в `settings.gradle.kts` — по слоям во всём проекте, кроме `build-logic/convention/` (contract → service → controller → application; commons → synchronous → reactive; `api` выше `implementation`; сервисы note → user → user-note) — 2026-10-03
