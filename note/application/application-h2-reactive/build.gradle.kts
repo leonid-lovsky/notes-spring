@@ -9,6 +9,6 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":note:controller:controller-webflux"))
     implementation(project(":note:service:service-reactive"))
+    implementation(project(":note:controller:controller-webflux"))
 }

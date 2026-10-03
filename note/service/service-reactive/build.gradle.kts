@@ -3,6 +3,6 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":note:service:service-commons"))
     implementation(project(":note:contract:contract-reactive"))
+    implementation(project(":note:service:service-commons"))
 }

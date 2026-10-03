@@ -9,6 +9,6 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":user:controller:controller-webmvc"))
     implementation(project(":user:service:service-synchronous"))
+    implementation(project(":user:controller:controller-webmvc"))
 }

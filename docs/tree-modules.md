@@ -6,7 +6,7 @@
 > **Разделы:** ASCII-дерево от пакета `com.example.usernote`
 > **Связано:** `docs/convention-plugins-graph.md`, `docs/tree-variants.md`
 
-> «Дерево модулей» — снимок всех Gradle-модулей `user-note/` (с 2026-09-29 `note/` и `user/` устроены так же — модули в подкаталогах `contract/`/`controller/`/`service/`/`application/`, путь проекта `:{service}:{group}:{module}`) с их пакетом и полным списком напрямую применённых convention-плагинов, в порядке `id(...)` из `build.gradle.kts`. Корень дерева — не каталог, а пакет: `com.example.usernote` одинаков во всех 17 модулях (проверено по `package-info.java`, см. `CLAUDE.md` → «Открытые решения»/обсуждение плоской структуры `user-note`) — различие между модулями живёт на границе Gradle-модуля/jar, не на границе Java-пакета. Присылать этот блок дословно по запросу «дерево модулей», без переформатирования. Источник истины при расхождении — сами `build.gradle.kts`; сверка: `for f in user-note/*/build.gradle.kts; do echo "$(dirname "$f" | xargs basename):"; grep -oP 'id\("com\.example\.[^"]+"\)' "$f"; done`.
+> «Дерево модулей» — снимок всех Gradle-модулей `user-note/` (с 2026-09-29 `note/` и `user/` устроены так же — модули в подкаталогах `contract/`/`service/`/`controller/`/`application/`, путь проекта `:{service}:{group}:{module}`) с их пакетом и полным списком напрямую применённых convention-плагинов, в порядке `id(...)` из `build.gradle.kts`. Корень дерева — не каталог, а пакет: `com.example.usernote` одинаков во всех 17 модулях (проверено по `package-info.java`, см. `CLAUDE.md` → «Открытые решения»/обсуждение плоской структуры `user-note`) — различие между модулями живёт на границе Gradle-модуля/jar, не на границе Java-пакета. Присылать этот блок дословно по запросу «дерево модулей», без переформатирования. Источник истины при расхождении — сами `build.gradle.kts`; сверка: `for f in user-note/*/build.gradle.kts; do echo "$(dirname "$f" | xargs basename):"; grep -oP 'id\("com\.example\.[^"]+"\)' "$f"; done`.
 
 ```
 com.example.usernote
@@ -15,12 +15,12 @@ com.example.usernote
 ├── contract-synchronous              — id("com.example.contract-synchronous")
 ├── contract-reactive                 — id("com.example.contract-reactive")
 │
-├── controller-webmvc                 — id("com.example.spring-boot-webmvc")
-├── controller-webflux                — id("com.example.spring-boot-webflux")
-│
 ├── service-commons                    — id("com.example.service-commons")
 ├── service-synchronous               — id("com.example.service-synchronous")
 ├── service-reactive                  — id("com.example.service-reactive")
+│
+├── controller-webmvc                 — id("com.example.spring-boot-webmvc")
+├── controller-webflux                — id("com.example.spring-boot-webflux")
 │
 ├── application-h2                    — id("com.example.spring-boot"), id("com.example.spring-boot-bootable"), id("com.example.spring-boot-actuator"), id("com.example.spring-boot-webmvc"), id("com.example.spring-boot-data-jdbc"), id("com.example.spring-boot-database-h2")
 ├── application-h2-reactive           — id("com.example.spring-boot"), id("com.example.spring-boot-bootable"), id("com.example.spring-boot-actuator"), id("com.example.spring-boot-webflux"), id("com.example.spring-boot-data-r2dbc"), id("com.example.spring-boot-database-r2dbc-h2")

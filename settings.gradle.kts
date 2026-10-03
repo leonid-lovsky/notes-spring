@@ -12,12 +12,12 @@ include(":note:contract:contract-commons")
 include(":note:contract:contract-synchronous")
 include(":note:contract:contract-reactive")
 
-include(":note:controller:controller-webmvc")
-include(":note:controller:controller-webflux")
-
 include(":note:service:service-commons")
 include(":note:service:service-synchronous")
 include(":note:service:service-reactive")
+
+include(":note:controller:controller-webmvc")
+include(":note:controller:controller-webflux")
 
 include(":note:application:application-h2")
 include(":note:application:application-h2-reactive")
@@ -32,12 +32,12 @@ include(":user:contract:contract-commons")
 include(":user:contract:contract-synchronous")
 include(":user:contract:contract-reactive")
 
-include(":user:controller:controller-webmvc")
-include(":user:controller:controller-webflux")
-
 include(":user:service:service-commons")
 include(":user:service:service-synchronous")
 include(":user:service:service-reactive")
+
+include(":user:controller:controller-webmvc")
+include(":user:controller:controller-webflux")
 
 include(":user:application:application-h2")
 include(":user:application:application-h2-reactive")
@@ -52,12 +52,12 @@ include(":user-note:contract:contract-commons")
 include(":user-note:contract:contract-synchronous")
 include(":user-note:contract:contract-reactive")
 
-include(":user-note:controller:controller-webmvc")
-include(":user-note:controller:controller-webflux")
-
 include(":user-note:service:service-commons")
 include(":user-note:service:service-synchronous")
 include(":user-note:service:service-reactive")
+
+include(":user-note:controller:controller-webmvc")
+include(":user-note:controller:controller-webflux")
 
 include(":user-note:application:application-h2")
 include(":user-note:application:application-h2-reactive")

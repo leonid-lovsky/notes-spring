@@ -37,18 +37,18 @@
 │   └── libs.versions.toml
 ├── note/                                  (с 2026-09-29 — группы модулей в подкаталогах, путь проекта `:note:<группа>:<модуль>`)
 │   ├── contract/     contract-commons/ (модели), contract-synchronous/, contract-reactive/ (порты)
-│   ├── controller/   controller-webmvc/, controller-webflux/ (контроллер, слайс-тест)
 │   ├── service/      service-commons/ (запись), service-synchronous/, service-reactive/ (репозиторий, реализации портов; цель — чистая Java; технологию даёт лист)
+│   ├── controller/   controller-webmvc/, controller-webflux/ (контроллер, слайс-тест)
 │   └── application/  application-{h2,mysql,postgresql,mongodb}[-reactive]/ (8 листьев, composition root)
 ├── user/                                  (с 2026-09-29 — группы модулей в подкаталогах, путь проекта `:user:<группа>:<модуль>`)
 │   ├── contract/     contract-commons/ (модели), contract-synchronous/, contract-reactive/ (порты)
-│   ├── controller/   controller-webmvc/, controller-webflux/ (контроллер, слайс-тест)
 │   ├── service/      service-commons/ (запись), service-synchronous/, service-reactive/ (репозиторий, реализации портов; цель — чистая Java; технологию даёт лист)
+│   ├── controller/   controller-webmvc/, controller-webflux/ (контроллер, слайс-тест)
 │   └── application/  application-{h2,mysql,postgresql,mongodb}[-reactive]/ (8 листьев, composition root)
 ├── user-note/                                  (с 2026-09-29 — группы модулей в подкаталогах, путь проекта `:user-note:<группа>:<модуль>`)
 │   ├── contract/     contract-commons/ (модели), contract-synchronous/, contract-reactive/ (порты)
-│   ├── controller/   controller-webmvc/, controller-webflux/ (контроллер, слайс-тест)
 │   ├── service/      service-commons/ (запись), service-synchronous/, service-reactive/ (репозиторий, реализации портов; цель — чистая Java; технологию даёт лист)
+│   ├── controller/   controller-webmvc/, controller-webflux/ (контроллер, слайс-тест)
 │   └── application/  application-{h2,mysql,postgresql,mongodb}[-reactive]/ (8 листьев, composition root)
 ├── .editorconfig
 ├── .gitattributes
