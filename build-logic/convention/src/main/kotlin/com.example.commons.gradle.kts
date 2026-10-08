@@ -18,6 +18,8 @@ java {
 dependencies {
     implementation("jakarta.validation:jakarta.validation-api:${libs.findVersion("jakarta-validation").get().requiredVersion}")
     testImplementation("org.junit.jupiter:junit-jupiter:${libs.findVersion("junit-jupiter").get().requiredVersion}")
+    testImplementation("org.mockito:mockito-core:${libs.findVersion("mockito").get().requiredVersion}")
+    testImplementation("org.mockito:mockito-junit-jupiter:${libs.findVersion("mockito").get().requiredVersion}")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher:${libs.findVersion("junit-platform").get().requiredVersion}")
 }
 
