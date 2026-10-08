@@ -15,8 +15,8 @@ public class UserNoteService implements FindUserNoteById, CreateUserNoteById, Re
     @Override
     public UserNoteResponse findUserNoteById(UUID id) {
         return userNoteRepository.findById(id)
-                .map(userNoteMapper::toResponse)
-                .orElseThrow(() -> new UserNoteNotFoundException(id));
+            .map(userNoteMapper::toResponse)
+            .orElseThrow(() -> new UserNoteNotFoundException(id));
     }
 
     @Override
