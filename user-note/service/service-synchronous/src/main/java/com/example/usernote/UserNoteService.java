@@ -4,7 +4,7 @@ import java.util.UUID;
 
 public class UserNoteService implements FindUserNoteById, CreateUserNoteById, ReplaceUserNoteById, UpdateUserNoteById, DeleteUserNoteById {
 
-    private final UserNoteMapper userNoteMapper = new UserNoteMapper();
+    private final UserNoteMapper userNoteMapper = new UserNoteMapperImpl();
 
     private final UserNoteRepository userNoteRepository;
 
@@ -24,7 +24,7 @@ public class UserNoteService implements FindUserNoteById, CreateUserNoteById, Re
         if (userNoteRepository.existsById(id)) {
             throw new UserNoteAlreadyExistsException(id);
         }
-        return userNoteMapper.toResponse(userNoteRepository.save(new UserNote(id, request.userId(), request.noteId())));
+        return userNoteMapper.toResponse(userNoteRepository.save(userNoteMapper.toEntity(id, request)));
     }
 
     @Override

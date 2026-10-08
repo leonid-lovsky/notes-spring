@@ -16,6 +16,7 @@ dependencies {
 tasks.withType<JavaCompile>().configureEach {
     options.errorprone {
         check("NullAway", CheckSeverity.ERROR)
+        excludedPaths = ".*/build/generated/.*"
         option("NullAway:AnnotatedPackages", "com.example")
     }
     if (name.lowercase().contains("test")) {

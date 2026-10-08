@@ -4,7 +4,7 @@ plugins {
 
 spotless {
     java {
-        importOrder()
+        importOrder("", "java|javax", "\\#")
         removeUnusedImports()
         leadingTabsToSpaces()
         trimTrailingWhitespace()

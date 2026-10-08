@@ -343,10 +343,13 @@
     <module name="OverloadMethodsDeclarationOrder"/>
     <module name="ConstructorsDeclarationGrouping"/>
     <module name="VariableDeclarationUsageDistance"/>
-    <module name="CustomImportOrder">
-      <property name="sortImportsInGroupAlphabetically" value="true"/>
-      <property name="separateLineBetweenGroups" value="true"/>
-      <property name="customImportOrderRules" value="STATIC###THIRD_PARTY_PACKAGE"/>
+    <module name="ImportOrder">
+      <property name="groups" value="/^(?!javax?\.).*/,/^javax?\./"/>
+      <property name="option" value="bottom"/>
+      <property name="ordered" value="true"/>
+      <property name="separated" value="true"/>
+      <property name="separatedStaticGroups" value="true"/>
+      <property name="sortStaticImportsAlphabetically" value="true"/>
     </module>
     <module name="MethodParamPad">
       <property name="tokens"

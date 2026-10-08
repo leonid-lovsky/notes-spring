@@ -52,7 +52,6 @@ include(":user-note:contract:contract-commons")
 include(":user-note:contract:contract-synchronous")
 include(":user-note:contract:contract-reactive")
 
-include(":user-note:service:service-commons")
 include(":user-note:service:service-synchronous")
 include(":user-note:service:service-reactive")
 
