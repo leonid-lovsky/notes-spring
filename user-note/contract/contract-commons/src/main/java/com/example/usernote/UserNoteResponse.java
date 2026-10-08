@@ -1,5 +1,13 @@
 package com.example.usernote;
 
+import jakarta.validation.constraints.NotNull;
+
 import java.util.UUID;
 
-public record UserNoteResponse(UUID id, UUID userId, UUID noteId) {}
+public record UserNoteResponse(
+    @NotNull UUID id,
+    @NotNull UUID userId,
+    @NotNull UUID noteId
+) {
+
+}

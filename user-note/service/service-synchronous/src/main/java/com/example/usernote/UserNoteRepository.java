@@ -5,9 +5,9 @@ import java.util.UUID;
 
 public interface UserNoteRepository {
 
+    UserNote save(UserNote userNote);
+
     Optional<UserNote> findById(UUID id);
 
     boolean existsById(UUID id);
-
-    UserNote save(UserNote userNote);
 }

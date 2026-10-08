@@ -1,5 +1,6 @@
 package com.example.usernote;
 
+import jakarta.validation.Valid;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,27 +31,37 @@ public class ReactiveUserNoteController {
     }
 
     @GetMapping("/{id}")
-    public Mono<ResponseEntity<UserNoteResponse>> findUserNoteById(@PathVariable("id") UUID id) {
+    public Mono<ResponseEntity<UserNoteResponse>> findUserNoteById(
+        @PathVariable("id") UUID id
+    ) {
         return findUserNoteById.findUserNoteById(id).map(ResponseEntity::ok);
     }
 
     @PostMapping("/{id}")
-    public Mono<ResponseEntity<UserNoteResponse>> createUserNoteById(@PathVariable("id") UUID id, @RequestBody UserNoteRequest request) {
+    public Mono<ResponseEntity<UserNoteResponse>> createUserNoteById(
+        @PathVariable("id") UUID id, @Valid @RequestBody UserNoteRequest request
+    ) {
         return createUserNoteById.createUserNoteById(id, request).map(ResponseEntity::ok);
     }
 
     @PutMapping("/{id}")
-    public Mono<ResponseEntity<UserNoteResponse>> replaceUserNoteById(@PathVariable("id") UUID id, @RequestBody UserNoteRequest request) {
+    public Mono<ResponseEntity<UserNoteResponse>> replaceUserNoteById(
+        @PathVariable("id") UUID id, @Valid @RequestBody UserNoteRequest request
+    ) {
         return replaceUserNoteById.replaceUserNoteById(id, request).map(ResponseEntity::ok);
     }
 
     @PatchMapping(path = "/{id}")
-    public Mono<ResponseEntity<UserNoteResponse>> updateUserNoteById(@PathVariable("id") UUID id, @RequestBody UserNoteRequest request) {
+    public Mono<ResponseEntity<UserNoteResponse>> updateUserNoteById(
+        @PathVariable("id") UUID id, @Valid @RequestBody UserNoteRequest request
+    ) {
         return updateUserNoteById.updateUserNoteById(id, request).map(ResponseEntity::ok);
     }
 
     @DeleteMapping("/{id}")
-    public Mono<ResponseEntity<UserNoteResponse>> deleteUserNoteById(@PathVariable("id") UUID id) {
+    public Mono<ResponseEntity<UserNoteResponse>> deleteUserNoteById(
+        @PathVariable("id") UUID id
+    ) {
         return deleteUserNoteById.deleteUserNoteById(id).map(ResponseEntity::ok);
     }
 }
