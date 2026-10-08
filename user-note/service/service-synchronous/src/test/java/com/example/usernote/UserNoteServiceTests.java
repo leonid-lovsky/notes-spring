@@ -34,16 +34,20 @@ class UserNoteServiceTests {
         UUID id = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
         UUID noteId = UUID.randomUUID();
-        when(userNoteRepository.findById(id)).thenReturn(Optional.of(new UserNote(id, userId, noteId)));
 
+        UserNote userNote = new UserNote(id, userId, noteId);
+        when(userNoteRepository.findById(id)).thenReturn(Optional.of(userNote));
         UserNoteResponse response = userNoteService.findUserNoteById(id);
 
-        assertEquals(new UserNoteResponse(id, userId, noteId), response);
+        UserNoteResponse expected = new UserNoteResponse(id, userId, noteId);
+
+        assertEquals(expected, response);
     }
 
     @Test
     void findUserNoteByIdThrowsWhenNotFound() {
         UUID id = UUID.randomUUID();
+
         when(userNoteRepository.findById(id)).thenReturn(Optional.empty());
 
         assertThrows(UserNoteNotFoundException.class, () -> userNoteService.findUserNoteById(id));
@@ -54,22 +58,29 @@ class UserNoteServiceTests {
         UUID id = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
         UUID noteId = UUID.randomUUID();
+
         UserNote userNote = new UserNote(id, userId, noteId);
+        UserNoteRequest request = new UserNoteRequest(userId, noteId);
         when(userNoteRepository.existsById(id)).thenReturn(false);
         when(userNoteRepository.save(userNote)).thenReturn(userNote);
+        UserNoteResponse response = userNoteService.createUserNoteById(id, request);
 
-        UserNoteResponse response = userNoteService.createUserNoteById(id, new UserNoteRequest(userId, noteId));
+        UserNoteResponse expected = new UserNoteResponse(id, userId, noteId);
 
-        assertEquals(new UserNoteResponse(id, userId, noteId), response);
+        assertEquals(expected, response);
     }
 
     @Test
     void createUserNoteByIdThrowsWhenAlreadyExists() {
         UUID id = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+        UUID noteId = UUID.randomUUID();
+
+        UserNoteRequest request = new UserNoteRequest(userId, noteId);
         when(userNoteRepository.existsById(id)).thenReturn(true);
-        UserNoteRequest request = new UserNoteRequest(UUID.randomUUID(), UUID.randomUUID());
 
         assertThrows(UserNoteAlreadyExistsException.class, () -> userNoteService.createUserNoteById(id, request));
+
         verify(userNoteRepository, never()).save(any());
     }
 }

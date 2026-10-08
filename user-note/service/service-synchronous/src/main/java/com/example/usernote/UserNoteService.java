@@ -24,7 +24,11 @@ public class UserNoteService implements FindUserNoteById, CreateUserNoteById, Re
         if (userNoteRepository.existsById(id)) {
             throw new UserNoteAlreadyExistsException(id);
         }
-        return userNoteMapper.toResponse(userNoteRepository.save(userNoteMapper.toEntity(id, request)));
+
+        UserNote userNote = userNoteMapper.toEntity(id, request);
+        UserNote savedUserNote = userNoteRepository.save(userNote);
+
+        return userNoteMapper.toResponse(savedUserNote);
     }
 
     @Override
