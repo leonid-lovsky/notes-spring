@@ -173,6 +173,7 @@
 - `user-note/service/service-synchronous/build.gradle.kts` — [REVIEW] — подключён к `application-{h2,mysql,postgresql}` через `implementation(project(":user-note:data:data-jdbc"))`
 - `user-note/service/service-synchronous/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-09-24, `@NullMarked`, был пропущен при заведении модуля 2026-09-21
 - `user-note/service/service-commons/src/main/java/com/example/usernote/UserNote.java` — [REVIEW] — пустой класс, 2026-09-21; запись без аннотаций (без `@Id`), перенесена из `service-synchronous` 2026-10-03
+- `user-note/service/service-commons/src/main/java/com/example/usernote/UserNoteMapper.java` — [REVIEW] — новый 2026-10-08, `UserNote` → `UserNoteResponse` (`toResponse`), один на оба стека; заменил приватный метод сервиса («приватных методов избегаем»); `service-commons` теперь зависит от `contract-commons`
 - `user-note/service/service-commons/build.gradle.kts` — [REVIEW] — новый 2026-10-03, `id("com.example.service-commons")`
 - `user-note/service/service-commons/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-10-03, `@NullMarked`
 - `user-note/service/service-synchronous/src/main/java/com/example/usernote/UserNoteRepository.java` — [REVIEW] — `ListCrudRepository<UserNote, UUID>`, 2026-09-21

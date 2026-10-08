@@ -4,6 +4,8 @@ import java.util.UUID;
 
 public class UserNoteService implements FindUserNoteById, CreateUserNoteById, ReplaceUserNoteById, UpdateUserNoteById, DeleteUserNoteById {
 
+    private final UserNoteMapper userNoteMapper = new UserNoteMapper();
+
     private final UserNoteRepository userNoteRepository;
 
     public UserNoteService(UserNoteRepository userNoteRepository) {
@@ -13,7 +15,7 @@ public class UserNoteService implements FindUserNoteById, CreateUserNoteById, Re
     @Override
     public UserNoteResponse findUserNoteById(UUID id) {
         return userNoteRepository.findById(id)
-                .map(UserNoteService::toResponse)
+                .map(userNoteMapper::toResponse)
                 .orElseThrow(() -> new UserNoteNotFoundException(id));
     }
 
@@ -22,7 +24,7 @@ public class UserNoteService implements FindUserNoteById, CreateUserNoteById, Re
         if (userNoteRepository.existsById(id)) {
             throw new UserNoteAlreadyExistsException(id);
         }
-        return toResponse(userNoteRepository.save(new UserNote(id, request.userId(), request.noteId())));
+        return userNoteMapper.toResponse(userNoteRepository.save(new UserNote(id, request.userId(), request.noteId())));
     }
 
     @Override
@@ -38,9 +40,5 @@ public class UserNoteService implements FindUserNoteById, CreateUserNoteById, Re
     @Override
     public UserNoteResponse deleteUserNoteById(UUID id) {
         throw new UnsupportedOperationException("Not implemented");
-    }
-
-    private static UserNoteResponse toResponse(UserNote userNote) {
-        return new UserNoteResponse(userNote.id(), userNote.userId(), userNote.noteId());
     }
 }
