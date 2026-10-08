@@ -1,15 +1,14 @@
 package com.example.usernote;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
 import java.util.UUID;
 
-@Mapper
+@Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface UserNoteMapper {
 
     UserNoteResponse toResponse(UserNote userNote);
 
-    @Mapping(target = "id", source = "id")
     UserNote toEntity(UUID id, UserNoteRequest request);
 }
