@@ -2,6 +2,9 @@ package com.example.usernote;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
@@ -43,5 +46,29 @@ class UserNoteServiceTests {
         when(userNoteRepository.findById(id)).thenReturn(Optional.empty());
 
         assertThrows(UserNoteNotFoundException.class, () -> userNoteService.findUserNoteById(id));
+    }
+
+    @Test
+    void createUserNoteByIdSavesAndReturnsResponse() {
+        UUID id = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+        UUID noteId = UUID.randomUUID();
+        UserNote userNote = new UserNote(id, userId, noteId);
+        when(userNoteRepository.existsById(id)).thenReturn(false);
+        when(userNoteRepository.save(userNote)).thenReturn(userNote);
+
+        UserNoteResponse response = userNoteService.createUserNoteById(id, new UserNoteRequest(userId, noteId));
+
+        assertEquals(new UserNoteResponse(id, userId, noteId), response);
+    }
+
+    @Test
+    void createUserNoteByIdThrowsWhenAlreadyExists() {
+        UUID id = UUID.randomUUID();
+        when(userNoteRepository.existsById(id)).thenReturn(true);
+        UserNoteRequest request = new UserNoteRequest(UUID.randomUUID(), UUID.randomUUID());
+
+        assertThrows(UserNoteAlreadyExistsException.class, () -> userNoteService.createUserNoteById(id, request));
+        verify(userNoteRepository, never()).save(any());
     }
 }

@@ -13,13 +13,16 @@ public class UserNoteService implements FindUserNoteById, CreateUserNoteById, Re
     @Override
     public UserNoteResponse findUserNoteById(UUID id) {
         return userNoteRepository.findById(id)
-                .map(userNote -> new UserNoteResponse(userNote.id(), userNote.userId(), userNote.noteId()))
+                .map(UserNoteService::toResponse)
                 .orElseThrow(() -> new UserNoteNotFoundException(id));
     }
 
     @Override
     public UserNoteResponse createUserNoteById(UUID id, UserNoteRequest request) {
-        throw new UnsupportedOperationException("Not implemented");
+        if (userNoteRepository.existsById(id)) {
+            throw new UserNoteAlreadyExistsException(id);
+        }
+        return toResponse(userNoteRepository.save(new UserNote(id, request.userId(), request.noteId())));
     }
 
     @Override
@@ -35,5 +38,9 @@ public class UserNoteService implements FindUserNoteById, CreateUserNoteById, Re
     @Override
     public UserNoteResponse deleteUserNoteById(UUID id) {
         throw new UnsupportedOperationException("Not implemented");
+    }
+
+    private static UserNoteResponse toResponse(UserNote userNote) {
+        return new UserNoteResponse(userNote.id(), userNote.userId(), userNote.noteId());
     }
 }
