@@ -1109,7 +1109,7 @@
 - `build-logic/com.example.spring-boot-graphql.gradle.kts` — [REVIEW]
 - `build-logic/com.example.spring-boot-data-r2dbc.gradle.kts` — [REVIEW]
 - `build-logic/com.example.spring-boot-data-commons.gradle.kts` — [REVIEW] — новый 2026-10-03: `org.springframework.data:spring-data-commons` (версия из BOM Boot), применяют `service-synchronous`/`service-reactive` всех трёх сервисов; технология-нейтральный, готового стартера для голого commons нет
-- `build-logic/com.example.mapstruct.gradle.kts` — [REVIEW] — новый 2026-10-08: `mapstruct` (compileOnly) + `mapstruct-processor` (annotationProcessor), версия `mapstruct` 1.6.3 в `gradle/libs.versions.toml`; применяет `contract-commons` `user-note` (генерация `UserNoteMapperImpl`)
+- `build-logic/com.example.mapstruct.gradle.kts` — [REMOVED] — создан и удалён 2026-10-08: содержимое (`mapstruct` compileOnly + `mapstruct-processor`) перенесено в `build-logic/com.example.contract-commons.gradle.kts`
 - `build-logic/com.example.spring-boot-data-mongodb.gradle.kts` — [REVIEW]
 - `build-logic/com.example.spring-boot-data-mongodb-reactive.gradle.kts` — [REVIEW]
 - `build-logic/com.example.spring-boot-data-jpa.gradle.kts` — [REVIEW]
