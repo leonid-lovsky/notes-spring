@@ -12,7 +12,9 @@ public class UserNoteService implements FindUserNoteById, CreateUserNoteById, Re
 
     @Override
     public UserNoteResponse findUserNoteById(UUID id) {
-        throw new UnsupportedOperationException("Not implemented");
+        return userNoteRepository.findById(id)
+                .map(userNote -> new UserNoteResponse(userNote.id(), userNote.userId(), userNote.noteId()))
+                .orElseThrow(() -> new UserNoteNotFoundException(id));
     }
 
     @Override

@@ -1,6 +1,6 @@
 # CLAUDE.md — notes-spring
 
-> Последнее обновление: Thu Oct 08 20:04:20 IDT 2026 **Всё временно** — любое решение подлежит обсуждению и изменению.
+> Последнее обновление: Thu Oct 08 20:19:27 IDT 2026 **Всё временно** — любое решение подлежит обсуждению и изменению.
 
 > **⚠️ Проект в процессе полного переписывания (с 2026-08-14)** — текущее состояние и ближайшие шаги — «Задачи»; история переписывания — `docs/decisions-log.md`.
 
@@ -137,7 +137,7 @@
 - слайс-тесты контроллеров — с `@MockitoBean` (расхождение со стратегией «sociable/classicist» названо, вернуться вместе с вопросом о тестах)
 
 **Открытые вопросы реализации (2026-09-29)**:
-1. Исключения «не найдено»/«уже существует» (в `contract-commons`) и один `@RestControllerAdvice` на стек → 404/409 `ProblemDetail`; одно исключение на сущность или общее
+1. Исключения «не найдено»/«уже существует» (в `contract-commons`) и один `@RestControllerAdvice` на стек → 404/409 `ProblemDetail`; одно исключение на сущность или общее; **решено 2026-10-08 (пользователь: «controller как можно более тонким»)**: «не найдено» — исключение в `contract-commons` (создано `UserNoteNotFoundException`), `Optional<…Response>` на выходе сценария отвергнут; правило слоёв: порт хранилища — `Optional` (reactive — пустой `Mono`), сценарий — исключение, `null` не возвращается; `@RestControllerAdvice` и исключение «уже существует» (409) не сделаны, исключения `Note`/`User` не созданы; **одно исключение на сущность** (решение пользователя 2026-10-08: `UserNoteNotFoundException`, для `note`/`user` — по аналогии, имена не выбраны; «уже существует» — тоже на сущность)
 2. Создание с готовым `id` в Spring Data — без `@Version` или `Persistable<UUID>` SQL-ветки делают `UPDATE` на 0 строк и молча ничего не создают, Mongo делает upsert (проверено по исходникам Spring Data JDBC/R2DBC 4.1.1, MongoDB 5.1.1: `PersistentEntityIsNewStrategy`, `updateWithoutVersion`, `R2dbcEntityTemplate.doUpdate`, `SimpleMongoRepository.save`); с `@Version` все 4 технологии дают `OptimisticLockingFailureException` при 0 затронутых строк
 3. Схемы БД — `schema-<vendor>.sql` для H2/MySQL/PostgreSQL и их место; имя колонки для `userId`/`noteId` стратегией Spring Data не проверено (ожидается `user_id`)
 4. Где выполняется слияние `PATCH` — в реализации сценария или методом сущности (`withContent(@Nullable …)`: правило одно на все `data-*` сервиса, но сущность в 4 копиях)

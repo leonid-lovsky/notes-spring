@@ -1,3 +1,9 @@
 package com.example.usernote;
 
-public interface UserNoteRepository {}
+import java.util.Optional;
+import java.util.UUID;
+
+public interface UserNoteRepository {
+
+    Optional<UserNote> findById(UUID id);
+}
