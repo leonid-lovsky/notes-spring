@@ -1,10 +1,11 @@
 plugins {
     id("com.example.commons")
+    id("java-library")
 }
 
 val libs = extensions.getByType(VersionCatalogsExtension::class.java).named("libs")
 
 dependencies {
-    compileOnly("org.mapstruct:mapstruct:${libs.findVersion("mapstruct").get().requiredVersion}")
+    compileOnlyApi("org.mapstruct:mapstruct:${libs.findVersion("mapstruct").get().requiredVersion}")
     annotationProcessor("org.mapstruct:mapstruct-processor:${libs.findVersion("mapstruct").get().requiredVersion}")
 }
