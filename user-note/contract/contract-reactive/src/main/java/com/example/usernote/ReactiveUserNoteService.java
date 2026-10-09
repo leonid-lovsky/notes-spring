@@ -4,7 +4,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
-public interface ReactiveUserNoteRepository {
+public interface ReactiveUserNoteService {
 
     Mono<UserNoteResponseBody> findUserNoteById(UUID id);
 

@@ -2,11 +2,11 @@ package com.example.usernote;
 
 import java.util.UUID;
 
-public class UserNoteService implements FindUserNoteById, CreateUserNote, UpdateUserNoteRoleById, DeleteUserNoteById {
+public class UserNoteServiceImpl implements UserNoteService {
 
     private final UserNoteRepository userNoteRepository;
 
-    public UserNoteService(UserNoteRepository userNoteRepository) {
+    public UserNoteServiceImpl(UserNoteRepository userNoteRepository) {
         this.userNoteRepository = userNoteRepository;
     }
 
