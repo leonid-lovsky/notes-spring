@@ -1,7 +1,7 @@
 package com.example.usernote;
 
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -11,55 +11,46 @@ import java.util.UUID;
 public class UserNoteController {
 
     private final FindUserNoteById findUserNoteById;
-    private final CreateUserNoteById createUserNoteById;
-    private final ReplaceUserNoteById replaceUserNoteById;
-    private final UpdateUserNoteById updateUserNoteById;
+    private final CreateUserNote createUserNote;
+    private final UpdateUserNoteRoleById updateUserNoteRoleById;
     private final DeleteUserNoteById deleteUserNoteById;
 
     public UserNoteController(
         FindUserNoteById findUserNoteById,
-        CreateUserNoteById createUserNoteById,
-        ReplaceUserNoteById replaceUserNoteById,
-        UpdateUserNoteById updateUserNoteById,
+        CreateUserNote createUserNote,
+        UpdateUserNoteRoleById updateUserNoteRoleById,
         DeleteUserNoteById deleteUserNoteById
     ) {
         this.findUserNoteById = findUserNoteById;
-        this.createUserNoteById = createUserNoteById;
-        this.replaceUserNoteById = replaceUserNoteById;
-        this.updateUserNoteById = updateUserNoteById;
+        this.createUserNote = createUserNote;
+        this.updateUserNoteRoleById = updateUserNoteRoleById;
         this.deleteUserNoteById = deleteUserNoteById;
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserNoteResponse> findUserNoteById(
+    public ResponseEntity<UserNoteResponseBody> findUserNoteById(
         @PathVariable("id") UUID id
     ) {
         return ResponseEntity.ok(findUserNoteById.findUserNoteById(id));
     }
 
-    @PostMapping("/{id}")
-    public ResponseEntity<UserNoteResponse> createUserNoteById(
-        @PathVariable("id") UUID id, @Valid @RequestBody UserNoteRequest request
+    @PostMapping
+    public ResponseEntity<UserNoteResponseBody> createUserNote(
+        @Validated @RequestBody UserNoteRequestBody requestBody
     ) {
-        return ResponseEntity.ok(createUserNoteById.createUserNoteById(id, request));
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<UserNoteResponse> replaceUserNoteById(
-        @PathVariable("id") UUID id, @Valid @RequestBody UserNoteRequest request
-    ) {
-        return ResponseEntity.ok(replaceUserNoteById.replaceUserNoteById(id, request));
+        return ResponseEntity.ok(createUserNote.createUserNote(requestBody));
     }
 
     @PatchMapping(path = "/{id}")
-    public ResponseEntity<UserNoteResponse> updateUserNoteById(
-        @PathVariable("id") UUID id, @Valid @RequestBody UserNoteRequest request
+    public ResponseEntity<UserNoteResponseBody> updateUserNoteRoleById(
+        @PathVariable("id") UUID id,
+        @RequestBody UserNoteRole role
     ) {
-        return ResponseEntity.ok(updateUserNoteById.updateUserNoteById(id, request));
+        return ResponseEntity.ok(updateUserNoteRoleById.updateUserNoteRoleById(id, role));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<UserNoteResponse> deleteUserNoteById(
+    public ResponseEntity<UserNoteResponseBody> deleteUserNoteById(
         @PathVariable("id") UUID id
     ) {
         return ResponseEntity.ok(deleteUserNoteById.deleteUserNoteById(id));

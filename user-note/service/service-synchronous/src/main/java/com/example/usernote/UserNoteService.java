@@ -2,9 +2,7 @@ package com.example.usernote;
 
 import java.util.UUID;
 
-public class UserNoteService implements FindUserNoteById, CreateUserNoteById, ReplaceUserNoteById, UpdateUserNoteById, DeleteUserNoteById {
-
-    private final UserNoteMapper userNoteMapper = new UserNoteMapperImpl();
+public class UserNoteService implements FindUserNoteById, CreateUserNote, UpdateUserNoteRoleById, DeleteUserNoteById {
 
     private final UserNoteRepository userNoteRepository;
 
@@ -13,36 +11,22 @@ public class UserNoteService implements FindUserNoteById, CreateUserNoteById, Re
     }
 
     @Override
-    public UserNoteResponse findUserNoteById(UUID id) {
-        return userNoteRepository.findById(id)
-            .map(userNoteMapper::toResponse)
-            .orElseThrow(() -> new UserNoteNotFoundException(id));
+    public UserNoteResponseBody findUserNoteById(UUID id) {
+        return userNoteRepository.findUserNoteById(id);
     }
 
     @Override
-    public UserNoteResponse createUserNoteById(UUID id, UserNoteRequest request) {
-        if (userNoteRepository.existsById(id)) {
-            throw new UserNoteAlreadyExistsException(id);
-        }
-
-        UserNote userNote = userNoteMapper.toEntity(id, request);
-        UserNote savedUserNote = userNoteRepository.save(userNote);
-
-        return userNoteMapper.toResponse(savedUserNote);
+    public UserNoteResponseBody createUserNote(UserNoteRequestBody requestBody) {
+        return userNoteRepository.createUserNote(requestBody);
     }
 
     @Override
-    public UserNoteResponse replaceUserNoteById(UUID id, UserNoteRequest request) {
-        throw new UnsupportedOperationException("Not implemented");
+    public UserNoteResponseBody updateUserNoteRoleById(UUID id, UserNoteRole role) {
+        return userNoteRepository.updateUserNoteRoleById(id, role);
     }
 
     @Override
-    public UserNoteResponse updateUserNoteById(UUID id, UserNoteRequest request) {
-        throw new UnsupportedOperationException("Not implemented");
-    }
-
-    @Override
-    public UserNoteResponse deleteUserNoteById(UUID id) {
-        throw new UnsupportedOperationException("Not implemented");
+    public UserNoteResponseBody deleteUserNoteById(UUID id) {
+        return userNoteRepository.deleteUserNoteById(id);
     }
 }

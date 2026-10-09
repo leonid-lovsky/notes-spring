@@ -43,7 +43,7 @@
 - `docs/current-implementation-plans.md` — [REVIEW] — новый 2026-10-08, дословное сообщение ассистента о дырах sync-`UserNoteService` и тестов — планы текущей реализации, по просьбе пользователя
 - `docs/microservices-reference.md` — [REVIEW] — новый 2026-09-26, справочный снимок итогов сессии по микросервисной архитектуре
 - `docs/reference-index.md` — [REVIEW] — новый 2026-09-26, путеводитель по файлам docs/
-- `docs/user-note-access-model.md` — [REVIEW] — новый 2026-09-25, модель доступа `UserNote` (права на заметку, роли-шаблоны для UI, инварианты, хранение SQL/NoSQL, JWT/Spring Security, механизмы инвариантов по слоям UI/Framework/Model/Storage, ключевые выводы …
+- `docs/user-note-access-model.md` — [REVIEW] — новый 2026-09-25, модель доступа `UserNoteEntity` (права на заметку, роли-шаблоны для UI, инварианты, хранение SQL/NoSQL, JWT/Spring Security, механизмы инвариантов по слоям UI/Framework/Model/Storage, ключевые выводы …
 - `docs/http-api-reference.md` — [REVIEW] — новый 2026-09-29, справочник по объявлению методов контроллера (стандарты HTTP, `createNote`, варианты, `Location`, gateway, аргументы)
 
 ### .claude/ (0 файлов, добавлено 2026-07-24, весь каталог удалён из репозитория и с диска в тот же день)
@@ -61,15 +61,15 @@
 #### user-note/contract/contract-commons/ (4 файла) — новый 2026-09-29, модели запроса и ответа, общие для `contract-synchronous` и `contract-reactive`, по образцу `note`/`user`, `id("com.example.commons")`
 - `user-note/contract/contract-commons/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `user-note/contract/contract-commons/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-09-29, `@NullMarked`
-- `user-note/contract/contract-commons/src/main/java/com/example/usernote/UserNoteRequest.java` — [REVIEW] — новый 2026-09-29, модель запроса `(userId, noteId)`
-- `user-note/contract/contract-commons/src/main/java/com/example/usernote/UserNoteResponse.java` — [REVIEW] — новый 2026-09-29, модель ответа `(id, userId, noteId)`
+- `user-note/contract/contract-commons/src/main/java/com/example/usernote/UserNoteRequest.java` — [REMOVED] — новый 2026-09-29, модель запроса `(userId, noteId)`; удалён 2026-10-09
+- `user-note/contract/contract-commons/src/main/java/com/example/usernote/UserNoteResponse.java` — [REMOVED] — новый 2026-09-29, модель ответа `(id, userId, noteId)`; удалён 2026-10-09
 
 #### user-note/contract/contract-synchronous/ (7 файлов) — не был в каталоге до 2026-09-24; не собирался (`plugins{}` пустой, без единого `id(...)`) до починки в этой сессии
 - `user-note/contract/contract-synchronous/build.gradle.kts` — [REVIEW] — было `plugins { id("com.example.java") }` (собирался, но нарушал паттерн «лист = плагин по роли, не голый `java`»); теперь `id("com.example.contract-synchronous")`
 - `user-note/contract/contract-synchronous/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-09-24, `@NullMarked`
-- `user-note/contract/contract-synchronous/src/main/java/com/example/usernote/CreateUserNoteById.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
-- `user-note/contract/contract-synchronous/src/main/java/com/example/usernote/UpdateUserNoteById.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
-- `user-note/contract/contract-synchronous/src/main/java/com/example/usernote/ReplaceUserNoteById.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
+- `user-note/contract/contract-synchronous/src/main/java/com/example/usernote/CreateUserNoteById.java` — [REMOVED] — новый 2026-09-29, входной порт сценария, метод `execute`; удалён 2026-10-09
+- `user-note/contract/contract-synchronous/src/main/java/com/example/usernote/UpdateUserNoteById.java` — [REMOVED] — новый 2026-09-29, входной порт сценария, метод `execute`; удалён 2026-10-09
+- `user-note/contract/contract-synchronous/src/main/java/com/example/usernote/ReplaceUserNoteById.java` — [REMOVED] — новый 2026-09-29, входной порт сценария, метод `execute`; удалён 2026-10-09
 - `user-note/contract/contract-synchronous/src/main/java/com/example/usernote/FindUserNoteById.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
 - `user-note/contract/contract-synchronous/src/main/java/com/example/usernote/DeleteUserNoteById.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
 
@@ -77,9 +77,9 @@
 - `user-note/contract/contract-reactive/build.gradle.kts` — [REVIEW] — было `id("com.example.project-reactor")` напрямую; теперь `id("com.example.contract-reactive")` (симметрично `contract`)
 - `user-note/contract/contract-reactive/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-09-24, `@NullMarked`
 - `user-note/contract/contract-reactive/src/main/java/com/example/usernote/ReactiveFindUserNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
-- `user-note/contract/contract-reactive/src/main/java/com/example/usernote/ReactiveReplaceUserNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
-- `user-note/contract/contract-reactive/src/main/java/com/example/usernote/ReactiveCreateUserNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
-- `user-note/contract/contract-reactive/src/main/java/com/example/usernote/ReactiveUpdateUserNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
+- `user-note/contract/contract-reactive/src/main/java/com/example/usernote/ReactiveReplaceUserNoteById.java` — [REMOVED] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`; удалён 2026-10-09
+- `user-note/contract/contract-reactive/src/main/java/com/example/usernote/ReactiveCreateUserNoteById.java` — [REMOVED] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`; удалён 2026-10-09
+- `user-note/contract/contract-reactive/src/main/java/com/example/usernote/ReactiveUpdateUserNoteById.java` — [REMOVED] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`; удалён 2026-10-09
 - `user-note/contract/contract-reactive/src/main/java/com/example/usernote/ReactiveDeleteUserNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
 
 #### user-note/application-{jdbc,jpa}/ — модель application-driver — [REMOVED] 2026-09-05
@@ -173,9 +173,9 @@
 #### user-note/service/service-{synchronous,reactive}/ — с 2026-10-03 заменили `data-{jdbc,r2dbc,mongodb,mongodb-reactive}` (сущность, репозиторий, сервис без технологии; плагин `spring-boot-data-commons`); строки `data-mongodb*`, тесты и `application-data-*.properties` ниже — [REMOVED]
 - `user-note/service/service-synchronous/build.gradle.kts` — [REVIEW] — подключён к `application-{h2,mysql,postgresql}` через `implementation(project(":user-note:data:data-jdbc"))`
 - `user-note/service/service-synchronous/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-09-24, `@NullMarked`, был пропущен при заведении модуля 2026-09-21
-- `user-note/contract/contract-commons/src/main/java/com/example/usernote/UserNote.java` — [REVIEW] — перенесён из `service-commons` в `contract-commons` 2026-10-08 (порт хранилища использует сущность в сигнатурах); пустой класс, 2026-09-21; запись без аннотаций (без `@Id`), перенесена из `service-synchronous` 2026-10-03
-- `user-note/contract/contract-commons/src/main/java/com/example/usernote/UserNoteMapper.java` — [REVIEW] — перенесён из `service-commons` в `contract-commons` 2026-10-08, с того же дня интерфейс MapStruct (`@Mapper`, `toResponse` и `toEntity`), реализацию `UserNoteMapperImpl` генерирует процессор; новый 2026-10-08, `UserNote` → `UserNoteResponse` (`toResponse`), один на оба стека; заменил приватный метод сервиса («приватных методов избегаем»); `service-commons` теперь зависит от `contract-commons`
-- `user-note/contract/contract-commons/src/test/java/com/example/usernote/UserNoteMapperTests.java` — [REVIEW] — новый 2026-10-08, 2 теста маппера (`toResponse`, `toEntity`) с тремя разными `UUID`, чтобы перепутанные поля нельзя было не заметить
+- `user-note/contract/contract-commons/src/main/java/com/example/usernote/UserNote.java` — [REMOVED] — перенесён из `service-commons` в `contract-commons` 2026-10-08 (порт хранилища использует сущность в сигнатурах); пустой класс, 2026-09-21; запись без аннотаций (без `@Id`), перенесена из `service-synchronous` 2026-10-03; удалён 2026-10-09
+- `user-note/contract/contract-commons/src/main/java/com/example/usernote/UserNoteMapper.java` — [REMOVED] — перенесён из `service-commons` в `contract-commons` 2026-10-08, с того же дня интерфейс MapStruct (`@Mapper`, `userNoteResponseBodyFrom` и `toEntity`), реализацию `UserNoteMapperImpl` генерирует процессор; новый 2026-10-08, `UserNoteEntity` → `UserNoteResponseBody` (`userNoteResponseBodyFrom`), один на оба стека; заменил приватный метод сервиса («приватных методов избегаем»); `service-commons` теперь зависит от `contract-commons`; удалён 2026-10-09
+- `user-note/contract/contract-commons/src/test/java/com/example/usernote/UserNoteMapperTests.java` — [REMOVED] — удалён 2026-10-09 (мапперы не тестируем), был новый 2026-10-08, 2 теста маппера (`userNoteResponseBodyFrom`, `toEntity`) с тремя разными `UUID`, чтобы перепутанные поля нельзя было не заметить
 - `user-note/service/service-commons/build.gradle.kts` — [REMOVED] — модуль `user-note/service/service-commons` удалён 2026-10-08 (сущность и маппер перенесены в `contract-commons`); новый 2026-10-03, `id("com.example.service-commons")`
 - `user-note/service/service-commons/src/main/java/com/example/usernote/package-info.java` — [REMOVED] — модуль `user-note/service/service-commons` удалён 2026-10-08 (сущность и маппер перенесены в `contract-commons`); новый 2026-10-03, `@NullMarked`
 - `user-note/contract/contract-synchronous/src/main/java/com/example/usernote/UserNoteRepository.java` — [REVIEW] — перенесён из `service-synchronous` в `contract-synchronous` 2026-10-08 (driven-порт хранилища в контракте); `ListCrudRepository<UserNote, UUID>`, 2026-09-21
@@ -208,6 +208,13 @@
 - `user-note/service/service-synchronous/src/test/java/com/example/usernote/UserNoteServiceTests.java` — [REVIEW] — новый 2026-10-08, юнит-тест сервиса без Spring (`MockitoExtension`, мок `UserNoteRepository`), 2 теста `findUserNoteById` (найдено / `UserNoteNotFoundException`), красные до реализации; Mockito подключён в `com.example.commons`
 - `user-note/contract/contract-commons/src/main/java/com/example/usernote/UserNoteNotFoundException.java` — [REVIEW] — новый 2026-10-08, `RuntimeException` с `UUID id` в конструкторе; «не найдено» для сценариев (контроллерная часть: 404 — не сделана)
 - `user-note/contract/contract-commons/src/main/java/com/example/usernote/UserNoteAlreadyExistsException.java` — [REVIEW] — новый 2026-10-08, `RuntimeException` с `UUID id`, «уже существует» для `create` (409 — не сделано)
+- `user-note/contract/contract-commons/src/main/java/com/example/usernote/UserNoteRequestBody.java` — [REVIEW] — новый 2026-10-09, тело запроса `(userId, noteId, role)` на `POST`, `@NotNull`, заменил `UserNoteRequest`
+- `user-note/contract/contract-commons/src/main/java/com/example/usernote/UserNoteResponseBody.java` — [REVIEW] — новый 2026-10-09, тело ответа `(id, userId, noteId, role)`, заменил `UserNoteResponse`
+- `user-note/contract/contract-commons/src/main/java/com/example/usernote/UserNoteRole.java` — [REVIEW] — новый 2026-10-09, enum `OWNER`, `EDITOR`, `COMMENTER`, `VIEWER`, `NONE` — от больших прав к меньшим
+- `user-note/contract/contract-synchronous/src/main/java/com/example/usernote/CreateUserNote.java` — [REVIEW] — новый 2026-10-09, порт сценария создания, `createUserNote(UserNoteRequestBody)`, без id и без `ById`
+- `user-note/contract/contract-synchronous/src/main/java/com/example/usernote/UpdateUserNoteRoleById.java` — [REVIEW] — новый 2026-10-09, порт сценария смены роли, `updateUserNoteRoleById(UUID, UserNoteRole)`, `PATCH /{id}`
+- `user-note/contract/contract-reactive/src/main/java/com/example/usernote/ReactiveCreateUserNote.java` — [REVIEW] — новый 2026-10-09, reactive-парный `CreateUserNote`
+- `user-note/contract/contract-reactive/src/main/java/com/example/usernote/ReactiveUpdateUserNoteRoleById.java` — [REVIEW] — новый 2026-10-09, reactive-парный `UpdateUserNoteRoleById`
 - `user-note/data/data-mongodb/src/main/java/com/example/usernote/UserNoteService.java` — [REMOVED] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}UserNoteByIdSynchronousService`; удалён 2026-10-03 (`data-*` сведены к `service-*`)
 - `user-note/service/service-reactive/src/main/java/com/example/usernote/ReactiveUserNoteService.java` — [REVIEW] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}UserNoteByIdReactiveService`
 - `user-note/data/data-mongodb-reactive/src/main/java/com/example/usernote/UserNoteService.java` — [REMOVED] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}UserNoteByIdReactiveService`; удалён 2026-10-03 (`data-*` сведены к `service-*`)

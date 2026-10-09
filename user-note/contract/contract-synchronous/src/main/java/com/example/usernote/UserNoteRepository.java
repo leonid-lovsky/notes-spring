@@ -1,13 +1,14 @@
 package com.example.usernote;
 
-import java.util.Optional;
 import java.util.UUID;
 
 public interface UserNoteRepository {
 
-    UserNote save(UserNote userNote);
+    UserNoteResponseBody findUserNoteById(UUID id);
 
-    Optional<UserNote> findById(UUID id);
+    UserNoteResponseBody createUserNote(UserNoteRequestBody requestBody);
 
-    boolean existsById(UUID id);
+    UserNoteResponseBody updateUserNoteRoleById(UUID id, UserNoteRole role);
+
+    UserNoteResponseBody deleteUserNoteById(UUID id);
 }

@@ -6,5 +6,5 @@ import java.util.UUID;
 
 public interface ReactiveDeleteUserNoteById {
 
-    Mono<UserNoteResponse> deleteUserNoteById(UUID id);
+    Mono<UserNoteResponseBody> deleteUserNoteById(UUID id);
 }

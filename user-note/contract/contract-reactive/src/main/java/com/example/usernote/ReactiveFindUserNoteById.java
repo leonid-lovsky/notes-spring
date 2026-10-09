@@ -6,5 +6,5 @@ import java.util.UUID;
 
 public interface ReactiveFindUserNoteById {
 
-    Mono<UserNoteResponse> findUserNoteById(UUID id);
+    Mono<UserNoteResponseBody> findUserNoteById(UUID id);
 }

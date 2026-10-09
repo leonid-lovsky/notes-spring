@@ -4,5 +4,5 @@ import java.util.UUID;
 
 public interface FindUserNoteById {
 
-    UserNoteResponse findUserNoteById(UUID id);
+    UserNoteResponseBody findUserNoteById(UUID id);
 }

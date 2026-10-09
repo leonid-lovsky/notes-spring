@@ -4,9 +4,10 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
 
-public record UserNoteRequest(
+public record UserNoteRequestBody(
     @NotNull UUID userId,
-    @NotNull UUID noteId
+    @NotNull UUID noteId,
+    @NotNull UserNoteRole role
 ) {
 
 }

@@ -4,7 +4,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
-public class ReactiveUserNoteService implements ReactiveFindUserNoteById, ReactiveCreateUserNoteById, ReactiveReplaceUserNoteById, ReactiveUpdateUserNoteById, ReactiveDeleteUserNoteById {
+public class ReactiveUserNoteService implements ReactiveFindUserNoteById, ReactiveCreateUserNote, ReactiveUpdateUserNoteRoleById, ReactiveDeleteUserNoteById {
 
     private final ReactiveUserNoteRepository userNoteRepository;
 
@@ -13,27 +13,22 @@ public class ReactiveUserNoteService implements ReactiveFindUserNoteById, Reacti
     }
 
     @Override
-    public Mono<UserNoteResponse> findUserNoteById(UUID id) {
+    public Mono<UserNoteResponseBody> findUserNoteById(UUID id) {
         return Mono.error(new UnsupportedOperationException("Not implemented"));
     }
 
     @Override
-    public Mono<UserNoteResponse> createUserNoteById(UUID id, UserNoteRequest request) {
+    public Mono<UserNoteResponseBody> createUserNote(UserNoteRequestBody requestBody) {
         return Mono.error(new UnsupportedOperationException("Not implemented"));
     }
 
     @Override
-    public Mono<UserNoteResponse> replaceUserNoteById(UUID id, UserNoteRequest request) {
+    public Mono<UserNoteResponseBody> updateUserNoteRoleById(UUID id, UserNoteRole role) {
         return Mono.error(new UnsupportedOperationException("Not implemented"));
     }
 
     @Override
-    public Mono<UserNoteResponse> updateUserNoteById(UUID id, UserNoteRequest request) {
-        return Mono.error(new UnsupportedOperationException("Not implemented"));
-    }
-
-    @Override
-    public Mono<UserNoteResponse> deleteUserNoteById(UUID id) {
+    public Mono<UserNoteResponseBody> deleteUserNoteById(UUID id) {
         return Mono.error(new UnsupportedOperationException("Not implemented"));
     }
 }

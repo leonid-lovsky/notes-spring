@@ -4,5 +4,5 @@ import java.util.UUID;
 
 public interface DeleteUserNoteById {
 
-    UserNoteResponse deleteUserNoteById(UUID id);
+    UserNoteResponseBody deleteUserNoteById(UUID id);
 }

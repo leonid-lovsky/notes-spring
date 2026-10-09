@@ -6,13 +6,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserNoteServiceTests {
@@ -28,57 +25,55 @@ class UserNoteServiceTests {
     }
 
     @Test
-    void findUserNoteByIdReturnsResponseWhenFound() {
+    void findUserNoteByIdReturnsRepositoryResponse() {
         UUID id = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
         UUID noteId = UUID.randomUUID();
 
-        UserNote userNote = new UserNote(id, userId, noteId);
-        when(userNoteRepository.findById(id)).thenReturn(Optional.of(userNote));
-        UserNoteResponse response = userNoteService.findUserNoteById(id);
+        UserNoteResponseBody expected = new UserNoteResponseBody(id, userId, noteId, UserNoteRole.EDITOR);
+        when(userNoteRepository.findUserNoteById(id)).thenReturn(expected);
+        UserNoteResponseBody responseBody = userNoteService.findUserNoteById(id);
 
-        UserNoteResponse expected = new UserNoteResponse(id, userId, noteId);
-
-        assertEquals(expected, response);
+        assertEquals(expected, responseBody);
     }
 
     @Test
-    void findUserNoteByIdThrowsWhenNotFound() {
-        UUID id = UUID.randomUUID();
-
-        when(userNoteRepository.findById(id)).thenReturn(Optional.empty());
-
-        assertThrows(UserNoteNotFoundException.class, () -> userNoteService.findUserNoteById(id));
-    }
-
-    @Test
-    void createUserNoteByIdSavesAndReturnsResponse() {
+    void createUserNoteReturnsRepositoryResponse() {
         UUID id = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
         UUID noteId = UUID.randomUUID();
 
-        UserNote userNote = new UserNote(id, userId, noteId);
-        UserNoteRequest request = new UserNoteRequest(userId, noteId);
-        when(userNoteRepository.existsById(id)).thenReturn(false);
-        when(userNoteRepository.save(userNote)).thenReturn(userNote);
-        UserNoteResponse response = userNoteService.createUserNoteById(id, request);
+        UserNoteRequestBody requestBody = new UserNoteRequestBody(userId, noteId, UserNoteRole.EDITOR);
+        UserNoteResponseBody expected = new UserNoteResponseBody(id, userId, noteId, UserNoteRole.EDITOR);
+        when(userNoteRepository.createUserNote(requestBody)).thenReturn(expected);
+        UserNoteResponseBody responseBody = userNoteService.createUserNote(requestBody);
 
-        UserNoteResponse expected = new UserNoteResponse(id, userId, noteId);
-
-        assertEquals(expected, response);
+        assertEquals(expected, responseBody);
     }
 
     @Test
-    void createUserNoteByIdThrowsWhenAlreadyExists() {
+    void updateUserNoteRoleByIdReturnsRepositoryResponse() {
         UUID id = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
         UUID noteId = UUID.randomUUID();
 
-        UserNoteRequest request = new UserNoteRequest(userId, noteId);
-        when(userNoteRepository.existsById(id)).thenReturn(true);
+        UserNoteResponseBody expected = new UserNoteResponseBody(id, userId, noteId, UserNoteRole.VIEWER);
+        when(userNoteRepository.updateUserNoteRoleById(id, UserNoteRole.VIEWER)).thenReturn(expected);
+        UserNoteResponseBody responseBody = userNoteService.updateUserNoteRoleById(id, UserNoteRole.VIEWER);
 
-        assertThrows(UserNoteAlreadyExistsException.class, () -> userNoteService.createUserNoteById(id, request));
+        assertEquals(expected, responseBody);
+    }
 
-        verify(userNoteRepository, never()).save(any());
+    @Test
+    void deleteUserNoteByIdReturnsRepositoryResponse() {
+        UUID id = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+        UUID noteId = UUID.randomUUID();
+
+        UserNoteResponseBody expected = new UserNoteResponseBody(id, userId, noteId, UserNoteRole.EDITOR);
+        when(userNoteRepository.deleteUserNoteById(id)).thenReturn(expected);
+        UserNoteResponseBody responseBody = userNoteService.deleteUserNoteById(id);
+
+        assertEquals(expected, responseBody);
     }
 }
