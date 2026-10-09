@@ -74,12 +74,12 @@ class ReactiveUserNoteControllerTests {
         UUID userId = UUID.randomUUID();
         UUID noteId = UUID.randomUUID();
 
-        UserNoteResponseBody responseBody = new UserNoteResponseBody(id, userId, noteId, UserNoteRole.VIEWER);
-        when(userNoteService.updateUserNoteRoleById(id, UserNoteRole.VIEWER)).thenReturn(Mono.just(responseBody));
+        UserNoteResponseBody responseBody = new UserNoteResponseBody(id, userId, noteId, UserNoteRole.EDITOR);
+        when(userNoteService.updateUserNoteRoleById(id, UserNoteRole.EDITOR)).thenReturn(Mono.just(responseBody));
 
-        String expected = "{\"id\":\"%s\",\"userId\":\"%s\",\"noteId\":\"%s\",\"role\":\"VIEWER\"}".formatted(id, userId, noteId);
+        String expected = "{\"id\":\"%s\",\"userId\":\"%s\",\"noteId\":\"%s\",\"role\":\"EDITOR\"}".formatted(id, userId, noteId);
 
-        webTestClient.patch().uri("/user-notes/{id}", id).contentType(MediaType.APPLICATION_JSON).bodyValue("\"VIEWER\"").exchange()
+        webTestClient.patch().uri("/user-notes/{id}", id).contentType(MediaType.APPLICATION_JSON).bodyValue("\"EDITOR\"").exchange()
             .expectStatus().isOk()
             .expectBody(String.class).isEqualTo(expected);
     }

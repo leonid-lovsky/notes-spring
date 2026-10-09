@@ -57,9 +57,9 @@ class UserNoteServiceImplTests {
         UUID userId = UUID.randomUUID();
         UUID noteId = UUID.randomUUID();
 
-        UserNoteResponseBody expected = new UserNoteResponseBody(id, userId, noteId, UserNoteRole.VIEWER);
-        when(userNoteRepository.updateUserNoteRoleById(id, UserNoteRole.VIEWER)).thenReturn(expected);
-        UserNoteResponseBody responseBody = userNoteService.updateUserNoteRoleById(id, UserNoteRole.VIEWER);
+        UserNoteResponseBody expected = new UserNoteResponseBody(id, userId, noteId, UserNoteRole.EDITOR);
+        when(userNoteRepository.updateUserNoteRoleById(id, UserNoteRole.EDITOR)).thenReturn(expected);
+        UserNoteResponseBody responseBody = userNoteService.updateUserNoteRoleById(id, UserNoteRole.EDITOR);
 
         assertEquals(expected, responseBody);
     }

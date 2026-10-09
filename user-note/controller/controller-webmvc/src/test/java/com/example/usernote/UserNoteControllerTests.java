@@ -76,11 +76,11 @@ class UserNoteControllerTests {
         UUID userId = UUID.randomUUID();
         UUID noteId = UUID.randomUUID();
 
-        UserNoteResponseBody responseBody = new UserNoteResponseBody(id, userId, noteId, UserNoteRole.VIEWER);
-        when(userNoteService.updateUserNoteRoleById(id, UserNoteRole.VIEWER)).thenReturn(responseBody);
-        MvcTestResult result = mockMvcTester.patch().uri("/user-notes/{id}", id).contentType(MediaType.APPLICATION_JSON).content("\"VIEWER\"").exchange();
+        UserNoteResponseBody responseBody = new UserNoteResponseBody(id, userId, noteId, UserNoteRole.EDITOR);
+        when(userNoteService.updateUserNoteRoleById(id, UserNoteRole.EDITOR)).thenReturn(responseBody);
+        MvcTestResult result = mockMvcTester.patch().uri("/user-notes/{id}", id).contentType(MediaType.APPLICATION_JSON).content("\"EDITOR\"").exchange();
 
-        String expected = "{\"id\":\"%s\",\"userId\":\"%s\",\"noteId\":\"%s\",\"role\":\"VIEWER\"}".formatted(id, userId, noteId);
+        String expected = "{\"id\":\"%s\",\"userId\":\"%s\",\"noteId\":\"%s\",\"role\":\"EDITOR\"}".formatted(id, userId, noteId);
 
         assertThat(result).hasStatusOk();
         assertThat(result).bodyText().isEqualTo(expected);
