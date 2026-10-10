@@ -1,102 +1,155 @@
 package com.example.usernote;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
-import tools.jackson.databind.ObjectMapper;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
-import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UserNoteController.class)
+@AutoConfigureRestTestClient
 class UserNoteControllerTests {
 
     @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
+    private RestTestClient restTestClient;
 
     @MockitoBean
     private UserNoteService userNoteService;
 
     @Test
-    void findUserNoteByIdReturnsOk() throws Exception {
+    void findUserNoteByIdReturnsOk() {
         UUID id = UUID.randomUUID();
 
         UserNoteResponseBody responseBody = new UserNoteResponseBody(id, UUID.randomUUID(), UUID.randomUUID(), UserNoteRole.EDITOR);
         when(userNoteService.findUserNoteById(id)).thenReturn(responseBody);
 
-        mockMvc.perform(get("/user-notes/{id}", id))
-            .andExpect(status().isOk())
-            .andExpect(content().json(objectMapper.writeValueAsString(responseBody)));
+        restTestClient.get().uri("/user-notes/{id}", id).exchange()
+            .expectStatus().isOk()
+            .expectBody(UserNoteResponseBody.class).isEqualTo(responseBody);
     }
 
     @Test
-    void findUserNoteByIdReturnsNotFound() throws Exception {
+    void findUserNoteByIdReturnsNotFound() {
         UUID id = UUID.randomUUID();
 
         when(userNoteService.findUserNoteById(id)).thenThrow(new UserNoteNotFoundException(id));
 
-        mockMvc.perform(get("/user-notes/{id}", id))
-            .andExpect(status().isNotFound());
+        restTestClient.get().uri("/user-notes/{id}", id).exchange()
+            .expectStatus().isNotFound();
     }
 
     @Test
-    void createUserNoteReturnsOk() throws Exception {
-        UserNoteRequestBody requestBody = new UserNoteRequestBody(UUID.randomUUID(), UUID.randomUUID(), UserNoteRole.EDITOR);
-        UserNoteResponseBody responseBody = new UserNoteResponseBody(UUID.randomUUID(), requestBody.userId(), requestBody.noteId(), UserNoteRole.EDITOR);
-
-        when(userNoteService.createUserNote(requestBody)).thenReturn(responseBody);
-
-        mockMvc.perform(post("/user-notes").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(requestBody)))
-            .andExpect(status().isOk())
-            .andExpect(content().json(objectMapper.writeValueAsString(responseBody)));
-    }
-
-    @Test
-    void createUserNoteWithoutUserIdReturnsBadRequest() throws Exception {
-        Map<String, Object> requestBody = Map.of("noteId", UUID.randomUUID(), "role", UserNoteRole.EDITOR);
-
-        mockMvc.perform(post("/user-notes").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(requestBody)))
-            .andExpect(status().isBadRequest());
+    void findUserNoteByIdWithInvalidIdReturnsBadRequest() {
+        restTestClient.get().uri("/user-notes/{id}", "not-a-uuid").exchange()
+            .expectStatus().isBadRequest();
 
         verifyNoInteractions(userNoteService);
     }
 
     @Test
-    void updateUserNoteRoleByIdReturnsOk() throws Exception {
+    void createUserNoteReturnsOk() {
+        UserNoteRequestBody requestBody = new UserNoteRequestBody(UUID.randomUUID(), UUID.randomUUID(), UserNoteRole.EDITOR);
+        UserNoteResponseBody responseBody = new UserNoteResponseBody(UUID.randomUUID(), requestBody.userId(), requestBody.noteId(), UserNoteRole.EDITOR);
+
+        when(userNoteService.createUserNote(requestBody)).thenReturn(responseBody);
+
+        restTestClient.post().uri("/user-notes").contentType(MediaType.APPLICATION_JSON).body(requestBody).exchange()
+            .expectStatus().isOk()
+            .expectBody(UserNoteResponseBody.class).isEqualTo(responseBody);
+    }
+
+    @ParameterizedTest
+    @MethodSource("requestBodiesWithMissingField")
+    void createUserNoteWithMissingFieldReturnsBadRequest(UserNoteRequestBody requestBody) {
+        restTestClient.post().uri("/user-notes").contentType(MediaType.APPLICATION_JSON).body(requestBody).exchange()
+            .expectStatus().isBadRequest();
+
+        verifyNoInteractions(userNoteService);
+    }
+
+    static Stream<UserNoteRequestBody> requestBodiesWithMissingField() {
+        return Stream.of(
+            new UserNoteRequestBody(null, UUID.randomUUID(), UserNoteRole.EDITOR),
+            new UserNoteRequestBody(UUID.randomUUID(), null, UserNoteRole.EDITOR),
+            new UserNoteRequestBody(UUID.randomUUID(), UUID.randomUUID(), null)
+        );
+    }
+
+    @Test
+    void updateUserNoteRoleByIdReturnsOk() {
         UUID id = UUID.randomUUID();
 
         UserNoteResponseBody responseBody = new UserNoteResponseBody(id, UUID.randomUUID(), UUID.randomUUID(), UserNoteRole.VIEWER);
         when(userNoteService.updateUserNoteRoleById(id, UserNoteRole.VIEWER)).thenReturn(responseBody);
 
-        mockMvc.perform(patch("/user-notes/{id}", id).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(UserNoteRole.VIEWER)))
-            .andExpect(status().isOk())
-            .andExpect(content().json(objectMapper.writeValueAsString(responseBody)));
+        restTestClient.patch().uri("/user-notes/{id}", id).contentType(MediaType.APPLICATION_JSON).body(UserNoteRole.VIEWER).exchange()
+            .expectStatus().isOk()
+            .expectBody(UserNoteResponseBody.class).isEqualTo(responseBody);
     }
 
     @Test
-    void deleteUserNoteByIdReturnsOk() throws Exception {
+    void updateUserNoteRoleByIdReturnsNotFound() {
+        UUID id = UUID.randomUUID();
+
+        when(userNoteService.updateUserNoteRoleById(id, UserNoteRole.VIEWER)).thenThrow(new UserNoteNotFoundException(id));
+
+        restTestClient.patch().uri("/user-notes/{id}", id).contentType(MediaType.APPLICATION_JSON).body(UserNoteRole.VIEWER).exchange()
+            .expectStatus().isNotFound();
+    }
+
+    @Test
+    void updateUserNoteRoleByIdWithUnknownRoleReturnsBadRequest() {
+        UUID id = UUID.randomUUID();
+
+        restTestClient.patch().uri("/user-notes/{id}", id).contentType(MediaType.APPLICATION_JSON).body(UnknownRole.UNKNOWN).exchange()
+            .expectStatus().isBadRequest();
+
+        verifyNoInteractions(userNoteService);
+    }
+
+    @Test
+    void updateUserNoteRoleByIdWithoutBodyReturnsBadRequest() {
+        UUID id = UUID.randomUUID();
+
+        restTestClient.patch().uri("/user-notes/{id}", id).contentType(MediaType.APPLICATION_JSON).exchange()
+            .expectStatus().isBadRequest();
+
+        verifyNoInteractions(userNoteService);
+    }
+
+    @Test
+    void deleteUserNoteByIdReturnsOk() {
         UUID id = UUID.randomUUID();
 
         UserNoteResponseBody responseBody = new UserNoteResponseBody(id, UUID.randomUUID(), UUID.randomUUID(), UserNoteRole.EDITOR);
         when(userNoteService.deleteUserNoteById(id)).thenReturn(responseBody);
 
-        mockMvc.perform(delete("/user-notes/{id}", id))
-            .andExpect(status().isOk())
-            .andExpect(content().json(objectMapper.writeValueAsString(responseBody)));
+        restTestClient.delete().uri("/user-notes/{id}", id).exchange()
+            .expectStatus().isOk()
+            .expectBody(UserNoteResponseBody.class).isEqualTo(responseBody);
+    }
+
+    @Test
+    void deleteUserNoteByIdReturnsNotFound() {
+        UUID id = UUID.randomUUID();
+
+        when(userNoteService.deleteUserNoteById(id)).thenThrow(new UserNoteNotFoundException(id));
+
+        restTestClient.delete().uri("/user-notes/{id}", id).exchange()
+            .expectStatus().isNotFound();
+    }
+
+    private enum UnknownRole {
+        UNKNOWN
     }
 }

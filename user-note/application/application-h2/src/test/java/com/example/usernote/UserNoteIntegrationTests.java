@@ -2,53 +2,45 @@ package com.example.usernote;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import tools.jackson.databind.ObjectMapper;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
+import java.util.Objects;
 import java.util.UUID;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureRestTestClient
 class UserNoteIntegrationTests {
 
     @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
+    private RestTestClient restTestClient;
 
     @Test
-    void createReadUpdateDeleteFlow() throws Exception {
+    void createReadUpdateDeleteFlow() {
         UserNoteRequestBody requestBody = new UserNoteRequestBody(UUID.randomUUID(), UUID.randomUUID(), UserNoteRole.EDITOR);
 
-        String createdJson = mockMvc.perform(post("/user-notes").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(requestBody)))
-            .andExpect(status().isOk())
-            .andReturn().getResponse().getContentAsString();
+        UserNoteResponseBody createResponse = restTestClient.post().uri("/user-notes").contentType(MediaType.APPLICATION_JSON).body(requestBody).exchange()
+            .expectStatus().isOk()
+            .expectBody(UserNoteResponseBody.class).returnResult().getResponseBody();
 
-        UserNoteResponseBody created = objectMapper.readValue(createdJson, UserNoteResponseBody.class);
+        UserNoteResponseBody created = Objects.requireNonNull(createResponse);
+        UserNoteResponseBody updated = new UserNoteResponseBody(created.id(), created.userId(), created.noteId(), UserNoteRole.VIEWER);
 
-        mockMvc.perform(get("/user-notes/{id}", created.id()))
-            .andExpect(status().isOk())
-            .andExpect(content().json(createdJson));
+        restTestClient.get().uri("/user-notes/{id}", created.id()).exchange()
+            .expectStatus().isOk()
+            .expectBody(UserNoteResponseBody.class).isEqualTo(created);
 
-        mockMvc.perform(patch("/user-notes/{id}", created.id()).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(UserNoteRole.VIEWER)))
-            .andExpect(status().isOk())
-            .andExpect(content().json(objectMapper.writeValueAsString(new UserNoteResponseBody(created.id(), created.userId(), created.noteId(), UserNoteRole.VIEWER))));
+        restTestClient.patch().uri("/user-notes/{id}", created.id()).contentType(MediaType.APPLICATION_JSON).body(UserNoteRole.VIEWER).exchange()
+            .expectStatus().isOk()
+            .expectBody(UserNoteResponseBody.class).isEqualTo(updated);
 
-        mockMvc.perform(delete("/user-notes/{id}", created.id()))
-            .andExpect(status().isOk());
+        restTestClient.delete().uri("/user-notes/{id}", created.id()).exchange()
+            .expectStatus().isOk()
+            .expectBody(UserNoteResponseBody.class).isEqualTo(updated);
 
-        mockMvc.perform(get("/user-notes/{id}", created.id()))
-            .andExpect(status().isNotFound());
+        restTestClient.get().uri("/user-notes/{id}", created.id()).exchange()
+            .expectStatus().isNotFound();
     }
 }

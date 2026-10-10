@@ -1,8 +1,8 @@
 package com.example.usernote;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -17,21 +17,14 @@ class UserNoteServiceImplTests {
     @Mock
     private UserNoteRepository userNoteRepository;
 
+    @InjectMocks
     private UserNoteServiceImpl userNoteService;
-
-    @BeforeEach
-    void setUp() {
-        userNoteService = new UserNoteServiceImpl(userNoteRepository);
-    }
 
     @Test
     void findUserNoteByIdReturnsRepositoryResponse() {
         UUID id = UUID.randomUUID();
-        UUID userId = UUID.randomUUID();
-        UUID noteId = UUID.randomUUID();
 
-        UserNoteResponseBody expected = new UserNoteResponseBody(id, userId, noteId, UserNoteRole.EDITOR);
-
+        UserNoteResponseBody expected = new UserNoteResponseBody(id, UUID.randomUUID(), UUID.randomUUID(), UserNoteRole.EDITOR);
         when(userNoteRepository.findUserNoteById(id)).thenReturn(expected);
 
         UserNoteResponseBody responseBody = userNoteService.findUserNoteById(id);
@@ -41,12 +34,8 @@ class UserNoteServiceImplTests {
 
     @Test
     void createUserNoteReturnsRepositoryResponse() {
-        UUID id = UUID.randomUUID();
-        UUID userId = UUID.randomUUID();
-        UUID noteId = UUID.randomUUID();
-
-        UserNoteRequestBody requestBody = new UserNoteRequestBody(userId, noteId, UserNoteRole.EDITOR);
-        UserNoteResponseBody expected = new UserNoteResponseBody(id, userId, noteId, UserNoteRole.EDITOR);
+        UserNoteRequestBody requestBody = new UserNoteRequestBody(UUID.randomUUID(), UUID.randomUUID(), UserNoteRole.EDITOR);
+        UserNoteResponseBody expected = new UserNoteResponseBody(UUID.randomUUID(), requestBody.userId(), requestBody.noteId(), UserNoteRole.EDITOR);
 
         when(userNoteRepository.createUserNote(requestBody)).thenReturn(expected);
 
@@ -58,11 +47,8 @@ class UserNoteServiceImplTests {
     @Test
     void updateUserNoteRoleByIdReturnsRepositoryResponse() {
         UUID id = UUID.randomUUID();
-        UUID userId = UUID.randomUUID();
-        UUID noteId = UUID.randomUUID();
 
-        UserNoteResponseBody expected = new UserNoteResponseBody(id, userId, noteId, UserNoteRole.EDITOR);
-
+        UserNoteResponseBody expected = new UserNoteResponseBody(id, UUID.randomUUID(), UUID.randomUUID(), UserNoteRole.EDITOR);
         when(userNoteRepository.updateUserNoteRoleById(id, UserNoteRole.EDITOR)).thenReturn(expected);
 
         UserNoteResponseBody responseBody = userNoteService.updateUserNoteRoleById(id, UserNoteRole.EDITOR);
@@ -73,11 +59,8 @@ class UserNoteServiceImplTests {
     @Test
     void deleteUserNoteByIdReturnsRepositoryResponse() {
         UUID id = UUID.randomUUID();
-        UUID userId = UUID.randomUUID();
-        UUID noteId = UUID.randomUUID();
 
-        UserNoteResponseBody expected = new UserNoteResponseBody(id, userId, noteId, UserNoteRole.EDITOR);
-
+        UserNoteResponseBody expected = new UserNoteResponseBody(id, UUID.randomUUID(), UUID.randomUUID(), UserNoteRole.EDITOR);
         when(userNoteRepository.deleteUserNoteById(id)).thenReturn(expected);
 
         UserNoteResponseBody responseBody = userNoteService.deleteUserNoteById(id);
