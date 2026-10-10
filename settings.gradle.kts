@@ -55,6 +55,8 @@ include(":user-note:contract:contract-reactive")
 include(":user-note:service:service-synchronous")
 include(":user-note:service:service-reactive")
 
+include(":user-note:data:data-jdbc")
+
 include(":user-note:controller:controller-webmvc")
 include(":user-note:controller:controller-webflux")
 

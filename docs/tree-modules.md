@@ -19,6 +19,8 @@ com.example.usernote
 ├── service-synchronous               — id("com.example.service-synchronous")
 ├── service-reactive                  — id("com.example.service-reactive")
 │
+├── data-jdbc                         — id("com.example.spring-boot-data-jdbc")  (2026-10-10, подключён только к application-h2)
+│
 ├── controller-webmvc                 — id("com.example.spring-boot-webmvc")
 ├── controller-webflux                — id("com.example.spring-boot-webflux")
 │
