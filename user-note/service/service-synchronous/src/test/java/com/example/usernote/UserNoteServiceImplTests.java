@@ -8,7 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,7 +36,7 @@ class UserNoteServiceImplTests {
 
         UserNoteResponseBody responseBody = userNoteService.findUserNoteById(id);
 
-        assertEquals(expected, responseBody);
+        assertThat(responseBody).isEqualTo(expected);
     }
 
     @Test
@@ -52,7 +52,7 @@ class UserNoteServiceImplTests {
 
         UserNoteResponseBody responseBody = userNoteService.createUserNote(requestBody);
 
-        assertEquals(expected, responseBody);
+        assertThat(responseBody).isEqualTo(expected);
     }
 
     @Test
@@ -67,7 +67,7 @@ class UserNoteServiceImplTests {
 
         UserNoteResponseBody responseBody = userNoteService.updateUserNoteRoleById(id, UserNoteRole.EDITOR);
 
-        assertEquals(expected, responseBody);
+        assertThat(responseBody).isEqualTo(expected);
     }
 
     @Test
@@ -82,6 +82,6 @@ class UserNoteServiceImplTests {
 
         UserNoteResponseBody responseBody = userNoteService.deleteUserNoteById(id);
 
-        assertEquals(expected, responseBody);
+        assertThat(responseBody).isEqualTo(expected);
     }
 }

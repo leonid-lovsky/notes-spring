@@ -10,15 +10,15 @@ import java.util.UUID;
 @Transactional
 public class JdbcUserNoteRepository implements UserNoteRepository {
 
-    private final JdbcAggregateOperations jdbcAggregateOperations;
+    private final JdbcAggregateOperations aggregateOperations;
 
-    public JdbcUserNoteRepository(JdbcAggregateOperations jdbcAggregateOperations) {
-        this.jdbcAggregateOperations = jdbcAggregateOperations;
+    public JdbcUserNoteRepository(JdbcAggregateOperations aggregateOperations) {
+        this.aggregateOperations = aggregateOperations;
     }
 
     @Override
     public UserNoteResponseBody findUserNoteById(UUID id) {
-        UserNote entity = jdbcAggregateOperations.findById(id, UserNote.class);
+        UserNote entity = aggregateOperations.findById(id, UserNote.class);
         if (entity == null) {
             throw new UserNoteNotFoundException(id);
         }
@@ -29,7 +29,7 @@ public class JdbcUserNoteRepository implements UserNoteRepository {
     public UserNoteResponseBody createUserNote(UserNoteRequestBody requestBody) {
         UUID id = UUID.randomUUID();
         UserNote entity = new UserNote(id, requestBody.userId(), requestBody.noteId(), requestBody.role());
-        UserNote inserted = jdbcAggregateOperations.insert(entity);
+        UserNote inserted = aggregateOperations.insert(entity);
         return inserted.responseBody();
     }
 
@@ -37,14 +37,14 @@ public class JdbcUserNoteRepository implements UserNoteRepository {
     public UserNoteResponseBody updateUserNoteRoleById(UUID id, UserNoteRole role) {
         UserNoteResponseBody found = findUserNoteById(id);
         UserNote entity = new UserNote(found.id(), found.userId(), found.noteId(), role);
-        UserNote updated = jdbcAggregateOperations.update(entity);
+        UserNote updated = aggregateOperations.update(entity);
         return updated.responseBody();
     }
 
     @Override
     public UserNoteResponseBody deleteUserNoteById(UUID id) {
         UserNoteResponseBody found = findUserNoteById(id);
-        jdbcAggregateOperations.deleteById(id, UserNote.class);
+        aggregateOperations.deleteById(id, UserNote.class);
         return found;
     }
 }

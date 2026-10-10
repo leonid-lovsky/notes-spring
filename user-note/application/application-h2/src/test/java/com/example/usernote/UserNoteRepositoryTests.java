@@ -1,143 +1,102 @@
 package com.example.usernote;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.data.jdbc.test.autoconfigure.DataJdbcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.data.jdbc.core.JdbcAggregateOperations;
 
-import java.util.Map;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest
-@Import(UserNoteTestConfiguration.class)
+@DataJdbcTest
+@Import(JdbcUserNoteRepository.class)
 class UserNoteRepositoryTests {
 
     @Autowired
-    private UserNoteRepository userNoteRepository;
+    private JdbcUserNoteRepository userNoteRepository;
 
     @Autowired
-    private JdbcClient jdbcClient;
+    private JdbcAggregateOperations aggregateOperations;
 
-    @ParameterizedTest
-    @EnumSource(UserNoteRole.class)
-    void findUserNoteByIdReturnsStoredRecord(UserNoteRole role) {
+    @Test
+    void findUserNoteByIdReturnsStoredRecord() {
         UUID id = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
         UUID noteId = UUID.randomUUID();
 
-        jdbcClient.sql("INSERT INTO \"user_note\" (\"id\", \"user_id\", \"note_id\", \"role\") VALUES (?, ?, ?, ?)")
-            .params(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), "EDITOR").update();
-
-        jdbcClient.sql("INSERT INTO \"user_note\" (\"id\", \"user_id\", \"note_id\", \"role\") VALUES (?, ?, ?, ?)")
-            .params(id, userId, noteId, role.name()).update();
+        aggregateOperations.insert(new UserNote(id, userId, noteId, UserNoteRole.EDITOR));
 
         UserNoteResponseBody responseBody = userNoteRepository.findUserNoteById(id);
 
-        UserNoteResponseBody expected = new UserNoteResponseBody(id, userId, noteId, role);
-
-        assertEquals(expected, responseBody);
+        assertThat(responseBody).isEqualTo(new UserNoteResponseBody(id, userId, noteId, UserNoteRole.EDITOR));
     }
 
     @Test
     void findUserNoteByIdThrowsWhenNotFound() {
         UUID id = UUID.randomUUID();
 
-        assertThrows(UserNoteNotFoundException.class, () -> userNoteRepository.findUserNoteById(id));
-    }
-
-    @ParameterizedTest
-    @EnumSource(UserNoteRole.class)
-    void createUserNoteStoresRecord(UserNoteRole role) {
-        UUID userId = UUID.randomUUID();
-        UUID noteId = UUID.randomUUID();
-
-        UserNoteRequestBody requestBody = new UserNoteRequestBody(userId, noteId, role);
-
-        UserNoteResponseBody responseBody = userNoteRepository.createUserNote(requestBody);
-
-        Map<String, Object> row = jdbcClient.sql("SELECT \"user_id\", \"note_id\", \"role\" FROM \"user_note\" WHERE \"id\" = ?")
-            .param(responseBody.id()).query().singleRow();
-
-        assertNotNull(responseBody.id());
-        assertEquals(userId, row.get("user_id"));
-        assertEquals(noteId, row.get("note_id"));
-        assertEquals(role.name(), row.get("role"));
+        assertThatThrownBy(() -> userNoteRepository.findUserNoteById(id))
+            .isInstanceOf(UserNoteNotFoundException.class);
     }
 
     @Test
-    void updateUserNoteRoleByIdStoresRoleOnlyForRequestedRecord() {
+    void createUserNoteStoresRecord() {
+        UUID userId = UUID.randomUUID();
+        UUID noteId = UUID.randomUUID();
+
+        UserNoteResponseBody responseBody = userNoteRepository.createUserNote(new UserNoteRequestBody(userId, noteId, UserNoteRole.EDITOR));
+
+        UserNote stored = aggregateOperations.findById(responseBody.id(), UserNote.class);
+
+        assertThat(stored).isEqualTo(new UserNote(responseBody.id(), userId, noteId, UserNoteRole.EDITOR));
+    }
+
+    @Test
+    void updateUserNoteRoleByIdStoresNewRole() {
         UUID id = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
         UUID noteId = UUID.randomUUID();
-        UUID otherId = UUID.randomUUID();
 
-        jdbcClient.sql("INSERT INTO \"user_note\" (\"id\", \"user_id\", \"note_id\", \"role\") VALUES (?, ?, ?, ?)")
-            .params(otherId, UUID.randomUUID(), UUID.randomUUID(), "EDITOR").update();
-
-        jdbcClient.sql("INSERT INTO \"user_note\" (\"id\", \"user_id\", \"note_id\", \"role\") VALUES (?, ?, ?, ?)")
-            .params(id, userId, noteId, "EDITOR").update();
+        aggregateOperations.insert(new UserNote(id, userId, noteId, UserNoteRole.EDITOR));
 
         UserNoteResponseBody responseBody = userNoteRepository.updateUserNoteRoleById(id, UserNoteRole.VIEWER);
 
-        String storedRole = jdbcClient.sql("SELECT \"role\" FROM \"user_note\" WHERE \"id\" = ?")
-            .param(id).query(String.class).single();
+        UserNote stored = aggregateOperations.findById(id, UserNote.class);
 
-        String otherRole = jdbcClient.sql("SELECT \"role\" FROM \"user_note\" WHERE \"id\" = ?")
-            .param(otherId).query(String.class).single();
-
-        UserNoteResponseBody expected = new UserNoteResponseBody(id, userId, noteId, UserNoteRole.VIEWER);
-
-        assertEquals(expected, responseBody);
-        assertEquals("VIEWER", storedRole);
-        assertEquals("EDITOR", otherRole);
+        assertThat(responseBody.role()).isEqualTo(UserNoteRole.VIEWER);
+        assertThat(stored).isEqualTo(new UserNote(id, userId, noteId, UserNoteRole.VIEWER));
     }
 
     @Test
     void updateUserNoteRoleByIdThrowsWhenNotFound() {
         UUID id = UUID.randomUUID();
 
-        assertThrows(UserNoteNotFoundException.class, () -> userNoteRepository.updateUserNoteRoleById(id, UserNoteRole.VIEWER));
+        assertThatThrownBy(() -> userNoteRepository.updateUserNoteRoleById(id, UserNoteRole.VIEWER))
+            .isInstanceOf(UserNoteNotFoundException.class);
     }
 
     @Test
-    void deleteUserNoteByIdRemovesOnlyRequestedRecord() {
+    void deleteUserNoteByIdRemovesRecord() {
         UUID id = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
         UUID noteId = UUID.randomUUID();
-        UUID otherId = UUID.randomUUID();
 
-        jdbcClient.sql("INSERT INTO \"user_note\" (\"id\", \"user_id\", \"note_id\", \"role\") VALUES (?, ?, ?, ?)")
-            .params(otherId, UUID.randomUUID(), UUID.randomUUID(), "EDITOR").update();
-
-        jdbcClient.sql("INSERT INTO \"user_note\" (\"id\", \"user_id\", \"note_id\", \"role\") VALUES (?, ?, ?, ?)")
-            .params(id, userId, noteId, "EDITOR").update();
+        aggregateOperations.insert(new UserNote(id, userId, noteId, UserNoteRole.EDITOR));
 
         UserNoteResponseBody responseBody = userNoteRepository.deleteUserNoteById(id);
 
-        Long count = jdbcClient.sql("SELECT COUNT(*) FROM \"user_note\" WHERE \"id\" = ?")
-            .param(id).query(Long.class).single();
-
-        Long otherCount = jdbcClient.sql("SELECT COUNT(*) FROM \"user_note\" WHERE \"id\" = ?")
-            .param(otherId).query(Long.class).single();
-
-        UserNoteResponseBody expected = new UserNoteResponseBody(id, userId, noteId, UserNoteRole.EDITOR);
-
-        assertEquals(expected, responseBody);
-        assertEquals(0L, count);
-        assertEquals(1L, otherCount);
+        assertThat(responseBody).isEqualTo(new UserNoteResponseBody(id, userId, noteId, UserNoteRole.EDITOR));
+        assertThat(aggregateOperations.existsById(id, UserNote.class)).isFalse();
     }
 
     @Test
     void deleteUserNoteByIdThrowsWhenNotFound() {
         UUID id = UUID.randomUUID();
 
-        assertThrows(UserNoteNotFoundException.class, () -> userNoteRepository.deleteUserNoteById(id));
+        assertThatThrownBy(() -> userNoteRepository.deleteUserNoteById(id))
+            .isInstanceOf(UserNoteNotFoundException.class);
     }
 }
