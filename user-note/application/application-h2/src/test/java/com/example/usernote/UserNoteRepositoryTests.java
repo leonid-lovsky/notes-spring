@@ -27,11 +27,13 @@ class UserNoteRepositoryTests {
         UUID userId = UUID.randomUUID();
         UUID noteId = UUID.randomUUID();
 
-        aggregateOperations.insert(new UserNote(id, userId, noteId, UserNoteRole.EDITOR));
+        UserNote userNote = new UserNote(id, userId, noteId, UserNoteRole.EDITOR);
+        aggregateOperations.insert(userNote);
 
-        UserNoteResponseBody responseBody = userNoteRepository.findUserNoteById(id);
+        UserNoteResponseBody actualResponseBody = userNoteRepository.findUserNoteById(id);
 
-        assertThat(responseBody).isEqualTo(new UserNoteResponseBody(id, userId, noteId, UserNoteRole.EDITOR));
+        UserNoteResponseBody expected = new UserNoteResponseBody(id, userId, noteId, UserNoteRole.EDITOR);
+        assertThat(actualResponseBody).isEqualTo(expected);
     }
 
     @Test
@@ -47,11 +49,30 @@ class UserNoteRepositoryTests {
         UUID userId = UUID.randomUUID();
         UUID noteId = UUID.randomUUID();
 
-        UserNoteResponseBody responseBody = userNoteRepository.createUserNote(new UserNoteRequestBody(userId, noteId, UserNoteRole.EDITOR));
+        UserNoteRequestBody requestBody = new UserNoteRequestBody(userId, noteId, UserNoteRole.EDITOR);
 
-        UserNote stored = aggregateOperations.findById(responseBody.id(), UserNote.class);
+        UserNoteResponseBody actualResponseBody = userNoteRepository.createUserNote(requestBody);
 
-        assertThat(stored).isEqualTo(new UserNote(responseBody.id(), userId, noteId, UserNoteRole.EDITOR));
+        UUID id = actualResponseBody.id();
+        UserNote actualUserNote = aggregateOperations.findById(id, UserNote.class);
+
+        UserNote expected = new UserNote(id, userId, noteId, UserNoteRole.EDITOR);
+        assertThat(actualUserNote).isEqualTo(expected);
+    }
+
+    @Test
+    void updateUserNoteRoleByIdReturnsUpdatedRecord() {
+        UUID id = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+        UUID noteId = UUID.randomUUID();
+
+        UserNote userNote = new UserNote(id, userId, noteId, UserNoteRole.EDITOR);
+        aggregateOperations.insert(userNote);
+
+        UserNoteResponseBody actualResponseBody = userNoteRepository.updateUserNoteRoleById(id, UserNoteRole.VIEWER);
+
+        UserNoteResponseBody expected = new UserNoteResponseBody(id, userId, noteId, UserNoteRole.VIEWER);
+        assertThat(actualResponseBody).isEqualTo(expected);
     }
 
     @Test
@@ -60,14 +81,15 @@ class UserNoteRepositoryTests {
         UUID userId = UUID.randomUUID();
         UUID noteId = UUID.randomUUID();
 
-        aggregateOperations.insert(new UserNote(id, userId, noteId, UserNoteRole.EDITOR));
+        UserNote userNote = new UserNote(id, userId, noteId, UserNoteRole.EDITOR);
+        aggregateOperations.insert(userNote);
 
-        UserNoteResponseBody responseBody = userNoteRepository.updateUserNoteRoleById(id, UserNoteRole.VIEWER);
+        userNoteRepository.updateUserNoteRoleById(id, UserNoteRole.VIEWER);
 
-        UserNote stored = aggregateOperations.findById(id, UserNote.class);
+        UserNote actualUserNote = aggregateOperations.findById(id, UserNote.class);
 
-        assertThat(responseBody.role()).isEqualTo(UserNoteRole.VIEWER);
-        assertThat(stored).isEqualTo(new UserNote(id, userId, noteId, UserNoteRole.VIEWER));
+        UserNote expected = new UserNote(id, userId, noteId, UserNoteRole.VIEWER);
+        assertThat(actualUserNote).isEqualTo(expected);
     }
 
     @Test
@@ -84,12 +106,16 @@ class UserNoteRepositoryTests {
         UUID userId = UUID.randomUUID();
         UUID noteId = UUID.randomUUID();
 
-        aggregateOperations.insert(new UserNote(id, userId, noteId, UserNoteRole.EDITOR));
+        UserNote userNote = new UserNote(id, userId, noteId, UserNoteRole.EDITOR);
+        aggregateOperations.insert(userNote);
 
-        UserNoteResponseBody responseBody = userNoteRepository.deleteUserNoteById(id);
+        UserNoteResponseBody actualResponseBody = userNoteRepository.deleteUserNoteById(id);
 
-        assertThat(responseBody).isEqualTo(new UserNoteResponseBody(id, userId, noteId, UserNoteRole.EDITOR));
-        assertThat(aggregateOperations.existsById(id, UserNote.class)).isFalse();
+        boolean exists = aggregateOperations.existsById(id, UserNote.class);
+
+        UserNoteResponseBody expected = new UserNoteResponseBody(id, userId, noteId, UserNoteRole.EDITOR);
+        assertThat(actualResponseBody).isEqualTo(expected);
+        assertThat(exists).isFalse();
     }
 
     @Test

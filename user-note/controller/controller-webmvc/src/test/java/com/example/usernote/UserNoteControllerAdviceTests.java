@@ -13,7 +13,9 @@ class UserNoteControllerAdviceTests {
 
     @Test
     void handleUserNoteNotFoundExceptionReturnsNotFoundProblemDetail() {
-        UserNoteNotFoundException exception = new UserNoteNotFoundException(UUID.randomUUID());
+        UUID id = UUID.randomUUID();
+
+        UserNoteNotFoundException exception = new UserNoteNotFoundException(id);
 
         ProblemDetail problemDetail = userNoteControllerAdvice.handleUserNoteNotFoundException(exception);
 

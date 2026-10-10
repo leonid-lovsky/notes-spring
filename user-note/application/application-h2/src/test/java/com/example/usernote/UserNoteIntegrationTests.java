@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.client.RestTestClient;
 
 import java.util.Objects;
@@ -19,28 +18,33 @@ class UserNoteIntegrationTests {
 
     @Test
     void createReadUpdateDeleteFlow() {
-        UserNoteRequestBody requestBody = new UserNoteRequestBody(UUID.randomUUID(), UUID.randomUUID(), UserNoteRole.EDITOR);
+        UUID userId = UUID.randomUUID();
+        UUID noteId = UUID.randomUUID();
 
-        UserNoteResponseBody createResponse = restTestClient.post().uri("/user-notes").contentType(MediaType.APPLICATION_JSON).body(requestBody).exchange()
+        UserNoteRequestBody requestBody = new UserNoteRequestBody(userId, noteId, UserNoteRole.EDITOR);
+
+        UserNoteResponseBody actualResponseBody = restTestClient.post().uri("/user-notes").body(requestBody).exchange()
             .expectStatus().isOk()
             .expectBody(UserNoteResponseBody.class).returnResult().getResponseBody();
 
-        UserNoteResponseBody created = Objects.requireNonNull(createResponse);
-        UserNoteResponseBody updated = new UserNoteResponseBody(created.id(), created.userId(), created.noteId(), UserNoteRole.VIEWER);
+        UserNoteResponseBody createdResponseBody = Objects.requireNonNull(actualResponseBody);
+        UUID id = createdResponseBody.id();
 
-        restTestClient.get().uri("/user-notes/{id}", created.id()).exchange()
+        restTestClient.get().uri("/user-notes/{id}", id).exchange()
             .expectStatus().isOk()
-            .expectBody(UserNoteResponseBody.class).isEqualTo(created);
+            .expectBody(UserNoteResponseBody.class).isEqualTo(createdResponseBody);
 
-        restTestClient.patch().uri("/user-notes/{id}", created.id()).contentType(MediaType.APPLICATION_JSON).body(UserNoteRole.VIEWER).exchange()
+        UserNoteResponseBody expected = new UserNoteResponseBody(id, userId, noteId, UserNoteRole.VIEWER);
+
+        restTestClient.patch().uri("/user-notes/{id}", id).body(UserNoteRole.VIEWER).exchange()
             .expectStatus().isOk()
-            .expectBody(UserNoteResponseBody.class).isEqualTo(updated);
+            .expectBody(UserNoteResponseBody.class).isEqualTo(expected);
 
-        restTestClient.delete().uri("/user-notes/{id}", created.id()).exchange()
+        restTestClient.delete().uri("/user-notes/{id}", id).exchange()
             .expectStatus().isOk()
-            .expectBody(UserNoteResponseBody.class).isEqualTo(updated);
+            .expectBody(UserNoteResponseBody.class).isEqualTo(expected);
 
-        restTestClient.get().uri("/user-notes/{id}", created.id()).exchange()
+        restTestClient.get().uri("/user-notes/{id}", id).exchange()
             .expectStatus().isNotFound();
     }
 }
