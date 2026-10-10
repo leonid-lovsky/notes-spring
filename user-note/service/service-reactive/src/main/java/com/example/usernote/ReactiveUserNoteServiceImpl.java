@@ -1,9 +1,11 @@
 package com.example.usernote;
 
+import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
+@Service
 public class ReactiveUserNoteServiceImpl implements ReactiveUserNoteService {
 
     private final ReactiveUserNoteRepository userNoteRepository;

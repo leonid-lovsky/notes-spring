@@ -1,7 +1,10 @@
 package com.example.usernote;
 
+import org.springframework.stereotype.Service;
+
 import java.util.UUID;
 
+@Service
 public class UserNoteServiceImpl implements UserNoteService {
 
     private final UserNoteRepository userNoteRepository;
