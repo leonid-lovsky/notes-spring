@@ -23,11 +23,12 @@ class UserNoteIntegrationTests {
 
         UserNoteRequestBody requestBody = new UserNoteRequestBody(userId, noteId, UserNoteRole.EDITOR);
 
-        UserNoteResponseBody actualResponseBody = restTestClient.post().uri("/user-notes").body(requestBody).exchange()
+        UserNoteResponseBody responseBody = restTestClient.post().uri("/user-notes").body(requestBody).exchange()
             .expectStatus().isOk()
             .expectBody(UserNoteResponseBody.class).returnResult().getResponseBody();
 
-        UserNoteResponseBody createdResponseBody = Objects.requireNonNull(actualResponseBody);
+        UserNoteResponseBody createdResponseBody = Objects.requireNonNull(responseBody);
+
         UUID id = createdResponseBody.id();
 
         restTestClient.get().uri("/user-notes/{id}", id).exchange()
