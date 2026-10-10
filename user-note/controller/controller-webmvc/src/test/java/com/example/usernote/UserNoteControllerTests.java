@@ -31,6 +31,7 @@ class UserNoteControllerTests {
         UUID noteId = UUID.randomUUID();
 
         UserNoteResponseBody responseBody = new UserNoteResponseBody(id, userId, noteId, UserNoteRole.EDITOR);
+
         when(userNoteService.findUserNoteById(id)).thenReturn(responseBody);
 
         restTestClient.get().uri("/user-notes/{id}", id).exchange()
@@ -56,6 +57,7 @@ class UserNoteControllerTests {
 
         UserNoteRequestBody requestBody = new UserNoteRequestBody(userId, noteId, UserNoteRole.EDITOR);
         UserNoteResponseBody responseBody = new UserNoteResponseBody(id, userId, noteId, UserNoteRole.EDITOR);
+
         when(userNoteService.createUserNote(requestBody)).thenReturn(responseBody);
 
         restTestClient.post().uri("/user-notes").contentType(MediaType.APPLICATION_JSON).body(requestBody).exchange()
@@ -82,6 +84,7 @@ class UserNoteControllerTests {
         UUID noteId = UUID.randomUUID();
 
         UserNoteResponseBody responseBody = new UserNoteResponseBody(id, userId, noteId, UserNoteRole.EDITOR);
+
         when(userNoteService.updateUserNoteRoleById(id, UserNoteRole.EDITOR)).thenReturn(responseBody);
 
         restTestClient.patch().uri("/user-notes/{id}", id).contentType(MediaType.APPLICATION_JSON).body(UserNoteRole.EDITOR).exchange()
@@ -106,6 +109,7 @@ class UserNoteControllerTests {
         UUID noteId = UUID.randomUUID();
 
         UserNoteResponseBody responseBody = new UserNoteResponseBody(id, userId, noteId, UserNoteRole.EDITOR);
+
         when(userNoteService.deleteUserNoteById(id)).thenReturn(responseBody);
 
         restTestClient.delete().uri("/user-notes/{id}", id).exchange()

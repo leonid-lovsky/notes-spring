@@ -32,6 +32,7 @@ class ReactiveUserNoteControllerTests {
         UUID noteId = UUID.randomUUID();
 
         UserNoteResponseBody responseBody = new UserNoteResponseBody(id, userId, noteId, UserNoteRole.EDITOR);
+
         when(userNoteService.findUserNoteById(id)).thenReturn(Mono.just(responseBody));
 
         webTestClient.get().uri("/user-notes/{id}", id).exchange()
@@ -47,6 +48,7 @@ class ReactiveUserNoteControllerTests {
 
         UserNoteRequestBody requestBody = new UserNoteRequestBody(userId, noteId, UserNoteRole.EDITOR);
         UserNoteResponseBody responseBody = new UserNoteResponseBody(id, userId, noteId, UserNoteRole.EDITOR);
+
         when(userNoteService.createUserNote(requestBody)).thenReturn(Mono.just(responseBody));
 
         webTestClient.post().uri("/user-notes").contentType(MediaType.APPLICATION_JSON).bodyValue(requestBody).exchange()
@@ -73,6 +75,7 @@ class ReactiveUserNoteControllerTests {
         UUID noteId = UUID.randomUUID();
 
         UserNoteResponseBody responseBody = new UserNoteResponseBody(id, userId, noteId, UserNoteRole.EDITOR);
+
         when(userNoteService.updateUserNoteRoleById(id, UserNoteRole.EDITOR)).thenReturn(Mono.just(responseBody));
 
         webTestClient.patch().uri("/user-notes/{id}", id).contentType(MediaType.APPLICATION_JSON).bodyValue(UserNoteRole.EDITOR).exchange()
@@ -87,6 +90,7 @@ class ReactiveUserNoteControllerTests {
         UUID noteId = UUID.randomUUID();
 
         UserNoteResponseBody responseBody = new UserNoteResponseBody(id, userId, noteId, UserNoteRole.EDITOR);
+
         when(userNoteService.deleteUserNoteById(id)).thenReturn(Mono.just(responseBody));
 
         webTestClient.delete().uri("/user-notes/{id}", id).exchange()

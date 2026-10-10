@@ -37,10 +37,13 @@ class JdbcUserNoteRepositoryTests {
         UUID noteId = UUID.randomUUID();
 
         UserNote entity = new UserNote(id, userId, noteId, UserNoteRole.EDITOR);
+
         when(jdbcAggregateOperations.findById(id, UserNote.class)).thenReturn(entity);
+
         UserNoteResponseBody responseBody = userNoteRepository.findUserNoteById(id);
 
         UserNoteResponseBody expected = new UserNoteResponseBody(id, userId, noteId, UserNoteRole.EDITOR);
+
         assertEquals(expected, responseBody);
     }
 
@@ -59,7 +62,9 @@ class JdbcUserNoteRepositoryTests {
         UUID noteId = UUID.randomUUID();
 
         UserNoteRequestBody requestBody = new UserNoteRequestBody(userId, noteId, UserNoteRole.EDITOR);
+
         when(jdbcAggregateOperations.insert(any(UserNote.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
         UserNoteResponseBody responseBody = userNoteRepository.createUserNote(requestBody);
 
         assertNotNull(responseBody.id());
@@ -76,11 +81,14 @@ class JdbcUserNoteRepositoryTests {
 
         UserNote existing = new UserNote(id, userId, noteId, UserNoteRole.EDITOR);
         UserNote updated = new UserNote(id, userId, noteId, UserNoteRole.VIEWER);
+
         when(jdbcAggregateOperations.findById(id, UserNote.class)).thenReturn(existing);
         when(jdbcAggregateOperations.update(updated)).thenReturn(updated);
+
         UserNoteResponseBody responseBody = userNoteRepository.updateUserNoteRoleById(id, UserNoteRole.VIEWER);
 
         UserNoteResponseBody expected = new UserNoteResponseBody(id, userId, noteId, UserNoteRole.VIEWER);
+
         assertEquals(expected, responseBody);
     }
 
@@ -91,6 +99,7 @@ class JdbcUserNoteRepositoryTests {
         when(jdbcAggregateOperations.findById(id, UserNote.class)).thenReturn(null);
 
         assertThrows(UserNoteNotFoundException.class, () -> userNoteRepository.updateUserNoteRoleById(id, UserNoteRole.VIEWER));
+
         verify(jdbcAggregateOperations, never()).update(any(UserNote.class));
     }
 
@@ -101,11 +110,15 @@ class JdbcUserNoteRepositoryTests {
         UUID noteId = UUID.randomUUID();
 
         UserNote entity = new UserNote(id, userId, noteId, UserNoteRole.EDITOR);
+
         when(jdbcAggregateOperations.findById(id, UserNote.class)).thenReturn(entity);
+
         UserNoteResponseBody responseBody = userNoteRepository.deleteUserNoteById(id);
 
         UserNoteResponseBody expected = new UserNoteResponseBody(id, userId, noteId, UserNoteRole.EDITOR);
+
         assertEquals(expected, responseBody);
+
         verify(jdbcAggregateOperations).deleteById(id, UserNote.class);
     }
 
@@ -116,6 +129,7 @@ class JdbcUserNoteRepositoryTests {
         when(jdbcAggregateOperations.findById(id, UserNote.class)).thenReturn(null);
 
         assertThrows(UserNoteNotFoundException.class, () -> userNoteRepository.deleteUserNoteById(id));
+
         verify(jdbcAggregateOperations, never()).deleteById(id, UserNote.class);
     }
 }

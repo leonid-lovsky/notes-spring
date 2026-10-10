@@ -32,7 +32,9 @@ class ReactiveUserNoteServiceImplTests {
         UUID noteId = UUID.randomUUID();
 
         UserNoteResponseBody expected = new UserNoteResponseBody(id, userId, noteId, UserNoteRole.EDITOR);
+
         when(userNoteRepository.findUserNoteById(id)).thenReturn(Mono.just(expected));
+
         UserNoteResponseBody responseBody = userNoteService.findUserNoteById(id).block();
 
         assertEquals(expected, responseBody);
@@ -46,7 +48,9 @@ class ReactiveUserNoteServiceImplTests {
 
         UserNoteRequestBody requestBody = new UserNoteRequestBody(userId, noteId, UserNoteRole.EDITOR);
         UserNoteResponseBody expected = new UserNoteResponseBody(id, userId, noteId, UserNoteRole.EDITOR);
+
         when(userNoteRepository.createUserNote(requestBody)).thenReturn(Mono.just(expected));
+
         UserNoteResponseBody responseBody = userNoteService.createUserNote(requestBody).block();
 
         assertEquals(expected, responseBody);
@@ -59,7 +63,9 @@ class ReactiveUserNoteServiceImplTests {
         UUID noteId = UUID.randomUUID();
 
         UserNoteResponseBody expected = new UserNoteResponseBody(id, userId, noteId, UserNoteRole.EDITOR);
+
         when(userNoteRepository.updateUserNoteRoleById(id, UserNoteRole.EDITOR)).thenReturn(Mono.just(expected));
+
         UserNoteResponseBody responseBody = userNoteService.updateUserNoteRoleById(id, UserNoteRole.EDITOR).block();
 
         assertEquals(expected, responseBody);
@@ -72,7 +78,9 @@ class ReactiveUserNoteServiceImplTests {
         UUID noteId = UUID.randomUUID();
 
         UserNoteResponseBody expected = new UserNoteResponseBody(id, userId, noteId, UserNoteRole.EDITOR);
+
         when(userNoteRepository.deleteUserNoteById(id)).thenReturn(Mono.just(expected));
+
         UserNoteResponseBody responseBody = userNoteService.deleteUserNoteById(id).block();
 
         assertEquals(expected, responseBody);
