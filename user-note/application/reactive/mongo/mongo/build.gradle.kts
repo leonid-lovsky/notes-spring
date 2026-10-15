@@ -12,5 +12,8 @@ plugins {
 
 dependencies {
     implementation(project(":user-note:service:reactive"))
+    implementation(project(":user-note:data:reactive:mongo"))
     implementation(project(":user-note:controller:reactive"))
+
+    testImplementation(project(":user-note:contract:reactive"))
 }

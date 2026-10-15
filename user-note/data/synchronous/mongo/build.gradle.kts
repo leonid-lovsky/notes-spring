@@ -1,0 +1,7 @@
+plugins {
+    id("com.example.spring-boot-data-mongodb")
+}
+
+dependencies {
+    implementation(project(":user-note:contract:synchronous"))
+}

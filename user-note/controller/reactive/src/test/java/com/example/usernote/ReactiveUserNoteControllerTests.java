@@ -41,6 +41,18 @@ class ReactiveUserNoteControllerTests {
     }
 
     @Test
+    void findUserNoteByIdReturnsNotFound() {
+        UUID id = UUID.randomUUID();
+
+        UserNoteNotFoundException exception = new UserNoteNotFoundException(id);
+
+        when(userNoteService.findUserNoteById(id)).thenReturn(Mono.error(exception));
+
+        webTestClient.get().uri("/user-notes/{id}", id).exchange()
+            .expectStatus().isNotFound();
+    }
+
+    @Test
     void createUserNoteReturnsOk() {
         UUID id = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
@@ -84,6 +96,18 @@ class ReactiveUserNoteControllerTests {
     }
 
     @Test
+    void updateUserNoteRoleByIdReturnsNotFound() {
+        UUID id = UUID.randomUUID();
+
+        UserNoteNotFoundException exception = new UserNoteNotFoundException(id);
+
+        when(userNoteService.updateUserNoteRoleById(id, UserNoteRole.EDITOR)).thenReturn(Mono.error(exception));
+
+        webTestClient.patch().uri("/user-notes/{id}", id).contentType(MediaType.APPLICATION_JSON).bodyValue(UserNoteRole.EDITOR).exchange()
+            .expectStatus().isNotFound();
+    }
+
+    @Test
     void deleteUserNoteByIdReturnsOk() {
         UUID id = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
@@ -96,5 +120,17 @@ class ReactiveUserNoteControllerTests {
         webTestClient.delete().uri("/user-notes/{id}", id).exchange()
             .expectStatus().isOk()
             .expectBody(UserNoteResponseBody.class).isEqualTo(responseBody);
+    }
+
+    @Test
+    void deleteUserNoteByIdReturnsNotFound() {
+        UUID id = UUID.randomUUID();
+
+        UserNoteNotFoundException exception = new UserNoteNotFoundException(id);
+
+        when(userNoteService.deleteUserNoteById(id)).thenReturn(Mono.error(exception));
+
+        webTestClient.delete().uri("/user-notes/{id}", id).exchange()
+            .expectStatus().isNotFound();
     }
 }

@@ -12,5 +12,8 @@ plugins {
 
 dependencies {
     implementation(project(":user-note:service:synchronous"))
+    implementation(project(":user-note:data:synchronous:mongo"))
     implementation(project(":user-note:controller:synchronous"))
+
+    testImplementation(project(":user-note:contract:synchronous"))
 }
