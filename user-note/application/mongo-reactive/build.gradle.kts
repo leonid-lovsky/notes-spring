@@ -14,6 +14,4 @@ dependencies {
     implementation(project(":user-note:service:reactive"))
     implementation(project(":user-note:data:mongo-reactive"))
     implementation(project(":user-note:controller:webflux"))
-
-    testImplementation(project(":user-note:contract:reactive"))
 }

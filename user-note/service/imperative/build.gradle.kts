@@ -4,5 +4,5 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":user-note:contract:sync"))
+    api(project(":user-note:contract:imperative"))
 }
