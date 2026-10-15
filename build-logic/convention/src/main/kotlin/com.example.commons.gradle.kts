@@ -26,3 +26,7 @@ dependencies {
 tasks.named<Test>("test") {
     useJUnitPlatform()
 }
+
+tasks.withType<Jar>().configureEach {
+    archiveBaseName = project.path.removePrefix(":").replace(':', '-')
+}

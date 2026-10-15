@@ -1,0 +1,19 @@
+plugins {
+    id("com.example.application-jdbc")
+
+    id("com.example.spring-boot-database-h2")
+    id("com.example.spring-boot-database-mysql")
+    id("com.example.spring-boot-database-postgresql")
+
+    id("com.example.spring-boot-testcontainers")
+    id("com.example.spring-boot-testcontainers-mysql")
+    id("com.example.spring-boot-testcontainers-postgresql")
+}
+
+dependencies {
+    implementation(project(":user-note:service:sync"))
+    implementation(project(":user-note:data:jdbc"))
+    implementation(project(":user-note:controller:webmvc"))
+
+    testImplementation(project(":user-note:contract:sync"))
+}

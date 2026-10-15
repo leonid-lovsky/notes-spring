@@ -84,6 +84,12 @@
 - `com.example.spring-boot-webmvc` — `spring-boot` — + `spring-boot-starter-webmvc`(+test) + `spring-boot-starter-validation`(+test) — 5 применений (`controller-webmvc` + листья `application-{h2,mysql,postgresql,mongodb}`)
 - `com.example.spring-cloud` — `spring-boot` — + Spring Cloud BOM (`spring-cloud-dependencies`) — 0 применений (родитель 9 плагинов уровня 3; `gateway`/`config`/`registry` — единственные потребители — удалены из репозитория 2026-08-14)
 
+## Алиасы листьев `application-*` (2026-10-15, по запросу пользователя «листья — минимум кода»)
+
+- `com.example.application-jdbc` — применяет `spring-boot`, `spring-boot-bootable`, `spring-boot-actuator`, `spring-boot-webmvc`, `spring-boot-data-jdbc`; зависимостей не добавляет; 3 применения (`user-note/application/synchronous/jdbc/{h2,mysql,postgres}`); вендорные плагины лист применяет сам
+- `com.example.application-r2dbc` — то же с `spring-boot-webflux` и `spring-boot-data-r2dbc`; 3 применения (`user-note/application/reactive/r2dbc/*`)
+- вид 1 (диамант внутри плагина): алиасы применяют 5 плагинов с общим предком `spring-boot` — осознанно, по смягчению 2026-10-03; правила «атомарность» не нарушают (каждый компонент остаётся атомарным, алиас — композиция)
+
 ## Уровень 3 — родитель `spring-cloud` (9 плагинов, 0 применений — все потребители удалены 2026-08-14)
 
 - `com.example.spring-cloud-circuit-breaker` — `spring-cloud` — + `spring-cloud-starter-circuitbreaker-reactor-resilience4j` — 0
