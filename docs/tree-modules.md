@@ -8,6 +8,8 @@
 
 > «Дерево модулей» — снимок всех Gradle-модулей `user-note/` (с 2026-09-29 `note/` и `user/` устроены так же — модули в подкаталогах `contract/`/`service/`/`controller/`/`application/`, путь проекта `:{service}:{group}:{module}`) с их пакетом и полным списком напрямую применённых convention-плагинов, в порядке `id(...)` из `build.gradle.kts`. Корень дерева — не каталог, а пакет: `com.example.usernote` одинаков во всех 17 модулях (проверено по `package-info.java`, см. `CLAUDE.md` → «Открытые решения»/обсуждение плоской структуры `user-note`) — различие между модулями живёт на границе Gradle-модуля/jar, не на границе Java-пакета. Присылать этот блок дословно по запросу «дерево модулей», без переформатирования. Источник истины при расхождении — сами `build.gradle.kts`; сверка: `for f in user-note/*/build.gradle.kts; do echo "$(dirname "$f" | xargs basename):"; grep -oP 'id\("com\.example\.[^"]+"\)' "$f"; done`.
 
+> **Каталоги и пути проектов с 2026-10-15 короткие** (`CLAUDE.md` → «Раскладка каталогов и пути проектов»): ниже имена модулей прежние — `contract-commons` = `contract/commons`, `controller-webmvc` = `controller/synchronous`, `application-h2` = `application/synchronous/jdbc/h2`, `application-h2-reactive` = `application/reactive/r2dbc/h2`, `application-mongodb` = `application/synchronous/mongo/mongo`, `data-jdbc` = `data/synchronous/jdbc`; `data/reactive/r2dbc` в снимок не внесён.
+
 ```
 com.example.usernote
 │
