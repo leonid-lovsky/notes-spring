@@ -22,10 +22,6 @@ dependencies {
 
 val testSourceSet = the<SourceSetContainer>()["test"]
 
-tasks.named<Test>("test") {
-    systemProperty("spring.profiles.active", "h2")
-}
-
 val vendorTests = listOf("mysql", "postgresql").map { vendor ->
     tasks.register<Test>("test${vendor.replaceFirstChar(Char::uppercase)}") {
         group = "verification"
