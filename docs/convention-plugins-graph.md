@@ -47,11 +47,10 @@
 
 ## Уровень 2 — родитель `spring-boot` (технологические плагины, каждый = 1 Spring Boot стартер/концерн; `spring-boot-application`/`spring-cloud-application` удалены 2026-09-04/06 — bootable-ось несёт отдельный атомарный `spring-boot-bootable`, композиция на листе)
 
-- `com.example.spring-boot-actuator` — `spring-boot` — + `spring-boot-starter-actuator`(+test) — 8 применений (все 8 листьев `application-*`)
 - `com.example.spring-boot-batch` — `spring-boot` — + `spring-boot-starter-batch`(+test) — 0 применений (ОТЛОЖЕНО)
 - `com.example.spring-boot-batch-data-mongodb` — `spring-boot` — + `spring-boot-starter-batch-data-mongodb`(+test) — 0 применений (ОТЛОЖЕНО)
 - `com.example.spring-boot-batch-jdbc` — `spring-boot` — + `spring-boot-starter-batch-jdbc`(+test) — 0 применений (ОТЛОЖЕНО)
-- `com.example.spring-boot-bootable` — `spring-boot` + `id("org.springframework.boot")` (bootable-ось, единственная причина второго id — typed-аксессор `bootJar`/`developmentOnly`) — читает `mainClass` из `user-note/.main-class` — 8 применений (все 8 листьев). Имя — не заимствовано у Spring Boot (официальный термин — «executable jar/archive», не «bootable», проверено `docs.spring.io/spring-boot/gradle-plugin/packaging.html` 2026-09-24) — одно из 5 исключений из правила именования, см. `CLAUDE.md` → «Правила»
+- `com.example.spring-boot-bootable` — `spring-boot` + `id("org.springframework.boot")` + стартер actuator(+test) с 2026-10-15 (плагин `spring-boot-actuator` удалён) (bootable-ось, единственная причина второго id — typed-аксессор `bootJar`/`developmentOnly`) — читает `mainClass` из `user-note/.main-class` — 8 применений (все 8 листьев). Имя — не заимствовано у Spring Boot (официальный термин — «executable jar/archive», не «bootable», проверено `docs.spring.io/spring-boot/gradle-plugin/packaging.html` 2026-09-24) — одно из 5 исключений из правила именования, см. `CLAUDE.md` → «Правила»
 - `com.example.spring-boot-client-restclient` — `spring-boot` — + `spring-boot-starter-restclient`(+test) — 0 применений (ОТЛОЖЕНО)
 - `com.example.spring-boot-client-webclient` — `spring-boot` — + `spring-boot-starter-webclient`(+test) — 0 применений (ОТЛОЖЕНО)
 - `com.example.spring-boot-data-elasticsearch` — `spring-boot` — + `spring-boot-starter-data-elasticsearch`(+test) — 0 применений (ОТЛОЖЕНО)
@@ -86,8 +85,6 @@
 
 ## Алиасы листьев `application-*` (2026-10-15, по запросу пользователя «листья — минимум кода»)
 
-- `com.example.application-jdbc` — применяет `spring-boot`, `spring-boot-bootable`, `spring-boot-actuator`, `spring-boot-webmvc`, `spring-boot-data-jdbc`; зависимостей не добавляет; 3 применения (`user-note/application/synchronous/jdbc/{h2,mysql,postgres}`); вендорные плагины лист применяет сам
-- `com.example.application-r2dbc` — то же с `spring-boot-webflux` и `spring-boot-data-r2dbc`; 3 применения (`user-note/application/reactive/r2dbc/*`)
 - вид 1 (диамант внутри плагина): алиасы применяют 5 плагинов с общим предком `spring-boot` — осознанно, по смягчению 2026-10-03; правила «атомарность» не нарушают (каждый компонент остаётся атомарным, алиас — композиция)
 
 ## Уровень 3 — родитель `spring-cloud` (9 плагинов, 0 применений — все потребители удалены 2026-08-14)
