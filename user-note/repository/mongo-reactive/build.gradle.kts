@@ -1,7 +1,12 @@
 plugins {
+    id("com.example.service-reactive")
+
     id("com.example.spring-boot-data-mongodb-reactive")
+
+    id("com.example.spring-boot-testcontainers")
+    id("com.example.spring-boot-testcontainers-mongodb")
 }
 
 dependencies {
-    implementation(project(":user-note:contract:reactive"))
+    api(project(":user-note:contract:reactive"))
 }

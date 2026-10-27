@@ -10,7 +10,6 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":user-note:service:imperative"))
     implementation(project(":user-note:repository:mongo"))
     implementation(project(":user-note:controller:webmvc"))
 }

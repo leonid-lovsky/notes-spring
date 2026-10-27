@@ -1,7 +1,12 @@
 plugins {
+    id("com.example.service-synchronous")
+
     id("com.example.spring-boot-data-mongodb")
+
+    id("com.example.spring-boot-testcontainers")
+    id("com.example.spring-boot-testcontainers-mongodb")
 }
 
 dependencies {
-    implementation(project(":user-note:contract:imperative"))
+    api(project(":user-note:contract:imperative"))
 }

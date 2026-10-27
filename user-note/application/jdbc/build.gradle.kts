@@ -14,7 +14,6 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":user-note:service:imperative"))
     implementation(project(":user-note:repository:jdbc"))
     implementation(project(":user-note:controller:webmvc"))
 }

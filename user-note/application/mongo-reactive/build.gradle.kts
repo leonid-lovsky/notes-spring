@@ -10,7 +10,6 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":user-note:service:reactive"))
     implementation(project(":user-note:repository:mongo-reactive"))
     implementation(project(":user-note:controller:webflux"))
 }
