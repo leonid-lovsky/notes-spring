@@ -58,29 +58,29 @@
 - `user-note/presentation/{webmvc,webflux}/**` — [REMOVED] — driving-адаптеры (контроллеры, exception handler, порт-интерфейсы)
 - `user-note/application/**` — [REMOVED] — старые composition-root модули (11 вложенных `application-{vendor}-{tech}/` + `application-mongodb[-reactive]/`)
 
-#### user-note/contract/common/ (4 файла) — новый 2026-09-29, модели запроса и ответа, общие для `contract-synchronous` и `contract-reactive`, по образцу `note`/`user`, `id("com.example.commons")`
-- `user-note/contract/common/build.gradle.kts` — [REVIEW] — новый 2026-09-29
-- `user-note/contract/common/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-09-29, `@NullMarked`
-- `user-note/contract/common/src/main/java/com/example/usernote/UserNoteRequest.java` — [REMOVED] — новый 2026-09-29, модель запроса `(userId, noteId)`; удалён 2026-10-09
-- `user-note/contract/common/src/main/java/com/example/usernote/UserNoteResponse.java` — [REMOVED] — новый 2026-09-29, модель ответа `(id, userId, noteId)`; удалён 2026-10-09
+#### user-note/contract-common/ (4 файла) — новый 2026-09-29, модели запроса и ответа, общие для `contract-synchronous` и `contract-reactive`, по образцу `note`/`user`, `id("com.example.commons")`
+- `user-note/contract-common/build.gradle.kts` — [REVIEW] — новый 2026-09-29
+- `user-note/contract-common/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-09-29, `@NullMarked`
+- `user-note/contract-common/src/main/java/com/example/usernote/UserNoteRequest.java` — [REMOVED] — новый 2026-09-29, модель запроса `(userId, noteId)`; удалён 2026-10-09
+- `user-note/contract-common/src/main/java/com/example/usernote/UserNoteResponse.java` — [REMOVED] — новый 2026-09-29, модель ответа `(id, userId, noteId)`; удалён 2026-10-09
 
-#### user-note/contract/imperative/ (7 файлов) — не был в каталоге до 2026-09-24; не собирался (`plugins{}` пустой, без единого `id(...)`) до починки в этой сессии
-- `user-note/contract/imperative/build.gradle.kts` — [REVIEW] — было `plugins { id("com.example.java") }` (собирался, но нарушал паттерн «лист = плагин по роли, не голый `java`»); теперь `id("com.example.contract-synchronous")`
-- `user-note/contract/imperative/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-09-24, `@NullMarked`
-- `user-note/contract/imperative/src/main/java/com/example/usernote/CreateUserNoteById.java` — [REMOVED] — новый 2026-09-29, входной порт сценария, метод `execute`; удалён 2026-10-09
-- `user-note/contract/imperative/src/main/java/com/example/usernote/UpdateUserNoteById.java` — [REMOVED] — новый 2026-09-29, входной порт сценария, метод `execute`; удалён 2026-10-09
-- `user-note/contract/imperative/src/main/java/com/example/usernote/ReplaceUserNoteById.java` — [REMOVED] — новый 2026-09-29, входной порт сценария, метод `execute`; удалён 2026-10-09
-- `user-note/contract/imperative/src/main/java/com/example/usernote/FindUserNoteById.java` — [REMOVED] — новый 2026-09-29, входной порт сценария, метод `execute`; удалён 2026-10-09 (порты-сценарии объединены в `UserNoteService`)
-- `user-note/contract/imperative/src/main/java/com/example/usernote/DeleteUserNoteById.java` — [REMOVED] — новый 2026-09-29, входной порт сценария, метод `execute`; удалён 2026-10-09 (порты-сценарии объединены в `UserNoteService`)
+#### user-note/contract-imperative/ (7 файлов) — не был в каталоге до 2026-09-24; не собирался (`plugins{}` пустой, без единого `id(...)`) до починки в этой сессии
+- `user-note/contract-imperative/build.gradle.kts` — [REVIEW] — было `plugins { id("com.example.java") }` (собирался, но нарушал паттерн «лист = плагин по роли, не голый `java`»); теперь `id("com.example.contract-synchronous")`
+- `user-note/contract-imperative/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-09-24, `@NullMarked`
+- `user-note/contract-imperative/src/main/java/com/example/usernote/CreateUserNoteById.java` — [REMOVED] — новый 2026-09-29, входной порт сценария, метод `execute`; удалён 2026-10-09
+- `user-note/contract-imperative/src/main/java/com/example/usernote/UpdateUserNoteById.java` — [REMOVED] — новый 2026-09-29, входной порт сценария, метод `execute`; удалён 2026-10-09
+- `user-note/contract-imperative/src/main/java/com/example/usernote/ReplaceUserNoteById.java` — [REMOVED] — новый 2026-09-29, входной порт сценария, метод `execute`; удалён 2026-10-09
+- `user-note/contract-imperative/src/main/java/com/example/usernote/FindUserNoteById.java` — [REMOVED] — новый 2026-09-29, входной порт сценария, метод `execute`; удалён 2026-10-09 (порты-сценарии объединены в `UserNoteService`)
+- `user-note/contract-imperative/src/main/java/com/example/usernote/DeleteUserNoteById.java` — [REMOVED] — новый 2026-09-29, входной порт сценария, метод `execute`; удалён 2026-10-09 (порты-сценарии объединены в `UserNoteService`)
 
-#### user-note/contract/reactive/ (7 файлов) — не был в каталоге до 2026-09-24
-- `user-note/contract/reactive/build.gradle.kts` — [REVIEW] — было `id("com.example.project-reactor")` напрямую; теперь `id("com.example.contract-reactive")` (симметрично `contract`)
-- `user-note/contract/reactive/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-09-24, `@NullMarked`
-- `user-note/contract/reactive/src/main/java/com/example/usernote/ReactiveFindUserNoteById.java` — [REMOVED] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`; удалён 2026-10-09 (порты-сценарии объединены в `UserNoteService`)
-- `user-note/contract/reactive/src/main/java/com/example/usernote/ReactiveReplaceUserNoteById.java` — [REMOVED] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`; удалён 2026-10-09
-- `user-note/contract/reactive/src/main/java/com/example/usernote/ReactiveCreateUserNoteById.java` — [REMOVED] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`; удалён 2026-10-09
-- `user-note/contract/reactive/src/main/java/com/example/usernote/ReactiveUpdateUserNoteById.java` — [REMOVED] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`; удалён 2026-10-09
-- `user-note/contract/reactive/src/main/java/com/example/usernote/ReactiveDeleteUserNoteById.java` — [REMOVED] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`; удалён 2026-10-09 (порты-сценарии объединены в `UserNoteService`)
+#### user-note/contract-reactive/ (7 файлов) — не был в каталоге до 2026-09-24
+- `user-note/contract-reactive/build.gradle.kts` — [REVIEW] — было `id("com.example.project-reactor")` напрямую; теперь `id("com.example.contract-reactive")` (симметрично `contract`)
+- `user-note/contract-reactive/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-09-24, `@NullMarked`
+- `user-note/contract-reactive/src/main/java/com/example/usernote/ReactiveFindUserNoteById.java` — [REMOVED] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`; удалён 2026-10-09 (порты-сценарии объединены в `UserNoteService`)
+- `user-note/contract-reactive/src/main/java/com/example/usernote/ReactiveReplaceUserNoteById.java` — [REMOVED] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`; удалён 2026-10-09
+- `user-note/contract-reactive/src/main/java/com/example/usernote/ReactiveCreateUserNoteById.java` — [REMOVED] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`; удалён 2026-10-09
+- `user-note/contract-reactive/src/main/java/com/example/usernote/ReactiveUpdateUserNoteById.java` — [REMOVED] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`; удалён 2026-10-09
+- `user-note/contract-reactive/src/main/java/com/example/usernote/ReactiveDeleteUserNoteById.java` — [REMOVED] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`; удалён 2026-10-09 (порты-сценарии объединены в `UserNoteService`)
 
 #### user-note/application-{jdbc,jpa}/ — модель application-driver — [REMOVED] 2026-09-05
 - оба модуля удалены целиком (`git rm`) при переходе с модели application-driver (модуль = технология доступа jdbc/jpa/r2dbc, вендор — Spring-профиль внутри) на модель application-vendor (модуль = вендор БД, jdbc+jpa — оба сразу как зависимости одного SQL-модуля) — явное решение пользователя, разворачивает принцип «вендор = профиль, не модуль» из 2026-08-31
@@ -93,172 +93,172 @@
 - `build-logic/convention/src/main/kotlin/com.example.application-jdbc.gradle.kts` — [REMOVED] — удалён 2026-10-15: плагин знал профили и вендоров приложения; состав перенесён в листья
 - `build-logic/convention/src/main/kotlin/com.example.application-r2dbc.gradle.kts` — [REMOVED] — удалён 2026-10-15, как application-jdbc
 
-#### user-note/repository/r2dbc/ — ресурсы
-- `user-note/repository/r2dbc/src/main/resources/application-repository-r2dbc.properties` — [REVIEW] — новый 2026-10-15: `logging.level.org.springframework.data{,.r2dbc}=DEBUG` + `spring.sql.init.mode=always`; подключается `spring.profiles.include=controller-webflux,data-r2dbc`
+#### user-note/repository-r2dbc/ — ресурсы
+- `user-note/repository-r2dbc/src/main/resources/application-repository-r2dbc.properties` — [REVIEW] — новый 2026-10-15: `logging.level.org.springframework.data{,.r2dbc}=DEBUG` + `spring.sql.init.mode=always`; подключается `spring.profiles.include=controller-webflux,data-r2dbc`
 
-#### user-note/repository/jdbc/ — новый 2026-10-10, адаптер хранилища JDBC (модуль на технологию), подключён пока только к `application-h2`
-- `user-note/repository/jdbc/build.gradle.kts` — [REVIEW] — 2026-10-27: алиас `service-synchronous`/`service-reactive` (ради `java-library`), стартер Spring Data, драйверы вендоров и Testcontainers, `api(contract)`; у jdbc/r2dbc — задачи `testMysql`/`testPostgresql`
-- `user-note/repository/jdbc/src/test/resources/application.properties` — [REVIEW] — новый 2026-10-27, тестовые профили модуля
-- `user-note/repository/jdbc/src/test/resources/application-postgresql.properties` — [REVIEW] — новый 2026-10-27, `spring.sql.init.platform=postgresql`
-- `user-note/repository/jdbc/src/test/resources/application-mysql.properties` — [REVIEW] — новый 2026-10-27, `spring.sql.init.platform=mysql`
-- `user-note/repository/jdbc/src/test/resources/application-h2.properties` — [REVIEW] — новый 2026-10-27, `spring.sql.init.platform=h2`
-- `user-note/repository/jdbc/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — новый 2026-10-27, контейнеры `@ServiceConnection` (копия из листа)
-- `user-note/repository/jdbc/src/main/resources/application-repository-jdbc.properties` — [REVIEW] — возвращён 2026-10-15: `logging.level.org.springframework.data{,.jdbc}=DEBUG` + `spring.sql.init.mode=always` (универсальное для всех JDBC-листьев); подключается `spring.profiles.include=controller-webmvc,data-jdbc` в `application.properties` листа
-- `user-note/repository/jdbc/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — `@NullMarked`
-- `user-note/repository/r2dbc/build.gradle.kts` — [REVIEW] — 2026-10-27: алиас `service-synchronous`/`service-reactive` (ради `java-library`), стартер Spring Data, драйверы вендоров и Testcontainers, `api(contract)`; у jdbc/r2dbc — задачи `testMysql`/`testPostgresql`
-- `user-note/repository/r2dbc/src/test/resources/application.properties` — [REVIEW] — новый 2026-10-27, тестовые профили модуля
-- `user-note/repository/r2dbc/src/test/resources/application-postgresql.properties` — [REVIEW] — новый 2026-10-27, `spring.sql.init.platform=postgresql`
-- `user-note/repository/r2dbc/src/test/resources/application-mysql.properties` — [REVIEW] — новый 2026-10-27, `spring.sql.init.platform=mysql`
-- `user-note/repository/r2dbc/src/test/resources/application-h2.properties` — [REVIEW] — новый 2026-10-27, `spring.sql.init.platform=h2`
-- `user-note/repository/r2dbc/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — новый 2026-10-27, контейнеры `@ServiceConnection` (копия из листа)
-- `user-note/repository/r2dbc/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-10-15
-- `user-note/repository/r2dbc/src/main/java/com/example/usernote/UserNote.java` — [REVIEW] — новый 2026-10-15, копия записи `data-jdbc` (`@Table`/`@Column` из `spring-data-relational`, общие для JDBC и R2DBC); модули стеков не делят код («Полная изоляция стеков»)
-- `user-note/repository/r2dbc/src/main/java/com/example/usernote/R2dbcUserNoteService.java` — [REVIEW] — новый 2026-10-15, `ReactiveUserNoteRepository` на `R2dbcEntityTemplate` (`selectOne`/`insert`/`update`/`delete`), `@Transactional`, «не найдено» — `Mono.error(UserNoteNotFoundException)` — 2026-10-27 перенесён/переименован из `user-note/repository/r2dbc/src/main/java/com/example/usernote/R2dbcUserNoteRepository.java`
-- `user-note/repository/mongo-reactive/build.gradle.kts` — [REVIEW] — 2026-10-27: алиас `service-synchronous`/`service-reactive` (ради `java-library`), стартер Spring Data, драйверы вендоров и Testcontainers, `api(contract)`; у jdbc/r2dbc — задачи `testMysql`/`testPostgresql`
-- `user-note/repository/mongo-reactive/src/test/resources/application.properties` — [REVIEW] — новый 2026-10-27, тестовые профили модуля
-- `user-note/repository/mongo-reactive/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — новый 2026-10-27, контейнеры `@ServiceConnection` (копия из листа)
-- `user-note/repository/mongo-reactive/src/test/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — новый 2026-10-27, test-scope `@SpringBootApplication`, точка входа слайса
-- `user-note/repository/mongo-reactive/src/main/resources/application-repository-mongo-reactive.properties` — [REVIEW] — новый 2026-10-27, логи Spring Data MongoDB, `spring.mongodb.representation.uuid=standard` (перенесено из листа)
-- `user-note/repository/mongo-reactive/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-10-15
-- `user-note/repository/mongo-reactive/src/main/java/com/example/usernote/UserNote.java` — [REVIEW] — новый 2026-10-15, запись `@Document("user_note")`, `@Id UUID id`, `@Field("user_id"/"note_id"/"role")`
-- `user-note/repository/mongo-reactive/src/main/java/com/example/usernote/ReactiveMongoUserNoteService.java` — [REVIEW] — новый 2026-10-15, `ReactiveMongoOperations`: `findById`, `insert`, обновление роли через `findAndModify` и удаление через `findAndRemove` одним атомарным запросом (без `@Transactional`: транзакции Mongo требуют replica set), «не найдено» — исключение контракта — 2026-10-27 перенесён/переименован из `user-note/repository/mongo-reactive/src/main/java/com/example/usernote/ReactiveMongoUserNoteRepository.java`
-- `user-note/repository/mongo/build.gradle.kts` — [REVIEW] — 2026-10-27: алиас `service-synchronous`/`service-reactive` (ради `java-library`), стартер Spring Data, драйверы вендоров и Testcontainers, `api(contract)`; у jdbc/r2dbc — задачи `testMysql`/`testPostgresql`
-- `user-note/repository/mongo/src/test/resources/application.properties` — [REVIEW] — новый 2026-10-27, тестовые профили модуля
-- `user-note/repository/mongo/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — новый 2026-10-27, контейнеры `@ServiceConnection` (копия из листа)
-- `user-note/repository/mongo/src/test/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — новый 2026-10-27, test-scope `@SpringBootApplication`, точка входа слайса
-- `user-note/repository/mongo/src/main/resources/application-repository-mongo.properties` — [REVIEW] — новый 2026-10-27, логи Spring Data MongoDB, `spring.mongodb.representation.uuid=standard` (перенесено из листа)
-- `user-note/repository/mongo/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-10-15
-- `user-note/repository/mongo/src/main/java/com/example/usernote/UserNote.java` — [REVIEW] — новый 2026-10-15, запись `@Document("user_note")`, `@Id UUID id`, `@Field("user_id"/"note_id"/"role")`
-- `user-note/repository/mongo/src/main/java/com/example/usernote/MongoUserNoteService.java` — [REVIEW] — новый 2026-10-15, `MongoOperations`: `findById`, `insert`, обновление роли через `findAndModify` и удаление через `findAndRemove` одним атомарным запросом (без `@Transactional`: транзакции Mongo требуют replica set), «не найдено» — исключение контракта — 2026-10-27 перенесён/переименован из `user-note/repository/mongo/src/main/java/com/example/usernote/MongoUserNoteRepository.java`
-- `user-note/repository/jdbc/src/main/java/com/example/usernote/UserNote.java` — [REVIEW] — запись хранения с явными именами (требование пользователя 2026-10-10): `@Table("user_note")`, `@Column("id")`/`("user_id")`/`("note_id")`/`("role")`, всё в нижнем регистре; Spring Data JDBC квотирует явные имена как есть, поэтому `schema.sql` H2 пишется с кавычками (без них H2 создаёт `USER_NOTE`; проверено запуском); метод `responseBody()`
-- `user-note/repository/jdbc/src/main/java/com/example/usernote/JdbcUserNoteService.java` — [REVIEW] — адаптер порта `UserNoteRepository` на `JdbcAggregateOperations` (`insert`/`update`/`findById`/`deleteById`), `@Repository` + `@Transactional` на классе; id выдаёт адаптер (`UUID.randomUUID()`, `insert` обходит проблему `save` с готовым id); «не найдено» → `UserNoteNotFoundException`; имя класса не утверждено пользователем — 2026-10-27 перенесён/переименован из `user-note/repository/jdbc/src/main/java/com/example/usernote/JdbcUserNoteRepository.java`
-- `user-note/repository/jdbc/src/test/java/com/example/usernote/JdbcUserNoteRepositoryTests.java` — [REMOVED] — новый 2026-10-11, 7 тестов с заглушкой `JdbcAggregateOperations` (Mockito), без базы: ветки «не найдено», маппинг, `insert` с выданным id, смена роли (`EDITOR` → `VIEWER`, «до» и «после» обязаны различаться), `update`/`deleteById` не вызываются при 404; SQL, имена колонок и схему не проверяет — для этого интеграционный тест в листе (решение пользователя 2026-10-11: в `data-*` нет зависимости базы данных, ни основной, ни тестовой); удалён 2026-10-11 (лишний по матрице тестов: Repository проверяет `@DataJdbcTest` в листе)
+#### user-note/repository-jdbc/ — новый 2026-10-10, адаптер хранилища JDBC (модуль на технологию), подключён пока только к `application-h2`
+- `user-note/repository-jdbc/build.gradle.kts` — [REVIEW] — 2026-10-27: алиас `service-synchronous`/`service-reactive` (ради `java-library`), стартер Spring Data, драйверы вендоров и Testcontainers, `api(contract)`; у jdbc/r2dbc — задачи `testMysql`/`testPostgresql`
+- `user-note/repository-jdbc/src/test/resources/application.properties` — [REVIEW] — новый 2026-10-27, тестовые профили модуля
+- `user-note/repository-jdbc/src/test/resources/application-postgresql.properties` — [REVIEW] — новый 2026-10-27, `spring.sql.init.platform=postgresql`
+- `user-note/repository-jdbc/src/test/resources/application-mysql.properties` — [REVIEW] — новый 2026-10-27, `spring.sql.init.platform=mysql`
+- `user-note/repository-jdbc/src/test/resources/application-h2.properties` — [REVIEW] — новый 2026-10-27, `spring.sql.init.platform=h2`
+- `user-note/repository-jdbc/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — новый 2026-10-27, контейнеры `@ServiceConnection` (копия из листа)
+- `user-note/repository-jdbc/src/main/resources/application-repository-jdbc.properties` — [REVIEW] — возвращён 2026-10-15: `logging.level.org.springframework.data{,.jdbc}=DEBUG` + `spring.sql.init.mode=always` (универсальное для всех JDBC-листьев); подключается `spring.profiles.include=controller-webmvc,data-jdbc` в `application.properties` листа
+- `user-note/repository-jdbc/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — `@NullMarked`
+- `user-note/repository-r2dbc/build.gradle.kts` — [REVIEW] — 2026-10-27: алиас `service-synchronous`/`service-reactive` (ради `java-library`), стартер Spring Data, драйверы вендоров и Testcontainers, `api(contract)`; у jdbc/r2dbc — задачи `testMysql`/`testPostgresql`
+- `user-note/repository-r2dbc/src/test/resources/application.properties` — [REVIEW] — новый 2026-10-27, тестовые профили модуля
+- `user-note/repository-r2dbc/src/test/resources/application-postgresql.properties` — [REVIEW] — новый 2026-10-27, `spring.sql.init.platform=postgresql`
+- `user-note/repository-r2dbc/src/test/resources/application-mysql.properties` — [REVIEW] — новый 2026-10-27, `spring.sql.init.platform=mysql`
+- `user-note/repository-r2dbc/src/test/resources/application-h2.properties` — [REVIEW] — новый 2026-10-27, `spring.sql.init.platform=h2`
+- `user-note/repository-r2dbc/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — новый 2026-10-27, контейнеры `@ServiceConnection` (копия из листа)
+- `user-note/repository-r2dbc/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-10-15
+- `user-note/repository-r2dbc/src/main/java/com/example/usernote/UserNote.java` — [REVIEW] — новый 2026-10-15, копия записи `data-jdbc` (`@Table`/`@Column` из `spring-data-relational`, общие для JDBC и R2DBC); модули стеков не делят код («Полная изоляция стеков»)
+- `user-note/repository-r2dbc/src/main/java/com/example/usernote/R2dbcUserNoteService.java` — [REVIEW] — новый 2026-10-15, `ReactiveUserNoteRepository` на `R2dbcEntityTemplate` (`selectOne`/`insert`/`update`/`delete`), `@Transactional`, «не найдено» — `Mono.error(UserNoteNotFoundException)` — 2026-10-27 перенесён/переименован из `user-note/repository-r2dbc/src/main/java/com/example/usernote/R2dbcUserNoteRepository.java`
+- `user-note/repository-mongo-reactive/build.gradle.kts` — [REVIEW] — 2026-10-27: алиас `service-synchronous`/`service-reactive` (ради `java-library`), стартер Spring Data, драйверы вендоров и Testcontainers, `api(contract)`; у jdbc/r2dbc — задачи `testMysql`/`testPostgresql`
+- `user-note/repository-mongo-reactive/src/test/resources/application.properties` — [REVIEW] — новый 2026-10-27, тестовые профили модуля
+- `user-note/repository-mongo-reactive/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — новый 2026-10-27, контейнеры `@ServiceConnection` (копия из листа)
+- `user-note/repository-mongo-reactive/src/test/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — новый 2026-10-27, test-scope `@SpringBootApplication`, точка входа слайса
+- `user-note/repository-mongo-reactive/src/main/resources/application-repository-mongo-reactive.properties` — [REVIEW] — новый 2026-10-27, логи Spring Data MongoDB, `spring.mongodb.representation.uuid=standard` (перенесено из листа)
+- `user-note/repository-mongo-reactive/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-10-15
+- `user-note/repository-mongo-reactive/src/main/java/com/example/usernote/UserNote.java` — [REVIEW] — новый 2026-10-15, запись `@Document("user_note")`, `@Id UUID id`, `@Field("user_id"/"note_id"/"role")`
+- `user-note/repository-mongo-reactive/src/main/java/com/example/usernote/ReactiveMongoUserNoteService.java` — [REVIEW] — новый 2026-10-15, `ReactiveMongoOperations`: `findById`, `insert`, обновление роли через `findAndModify` и удаление через `findAndRemove` одним атомарным запросом (без `@Transactional`: транзакции Mongo требуют replica set), «не найдено» — исключение контракта — 2026-10-27 перенесён/переименован из `user-note/repository-mongo-reactive/src/main/java/com/example/usernote/ReactiveMongoUserNoteRepository.java`
+- `user-note/repository-mongo/build.gradle.kts` — [REVIEW] — 2026-10-27: алиас `service-synchronous`/`service-reactive` (ради `java-library`), стартер Spring Data, драйверы вендоров и Testcontainers, `api(contract)`; у jdbc/r2dbc — задачи `testMysql`/`testPostgresql`
+- `user-note/repository-mongo/src/test/resources/application.properties` — [REVIEW] — новый 2026-10-27, тестовые профили модуля
+- `user-note/repository-mongo/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — новый 2026-10-27, контейнеры `@ServiceConnection` (копия из листа)
+- `user-note/repository-mongo/src/test/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — новый 2026-10-27, test-scope `@SpringBootApplication`, точка входа слайса
+- `user-note/repository-mongo/src/main/resources/application-repository-mongo.properties` — [REVIEW] — новый 2026-10-27, логи Spring Data MongoDB, `spring.mongodb.representation.uuid=standard` (перенесено из листа)
+- `user-note/repository-mongo/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-10-15
+- `user-note/repository-mongo/src/main/java/com/example/usernote/UserNote.java` — [REVIEW] — новый 2026-10-15, запись `@Document("user_note")`, `@Id UUID id`, `@Field("user_id"/"note_id"/"role")`
+- `user-note/repository-mongo/src/main/java/com/example/usernote/MongoUserNoteService.java` — [REVIEW] — новый 2026-10-15, `MongoOperations`: `findById`, `insert`, обновление роли через `findAndModify` и удаление через `findAndRemove` одним атомарным запросом (без `@Transactional`: транзакции Mongo требуют replica set), «не найдено» — исключение контракта — 2026-10-27 перенесён/переименован из `user-note/repository-mongo/src/main/java/com/example/usernote/MongoUserNoteRepository.java`
+- `user-note/repository-jdbc/src/main/java/com/example/usernote/UserNote.java` — [REVIEW] — запись хранения с явными именами (требование пользователя 2026-10-10): `@Table("user_note")`, `@Column("id")`/`("user_id")`/`("note_id")`/`("role")`, всё в нижнем регистре; Spring Data JDBC квотирует явные имена как есть, поэтому `schema.sql` H2 пишется с кавычками (без них H2 создаёт `USER_NOTE`; проверено запуском); метод `responseBody()`
+- `user-note/repository-jdbc/src/main/java/com/example/usernote/JdbcUserNoteService.java` — [REVIEW] — адаптер порта `UserNoteRepository` на `JdbcAggregateOperations` (`insert`/`update`/`findById`/`deleteById`), `@Repository` + `@Transactional` на классе; id выдаёт адаптер (`UUID.randomUUID()`, `insert` обходит проблему `save` с готовым id); «не найдено» → `UserNoteNotFoundException`; имя класса не утверждено пользователем — 2026-10-27 перенесён/переименован из `user-note/repository-jdbc/src/main/java/com/example/usernote/JdbcUserNoteRepository.java`
+- `user-note/repository-jdbc/src/test/java/com/example/usernote/JdbcUserNoteRepositoryTests.java` — [REMOVED] — новый 2026-10-11, 7 тестов с заглушкой `JdbcAggregateOperations` (Mockito), без базы: ветки «не найдено», маппинг, `insert` с выданным id, смена роли (`EDITOR` → `VIEWER`, «до» и «после» обязаны различаться), `update`/`deleteById` не вызываются при 404; SQL, имена колонок и схему не проверяет — для этого интеграционный тест в листе (решение пользователя 2026-10-11: в `data-*` нет зависимости базы данных, ни основной, ни тестовой); удалён 2026-10-11 (лишний по матрице тестов: Repository проверяет `@DataJdbcTest` в листе)
 
-#### user-note/application/jdbc/ (5 файлов, было 4) — новый 2026-09-05, sync SQL по модели application-vendor: только `data-jdbc` (JPA убран тем же вечером — см. «Активная нить») + `database-h2` …
-- `user-note/application/jdbc/build.gradle.kts` — [REVIEW]
-- `user-note/application/jdbc/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`, восстановлен 2026-09-13 (был вынесен в `application-core`, модуль удалён)
-- `user-note/application/jdbc/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — восстановлен 2026-09-13
-- `user-note/application/jdbc/src/main/resources/schema.sql` — [REVIEW] — новый 2026-10-10, `CREATE TABLE IF NOT EXISTS "user_note"` с квотированными нижними именами колонок (`"id" UUID PRIMARY KEY`, `"user_id"`, `"note_id"` UUID, `"role" VARCHAR(16)`); встроенная H2 выполняет сама; для MySQL/PostgreSQL регистр и кавычки не проверены
-- `user-note/application/jdbc/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.jdbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
-- `user-note/application/jdbc/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REMOVED] — удалён в H2-листе 2026-10-11: пустой, лишний для sync/H2 (у остальных листьев остаётся — контейнеры)
-- `user-note/application/jdbc/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — пустой шаблонный тест `@SpringBootTest` с одним `contextLoads()` (стандартный вид Spring Initializr; удалён и возвращён 2026-10-11 по указанию пользователя, написан заново)
-- `user-note/application/jdbc/src/test/java/com/example/usernote/UserNoteRepositoryTests.java` — [REMOVED] — слайс данных `@DataJdbcTest` + `@Import(JdbcUserNoteRepository.class)`, 8 тестов (тест `update` разделён 2026-10-11 на `…ReturnsUpdatedRecord` и `…StoresNewRole`, в каждом по одному `expected`) (по методу + 404 для `find`/`update`/`delete`), состояние через `JdbcAggregateOperations` без SQL, AssertJ; новый 2026-10-11; до 2026-10-11 назывался `JdbcUserNoteRepositoryTests` — удалён 2026-10-27: сервисный слой убран, адаптеры `*UserNoteService` в `repository/*`, тесты перенесены туда же
-- `user-note/repository/jdbc/src/test/java/com/example/usernote/JdbcUserNoteServiceTests.java` — [REVIEW] — тесты сервиса без моков: `@DataJdbcTest` + `@Import({UserNoteServiceImpl.class, JdbcUserNoteRepository.class})`, 8 тестов (по методу + 404 для `find`/`update`/`delete`, `update` разделён на `…ReturnsUpdatedRecord` и `…StoresNewRole`), состояние через `JdbcAggregateOperations`, вид совпадает с `UserNoteRepositoryTests`; новый 2026-10-11 по запросу пользователя — 2026-10-27 перенесён/переименован из `user-note/application/jdbc/src/test/java/com/example/usernote/UserNoteServiceTests.java`
-- `user-note/application/jdbc/src/test/java/com/example/usernote/UserNoteIntegrationTests.java` — [REVIEW] — `@SpringBootTest` + `@AutoConfigureRestTestClient` (окружение `MOCK`), 1 тест: только базовый flow `POST` → `GET` → `PATCH` → `DELETE` → `GET` = 404 по реальной цепочке (контроллер → сервис → репозиторий → H2, `UserNoteControllerAdvice`), `RestTestClient`, тела записями (тесты 404 для `PATCH` и `DELETE` несуществующей записи убраны 2026-10-11 по указанию пользователя: в интеграционных тестах только базовые flow); новый 2026-10-11, переписан на `RestTestClient` 2026-10-11- `user-note/application/jdbc/src/test/java/com/example/usernote/UserNoteFullContextTests.java` — [REMOVED] — тонкий класс листа: `@Import(UserNoteTestConfiguration.class)`, наследует `AbstractUserNoteFullContextTests`; удалён 2026-10-11 (заменён классами матрицы тестов)
+#### user-note/application-jdbc/ (5 файлов, было 4) — новый 2026-09-05, sync SQL по модели application-vendor: только `data-jdbc` (JPA убран тем же вечером — см. «Активная нить») + `database-h2` …
+- `user-note/application-jdbc/build.gradle.kts` — [REVIEW]
+- `user-note/application-jdbc/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`, восстановлен 2026-09-13 (был вынесен в `application-core`, модуль удалён)
+- `user-note/application-jdbc/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — восстановлен 2026-09-13
+- `user-note/application-jdbc/src/main/resources/schema.sql` — [REVIEW] — новый 2026-10-10, `CREATE TABLE IF NOT EXISTS "user_note"` с квотированными нижними именами колонок (`"id" UUID PRIMARY KEY`, `"user_id"`, `"note_id"` UUID, `"role" VARCHAR(16)`); встроенная H2 выполняет сама; для MySQL/PostgreSQL регистр и кавычки не проверены
+- `user-note/application-jdbc/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.jdbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
+- `user-note/application-jdbc/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REMOVED] — удалён в H2-листе 2026-10-11: пустой, лишний для sync/H2 (у остальных листьев остаётся — контейнеры)
+- `user-note/application-jdbc/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — пустой шаблонный тест `@SpringBootTest` с одним `contextLoads()` (стандартный вид Spring Initializr; удалён и возвращён 2026-10-11 по указанию пользователя, написан заново)
+- `user-note/application-jdbc/src/test/java/com/example/usernote/UserNoteRepositoryTests.java` — [REMOVED] — слайс данных `@DataJdbcTest` + `@Import(JdbcUserNoteRepository.class)`, 8 тестов (тест `update` разделён 2026-10-11 на `…ReturnsUpdatedRecord` и `…StoresNewRole`, в каждом по одному `expected`) (по методу + 404 для `find`/`update`/`delete`), состояние через `JdbcAggregateOperations` без SQL, AssertJ; новый 2026-10-11; до 2026-10-11 назывался `JdbcUserNoteRepositoryTests` — удалён 2026-10-27: сервисный слой убран, адаптеры `*UserNoteService` в `repository/*`, тесты перенесены туда же
+- `user-note/repository-jdbc/src/test/java/com/example/usernote/JdbcUserNoteServiceTests.java` — [REVIEW] — тесты сервиса без моков: `@DataJdbcTest` + `@Import({UserNoteServiceImpl.class, JdbcUserNoteRepository.class})`, 8 тестов (по методу + 404 для `find`/`update`/`delete`, `update` разделён на `…ReturnsUpdatedRecord` и `…StoresNewRole`), состояние через `JdbcAggregateOperations`, вид совпадает с `UserNoteRepositoryTests`; новый 2026-10-11 по запросу пользователя — 2026-10-27 перенесён/переименован из `user-note/application-jdbc/src/test/java/com/example/usernote/UserNoteServiceTests.java`
+- `user-note/application-jdbc/src/test/java/com/example/usernote/UserNoteIntegrationTests.java` — [REVIEW] — `@SpringBootTest` + `@AutoConfigureRestTestClient` (окружение `MOCK`), 1 тест: только базовый flow `POST` → `GET` → `PATCH` → `DELETE` → `GET` = 404 по реальной цепочке (контроллер → сервис → репозиторий → H2, `UserNoteControllerAdvice`), `RestTestClient`, тела записями (тесты 404 для `PATCH` и `DELETE` несуществующей записи убраны 2026-10-11 по указанию пользователя: в интеграционных тестах только базовые flow); новый 2026-10-11, переписан на `RestTestClient` 2026-10-11- `user-note/application-jdbc/src/test/java/com/example/usernote/UserNoteFullContextTests.java` — [REMOVED] — тонкий класс листа: `@Import(UserNoteTestConfiguration.class)`, наследует `AbstractUserNoteFullContextTests`; удалён 2026-10-11 (заменён классами матрицы тестов)
 
-#### user-note/application/jdbc/ (6 файлов, было 7) — новый 2026-09-05, sync SQL: только `data-jdbc` (JPA убран тем же вечером) + testcontainers-mysql …
-- `user-note/application/jdbc/build.gradle.kts` — [REVIEW]
-- `user-note/application/jdbc/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`, восстановлен 2026-09-13 (был вынесен в `application-core`, модуль удалён)
-- `user-note/application/jdbc/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — восстановлен 2026-09-13
-- `user-note/repository/jdbc/src/main/java/com/example/usernote/MySQLConversionsConfiguration.java` — [REVIEW] — новый 2026-10-15, бин `JdbcCustomConversions` с конвертерами `UUID` ↔ `String` (`@WritingConverter`/`@ReadingConverter`): без них Connector/J пишет `UUID` сериализованным объектом (`Incorrect string value … for column id`); вендорное различие, в `data-jdbc` не выносится (H2 и PostgreSQL пишут `UUID` нативно) — 2026-10-27 перенесён/переименован из `user-note/application/jdbc/src/main/java/com/example/usernote/MySQLConversionsConfiguration.java`
-- `user-note/application/jdbc/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.jdbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
-- `user-note/application/jdbc/src/main/resources/schema.sql` — [REVIEW] — новый 2026-10-15, `CREATE TABLE IF NOT EXISTS `user_note`` с обратными кавычками MySQL, `id`/`user_id`/`note_id` — `CHAR(36)` (Connector/J пишет `UUID` через `setObject` Java-сериализацией, `BINARY(16)`/`CHAR(36)` без конвертера не работают — проверено запуском), `role` `VARCHAR(16)`; выполняется `spring.sql.init.mode=always` (для не встроенной БД по умолчанию `embedded`, схема не создаётся)
-- `user-note/application/jdbc/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — `@Import(UserNoteTestConfiguration.class)`, без `@ActiveProfiles`
-- `user-note/application/jdbc/src/test/java/com/example/usernote/UserNoteIntegrationTests.java` — [REVIEW] — новый 2026-10-15, тот же базовый flow `POST` → `GET` → `PATCH` → `DELETE` → `GET` = 404, что в `application-h2`, плюс `@Import(UserNoteTestConfiguration.class)` (реальный MySQL в Testcontainers)
-- `user-note/application/jdbc/src/test/java/com/example/usernote/UserNoteRepositoryTests.java` — [REMOVED] — новый 2026-10-15, 8 тестов контракта репозитория (успех и «не найдено» на каждый метод, `create`/`update` — ещё проверка сохранённого состояния), `@DataJdbcTest + AutoConfigureTestDatabase(NONE)` (+ `@Import` реального контейнера, `MySQLConversionsConfiguration` — слайс не подхватывает конфигурацию листа), подготовка и чтение состояния через `JdbcAggregateOperations` — удалён 2026-10-27: сервисный слой убран, адаптеры `*UserNoteService` в `repository/*`, тесты перенесены туда же
-- `user-note/repository/jdbc/src/test/java/com/example/usernote/JdbcUserNoteServiceTests.java` — [REVIEW] — новый 2026-10-15, те же 8 тестов через `UserNoteServiceImpl` + настоящий репозиторий, без моков — 2026-10-27 перенесён/переименован из `user-note/application/jdbc/src/test/java/com/example/usernote/UserNoteServiceTests.java`
-- `user-note/application/jdbc/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — `@Bean @ServiceConnection MySQLContainer`, без `@Profile`
+#### user-note/application-jdbc/ (6 файлов, было 7) — новый 2026-09-05, sync SQL: только `data-jdbc` (JPA убран тем же вечером) + testcontainers-mysql …
+- `user-note/application-jdbc/build.gradle.kts` — [REVIEW]
+- `user-note/application-jdbc/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`, восстановлен 2026-09-13 (был вынесен в `application-core`, модуль удалён)
+- `user-note/application-jdbc/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — восстановлен 2026-09-13
+- `user-note/repository-jdbc/src/main/java/com/example/usernote/MySQLConversionsConfiguration.java` — [REVIEW] — новый 2026-10-15, бин `JdbcCustomConversions` с конвертерами `UUID` ↔ `String` (`@WritingConverter`/`@ReadingConverter`): без них Connector/J пишет `UUID` сериализованным объектом (`Incorrect string value … for column id`); вендорное различие, в `data-jdbc` не выносится (H2 и PostgreSQL пишут `UUID` нативно) — 2026-10-27 перенесён/переименован из `user-note/application-jdbc/src/main/java/com/example/usernote/MySQLConversionsConfiguration.java`
+- `user-note/application-jdbc/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.jdbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
+- `user-note/application-jdbc/src/main/resources/schema.sql` — [REVIEW] — новый 2026-10-15, `CREATE TABLE IF NOT EXISTS `user_note`` с обратными кавычками MySQL, `id`/`user_id`/`note_id` — `CHAR(36)` (Connector/J пишет `UUID` через `setObject` Java-сериализацией, `BINARY(16)`/`CHAR(36)` без конвертера не работают — проверено запуском), `role` `VARCHAR(16)`; выполняется `spring.sql.init.mode=always` (для не встроенной БД по умолчанию `embedded`, схема не создаётся)
+- `user-note/application-jdbc/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — `@Import(UserNoteTestConfiguration.class)`, без `@ActiveProfiles`
+- `user-note/application-jdbc/src/test/java/com/example/usernote/UserNoteIntegrationTests.java` — [REVIEW] — новый 2026-10-15, тот же базовый flow `POST` → `GET` → `PATCH` → `DELETE` → `GET` = 404, что в `application-h2`, плюс `@Import(UserNoteTestConfiguration.class)` (реальный MySQL в Testcontainers)
+- `user-note/application-jdbc/src/test/java/com/example/usernote/UserNoteRepositoryTests.java` — [REMOVED] — новый 2026-10-15, 8 тестов контракта репозитория (успех и «не найдено» на каждый метод, `create`/`update` — ещё проверка сохранённого состояния), `@DataJdbcTest + AutoConfigureTestDatabase(NONE)` (+ `@Import` реального контейнера, `MySQLConversionsConfiguration` — слайс не подхватывает конфигурацию листа), подготовка и чтение состояния через `JdbcAggregateOperations` — удалён 2026-10-27: сервисный слой убран, адаптеры `*UserNoteService` в `repository/*`, тесты перенесены туда же
+- `user-note/repository-jdbc/src/test/java/com/example/usernote/JdbcUserNoteServiceTests.java` — [REVIEW] — новый 2026-10-15, те же 8 тестов через `UserNoteServiceImpl` + настоящий репозиторий, без моков — 2026-10-27 перенесён/переименован из `user-note/application-jdbc/src/test/java/com/example/usernote/UserNoteServiceTests.java`
+- `user-note/application-jdbc/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — `@Bean @ServiceConnection MySQLContainer`, без `@Profile`
 - `user-note/application-mysql/src/test/java/com/example/usernote/UserNoteTestApplication.java` — [REMOVED] — удалён пользователем 2026-09-21 (причина не названа; был точкой входа `bootTestRun`)
 
-#### user-note/application/jdbc/ (6 файлов, было 7) — новый 2026-09-05, то же, что application-mysql/ (только `data-jdbc`, без JPA), но `database-postgresql`+`testcontainers-postgresql`+`PostgreSQLContainer`
-- `user-note/application/jdbc/build.gradle.kts` — [REVIEW]
-- `user-note/application/jdbc/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`, восстановлен 2026-09-13 (был вынесен в `application-core`, модуль удалён)
-- `user-note/application/jdbc/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — восстановлен 2026-09-13
-- `user-note/application/jdbc/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.jdbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
-- `user-note/application/jdbc/src/main/resources/schema.sql` — [REVIEW] — новый 2026-10-15, `CREATE TABLE IF NOT EXISTS "user_note"` с кавычками, `id`/`user_id`/`note_id` — нативный `UUID`, `role` `VARCHAR(16)`; выполняется `spring.sql.init.mode=always` (для не встроенной БД по умолчанию `embedded`, схема не создаётся)
-- `user-note/application/jdbc/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — `@Import(UserNoteTestConfiguration.class)`, без `@ActiveProfiles`
-- `user-note/application/jdbc/src/test/java/com/example/usernote/UserNoteIntegrationTests.java` — [REVIEW] — новый 2026-10-15, тот же базовый flow `POST` → `GET` → `PATCH` → `DELETE` → `GET` = 404, что в `application-h2`, плюс `@Import(UserNoteTestConfiguration.class)` (реальный PostgreSQL в Testcontainers)
-- `user-note/application/jdbc/src/test/java/com/example/usernote/UserNoteRepositoryTests.java` — [REMOVED] — новый 2026-10-15, 8 тестов контракта репозитория (успех и «не найдено» на каждый метод, `create`/`update` — ещё проверка сохранённого состояния), `@DataJdbcTest + AutoConfigureTestDatabase(NONE)` (+ `@Import` реального контейнера), подготовка и чтение состояния через `JdbcAggregateOperations` — удалён 2026-10-27: сервисный слой убран, адаптеры `*UserNoteService` в `repository/*`, тесты перенесены туда же
-- `user-note/repository/jdbc/src/test/java/com/example/usernote/JdbcUserNoteServiceTests.java` — [REVIEW] — новый 2026-10-15, те же 8 тестов через `UserNoteServiceImpl` + настоящий репозиторий, без моков — 2026-10-27 перенесён/переименован из `user-note/application/jdbc/src/test/java/com/example/usernote/UserNoteServiceTests.java`
-- `user-note/application/jdbc/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — `@Bean @ServiceConnection PostgreSQLContainer`, без `@Profile`
+#### user-note/application-jdbc/ (6 файлов, было 7) — новый 2026-09-05, то же, что application-mysql/ (только `data-jdbc`, без JPA), но `database-postgresql`+`testcontainers-postgresql`+`PostgreSQLContainer`
+- `user-note/application-jdbc/build.gradle.kts` — [REVIEW]
+- `user-note/application-jdbc/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`, восстановлен 2026-09-13 (был вынесен в `application-core`, модуль удалён)
+- `user-note/application-jdbc/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — восстановлен 2026-09-13
+- `user-note/application-jdbc/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.jdbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
+- `user-note/application-jdbc/src/main/resources/schema.sql` — [REVIEW] — новый 2026-10-15, `CREATE TABLE IF NOT EXISTS "user_note"` с кавычками, `id`/`user_id`/`note_id` — нативный `UUID`, `role` `VARCHAR(16)`; выполняется `spring.sql.init.mode=always` (для не встроенной БД по умолчанию `embedded`, схема не создаётся)
+- `user-note/application-jdbc/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — `@Import(UserNoteTestConfiguration.class)`, без `@ActiveProfiles`
+- `user-note/application-jdbc/src/test/java/com/example/usernote/UserNoteIntegrationTests.java` — [REVIEW] — новый 2026-10-15, тот же базовый flow `POST` → `GET` → `PATCH` → `DELETE` → `GET` = 404, что в `application-h2`, плюс `@Import(UserNoteTestConfiguration.class)` (реальный PostgreSQL в Testcontainers)
+- `user-note/application-jdbc/src/test/java/com/example/usernote/UserNoteRepositoryTests.java` — [REMOVED] — новый 2026-10-15, 8 тестов контракта репозитория (успех и «не найдено» на каждый метод, `create`/`update` — ещё проверка сохранённого состояния), `@DataJdbcTest + AutoConfigureTestDatabase(NONE)` (+ `@Import` реального контейнера), подготовка и чтение состояния через `JdbcAggregateOperations` — удалён 2026-10-27: сервисный слой убран, адаптеры `*UserNoteService` в `repository/*`, тесты перенесены туда же
+- `user-note/repository-jdbc/src/test/java/com/example/usernote/JdbcUserNoteServiceTests.java` — [REVIEW] — новый 2026-10-15, те же 8 тестов через `UserNoteServiceImpl` + настоящий репозиторий, без моков — 2026-10-27 перенесён/переименован из `user-note/application-jdbc/src/test/java/com/example/usernote/UserNoteServiceTests.java`
+- `user-note/application-jdbc/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — `@Bean @ServiceConnection PostgreSQLContainer`, без `@Profile`
 - `user-note/application-postgresql/src/test/java/com/example/usernote/UserNoteTestApplication.java` — [REMOVED] — удалён пользователем 2026-09-21 (причина не названа; был точкой входа `bootTestRun`)
 
-#### user-note/application/mongo/ (7 файлов, было 8) — sync Mongo скелет: webmvc + data-mongodb + testcontainers-mongodb
-- `user-note/application/mongo/build.gradle.kts` — [REVIEW]
-- `user-note/application/mongo/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`, восстановлен 2026-09-13 (был вынесен в `application-core`, модуль удалён)
-- `user-note/application/mongo/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — восстановлен 2026-09-13
-- `user-note/application/mongo/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.mongodb=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
+#### user-note/application-mongo/ (7 файлов, было 8) — sync Mongo скелет: webmvc + data-mongodb + testcontainers-mongodb
+- `user-note/application-mongo/build.gradle.kts` — [REVIEW]
+- `user-note/application-mongo/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`, восстановлен 2026-09-13 (был вынесен в `application-core`, модуль удалён)
+- `user-note/application-mongo/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — восстановлен 2026-09-13
+- `user-note/application-mongo/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webmvc` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.mongodb=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `user-note/application-mongodb/src/main/resources/application-mongodb.properties` — [REMOVED] 2026-08-31 (`spring.mongodb.*` connection-строки, в тестах перекрывались `@ServiceConnection`)
 - `user-note/application-mongodb/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REMOVED] 2026-09-04 (было `@Nested @ActiveProfiles("mongodb")` через `abstract MongoTemplateTests`)
-- `user-note/application/mongo/src/test/java/com/example/usernote/UserNoteApplicationDefaultTest.java` — [REVIEW] — новый 2026-09-04, голый `contextLoads(){}` без активного профиля
-- `user-note/application/mongo/src/test/java/com/example/usernote/UserNoteApplicationMongoDBTest.java` — [REVIEW] — новый 2026-09-04, `@ActiveProfiles("MongoDB")`
+- `user-note/application-mongo/src/test/java/com/example/usernote/UserNoteApplicationDefaultTest.java` — [REVIEW] — новый 2026-09-04, голый `contextLoads(){}` без активного профиля
+- `user-note/application-mongo/src/test/java/com/example/usernote/UserNoteApplicationMongoDBTest.java` — [REVIEW] — новый 2026-09-04, `@ActiveProfiles("MongoDB")`
 - `user-note/application-mongodb/src/test/java/com/example/usernote/UserNoteTestApplication.java` — [REMOVED] — удалён пользователем 2026-09-21 (причина не названа; был точкой входа `bootTestRun`)
-- `user-note/application/mongo/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — `@Bean @Profile("mongodb") @ServiceConnection MongoDBContainer`
-- `user-note/application/mongo/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — пропущен в каталоге, добавлен 2026-09-29
-- `user-note/application/mongo/src/test/java/com/example/usernote/UserNoteIntegrationTests.java` — [REVIEW] — новый 2026-10-15, базовый flow `POST` → `GET` → `PATCH` → `DELETE` → `GET` = 404, `RestTestClient`, реальный MongoDB в Testcontainers
-- `user-note/application/mongo/src/test/java/com/example/usernote/UserNoteRepositoryTests.java` — [REMOVED] — новый 2026-10-15, 8 тестов контракта репозитория (успех и «не найдено» на каждый метод, `create`/`update` — ещё проверка сохранённого состояния), `@DataMongoTest` (+ `@Import` реального контейнера), подготовка и чтение состояния через `MongoOperations` — удалён 2026-10-27: сервисный слой убран, адаптеры `*UserNoteService` в `repository/*`, тесты перенесены туда же
-- `user-note/repository/mongo/src/test/java/com/example/usernote/MongoUserNoteServiceTests.java` — [REVIEW] — новый 2026-10-15, те же 8 тестов через `UserNoteServiceImpl` + настоящий репозиторий, без моков — 2026-10-27 перенесён/переименован из `user-note/application/mongo/src/test/java/com/example/usernote/UserNoteServiceTests.java`
+- `user-note/application-mongo/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — `@Bean @Profile("mongodb") @ServiceConnection MongoDBContainer`
+- `user-note/application-mongo/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — пропущен в каталоге, добавлен 2026-09-29
+- `user-note/application-mongo/src/test/java/com/example/usernote/UserNoteIntegrationTests.java` — [REVIEW] — новый 2026-10-15, базовый flow `POST` → `GET` → `PATCH` → `DELETE` → `GET` = 404, `RestTestClient`, реальный MongoDB в Testcontainers
+- `user-note/application-mongo/src/test/java/com/example/usernote/UserNoteRepositoryTests.java` — [REMOVED] — новый 2026-10-15, 8 тестов контракта репозитория (успех и «не найдено» на каждый метод, `create`/`update` — ещё проверка сохранённого состояния), `@DataMongoTest` (+ `@Import` реального контейнера), подготовка и чтение состояния через `MongoOperations` — удалён 2026-10-27: сервисный слой убран, адаптеры `*UserNoteService` в `repository/*`, тесты перенесены туда же
+- `user-note/repository-mongo/src/test/java/com/example/usernote/MongoUserNoteServiceTests.java` — [REVIEW] — новый 2026-10-15, те же 8 тестов через `UserNoteServiceImpl` + настоящий репозиторий, без моков — 2026-10-27 перенесён/переименован из `user-note/application-mongo/src/test/java/com/example/usernote/UserNoteServiceTests.java`
 
-#### user-note/application/mongo-reactive/ (7 файлов, было 8) — reactive Mongo скелет: webflux + data-mongodb-reactive + testcontainers-mongodb
-- `user-note/application/mongo-reactive/build.gradle.kts` — [REVIEW]
-- `user-note/application/mongo-reactive/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`, восстановлен 2026-09-13 (был вынесен в `application-core`, модуль удалён)
-- `user-note/application/mongo-reactive/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — восстановлен 2026-09-13
-- `user-note/application/mongo-reactive/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webflux` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.mongodb=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
+#### user-note/application-mongo-reactive/ (7 файлов, было 8) — reactive Mongo скелет: webflux + data-mongodb-reactive + testcontainers-mongodb
+- `user-note/application-mongo-reactive/build.gradle.kts` — [REVIEW]
+- `user-note/application-mongo-reactive/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`, восстановлен 2026-09-13 (был вынесен в `application-core`, модуль удалён)
+- `user-note/application-mongo-reactive/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — восстановлен 2026-09-13
+- `user-note/application-mongo-reactive/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webflux` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.mongodb=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
 - `user-note/application-mongodb-reactive/src/main/resources/application-mongodb.properties` — [REMOVED] 2026-08-31 (`spring.mongodb.*` connection-строки, в тестах перекрывались `@ServiceConnection`)
 - `user-note/application-mongodb-reactive/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REMOVED] 2026-09-04 (было `@Nested @ActiveProfiles("mongodb")` через `abstract ReactiveMongoTemplateTests`)
-- `user-note/application/mongo-reactive/src/test/java/com/example/usernote/UserNoteApplicationDefaultTest.java` — [REVIEW] — новый 2026-09-04, голый `contextLoads(){}` без активного профиля
-- `user-note/application/mongo-reactive/src/test/java/com/example/usernote/UserNoteApplicationMongoDBTest.java` — [REVIEW] — новый 2026-09-04, `@ActiveProfiles("MongoDB")`
+- `user-note/application-mongo-reactive/src/test/java/com/example/usernote/UserNoteApplicationDefaultTest.java` — [REVIEW] — новый 2026-09-04, голый `contextLoads(){}` без активного профиля
+- `user-note/application-mongo-reactive/src/test/java/com/example/usernote/UserNoteApplicationMongoDBTest.java` — [REVIEW] — новый 2026-09-04, `@ActiveProfiles("MongoDB")`
 - `user-note/application-mongodb-reactive/src/test/java/com/example/usernote/UserNoteTestApplication.java` — [REMOVED] — удалён пользователем 2026-09-21 (причина не названа; был точкой входа `bootTestRun`)
-- `user-note/application/mongo-reactive/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — `@Bean @Profile("mongodb") @ServiceConnection MongoDBContainer`
-- `user-note/application/mongo-reactive/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — пропущен в каталоге, добавлен 2026-09-29
-- `user-note/application/mongo-reactive/src/test/java/com/example/usernote/UserNoteIntegrationTests.java` — [REVIEW] — новый 2026-10-15, базовый flow `POST` → `GET` → `PATCH` → `DELETE` → `GET` = 404, `WebTestClient`, реальный MongoDB в Testcontainers
-- `user-note/application/mongo-reactive/src/test/java/com/example/usernote/ReactiveUserNoteRepositoryTests.java` — [REMOVED] — новый 2026-10-15, 8 тестов контракта репозитория (успех и «не найдено» на каждый метод, `create`/`update` — ещё проверка сохранённого состояния), `@DataMongoTest` (+ `@Import` реального контейнера), подготовка и чтение состояния через `ReactiveMongoOperations`, ответы через `StepVerifier` — удалён 2026-10-27: сервисный слой убран, адаптеры `*UserNoteService` в `repository/*`, тесты перенесены туда же
-- `user-note/repository/mongo-reactive/src/test/java/com/example/usernote/ReactiveMongoUserNoteServiceTests.java` — [REVIEW] — новый 2026-10-15, те же 8 тестов через `ReactiveUserNoteServiceImpl` + настоящий репозиторий, без моков — 2026-10-27 перенесён/переименован из `user-note/application/mongo-reactive/src/test/java/com/example/usernote/ReactiveUserNoteServiceTests.java`
+- `user-note/application-mongo-reactive/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — `@Bean @Profile("mongodb") @ServiceConnection MongoDBContainer`
+- `user-note/application-mongo-reactive/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — пропущен в каталоге, добавлен 2026-09-29
+- `user-note/application-mongo-reactive/src/test/java/com/example/usernote/UserNoteIntegrationTests.java` — [REVIEW] — новый 2026-10-15, базовый flow `POST` → `GET` → `PATCH` → `DELETE` → `GET` = 404, `WebTestClient`, реальный MongoDB в Testcontainers
+- `user-note/application-mongo-reactive/src/test/java/com/example/usernote/ReactiveUserNoteRepositoryTests.java` — [REMOVED] — новый 2026-10-15, 8 тестов контракта репозитория (успех и «не найдено» на каждый метод, `create`/`update` — ещё проверка сохранённого состояния), `@DataMongoTest` (+ `@Import` реального контейнера), подготовка и чтение состояния через `ReactiveMongoOperations`, ответы через `StepVerifier` — удалён 2026-10-27: сервисный слой убран, адаптеры `*UserNoteService` в `repository/*`, тесты перенесены туда же
+- `user-note/repository-mongo-reactive/src/test/java/com/example/usernote/ReactiveMongoUserNoteServiceTests.java` — [REVIEW] — новый 2026-10-15, те же 8 тестов через `ReactiveUserNoteServiceImpl` + настоящий репозиторий, без моков — 2026-10-27 перенесён/переименован из `user-note/application-mongo-reactive/src/test/java/com/example/usernote/ReactiveUserNoteServiceTests.java`
 
 #### user-note/application-r2dbc/ — модель application-driver — [REMOVED] 2026-09-05
 - удалён целиком (`git rm`), заменён на `application-h2-reactive`/`application-mysql-reactive`/`application-postgresql-reactive` ниже — та же причина, что у `application-{jdbc,jpa}` выше
 
-#### user-note/application/r2dbc/ (5 файлов, было 4) — новый 2026-09-05, reactive SQL по модели application-vendor: только data-r2dbc+`database-r2dbc-h2`, H2-драйвер изолирован от mysql/postgresql-reactive-модулей, без Testcontainers
-- `user-note/application/r2dbc/build.gradle.kts` — [REVIEW]
-- `user-note/application/r2dbc/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`, восстановлен 2026-09-13 (был вынесен в `application-core`, модуль удалён)
-- `user-note/application/r2dbc/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — восстановлен 2026-09-13
-- `user-note/application/r2dbc/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webflux` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.r2dbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
-- `user-note/application/r2dbc/src/main/resources/schema.sql` — [REVIEW] — новый 2026-10-15, как в `application-postgresql` (`"user_note"`, `UUID`; H2 в режиме embedded); выполняет `spring.sql.init` через R2DBC
-- `user-note/application/r2dbc/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — 2026-09-06: `@Import(UserNoteTestConfiguration.class)` — унифицирован со всеми 8 модулями
-- `user-note/application/r2dbc/src/test/java/com/example/usernote/UserNoteIntegrationTests.java` — [REVIEW] — новый 2026-10-15, базовый flow `POST` → `GET` → `PATCH` → `DELETE` → `GET` = 404 на `WebTestClient` (`@SpringBootTest` + `@AutoConfigureWebTestClient`, окружение `MOCK`)
-- `user-note/application/r2dbc/src/test/java/com/example/usernote/ReactiveUserNoteRepositoryTests.java` — [REMOVED] — новый 2026-10-15, 8 тестов контракта репозитория (успех и «не найдено» на каждый метод, `create`/`update` — ещё проверка сохранённого состояния), `@DataR2dbcTest`, подготовка и чтение состояния через `R2dbcEntityTemplate`, ответы через `StepVerifier` — удалён 2026-10-27: сервисный слой убран, адаптеры `*UserNoteService` в `repository/*`, тесты перенесены туда же
-- `user-note/repository/r2dbc/src/test/java/com/example/usernote/R2dbcUserNoteServiceTests.java` — [REVIEW] — новый 2026-10-15, те же 8 тестов через `ReactiveUserNoteServiceImpl` + настоящий репозиторий, без моков — 2026-10-27 перенесён/переименован из `user-note/application/r2dbc/src/test/java/com/example/usernote/ReactiveUserNoteServiceTests.java`
-- `user-note/application/r2dbc/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — новый 2026-09-06, тривиальный пустой `@TestConfiguration`
+#### user-note/application-r2dbc/ (5 файлов, было 4) — новый 2026-09-05, reactive SQL по модели application-vendor: только data-r2dbc+`database-r2dbc-h2`, H2-драйвер изолирован от mysql/postgresql-reactive-модулей, без Testcontainers
+- `user-note/application-r2dbc/build.gradle.kts` — [REVIEW]
+- `user-note/application-r2dbc/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`, восстановлен 2026-09-13 (был вынесен в `application-core`, модуль удалён)
+- `user-note/application-r2dbc/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — восстановлен 2026-09-13
+- `user-note/application-r2dbc/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webflux` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.r2dbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
+- `user-note/application-r2dbc/src/main/resources/schema.sql` — [REVIEW] — новый 2026-10-15, как в `application-postgresql` (`"user_note"`, `UUID`; H2 в режиме embedded); выполняет `spring.sql.init` через R2DBC
+- `user-note/application-r2dbc/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — 2026-09-06: `@Import(UserNoteTestConfiguration.class)` — унифицирован со всеми 8 модулями
+- `user-note/application-r2dbc/src/test/java/com/example/usernote/UserNoteIntegrationTests.java` — [REVIEW] — новый 2026-10-15, базовый flow `POST` → `GET` → `PATCH` → `DELETE` → `GET` = 404 на `WebTestClient` (`@SpringBootTest` + `@AutoConfigureWebTestClient`, окружение `MOCK`)
+- `user-note/application-r2dbc/src/test/java/com/example/usernote/ReactiveUserNoteRepositoryTests.java` — [REMOVED] — новый 2026-10-15, 8 тестов контракта репозитория (успех и «не найдено» на каждый метод, `create`/`update` — ещё проверка сохранённого состояния), `@DataR2dbcTest`, подготовка и чтение состояния через `R2dbcEntityTemplate`, ответы через `StepVerifier` — удалён 2026-10-27: сервисный слой убран, адаптеры `*UserNoteService` в `repository/*`, тесты перенесены туда же
+- `user-note/repository-r2dbc/src/test/java/com/example/usernote/R2dbcUserNoteServiceTests.java` — [REVIEW] — новый 2026-10-15, те же 8 тестов через `ReactiveUserNoteServiceImpl` + настоящий репозиторий, без моков — 2026-10-27 перенесён/переименован из `user-note/application-r2dbc/src/test/java/com/example/usernote/ReactiveUserNoteServiceTests.java`
+- `user-note/application-r2dbc/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — новый 2026-09-06, тривиальный пустой `@TestConfiguration`
 
-#### user-note/application/r2dbc/ (6 файлов, было 7) — новый 2026-09-05, reactive SQL: data-r2dbc+`database-r2dbc-mysql`+testcontainers(-r2dbc)-mysql; `@Profile`/`@ActiveProfiles` сняты, как и у sync-вендорных модулей
-- `user-note/application/r2dbc/build.gradle.kts` — [REVIEW]
-- `user-note/application/r2dbc/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`, восстановлен 2026-09-13 (был вынесен в `application-core`, модуль удалён)
-- `user-note/repository/r2dbc/src/main/java/com/example/usernote/MySQLConversionsConfiguration.java` — [REVIEW] — новый 2026-10-15, бин `R2dbcCustomConversions` (диалект по `ConnectionFactory`) с конвертерами `UUID` ↔ `String`: r2dbc-mysql не кодирует `UUID` (`Cannot encode class java.util.UUID`) — 2026-10-27 перенесён/переименован из `user-note/application/r2dbc/src/main/java/com/example/usernote/MySQLConversionsConfiguration.java`
-- `user-note/application/r2dbc/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — восстановлен 2026-09-13
-- `user-note/application/r2dbc/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webflux` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.r2dbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
-- `user-note/application/r2dbc/src/main/resources/schema.sql` — [REVIEW] — новый 2026-10-15, как в `application-mysql` (`CHAR(36)`, обратные кавычки); выполняет `spring.sql.init` через R2DBC; `spring.sql.init.mode=always` в `application.properties`
-- `user-note/application/r2dbc/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — `@Import(UserNoteTestConfiguration.class)`, без `@ActiveProfiles`
-- `user-note/application/r2dbc/src/test/java/com/example/usernote/UserNoteIntegrationTests.java` — [REVIEW] — новый 2026-10-15, базовый flow `POST` → `GET` → `PATCH` → `DELETE` → `GET` = 404 на `WebTestClient` (`@SpringBootTest` + `@AutoConfigureWebTestClient`, окружение `MOCK`), реальный MySQL в Testcontainers
-- `user-note/application/r2dbc/src/test/java/com/example/usernote/ReactiveUserNoteRepositoryTests.java` — [REMOVED] — новый 2026-10-15, 8 тестов контракта репозитория (успех и «не найдено» на каждый метод, `create`/`update` — ещё проверка сохранённого состояния), `@DataR2dbcTest` (+ `@Import` реального контейнера, `MySQLConversionsConfiguration` — слайс не подхватывает конфигурацию листа), подготовка и чтение состояния через `R2dbcEntityTemplate`, ответы через `StepVerifier` — удалён 2026-10-27: сервисный слой убран, адаптеры `*UserNoteService` в `repository/*`, тесты перенесены туда же
-- `user-note/repository/r2dbc/src/test/java/com/example/usernote/R2dbcUserNoteServiceTests.java` — [REVIEW] — новый 2026-10-15, те же 8 тестов через `ReactiveUserNoteServiceImpl` + настоящий репозиторий, без моков — 2026-10-27 перенесён/переименован из `user-note/application/r2dbc/src/test/java/com/example/usernote/ReactiveUserNoteServiceTests.java`
-- `user-note/application/r2dbc/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — `@Bean @ServiceConnection MySQLContainer`, без `@Profile` (в R2DBC-модуле даёт `R2dbcConnectionDetails`)
+#### user-note/application-r2dbc/ (6 файлов, было 7) — новый 2026-09-05, reactive SQL: data-r2dbc+`database-r2dbc-mysql`+testcontainers(-r2dbc)-mysql; `@Profile`/`@ActiveProfiles` сняты, как и у sync-вендорных модулей
+- `user-note/application-r2dbc/build.gradle.kts` — [REVIEW]
+- `user-note/application-r2dbc/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`, восстановлен 2026-09-13 (был вынесен в `application-core`, модуль удалён)
+- `user-note/repository-r2dbc/src/main/java/com/example/usernote/MySQLConversionsConfiguration.java` — [REVIEW] — новый 2026-10-15, бин `R2dbcCustomConversions` (диалект по `ConnectionFactory`) с конвертерами `UUID` ↔ `String`: r2dbc-mysql не кодирует `UUID` (`Cannot encode class java.util.UUID`) — 2026-10-27 перенесён/переименован из `user-note/application-r2dbc/src/main/java/com/example/usernote/MySQLConversionsConfiguration.java`
+- `user-note/application-r2dbc/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — восстановлен 2026-09-13
+- `user-note/application-r2dbc/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webflux` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.r2dbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
+- `user-note/application-r2dbc/src/main/resources/schema.sql` — [REVIEW] — новый 2026-10-15, как в `application-mysql` (`CHAR(36)`, обратные кавычки); выполняет `spring.sql.init` через R2DBC; `spring.sql.init.mode=always` в `application.properties`
+- `user-note/application-r2dbc/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — `@Import(UserNoteTestConfiguration.class)`, без `@ActiveProfiles`
+- `user-note/application-r2dbc/src/test/java/com/example/usernote/UserNoteIntegrationTests.java` — [REVIEW] — новый 2026-10-15, базовый flow `POST` → `GET` → `PATCH` → `DELETE` → `GET` = 404 на `WebTestClient` (`@SpringBootTest` + `@AutoConfigureWebTestClient`, окружение `MOCK`), реальный MySQL в Testcontainers
+- `user-note/application-r2dbc/src/test/java/com/example/usernote/ReactiveUserNoteRepositoryTests.java` — [REMOVED] — новый 2026-10-15, 8 тестов контракта репозитория (успех и «не найдено» на каждый метод, `create`/`update` — ещё проверка сохранённого состояния), `@DataR2dbcTest` (+ `@Import` реального контейнера, `MySQLConversionsConfiguration` — слайс не подхватывает конфигурацию листа), подготовка и чтение состояния через `R2dbcEntityTemplate`, ответы через `StepVerifier` — удалён 2026-10-27: сервисный слой убран, адаптеры `*UserNoteService` в `repository/*`, тесты перенесены туда же
+- `user-note/repository-r2dbc/src/test/java/com/example/usernote/R2dbcUserNoteServiceTests.java` — [REVIEW] — новый 2026-10-15, те же 8 тестов через `ReactiveUserNoteServiceImpl` + настоящий репозиторий, без моков — 2026-10-27 перенесён/переименован из `user-note/application-r2dbc/src/test/java/com/example/usernote/ReactiveUserNoteServiceTests.java`
+- `user-note/application-r2dbc/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — `@Bean @ServiceConnection MySQLContainer`, без `@Profile` (в R2DBC-модуле даёт `R2dbcConnectionDetails`)
 - `user-note/application-mysql-reactive/src/test/java/com/example/usernote/UserNoteTestApplication.java` — [REMOVED] — удалён пользователем 2026-09-21 (причина не названа; был точкой входа `bootTestRun`)
 
-#### user-note/application/r2dbc/ (6 файлов, было 7) — новый 2026-09-05, то же, что application-mysql-reactive/, но `database-r2dbc-postgresql`+testcontainers-postgresql+`PostgreSQLContainer`
-- `user-note/application/r2dbc/build.gradle.kts` — [REVIEW]
-- `user-note/application/r2dbc/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`, восстановлен 2026-09-13 (был вынесен в `application-core`, модуль удалён)
-- `user-note/application/r2dbc/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — восстановлен 2026-09-13
-- `user-note/application/r2dbc/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webflux` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.r2dbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
-- `user-note/application/r2dbc/src/main/resources/schema.sql` — [REVIEW] — новый 2026-10-15, как в `application-postgresql` (`UUID`); выполняет `spring.sql.init` через R2DBC; `spring.sql.init.mode=always` в `application.properties`
-- `user-note/application/r2dbc/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — `@Import(UserNoteTestConfiguration.class)`, без `@ActiveProfiles`
-- `user-note/application/r2dbc/src/test/java/com/example/usernote/UserNoteIntegrationTests.java` — [REVIEW] — новый 2026-10-15, базовый flow `POST` → `GET` → `PATCH` → `DELETE` → `GET` = 404 на `WebTestClient` (`@SpringBootTest` + `@AutoConfigureWebTestClient`, окружение `MOCK`), реальный PostgreSQL в Testcontainers
-- `user-note/application/r2dbc/src/test/java/com/example/usernote/ReactiveUserNoteRepositoryTests.java` — [REMOVED] — новый 2026-10-15, 8 тестов контракта репозитория (успех и «не найдено» на каждый метод, `create`/`update` — ещё проверка сохранённого состояния), `@DataR2dbcTest` (+ `@Import` реального контейнера), подготовка и чтение состояния через `R2dbcEntityTemplate`, ответы через `StepVerifier` — удалён 2026-10-27: сервисный слой убран, адаптеры `*UserNoteService` в `repository/*`, тесты перенесены туда же
-- `user-note/repository/r2dbc/src/test/java/com/example/usernote/R2dbcUserNoteServiceTests.java` — [REVIEW] — новый 2026-10-15, те же 8 тестов через `ReactiveUserNoteServiceImpl` + настоящий репозиторий, без моков — 2026-10-27 перенесён/переименован из `user-note/application/r2dbc/src/test/java/com/example/usernote/ReactiveUserNoteServiceTests.java`
-- `user-note/application/r2dbc/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — `@Bean @ServiceConnection PostgreSQLContainer`, без `@Profile`
+#### user-note/application-r2dbc/ (6 файлов, было 7) — новый 2026-09-05, то же, что application-mysql-reactive/, но `database-r2dbc-postgresql`+testcontainers-postgresql+`PostgreSQLContainer`
+- `user-note/application-r2dbc/build.gradle.kts` — [REVIEW]
+- `user-note/application-r2dbc/src/main/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — голый `@SpringBootApplication`, восстановлен 2026-09-13 (был вынесен в `application-core`, модуль удалён)
+- `user-note/application-r2dbc/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — восстановлен 2026-09-13
+- `user-note/application-r2dbc/src/main/resources/application.properties` — [REVIEW] — `spring.profiles.include=controller-webflux` + `logging.level.org.springframework.data=DEBUG` и `logging.level.org.springframework.data.r2dbc=DEBUG` (логи Spring Data перенесены сюда из `application-data-<tech>.properties` модулей `data-*`, 2026-10-03)
+- `user-note/application-r2dbc/src/main/resources/schema.sql` — [REVIEW] — новый 2026-10-15, как в `application-postgresql` (`UUID`); выполняет `spring.sql.init` через R2DBC; `spring.sql.init.mode=always` в `application.properties`
+- `user-note/application-r2dbc/src/test/java/com/example/usernote/UserNoteApplicationTests.java` — [REVIEW] — `@Import(UserNoteTestConfiguration.class)`, без `@ActiveProfiles`
+- `user-note/application-r2dbc/src/test/java/com/example/usernote/UserNoteIntegrationTests.java` — [REVIEW] — новый 2026-10-15, базовый flow `POST` → `GET` → `PATCH` → `DELETE` → `GET` = 404 на `WebTestClient` (`@SpringBootTest` + `@AutoConfigureWebTestClient`, окружение `MOCK`), реальный PostgreSQL в Testcontainers
+- `user-note/application-r2dbc/src/test/java/com/example/usernote/ReactiveUserNoteRepositoryTests.java` — [REMOVED] — новый 2026-10-15, 8 тестов контракта репозитория (успех и «не найдено» на каждый метод, `create`/`update` — ещё проверка сохранённого состояния), `@DataR2dbcTest` (+ `@Import` реального контейнера), подготовка и чтение состояния через `R2dbcEntityTemplate`, ответы через `StepVerifier` — удалён 2026-10-27: сервисный слой убран, адаптеры `*UserNoteService` в `repository/*`, тесты перенесены туда же
+- `user-note/repository-r2dbc/src/test/java/com/example/usernote/R2dbcUserNoteServiceTests.java` — [REVIEW] — новый 2026-10-15, те же 8 тестов через `ReactiveUserNoteServiceImpl` + настоящий репозиторий, без моков — 2026-10-27 перенесён/переименован из `user-note/application-r2dbc/src/test/java/com/example/usernote/ReactiveUserNoteServiceTests.java`
+- `user-note/application-r2dbc/src/test/java/com/example/usernote/UserNoteTestConfiguration.java` — [REVIEW] — `@Bean @ServiceConnection PostgreSQLContainer`, без `@Profile`
 - `user-note/application-postgresql-reactive/src/test/java/com/example/usernote/UserNoteTestApplication.java` — [REMOVED] — удалён пользователем 2026-09-21 (причина не названа; был точкой входа `bootTestRun`)
 
 #### user-note/service/service-{synchronous,reactive}/ — с 2026-10-03 заменили `data-{jdbc,r2dbc,mongodb,mongodb-reactive}` (сущность, репозиторий, сервис без технологии; плагин `spring-boot-data-commons`); строки `data-mongodb*`, тесты и `application-data-*.properties` ниже — [REMOVED]
 - `user-note/service/imperative/build.gradle.kts` — [REMOVED] — подключён к `application-{h2,mysql,postgresql}` через `implementation(project(":user-note:data:jdbc"))` — удалён 2026-10-27: сервисный слой убран, адаптеры `*UserNoteService` в `repository/*`, тесты перенесены туда же
 - `user-note/service/imperative/src/main/java/com/example/usernote/package-info.java` — [REMOVED] — новый 2026-09-24, `@NullMarked`, был пропущен при заведении модуля 2026-09-21 — удалён 2026-10-27: сервисный слой убран, адаптеры `*UserNoteService` в `repository/*`, тесты перенесены туда же
-- `user-note/contract/common/src/main/java/com/example/usernote/UserNote.java` — [REMOVED] — перенесён из `service-commons` в `contract-commons` 2026-10-08 (порт хранилища использует сущность в сигнатурах); пустой класс, 2026-09-21; запись без аннотаций (без `@Id`), перенесена из `service-synchronous` 2026-10-03; удалён 2026-10-09
-- `user-note/contract/common/src/main/java/com/example/usernote/UserNoteMapper.java` — [REMOVED] — перенесён из `service-commons` в `contract-commons` 2026-10-08, с того же дня интерфейс MapStruct (`@Mapper`, `userNoteResponseBodyFrom` и `toEntity`), реализацию `UserNoteMapperImpl` генерирует процессор; новый 2026-10-08, `UserNoteEntity` → `UserNoteResponseBody` (`userNoteResponseBodyFrom`), один на оба стека; заменил приватный метод сервиса («приватных методов избегаем»); `service-commons` теперь зависит от `contract-commons`; удалён 2026-10-09
-- `user-note/contract/common/src/test/java/com/example/usernote/UserNoteMapperTests.java` — [REMOVED] — удалён 2026-10-09 (мапперы не тестируем), был новый 2026-10-08, 2 теста маппера (`userNoteResponseBodyFrom`, `toEntity`) с тремя разными `UUID`, чтобы перепутанные поля нельзя было не заметить
+- `user-note/contract-common/src/main/java/com/example/usernote/UserNote.java` — [REMOVED] — перенесён из `service-commons` в `contract-commons` 2026-10-08 (порт хранилища использует сущность в сигнатурах); пустой класс, 2026-09-21; запись без аннотаций (без `@Id`), перенесена из `service-synchronous` 2026-10-03; удалён 2026-10-09
+- `user-note/contract-common/src/main/java/com/example/usernote/UserNoteMapper.java` — [REMOVED] — перенесён из `service-commons` в `contract-commons` 2026-10-08, с того же дня интерфейс MapStruct (`@Mapper`, `userNoteResponseBodyFrom` и `toEntity`), реализацию `UserNoteMapperImpl` генерирует процессор; новый 2026-10-08, `UserNoteEntity` → `UserNoteResponseBody` (`userNoteResponseBodyFrom`), один на оба стека; заменил приватный метод сервиса («приватных методов избегаем»); `service-commons` теперь зависит от `contract-commons`; удалён 2026-10-09
+- `user-note/contract-common/src/test/java/com/example/usernote/UserNoteMapperTests.java` — [REMOVED] — удалён 2026-10-09 (мапперы не тестируем), был новый 2026-10-08, 2 теста маппера (`userNoteResponseBodyFrom`, `toEntity`) с тремя разными `UUID`, чтобы перепутанные поля нельзя было не заметить
 - `user-note/service/commons/build.gradle.kts` — [REMOVED] — модуль `user-note/service/commons` удалён 2026-10-08 (сущность и маппер перенесены в `contract-commons`); новый 2026-10-03, `id("com.example.service-commons")`
 - `user-note/service/commons/src/main/java/com/example/usernote/package-info.java` — [REMOVED] — модуль `user-note/service/commons` удалён 2026-10-08 (сущность и маппер перенесены в `contract-commons`); новый 2026-10-03, `@NullMarked`
-- `user-note/contract/imperative/src/main/java/com/example/usernote/UserNoteRepository.java` — [REMOVED] — перенесён из `service-synchronous` в `contract-synchronous` 2026-10-08 (driven-порт хранилища в контракте); `ListCrudRepository<UserNote, UUID>`, 2026-09-21 — удалён 2026-10-27: сервисный слой убран, адаптеры `*UserNoteService` в `repository/*`, тесты перенесены туда же
-- `user-note/repository/jdbc/src/main/resources/application-data-jdbc.properties` — [REMOVED] — `logging.level.org.springframework.data=DEBUG` + `...data.jdbc=DEBUG` (2026-09-21); подключается строкой `spring.profiles.include=data-jdbc` в `application.properties` листьев `application-{h2,mysql,postgresql}` …; удалён 2026-10-03 (`data-*` сведены к `service-*`)
-- `user-note/repository/jdbc/src/test/java/com/example/usernote/UserNoteRepositoryTests.java` — [REMOVED] — smoke: слайс-аннотация технологии (`@DataJdbcTest`/`@DataR2dbcTest`/`@DataMongoTest`) + пустой `contextLoads()`; зеркально остальным data-модулям (2026-09-21) …; удалён 2026-10-03 (`data-*` сведены к `service-*`); удалён 2026-10-11 (лишний по матрице тестов: Repository проверяет `@DataJdbcTest` в листе)
-- `user-note/repository/jdbc/src/test/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — новый 2026-09-21, test-scope `@SpringBootApplication` (точка входа слайс-теста, как `UserNoteApplication` в `application-*`); побайтово одинаков во всех 6 модулях …; удалён 2026-10-03 (`data-*` сведены к `service-*`); удалён 2026-10-11 (лишний по матрице тестов: Repository проверяет `@DataJdbcTest` в листе) — возвращён 2026-10-27: точка входа слайса для тестов адаптера в `repository/*`
+- `user-note/contract-imperative/src/main/java/com/example/usernote/UserNoteRepository.java` — [REMOVED] — перенесён из `service-synchronous` в `contract-synchronous` 2026-10-08 (driven-порт хранилища в контракте); `ListCrudRepository<UserNote, UUID>`, 2026-09-21 — удалён 2026-10-27: сервисный слой убран, адаптеры `*UserNoteService` в `repository/*`, тесты перенесены туда же
+- `user-note/repository-jdbc/src/main/resources/application-data-jdbc.properties` — [REMOVED] — `logging.level.org.springframework.data=DEBUG` + `...data.jdbc=DEBUG` (2026-09-21); подключается строкой `spring.profiles.include=data-jdbc` в `application.properties` листьев `application-{h2,mysql,postgresql}` …; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user-note/repository-jdbc/src/test/java/com/example/usernote/UserNoteRepositoryTests.java` — [REMOVED] — smoke: слайс-аннотация технологии (`@DataJdbcTest`/`@DataR2dbcTest`/`@DataMongoTest`) + пустой `contextLoads()`; зеркально остальным data-модулям (2026-09-21) …; удалён 2026-10-03 (`data-*` сведены к `service-*`); удалён 2026-10-11 (лишний по матрице тестов: Repository проверяет `@DataJdbcTest` в листе)
+- `user-note/repository-jdbc/src/test/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — новый 2026-09-21, test-scope `@SpringBootApplication` (точка входа слайс-теста, как `UserNoteApplication` в `application-*`); побайтово одинаков во всех 6 модулях …; удалён 2026-10-03 (`data-*` сведены к `service-*`); удалён 2026-10-11 (лишний по матрице тестов: Repository проверяет `@DataJdbcTest` в листе) — возвращён 2026-10-27: точка входа слайса для тестов адаптера в `repository/*`
 - `user-note/data-jpa/build.gradle.kts` — [REMOVED] — удалён 2026-09-05 (домен без связей между сущностями, риск `NoUniqueBeanDefinitionException` от двух адаптеров одного порта), тем же вечером восстановлен как скелет «про запас» …
 - `user-note/repository/data-mongodb/build.gradle.kts` — [REMOVED]; удалён 2026-10-03 (`data-*` сведены к `service-*`)
 - `user-note/repository/data-mongodb/src/main/java/com/example/usernote/package-info.java` — [REMOVED] — новый 2026-09-24, `@NullMarked`, был пропущен при заведении модуля 2026-09-21; удалён 2026-10-03 (`data-*` сведены к `service-*`)
@@ -277,51 +277,51 @@
 - `user-note/service/reactive/build.gradle.kts` — [REMOVED] — удалён 2026-10-27: сервисный слой убран, адаптеры `*UserNoteService` в `repository/*`, тесты перенесены туда же
 - `user-note/service/reactive/src/main/java/com/example/usernote/package-info.java` — [REMOVED] — новый 2026-09-24, `@NullMarked`, был пропущен при заведении модуля 2026-09-21 — удалён 2026-10-27: сервисный слой убран, адаптеры `*UserNoteService` в `repository/*`, тесты перенесены туда же
 - `user-note/service/reactive/src/main/java/com/example/usernote/UserNote.java` — [REMOVED] — пустой класс, 2026-09-21; перенесён в `service-commons` 2026-10-03
-- `user-note/contract/reactive/src/main/java/com/example/usernote/ReactiveUserNoteRepository.java` — [REMOVED] — перенесён из `service-reactive` в `contract-reactive` 2026-10-08 (зеркально sync); `ReactiveCrudRepository<UserNote, UUID>`, 2026-09-21 — удалён 2026-10-27: сервисный слой убран, адаптеры `*UserNoteService` в `repository/*`, тесты перенесены туда же
+- `user-note/contract-reactive/src/main/java/com/example/usernote/ReactiveUserNoteRepository.java` — [REMOVED] — перенесён из `service-reactive` в `contract-reactive` 2026-10-08 (зеркально sync); `ReactiveCrudRepository<UserNote, UUID>`, 2026-09-21 — удалён 2026-10-27: сервисный слой убран, адаптеры `*UserNoteService` в `repository/*`, тесты перенесены туда же
 - `user-note/service/reactive/src/main/resources/application-data-r2dbc.properties` — [REVIEW] — `logging.level.org.springframework.data=DEBUG` + `...data.r2dbc=DEBUG` (2026-09-21); подключается строкой `spring.profiles.include=data-r2dbc` в `application.properties` листьев …
-- `user-note/repository/r2dbc/src/test/java/com/example/usernote/UserNoteRepositoryTests.java` — [REMOVED] — smoke: слайс-аннотация технологии (`@DataJdbcTest`/`@DataR2dbcTest`/`@DataMongoTest`) + пустой `contextLoads()`; зеркально остальным data-модулям (2026-09-21) …; удалён 2026-10-03 (`data-*` сведены к `service-*`)
-- `user-note/repository/r2dbc/src/test/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — новый 2026-09-21, test-scope `@SpringBootApplication` (точка входа слайс-теста, как `UserNoteApplication` в `application-*`); побайтово одинаков во всех 6 модулях …; удалён 2026-10-03 (`data-*` сведены к `service-*`) — возвращён 2026-10-27: точка входа слайса для тестов адаптера в `repository/*`
+- `user-note/repository-r2dbc/src/test/java/com/example/usernote/UserNoteRepositoryTests.java` — [REMOVED] — smoke: слайс-аннотация технологии (`@DataJdbcTest`/`@DataR2dbcTest`/`@DataMongoTest`) + пустой `contextLoads()`; зеркально остальным data-модулям (2026-09-21) …; удалён 2026-10-03 (`data-*` сведены к `service-*`)
+- `user-note/repository-r2dbc/src/test/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — новый 2026-09-21, test-scope `@SpringBootApplication` (точка входа слайс-теста, как `UserNoteApplication` в `application-*`); побайтово одинаков во всех 6 модулях …; удалён 2026-10-03 (`data-*` сведены к `service-*`) — возвращён 2026-10-27: точка входа слайса для тестов адаптера в `repository/*`
 - `user-note/service/imperative/src/main/java/com/example/usernote/UserNoteServiceImpl.java` — [REMOVED] — переименован 2026-10-09 из `UserNoteService` (имя занял интерфейс контракта); прослойка: 1 строка на метод, вызывает `UserNoteRepository` — удалён 2026-10-27: сервисный слой убран, адаптеры `*UserNoteService` в `repository/*`, тесты перенесены туда же
 - `user-note/service/imperative/src/test/java/com/example/usernote/UserNoteServiceImplTests.java` — [REMOVED] — удалён 2026-10-11 по указанию пользователя: сервис — делегирование без логики, четыре теста с заглушкой репозитория не могли упасть из-за дефекта в нашем коде; вернуть, когда у сервиса появятся правила (инвариант `OWNER`, роль `NONE`); прежний вид — в git (коммит `f63a953d`)
-- `user-note/contract/common/src/main/java/com/example/usernote/UserNoteNotFoundException.java` — [REVIEW] — новый 2026-10-08, `RuntimeException` с `UUID id` в конструкторе; «не найдено» для сценариев (контроллерная часть: 404 — не сделана)
-- `user-note/contract/common/src/main/java/com/example/usernote/UserNoteAlreadyExistsException.java` — [REMOVED] — новый 2026-10-08, `RuntimeException` с `UUID id`, «уже существует» для `create` (409 — не сделано); удалён 2026-10-11 (id выдаёт адаптер, конфликт по id невозможен), вернуть вместе с проверкой уникальности пары `(userId, noteId)`
-- `user-note/contract/common/src/main/java/com/example/usernote/UserNoteRequestBody.java` — [REVIEW] — новый 2026-10-09, тело запроса `(userId, noteId, role)` на `POST`, `@NotNull`, заменил `UserNoteRequest`
-- `user-note/contract/common/src/main/java/com/example/usernote/UserNoteResponseBody.java` — [REVIEW] — новый 2026-10-09, тело ответа `(id, userId, noteId, role)`, заменил `UserNoteResponse`
-- `user-note/contract/common/src/main/java/com/example/usernote/UserNoteRole.java` — [REVIEW] — новый 2026-10-09, enum `OWNER`, `EDITOR`, `COMMENTER`, `VIEWER`, `NONE` — от больших прав к меньшим
-- `user-note/contract/imperative/src/main/java/com/example/usernote/CreateUserNote.java` — [REMOVED] — новый 2026-10-09, порт сценария создания, `createUserNote(UserNoteRequestBody)`, без id и без `ById`; удалён 2026-10-09 (порты-сценарии объединены в `UserNoteService`)
-- `user-note/contract/imperative/src/main/java/com/example/usernote/UpdateUserNoteRoleById.java` — [REMOVED] — новый 2026-10-09, порт сценария смены роли, `updateUserNoteRoleById(UUID, UserNoteRole)`, `PATCH /{id}`; удалён 2026-10-09 (порты-сценарии объединены в `UserNoteService`)
-- `user-note/contract/reactive/src/main/java/com/example/usernote/ReactiveCreateUserNote.java` — [REMOVED] — новый 2026-10-09, reactive-парный `CreateUserNote`; удалён 2026-10-09 (порты-сценарии объединены в `UserNoteService`)
-- `user-note/contract/reactive/src/main/java/com/example/usernote/ReactiveUpdateUserNoteRoleById.java` — [REMOVED] — новый 2026-10-09, reactive-парный `UpdateUserNoteRoleById`; удалён 2026-10-09 (порты-сценарии объединены в `UserNoteService`)
-- `user-note/contract/imperative/src/main/java/com/example/usernote/UserNoteService.java` — [REVIEW] — новый 2026-10-09, общий интерфейс сценариев (`find`/`create`/`updateRole`/`delete`) вместо четырёх портов
-- `user-note/contract/reactive/src/main/java/com/example/usernote/ReactiveUserNoteService.java` — [REVIEW] — новый 2026-10-09, reactive-парный `UserNoteService`
+- `user-note/contract-common/src/main/java/com/example/usernote/UserNoteNotFoundException.java` — [REVIEW] — новый 2026-10-08, `RuntimeException` с `UUID id` в конструкторе; «не найдено» для сценариев (контроллерная часть: 404 — не сделана)
+- `user-note/contract-common/src/main/java/com/example/usernote/UserNoteAlreadyExistsException.java` — [REMOVED] — новый 2026-10-08, `RuntimeException` с `UUID id`, «уже существует» для `create` (409 — не сделано); удалён 2026-10-11 (id выдаёт адаптер, конфликт по id невозможен), вернуть вместе с проверкой уникальности пары `(userId, noteId)`
+- `user-note/contract-common/src/main/java/com/example/usernote/UserNoteRequestBody.java` — [REVIEW] — новый 2026-10-09, тело запроса `(userId, noteId, role)` на `POST`, `@NotNull`, заменил `UserNoteRequest`
+- `user-note/contract-common/src/main/java/com/example/usernote/UserNoteResponseBody.java` — [REVIEW] — новый 2026-10-09, тело ответа `(id, userId, noteId, role)`, заменил `UserNoteResponse`
+- `user-note/contract-common/src/main/java/com/example/usernote/UserNoteRole.java` — [REVIEW] — новый 2026-10-09, enum `OWNER`, `EDITOR`, `COMMENTER`, `VIEWER`, `NONE` — от больших прав к меньшим
+- `user-note/contract-imperative/src/main/java/com/example/usernote/CreateUserNote.java` — [REMOVED] — новый 2026-10-09, порт сценария создания, `createUserNote(UserNoteRequestBody)`, без id и без `ById`; удалён 2026-10-09 (порты-сценарии объединены в `UserNoteService`)
+- `user-note/contract-imperative/src/main/java/com/example/usernote/UpdateUserNoteRoleById.java` — [REMOVED] — новый 2026-10-09, порт сценария смены роли, `updateUserNoteRoleById(UUID, UserNoteRole)`, `PATCH /{id}`; удалён 2026-10-09 (порты-сценарии объединены в `UserNoteService`)
+- `user-note/contract-reactive/src/main/java/com/example/usernote/ReactiveCreateUserNote.java` — [REMOVED] — новый 2026-10-09, reactive-парный `CreateUserNote`; удалён 2026-10-09 (порты-сценарии объединены в `UserNoteService`)
+- `user-note/contract-reactive/src/main/java/com/example/usernote/ReactiveUpdateUserNoteRoleById.java` — [REMOVED] — новый 2026-10-09, reactive-парный `UpdateUserNoteRoleById`; удалён 2026-10-09 (порты-сценарии объединены в `UserNoteService`)
+- `user-note/contract-imperative/src/main/java/com/example/usernote/UserNoteService.java` — [REVIEW] — новый 2026-10-09, общий интерфейс сценариев (`find`/`create`/`updateRole`/`delete`) вместо четырёх портов
+- `user-note/contract-reactive/src/main/java/com/example/usernote/ReactiveUserNoteService.java` — [REVIEW] — новый 2026-10-09, reactive-парный `UserNoteService`
 - `user-note/service/reactive/src/test/java/com/example/usernote/ReactiveUserNoteServiceImplTests.java` — [REMOVED] — 4 теста прослойки на моках (`Mono.block()`); удалён 2026-10-15 по решению пользователя, прослойку покрывают `ReactiveUserNoteServiceTests` в листьях
 - `user-note/repository/data-mongodb/src/main/java/com/example/usernote/UserNoteService.java` — [REMOVED] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}UserNoteByIdSynchronousService`; удалён 2026-10-03 (`data-*` сведены к `service-*`)
 - `user-note/service/reactive/src/main/java/com/example/usernote/ReactiveUserNoteServiceImpl.java` — [REMOVED] — переименован 2026-10-09 из `ReactiveUserNoteService`; прослойка над `ReactiveUserNoteRepository` — удалён 2026-10-27: сервисный слой убран, адаптеры `*UserNoteService` в `repository/*`, тесты перенесены туда же
 - `user-note/repository/data-mongodb-reactive/src/main/java/com/example/usernote/UserNoteService.java` — [REMOVED] — новый 2026-10-02, единственная реализация всех 5 портов модуля (`@Service`, заглушки `UnsupportedOperationException`); заменила 5 классов `{Сценарий}UserNoteByIdReactiveService`; удалён 2026-10-03 (`data-*` сведены к `service-*`)
 
-#### user-note/controller/webmvc/ (4 файла) — новый 2026-09-21, driving-сторона sync: `id("com.example.spring-boot-webmvc")`; подключён к `application-{h2,mysql,postgresql,mongodb}` через `implementation(project(":user-note:controller:webmvc"))` …
-- `user-note/controller/webmvc/build.gradle.kts` — [REVIEW]
-- `user-note/controller/webmvc/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-09-24, `@NullMarked`, был пропущен при заведении модуля 2026-09-21
-- `user-note/controller/webmvc/src/main/java/com/example/usernote/UserNoteController.java` — [REVIEW] — пустой `@RestController`, зеркален `controller-webflux` (2026-09-21)
-- `user-note/controller/webmvc/src/main/java/com/example/usernote/UserNoteControllerAdvice.java` — [REVIEW] — новый 2026-10-11, `@RestControllerAdvice`: `UserNoteNotFoundException` → 404 `ProblemDetail` (`ProblemDetail.forStatusAndDetail`); зеркало для `controller-webflux` не сделано; имя класса не утверждено пользователем
-- `user-note/controller/webmvc/src/main/resources/application-controller-webmvc.properties` — [REVIEW] — `spring.mvc.problemdetails.enabled=true` + `logging.level.org.springframework.web=DEBUG`, вынесены из `application.properties` 4 sync-листьев …
-- `user-note/controller/webmvc/src/test/java/com/example/usernote/UserNoteControllerTests.java` — [REVIEW] — слайс веба `@WebMvcTest` + `@AutoConfigureRestTestClient` + `RestTestClient` (написан заново 2026-10-11 после недолгого перехода на `MockMvc`), 7 тестов: по методу — 200, и 404 для `find`/`update`/`delete`; тесты 400 по HTTP убраны 2026-10-11: `null` в полях записи — тесты валидации отложены (запись на будущее), неверный формат `id` в пути и пустое тело `PATCH` — поведение Spring без «реального метода» нашего кода; `.contentType(...)` не указывается, тела — объекты
-- `user-note/controller/webmvc/src/test/java/com/example/usernote/UserNoteControllerAdviceTests.java` — [REVIEW] — новый 2026-10-11, модульный тест `UserNoteControllerAdvice` без Spring: `UserNoteNotFoundException` → `ProblemDetail` со статусом 404 и `detail` из сообщения исключения (1 тест; проверка тела `ProblemDetail`, которую слайс контроллера не делает)
-- `user-note/controller/webmvc/src/test/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — новый 2026-09-21, test-scope `@SpringBootApplication` (точка входа слайс-теста, как `UserNoteApplication` в `application-*`); побайтово одинаков во всех 6 модулях …
+#### user-note/controller-webmvc/ (4 файла) — новый 2026-09-21, driving-сторона sync: `id("com.example.spring-boot-webmvc")`; подключён к `application-{h2,mysql,postgresql,mongodb}` через `implementation(project(":user-note:controller-webmvc"))` …
+- `user-note/controller-webmvc/build.gradle.kts` — [REVIEW]
+- `user-note/controller-webmvc/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-09-24, `@NullMarked`, был пропущен при заведении модуля 2026-09-21
+- `user-note/controller-webmvc/src/main/java/com/example/usernote/UserNoteController.java` — [REVIEW] — пустой `@RestController`, зеркален `controller-webflux` (2026-09-21)
+- `user-note/controller-webmvc/src/main/java/com/example/usernote/UserNoteControllerAdvice.java` — [REVIEW] — новый 2026-10-11, `@RestControllerAdvice`: `UserNoteNotFoundException` → 404 `ProblemDetail` (`ProblemDetail.forStatusAndDetail`); зеркало для `controller-webflux` не сделано; имя класса не утверждено пользователем
+- `user-note/controller-webmvc/src/main/resources/application-controller-webmvc.properties` — [REVIEW] — `spring.mvc.problemdetails.enabled=true` + `logging.level.org.springframework.web=DEBUG`, вынесены из `application.properties` 4 sync-листьев …
+- `user-note/controller-webmvc/src/test/java/com/example/usernote/UserNoteControllerTests.java` — [REVIEW] — слайс веба `@WebMvcTest` + `@AutoConfigureRestTestClient` + `RestTestClient` (написан заново 2026-10-11 после недолгого перехода на `MockMvc`), 7 тестов: по методу — 200, и 404 для `find`/`update`/`delete`; тесты 400 по HTTP убраны 2026-10-11: `null` в полях записи — тесты валидации отложены (запись на будущее), неверный формат `id` в пути и пустое тело `PATCH` — поведение Spring без «реального метода» нашего кода; `.contentType(...)` не указывается, тела — объекты
+- `user-note/controller-webmvc/src/test/java/com/example/usernote/UserNoteControllerAdviceTests.java` — [REVIEW] — новый 2026-10-11, модульный тест `UserNoteControllerAdvice` без Spring: `UserNoteNotFoundException` → `ProblemDetail` со статусом 404 и `detail` из сообщения исключения (1 тест; проверка тела `ProblemDetail`, которую слайс контроллера не делает)
+- `user-note/controller-webmvc/src/test/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — новый 2026-09-21, test-scope `@SpringBootApplication` (точка входа слайс-теста, как `UserNoteApplication` в `application-*`); побайтово одинаков во всех 6 модулях …
 
-#### user-note/controller/webflux/ (4 файла) — новый 2026-09-21, driving-сторона reactive: `id("com.example.spring-boot-webflux")`; подключён к `application-{h2,mysql,postgresql,mongodb}-reactive` через `implementation(project(":user-note:controller:webflux"))`
-- `user-note/controller/webflux/build.gradle.kts` — [REVIEW]
-- `user-note/controller/webflux/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-09-24, `@NullMarked`, был пропущен при заведении модуля 2026-09-21
-- `user-note/controller/webflux/src/main/java/com/example/usernote/ReactiveUserNoteController.java` — [REVIEW] — пустой `@RestController`, зеркален `controller-webmvc` (2026-09-21)
-- `user-note/controller/webflux/src/main/java/com/example/usernote/ReactiveUserNoteControllerAdvice.java` — [REVIEW] — новый 2026-10-15, `@RestControllerAdvice`: `UserNoteNotFoundException` → 404 `ProblemDetail` (зеркало `UserNoteControllerAdvice`)
-- `user-note/controller/webflux/src/main/resources/application-controller-webflux.properties` — [REVIEW] — `spring.webflux.problemdetails.enabled=true` + `logging.level.org.springframework.web=DEBUG`, вынесены из `application.properties` 4 reactive-листьев; подключается строкой `spring.profiles.include=controller-webflux`
-- `user-note/controller/webflux/src/test/java/com/example/usernote/ReactiveUserNoteControllerTests.java` — [REVIEW] — smoke: `@WebFluxTest(UserNoteController.class)` + пустой `contextLoads()`; зеркален `controller-webmvc`; точка входа та же
-- `user-note/controller/webflux/src/test/java/com/example/usernote/ReactiveUserNoteControllerAdviceTests.java` — [REVIEW] — новый 2026-10-15, модульный тест обработчика 404
-- `user-note/controller/webflux/src/test/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — новый 2026-09-21, test-scope `@SpringBootApplication` (точка входа слайс-теста, как `UserNoteApplication` в `application-*`); побайтово одинаков во всех 6 модулях …
+#### user-note/controller-webflux/ (4 файла) — новый 2026-09-21, driving-сторона reactive: `id("com.example.spring-boot-webflux")`; подключён к `application-{h2,mysql,postgresql,mongodb}-reactive` через `implementation(project(":user-note:controller-webflux"))`
+- `user-note/controller-webflux/build.gradle.kts` — [REVIEW]
+- `user-note/controller-webflux/src/main/java/com/example/usernote/package-info.java` — [REVIEW] — новый 2026-09-24, `@NullMarked`, был пропущен при заведении модуля 2026-09-21
+- `user-note/controller-webflux/src/main/java/com/example/usernote/ReactiveUserNoteController.java` — [REVIEW] — пустой `@RestController`, зеркален `controller-webmvc` (2026-09-21)
+- `user-note/controller-webflux/src/main/java/com/example/usernote/ReactiveUserNoteControllerAdvice.java` — [REVIEW] — новый 2026-10-15, `@RestControllerAdvice`: `UserNoteNotFoundException` → 404 `ProblemDetail` (зеркало `UserNoteControllerAdvice`)
+- `user-note/controller-webflux/src/main/resources/application-controller-webflux.properties` — [REVIEW] — `spring.webflux.problemdetails.enabled=true` + `logging.level.org.springframework.web=DEBUG`, вынесены из `application.properties` 4 reactive-листьев; подключается строкой `spring.profiles.include=controller-webflux`
+- `user-note/controller-webflux/src/test/java/com/example/usernote/ReactiveUserNoteControllerTests.java` — [REVIEW] — smoke: `@WebFluxTest(UserNoteController.class)` + пустой `contextLoads()`; зеркален `controller-webmvc`; точка входа та же
+- `user-note/controller-webflux/src/test/java/com/example/usernote/ReactiveUserNoteControllerAdviceTests.java` — [REVIEW] — новый 2026-10-15, модульный тест обработчика 404
+- `user-note/controller-webflux/src/test/java/com/example/usernote/UserNoteApplication.java` — [REVIEW] — новый 2026-09-21, test-scope `@SpringBootApplication` (точка входа слайс-теста, как `UserNoteApplication` в `application-*`); побайтово одинаков во всех 6 модулях …
 
 ### user/ — воссоздан 2026-09-29 копией структуры `user-note/` (92 файлов); ниже новых разделов — прежние файлы, удалённые 2026-08-29 (исторический список)
 
-#### user/application/synchronous/jdbc/h2/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/application/jdbc/` (пакет `com.example.user`)
+#### user/application/synchronous/jdbc/h2/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/application-jdbc/` (пакет `com.example.user`)
 - `user/application/synchronous/jdbc/h2/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `user/application/synchronous/jdbc/h2/src/main/java/com/example/user/UserApplication.java` — [REVIEW] — новый 2026-09-29
 - `user/application/synchronous/jdbc/h2/src/main/java/com/example/user/package-info.java` — [REVIEW] — новый 2026-09-29
@@ -329,7 +329,7 @@
 - `user/application/synchronous/jdbc/h2/src/test/java/com/example/user/UserApplicationTests.java` — [REVIEW] — новый 2026-09-29
 - `user/application/synchronous/jdbc/h2/src/test/java/com/example/user/UserTestConfiguration.java` — [REVIEW] — новый 2026-09-29
 
-#### user/application/reactive/r2dbc/h2/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/application/r2dbc/` (пакет `com.example.user`)
+#### user/application/reactive/r2dbc/h2/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/application-r2dbc/` (пакет `com.example.user`)
 - `user/application/reactive/r2dbc/h2/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `user/application/reactive/r2dbc/h2/src/main/java/com/example/user/UserApplication.java` — [REVIEW] — новый 2026-09-29
 - `user/application/reactive/r2dbc/h2/src/main/java/com/example/user/package-info.java` — [REVIEW] — новый 2026-09-29
@@ -337,7 +337,7 @@
 - `user/application/reactive/r2dbc/h2/src/test/java/com/example/user/UserApplicationTests.java` — [REVIEW] — новый 2026-09-29
 - `user/application/reactive/r2dbc/h2/src/test/java/com/example/user/UserTestConfiguration.java` — [REVIEW] — новый 2026-09-29
 
-#### user/application/synchronous/mongo/mongo/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/application/mongo/` (пакет `com.example.user`)
+#### user/application/synchronous/mongo/mongo/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/application-mongo/` (пакет `com.example.user`)
 - `user/application/synchronous/mongo/mongo/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `user/application/synchronous/mongo/mongo/src/main/java/com/example/user/UserApplication.java` — [REVIEW] — новый 2026-09-29
 - `user/application/synchronous/mongo/mongo/src/main/java/com/example/user/package-info.java` — [REVIEW] — новый 2026-09-29
@@ -345,7 +345,7 @@
 - `user/application/synchronous/mongo/mongo/src/test/java/com/example/user/UserApplicationTests.java` — [REVIEW] — новый 2026-09-29
 - `user/application/synchronous/mongo/mongo/src/test/java/com/example/user/UserTestConfiguration.java` — [REVIEW] — новый 2026-09-29
 
-#### user/application/reactive/mongo/mongo/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/application/mongo-reactive/` (пакет `com.example.user`)
+#### user/application/reactive/mongo/mongo/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/application-mongo-reactive/` (пакет `com.example.user`)
 - `user/application/reactive/mongo/mongo/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `user/application/reactive/mongo/mongo/src/main/java/com/example/user/UserApplication.java` — [REVIEW] — новый 2026-09-29
 - `user/application/reactive/mongo/mongo/src/main/java/com/example/user/package-info.java` — [REVIEW] — новый 2026-09-29
@@ -353,7 +353,7 @@
 - `user/application/reactive/mongo/mongo/src/test/java/com/example/user/UserApplicationTests.java` — [REVIEW] — новый 2026-09-29
 - `user/application/reactive/mongo/mongo/src/test/java/com/example/user/UserTestConfiguration.java` — [REVIEW] — новый 2026-09-29
 
-#### user/application/synchronous/jdbc/mysql/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/application/jdbc/` (пакет `com.example.user`)
+#### user/application/synchronous/jdbc/mysql/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/application-jdbc/` (пакет `com.example.user`)
 - `user/application/synchronous/jdbc/mysql/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `user/application/synchronous/jdbc/mysql/src/main/java/com/example/user/UserApplication.java` — [REVIEW] — новый 2026-09-29
 - `user/application/synchronous/jdbc/mysql/src/main/java/com/example/user/package-info.java` — [REVIEW] — новый 2026-09-29
@@ -361,7 +361,7 @@
 - `user/application/synchronous/jdbc/mysql/src/test/java/com/example/user/UserApplicationTests.java` — [REVIEW] — новый 2026-09-29
 - `user/application/synchronous/jdbc/mysql/src/test/java/com/example/user/UserTestConfiguration.java` — [REVIEW] — новый 2026-09-29
 
-#### user/application/reactive/r2dbc/mysql/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/application/r2dbc/` (пакет `com.example.user`)
+#### user/application/reactive/r2dbc/mysql/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/application-r2dbc/` (пакет `com.example.user`)
 - `user/application/reactive/r2dbc/mysql/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `user/application/reactive/r2dbc/mysql/src/main/java/com/example/user/UserApplication.java` — [REVIEW] — новый 2026-09-29
 - `user/application/reactive/r2dbc/mysql/src/main/java/com/example/user/package-info.java` — [REVIEW] — новый 2026-09-29
@@ -369,7 +369,7 @@
 - `user/application/reactive/r2dbc/mysql/src/test/java/com/example/user/UserApplicationTests.java` — [REVIEW] — новый 2026-09-29
 - `user/application/reactive/r2dbc/mysql/src/test/java/com/example/user/UserTestConfiguration.java` — [REVIEW] — новый 2026-09-29
 
-#### user/application/synchronous/jdbc/postgres/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/application/jdbc/` (пакет `com.example.user`)
+#### user/application/synchronous/jdbc/postgres/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/application-jdbc/` (пакет `com.example.user`)
 - `user/application/synchronous/jdbc/postgres/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `user/application/synchronous/jdbc/postgres/src/main/java/com/example/user/UserApplication.java` — [REVIEW] — новый 2026-09-29
 - `user/application/synchronous/jdbc/postgres/src/main/java/com/example/user/package-info.java` — [REVIEW] — новый 2026-09-29
@@ -377,7 +377,7 @@
 - `user/application/synchronous/jdbc/postgres/src/test/java/com/example/user/UserApplicationTests.java` — [REVIEW] — новый 2026-09-29
 - `user/application/synchronous/jdbc/postgres/src/test/java/com/example/user/UserTestConfiguration.java` — [REVIEW] — новый 2026-09-29
 
-#### user/application/reactive/r2dbc/postgres/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/application/r2dbc/` (пакет `com.example.user`)
+#### user/application/reactive/r2dbc/postgres/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/application-r2dbc/` (пакет `com.example.user`)
 - `user/application/reactive/r2dbc/postgres/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `user/application/reactive/r2dbc/postgres/src/main/java/com/example/user/UserApplication.java` — [REVIEW] — новый 2026-09-29
 - `user/application/reactive/r2dbc/postgres/src/main/java/com/example/user/package-info.java` — [REVIEW] — новый 2026-09-29
@@ -400,7 +400,7 @@
 - `user/contract/synchronous/src/main/java/com/example/user/UpdateUserById.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
 - `user/contract/synchronous/src/main/java/com/example/user/DeleteUserById.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
 
-#### user/contract/reactive/ (7 файлов) — новый 2026-09-29, копия структуры `user-note/contract/reactive/` (пакет `com.example.user`)
+#### user/contract/reactive/ (7 файлов) — новый 2026-09-29, копия структуры `user-note/contract-reactive/` (пакет `com.example.user`)
 - `user/contract/reactive/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `user/contract/reactive/src/main/java/com/example/user/package-info.java` — [REVIEW] — новый 2026-09-29
 - `user/contract/reactive/src/main/java/com/example/user/ReactiveFindUserById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
@@ -409,7 +409,7 @@
 - `user/contract/reactive/src/main/java/com/example/user/ReactiveUpdateUserById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
 - `user/contract/reactive/src/main/java/com/example/user/ReactiveDeleteUserById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
 
-#### user/controller/reactive/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/controller/webflux/` (пакет `com.example.user`)
+#### user/controller/reactive/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/controller-webflux/` (пакет `com.example.user`)
 - `user/controller/reactive/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `user/controller/reactive/src/main/java/com/example/user/ReactiveUserController.java` — [REVIEW] — новый 2026-09-29
 - `user/controller/reactive/src/main/java/com/example/user/package-info.java` — [REVIEW] — новый 2026-09-29
@@ -417,7 +417,7 @@
 - `user/controller/reactive/src/test/java/com/example/user/UserApplication.java` — [REVIEW] — новый 2026-09-29
 - `user/controller/reactive/src/test/java/com/example/user/ReactiveUserControllerTests.java` — [REVIEW] — новый 2026-09-29
 
-#### user/controller/synchronous/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/controller/webmvc/` (пакет `com.example.user`)
+#### user/controller/synchronous/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/controller-webmvc/` (пакет `com.example.user`)
 - `user/controller/synchronous/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `user/controller/synchronous/src/main/java/com/example/user/UserController.java` — [REVIEW] — новый 2026-09-29
 - `user/controller/synchronous/src/main/java/com/example/user/package-info.java` — [REVIEW] — новый 2026-09-29
@@ -723,7 +723,7 @@
 
 ### note/ — воссоздан 2026-09-29 копией структуры `user-note/` (92 файлов); ниже новых разделов — прежние файлы, удалённые 2026-08-29 (исторический список)
 
-#### note/application/synchronous/jdbc/h2/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/application/jdbc/` (пакет `com.example.note`)
+#### note/application/synchronous/jdbc/h2/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/application-jdbc/` (пакет `com.example.note`)
 - `note/application/synchronous/jdbc/h2/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `note/application/synchronous/jdbc/h2/src/main/java/com/example/note/NoteApplication.java` — [REVIEW] — новый 2026-09-29
 - `note/application/synchronous/jdbc/h2/src/main/java/com/example/note/package-info.java` — [REVIEW] — новый 2026-09-29
@@ -731,7 +731,7 @@
 - `note/application/synchronous/jdbc/h2/src/test/java/com/example/note/NoteApplicationTests.java` — [REVIEW] — новый 2026-09-29
 - `note/application/synchronous/jdbc/h2/src/test/java/com/example/note/NoteTestConfiguration.java` — [REVIEW] — новый 2026-09-29
 
-#### note/application/reactive/r2dbc/h2/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/application/r2dbc/` (пакет `com.example.note`)
+#### note/application/reactive/r2dbc/h2/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/application-r2dbc/` (пакет `com.example.note`)
 - `note/application/reactive/r2dbc/h2/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `note/application/reactive/r2dbc/h2/src/main/java/com/example/note/NoteApplication.java` — [REVIEW] — новый 2026-09-29
 - `note/application/reactive/r2dbc/h2/src/main/java/com/example/note/package-info.java` — [REVIEW] — новый 2026-09-29
@@ -739,7 +739,7 @@
 - `note/application/reactive/r2dbc/h2/src/test/java/com/example/note/NoteApplicationTests.java` — [REVIEW] — новый 2026-09-29
 - `note/application/reactive/r2dbc/h2/src/test/java/com/example/note/NoteTestConfiguration.java` — [REVIEW] — новый 2026-09-29
 
-#### note/application/synchronous/mongo/mongo/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/application/mongo/` (пакет `com.example.note`)
+#### note/application/synchronous/mongo/mongo/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/application-mongo/` (пакет `com.example.note`)
 - `note/application/synchronous/mongo/mongo/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `note/application/synchronous/mongo/mongo/src/main/java/com/example/note/NoteApplication.java` — [REVIEW] — новый 2026-09-29
 - `note/application/synchronous/mongo/mongo/src/main/java/com/example/note/package-info.java` — [REVIEW] — новый 2026-09-29
@@ -747,7 +747,7 @@
 - `note/application/synchronous/mongo/mongo/src/test/java/com/example/note/NoteApplicationTests.java` — [REVIEW] — новый 2026-09-29
 - `note/application/synchronous/mongo/mongo/src/test/java/com/example/note/NoteTestConfiguration.java` — [REVIEW] — новый 2026-09-29
 
-#### note/application/reactive/mongo/mongo/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/application/mongo-reactive/` (пакет `com.example.note`)
+#### note/application/reactive/mongo/mongo/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/application-mongo-reactive/` (пакет `com.example.note`)
 - `note/application/reactive/mongo/mongo/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `note/application/reactive/mongo/mongo/src/main/java/com/example/note/NoteApplication.java` — [REVIEW] — новый 2026-09-29
 - `note/application/reactive/mongo/mongo/src/main/java/com/example/note/package-info.java` — [REVIEW] — новый 2026-09-29
@@ -755,7 +755,7 @@
 - `note/application/reactive/mongo/mongo/src/test/java/com/example/note/NoteApplicationTests.java` — [REVIEW] — новый 2026-09-29
 - `note/application/reactive/mongo/mongo/src/test/java/com/example/note/NoteTestConfiguration.java` — [REVIEW] — новый 2026-09-29
 
-#### note/application/synchronous/jdbc/mysql/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/application/jdbc/` (пакет `com.example.note`)
+#### note/application/synchronous/jdbc/mysql/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/application-jdbc/` (пакет `com.example.note`)
 - `note/application/synchronous/jdbc/mysql/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `note/application/synchronous/jdbc/mysql/src/main/java/com/example/note/NoteApplication.java` — [REVIEW] — новый 2026-09-29
 - `note/application/synchronous/jdbc/mysql/src/main/java/com/example/note/package-info.java` — [REVIEW] — новый 2026-09-29
@@ -763,7 +763,7 @@
 - `note/application/synchronous/jdbc/mysql/src/test/java/com/example/note/NoteApplicationTests.java` — [REVIEW] — новый 2026-09-29
 - `note/application/synchronous/jdbc/mysql/src/test/java/com/example/note/NoteTestConfiguration.java` — [REVIEW] — новый 2026-09-29
 
-#### note/application/reactive/r2dbc/mysql/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/application/r2dbc/` (пакет `com.example.note`)
+#### note/application/reactive/r2dbc/mysql/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/application-r2dbc/` (пакет `com.example.note`)
 - `note/application/reactive/r2dbc/mysql/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `note/application/reactive/r2dbc/mysql/src/main/java/com/example/note/NoteApplication.java` — [REVIEW] — новый 2026-09-29
 - `note/application/reactive/r2dbc/mysql/src/main/java/com/example/note/package-info.java` — [REVIEW] — новый 2026-09-29
@@ -771,7 +771,7 @@
 - `note/application/reactive/r2dbc/mysql/src/test/java/com/example/note/NoteApplicationTests.java` — [REVIEW] — новый 2026-09-29
 - `note/application/reactive/r2dbc/mysql/src/test/java/com/example/note/NoteTestConfiguration.java` — [REVIEW] — новый 2026-09-29
 
-#### note/application/synchronous/jdbc/postgres/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/application/jdbc/` (пакет `com.example.note`)
+#### note/application/synchronous/jdbc/postgres/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/application-jdbc/` (пакет `com.example.note`)
 - `note/application/synchronous/jdbc/postgres/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `note/application/synchronous/jdbc/postgres/src/main/java/com/example/note/NoteApplication.java` — [REVIEW] — новый 2026-09-29
 - `note/application/synchronous/jdbc/postgres/src/main/java/com/example/note/package-info.java` — [REVIEW] — новый 2026-09-29
@@ -779,7 +779,7 @@
 - `note/application/synchronous/jdbc/postgres/src/test/java/com/example/note/NoteApplicationTests.java` — [REVIEW] — новый 2026-09-29
 - `note/application/synchronous/jdbc/postgres/src/test/java/com/example/note/NoteTestConfiguration.java` — [REVIEW] — новый 2026-09-29
 
-#### note/application/reactive/r2dbc/postgres/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/application/r2dbc/` (пакет `com.example.note`)
+#### note/application/reactive/r2dbc/postgres/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/application-r2dbc/` (пакет `com.example.note`)
 - `note/application/reactive/r2dbc/postgres/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `note/application/reactive/r2dbc/postgres/src/main/java/com/example/note/NoteApplication.java` — [REVIEW] — новый 2026-09-29
 - `note/application/reactive/r2dbc/postgres/src/main/java/com/example/note/package-info.java` — [REVIEW] — новый 2026-09-29
@@ -802,7 +802,7 @@
 - `note/contract/synchronous/src/main/java/com/example/note/UpdateNoteById.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
 - `note/contract/synchronous/src/main/java/com/example/note/DeleteNoteById.java` — [REVIEW] — новый 2026-09-29, входной порт сценария, метод `execute`
 
-#### note/contract/reactive/ (7 файлов) — новый 2026-09-29, копия структуры `user-note/contract/reactive/` (пакет `com.example.note`)
+#### note/contract/reactive/ (7 файлов) — новый 2026-09-29, копия структуры `user-note/contract-reactive/` (пакет `com.example.note`)
 - `note/contract/reactive/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `note/contract/reactive/src/main/java/com/example/note/package-info.java` — [REVIEW] — новый 2026-09-29
 - `note/contract/reactive/src/main/java/com/example/note/ReactiveFindNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
@@ -811,7 +811,7 @@
 - `note/contract/reactive/src/main/java/com/example/note/ReactiveUpdateNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
 - `note/contract/reactive/src/main/java/com/example/note/ReactiveDeleteNoteById.java` — [REVIEW] — новый 2026-09-29, реактивный входной порт сценария, метод `execute`
 
-#### note/controller/reactive/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/controller/webflux/` (пакет `com.example.note`)
+#### note/controller/reactive/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/controller-webflux/` (пакет `com.example.note`)
 - `note/controller/reactive/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `note/controller/reactive/src/main/java/com/example/note/ReactiveNoteController.java` — [REVIEW] — новый 2026-09-29
 - `note/controller/reactive/src/main/java/com/example/note/package-info.java` — [REVIEW] — новый 2026-09-29
@@ -819,7 +819,7 @@
 - `note/controller/reactive/src/test/java/com/example/note/NoteApplication.java` — [REVIEW] — новый 2026-09-29
 - `note/controller/reactive/src/test/java/com/example/note/ReactiveNoteControllerTests.java` — [REVIEW] — новый 2026-09-29
 
-#### note/controller/synchronous/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/controller/webmvc/` (пакет `com.example.note`)
+#### note/controller/synchronous/ (6 файлов) — новый 2026-09-29, копия структуры `user-note/controller-webmvc/` (пакет `com.example.note`)
 - `note/controller/synchronous/build.gradle.kts` — [REVIEW] — новый 2026-09-29
 - `note/controller/synchronous/src/main/java/com/example/note/NoteController.java` — [REVIEW] — новый 2026-09-29
 - `note/controller/synchronous/src/main/java/com/example/note/package-info.java` — [REVIEW] — новый 2026-09-29

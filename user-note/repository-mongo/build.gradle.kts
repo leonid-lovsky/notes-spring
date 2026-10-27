@@ -8,5 +8,5 @@ plugins {
 }
 
 dependencies {
-    api(project(":user-note:contract:imperative"))
+    api(project(":user-note:contract-imperative"))
 }

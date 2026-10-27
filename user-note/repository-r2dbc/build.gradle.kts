@@ -1,19 +1,20 @@
 plugins {
-    id("com.example.service-synchronous")
+    id("com.example.service-reactive")
 
-    id("com.example.spring-boot-data-jdbc")
+    id("com.example.spring-boot-data-r2dbc")
 
-    id("com.example.spring-boot-database-h2")
-    id("com.example.spring-boot-database-mysql")
-    id("com.example.spring-boot-database-postgresql")
+    id("com.example.spring-boot-database-r2dbc-h2")
+    id("com.example.spring-boot-database-r2dbc-mysql")
+    id("com.example.spring-boot-database-r2dbc-postgresql")
 
     id("com.example.spring-boot-testcontainers")
+    id("com.example.spring-boot-testcontainers-r2dbc")
     id("com.example.spring-boot-testcontainers-mysql")
     id("com.example.spring-boot-testcontainers-postgresql")
 }
 
 dependencies {
-    api(project(":user-note:contract:imperative"))
+    api(project(":user-note:contract-reactive"))
 }
 
 val testSourceSet = the<SourceSetContainer>()["test"]

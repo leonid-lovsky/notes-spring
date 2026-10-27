@@ -8,5 +8,5 @@ plugins {
 }
 
 dependencies {
-    api(project(":user-note:contract:reactive"))
+    api(project(":user-note:contract-reactive"))
 }

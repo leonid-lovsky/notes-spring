@@ -1,21 +1,22 @@
 plugins {
     id("com.example.spring-boot-bootable")
-    id("com.example.spring-boot-webmvc")
+    id("com.example.spring-boot-webflux")
 
-    id("com.example.spring-boot-data-jdbc")
+    id("com.example.spring-boot-data-r2dbc")
 
-    id("com.example.spring-boot-database-h2")
-    id("com.example.spring-boot-database-mysql")
-    id("com.example.spring-boot-database-postgresql")
+    id("com.example.spring-boot-database-r2dbc-h2")
+    id("com.example.spring-boot-database-r2dbc-mysql")
+    id("com.example.spring-boot-database-r2dbc-postgresql")
 
     id("com.example.spring-boot-testcontainers")
+    id("com.example.spring-boot-testcontainers-r2dbc")
     id("com.example.spring-boot-testcontainers-mysql")
     id("com.example.spring-boot-testcontainers-postgresql")
 }
 
 dependencies {
-    implementation(project(":user-note:repository:jdbc"))
-    implementation(project(":user-note:controller:webmvc"))
+    implementation(project(":user-note:repository-r2dbc"))
+    implementation(project(":user-note:controller-webflux"))
 }
 
 val testSourceSet = the<SourceSetContainer>()["test"]

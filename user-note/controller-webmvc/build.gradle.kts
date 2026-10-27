@@ -3,5 +3,5 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":user-note:contract:imperative"))
+    implementation(project(":user-note:contract-imperative"))
 }
