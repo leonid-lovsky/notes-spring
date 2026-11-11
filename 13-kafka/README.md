@@ -1,4 +1,4 @@
-# 03 · Event-driven
+# 13 · Kafka
 
 Level: middle+. Status: not started.
 
@@ -12,12 +12,9 @@ Notifications have a different load profile and release cycle than the rest of t
 
 ## Tools
 
-- Messaging: Spring for Apache Kafka, Spring Modulith event externalization (`spring-modulith-events-kafka`).
-- Observability: Micrometer Tracing with OpenTelemetry, Grafana LGTM in Docker Compose.
-- CI: GitLab CI joins GitHub Actions and Jenkins.
+- Spring for Apache Kafka, Spring Modulith event externalization (`spring-modulith-events-kafka`), Kafka in Docker Compose and in Testcontainers.
 
 ## Proof
 
 - The acceptance tests pass.
 - With the notifications service stopped for a minute, no events are lost or duplicated after it comes back.
-- The whole request path is visible in a single trace.
