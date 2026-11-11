@@ -4,12 +4,21 @@ Level: junior. Status: not started.
 
 ## Change
 
-The baseline. Functionality and HTTP API are fixed here and stay the same in every later stage: users, notes, note sharing with roles, notifications. Only the internal structure changes afterwards.
+The baseline: a classic layered application with one database and one transaction per request. Its functionality and HTTP API are fixed here and stay the same in every later stage — users, notes, note sharing with roles, notifications with a live feed over Server-Sent Events, and full-text search of notes. Later stages change only the internal structure.
+
+## Why
+
+Every later stage is measured against a working, deployed, conventional Spring application.
 
 ## Tools
 
-Spring Boot starters with auto-configuration: Spring MVC, Spring Data JPA, PostgreSQL, Flyway, Bean Validation, Spring Security with OAuth2 Client and Resource Server (Keycloak as the OIDC provider), Thymeleaf, Actuator. Tests: JUnit, slice tests, Testcontainers with `@ServiceConnection`. Local run: Spring Boot Docker Compose support. Delivery: GitHub Actions, container image, VPS with TLS.
+- Application: Gradle (Kotlin DSL), Spring Boot starters with auto-configuration, Spring MVC, Thymeleaf, Bean Validation, MapStruct for mapping between entities and request/response bodies, springdoc-openapi (Swagger UI), Actuator. The live feed uses `SseEmitter`.
+- Data: Spring Data JPA, PostgreSQL, Flyway. Search is a plain PostgreSQL query.
+- Security: the application is an OAuth2 Client for login and a Resource Server for the API. Tokens are issued by `auth-server`, a separate Spring Boot application on Spring Authorization Server.
+- Tests: JUnit, Mockito, slice tests, Testcontainers with `@ServiceConnection`.
+- Run and delivery: Spring Boot Docker Compose support locally. GitHub Actions authenticates to AWS through OIDC, pushes the images to Amazon ECR and deploys them to Amazon EC2 with Docker Compose and TLS. SonarQube Cloud checks quality.
 
 ## Proof
 
-End-to-end scenarios pass against the running application; the live instance is reachable over HTTPS.
+- The [acceptance tests](../acceptance-tests) pass against the deployed stage.
+- The live instance on AWS is reachable over HTTPS.
