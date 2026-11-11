@@ -8,45 +8,56 @@ The goal is to learn Spring technologies and to demonstrate them to employers on
 
 ## Decision
 
-Twenty-eight independent projects in one repository, built strictly one after another. Each project starts as a copy of the previous one and adds one change, motivated by a problem of the previous stage. Functionality and HTTP API — users, notes, sharing with roles, notifications with a live feed over Server-Sent Events, full-text search — are fixed in the first project, which already authenticates users with HTTP Basic; the second replaces the authentication method with OAuth 2.0 / OpenID Connect, and the contract does not change afterwards. One black-box acceptance test suite (`acceptance-tests/`) runs against every stage over HTTP only and knows nothing about the implementation; it proves that the behaviour of the API does not change. Standard Spring Boot starters with auto-configuration are preferred over custom configuration.
+Thirty-four independent projects in one repository, built strictly one after another. The first is always the monolith; each following project starts as a copy of the previous one and adds one key technology, motivated by a problem of the previous stage. Functionality and HTTP API — users, notes, sharing with roles, notifications with a live feed over Server-Sent Events, full-text search — are fixed in the first project, which already authenticates users with HTTP Basic; stage 11 replaces the authentication method with OAuth 2.0 / OpenID Connect, and the contract does not change afterwards. GraphQL in stage 24 adds a second API for combined reads without changing the REST API. One black-box acceptance test suite (`acceptance-tests/`) runs against every stage over HTTP only and knows nothing about the implementation; it proves that the behaviour of the REST API does not change.
 
-The project grows iteratively, smoothly and as evenly as possible. Every milestone is a working application, a separate project and a separate directory. The sequence of directories shows three lines at once: the development of the project, the mastering of technologies, and the growth from junior to senior and architect. A stage is named after the technology that defines it and its architecture; when several technologies matter, the stage is split into several stages, one per technology. Only stages whose change is an architectural style or technique are named after it: monolith, microservices, saga, autoscaling, hexagonal.
+The project is limited to the current Spring portfolio and the features of Spring Boot, with auto-configuration preferred over custom configuration. When two technologies are alternatives, the current one is chosen; outdated or feature-complete technologies are not used. A technology outside the Spring portfolio is used only when matching job postings critically requires it, and only after the Spring way of solving the same task, as a separate stage. The set aims to be the complete toolkit of a Spring developer with the widest current outlook. The choice stays open to alternatives: every technology is used through a standard abstraction or protocol where one exists — Spring Data, Spring Cache, Spring Modulith event externalization, Micrometer, OAuth 2.0 / OpenID Connect — so replacing it is a change of dependencies and settings rather than of code.
 
-The stages form groups:
+The project grows iteratively, smoothly and as evenly as possible. Every milestone is a working application, a separate project and a separate directory. The sequence of directories shows three lines at once: the development of the project, the mastering of technologies, and the growth from junior to senior and architect. A stage is named after its key technology; the only exceptions are monolith, the baseline, and hexagonal, an architectural style. When several technologies matter, the stage is split, one key technology per stage. Patterns and supporting practices — sagas, contract tests, autoscaling, failure tests, page tests — belong to the stage of the technology that implements them. The number of stages is kept even.
 
-- 01–04, junior: a REST API with Spring Security (monolith), OAuth2 with an own authorization server (oauth2), a browser interface (thymeleaf), module boundaries restructured while it is still cheap (modulith).
-- 05–12, middle: the modular monolith becomes ready for production — Terraform, Jenkins, GitLab CI, SonarQube, Prometheus, Grafana, Elasticsearch, Redis. Provisioning, delivery and monitoring precede distribution because a system needs them before it is split (Martin Fowler, "MicroservicePrerequisites").
-- 13–14, middle+: the first service leaves the process (kafka) and is traced end to end (opentelemetry).
-- 15–21, senior: the system is distributed (microservices, spring-cloud-gateway), made configurable (spring-cloud-config, eureka, secrets-manager) and resilient (resilience4j, saga).
-- 22–25, senior: the system moves to a platform (kubernetes, helm, argocd, autoscaling).
-- 26–28, architect: decisions on trade-offs and measurements — where a storage abstraction pays off (hexagonal, mongodb) and which web stack the measurements justify (webflux).
+The order follows the roadmap of a Spring developer: ten stages of a junior, ten of a middle, ten of a senior and the final stages of an architect, each technology at the point where a developer usually meets it.
 
-Technologies required by the job market are placed as follows:
+- 01–10, junior: a REST API with Spring Data JPA and Spring Security (monolith); schema migrations (flyway); API documentation from tests and as an OpenAPI description (spring-rest-docs, openapi); operational endpoints (actuator); a server-rendered browser interface with form login (thymeleaf); a container image and the whole stage in one Compose file (docker, compose); a pipeline (github-actions); a cache (redis).
+- 11–20, middle: OAuth2 with Spring Authorization Server and Keycloak replacing it without a code change (oauth2, keycloak); module boundaries while restructuring is still cheap (modulith); monitoring (prometheus, grafana); a search engine and a batch job that rebuilds its index (elasticsearch, spring-batch); a second pipeline (jenkins); the first service out of the process, first through a queue and then through a replayable log (rabbitmq, kafka). Delivery and monitoring precede distribution because a system needs them before it is split (Martin Fowler, "MicroservicePrerequisites").
+- 21–30, senior: tracing across processes (micrometer-tracing); a gateway as the single entry point and the seam for extracting services (spring-cloud-gateway); services calling each other through Spring HTTP service clients, protected by contract tests and kept consistent by sagas (http-service-clients); combined reads (graphql); configuration with encrypted secrets and discovery (spring-cloud-config, eureka); resilience (resilience4j); the hottest internal call over gRPC (spring-grpc); a platform that replaces Spring Cloud infrastructure and scales with load (kubernetes); native images that start and scale fast (graalvm).
+- 31–34, architect: decisions on trade-offs and measurements — where a storage abstraction pays off (hexagonal, mongodb), what semantic search is worth against the cost of a model (spring-ai), and which web stack the measurements justify (webflux).
 
-- **AWS** is the target platform of every stage; each stage is ready for deployment, but the actual deployment is postponed and the deployment step of the pipelines stays switched off until the job search starts. 01: Amazon EC2 with Docker Compose, images in Amazon ECR, GitHub Actions authenticates through OIDC with a least-privilege IAM role. 05: Terraform describes the AWS resources. 19: secrets in AWS Secrets Manager through Spring Cloud AWS, with LocalStack locally and in tests. 24: Terraform grows to the whole cluster infrastructure; k3s runs on EC2.
-- **Docker Compose** runs stages 01–21; **Kubernetes** (k3s) replaces it from 22. Both run locally and in CI until the deployment starts.
-- **GitHub Actions** builds every stage; **Jenkins** joins in 06 and **GitLab CI** in 07 as equal pipelines with the same steps, all calling the same Gradle tasks, so the build logic is not duplicated. **SonarQube Cloud** is the quality gate of all pipelines from 08, **Argo CD** deploys to the cluster from 24.
-- **Spring Security** from 01: users and BCrypt password hashes in the application database, HTTP Basic. **OAuth 2.0 / OpenID Connect** comes in 02: tokens are issued by `auth-server`, a separate Spring Boot application on Spring Authorization Server, configured through properties, and the application becomes a Resource Server. In 03 the browser interface signs in as an OAuth2 Client; in 16 the gateway takes over browser sign-in and relays the token to the services.
-- **Thymeleaf** comes in 03 as a server-rendered browser interface next to the unchanged REST API.
-- **Prometheus** comes in 09, **Grafana** in 10; distributed tracing and logs join them in 14, when a second process appears.
-- **Elasticsearch** comes in 11 and replaces the PostgreSQL full-text query. The search module indexes notes from Spring Modulith events, so the event publication registry guarantees that the index catches up after an outage.
-- **Redis** comes in 12 as a cache (Spring Cache); in 16 it also keeps the session shared by several gateway instances (Spring Session).
-- **Kafka** comes in 13 and carries the saga in 21.
-- **Gradle**, **Actuator**, **MapStruct**, **OpenAPI** (springdoc-openapi, Swagger UI), `ProblemDetail` error responses (RFC 9457) and **JaCoCo** start in 01.
+Technologies outside the Spring portfolio, kept because job postings critically require them, are placed as follows:
+
+- **PostgreSQL**, **Testcontainers** and **Gradle** start in 01; the schema comes from Spring Boot SQL initialization (`schema.sql`) and moves to **Flyway** in 02. **OpenAPI** (springdoc-openapi, Swagger UI) comes in 04 after Spring REST Docs in 03.
+- **Docker** comes in 07 with an image built by `bootBuildImage`, **Docker Compose** in 08 with the whole stage in one file. Compose runs stages 08–27, **Kubernetes** (k3s) replaces it from 29. Both run locally and in CI until the deployment starts.
+- **AWS** is the target platform from 09: Amazon EC2, images in Amazon ECR, GitHub Actions authenticates through OIDC with a least-privilege IAM role. Each stage is ready for deployment, but the deployment step of the pipelines stays switched off until the job search starts.
+- **GitHub Actions** comes in 09; **Jenkins** joins in 18 as an equal pipeline with the same steps, both calling the same Gradle tasks, so the build logic is not duplicated.
+- **Keycloak** replaces Spring Authorization Server in 12, changing only the issuer settings of the application. The browser interface of 06 uses form login until 11, where it becomes an OAuth2 Client.
+- **Prometheus** comes in 14 and **Grafana** in 15; traces and logs join them in 21.
+- **Redis** comes in 10 as a cache (Spring Cache), its effect visible in the cache metrics of Actuator; in 22 it also keeps the session shared by several gateway instances (Spring Session) and in 27 backs the rate limiter of the gateway.
+- **Elasticsearch** comes in 16 through Spring Data Elasticsearch and replaces the PostgreSQL full-text query; the event publication registry of Spring Modulith guarantees that the index catches up after an outage.
+- **RabbitMQ** comes in 19 through Spring AMQP and Spring Modulith event externalization as the first broker, when notifications leave the process. **Kafka** replaces it for domain events in 20, when events must be kept and replayed by consumers added later, and carries the sagas in 23.
+- **GraalVM** comes in 30 through Spring AOT and `bootBuildImage`.
+- **Ollama** runs the embedding model of Spring AI locally in 33; the vector store is the Elasticsearch already in the plan.
+- **Resilience4j** comes in 27 through Spring Cloud Circuit Breaker; retries and concurrency limits use the resilience features of Spring Framework where they suffice.
+- **MongoDB** comes in 32 through Spring Data MongoDB.
+
+Considered and not included, because they are outside the current Spring portfolio and not critical for job postings, or duplicate a tool already in the plan:
+
+- MapStruct — records with hand-written mapping cover the application
+- Liquibase — Flyway covers migrations
+- SonarQube and JaCoCo — static analysis and coverage are not a Spring concern; the build fails on compiler warnings instead
+- Gatling — load is generated in the stages that need a measurement
+- Terraform and Argo CD — the actual deployment is postponed; the pipelines carry the deployment step
+- HashiCorp Vault — Spring Cloud Config encryption covers secrets
+- Helm — plain Kubernetes manifests cover one environment
+- Toxiproxy — failure tests stop or slow down containers through Testcontainers
+- Spring Cloud OpenFeign — feature-complete since Spring Cloud 2022.0; Spring recommends HTTP service clients instead
+- Spring Cloud Stream — Spring Modulith event externalization already decouples the code from the broker
+- WebSocket — Server-Sent Events cover the one-way live feed
+- the ELK stack — Grafana covers logs
+- Maven — Gradle is the build tool
+- GitLab CI — a third pipeline with the same steps teaches nothing new
+- Lombok — records cover request and response bodies
+- AWS Secrets Manager — Spring Cloud Config encryption covers secrets without tying the project to one cloud
+- a hand-written `Dockerfile` — `bootBuildImage` builds layered images without one
 
 Managed services that cost money even without load — Amazon RDS, Amazon MSK, Amazon EKS — are named as production alternatives in the READMEs of their stages but not used.
-
-The choice of technologies is pragmatic, but the project stays ready for an alternative choice: every technology is used through a standard abstraction or protocol where one exists — Spring Data, Spring Cache, Spring Modulith event externalization, Micrometer, OpenTelemetry, OAuth 2.0 / OpenID Connect — so replacing it with an alternative is a change of dependencies and settings rather than of code.
-
-Considered and not included in the plan, each can be added later as a separate decision:
-
-- RabbitMQ — Kafka covers messaging; Spring Modulith externalizes events to AMQP as well
-- the ELK stack as a log platform — Grafana with Loki covers logs
-- Liquibase — Flyway covers migrations
-- Maven — Gradle is the build tool
-- Lombok — records cover request and response bodies
-- Keycloak — Spring Authorization Server stays within the Spring stack and its auto-configuration; the application relies only on OpenID Connect, so any compliant provider fits
-- GraphQL (Spring for GraphQL) — the REST API covers the functionality; the natural candidate place is the gateway in 16, where a client needs data aggregated from several services
 
 ## Consequences
 
@@ -55,10 +66,11 @@ Benefits:
 - every stage is a finished application, ready for deployment, operation and a demonstration to an employer
 - the directories read as a path from junior to architect
 - the difference between two neighbouring directories shows one step of the evolution
-- every technology from typical job postings is backed by working code in a finished stage; the job search can start after 03 and is well covered after 12
+- every technology the job postings critically require is backed by working code in a finished stage; the job search can start after the junior stages and is well covered after the middle stages
 
 Costs:
 
-- code is duplicated between stages on purpose: each directory is a snapshot, and twenty-eight snapshots make the repository large, and some stages change only the build or the infrastructure
+- code is duplicated between stages on purpose: each directory is a snapshot, and thirty-four snapshots make the repository large
+- some stages change only the build or the infrastructure, not the application code
 - frozen stages still need dependency updates
 - AWS costs nothing until the deployment starts; prices and free tier conditions are checked at that moment

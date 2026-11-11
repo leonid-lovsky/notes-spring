@@ -1,6 +1,6 @@
 # Acceptance tests
 
-One black-box test suite for every stage. Functionality and HTTP API are fixed in 01, only the authentication method changes once in 02, and the contract must not change afterwards; this suite proves it by talking to a running system over HTTP only, without knowing how the system is built.
+One black-box test suite for every stage. Functionality and HTTP API are fixed in 01, only the authentication method changes once in 11, and the contract must not change afterwards; this suite proves it by talking to a running system over HTTP only, without knowing how the system is built.
 
 ## Boundary
 
