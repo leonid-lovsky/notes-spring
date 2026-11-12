@@ -51,7 +51,7 @@ Every stage is a standalone application in its own directory. The first stage is
 
 The project grows iteratively, smoothly and as evenly as possible. Every milestone is a working application, a separate project and a separate directory; there are no milestones inside a directory. The sequence of directories shows three lines at once: the development of the project, the mastering of technologies, and the roadmap of a developer — ten stages of a junior, ten of a middle, ten of a senior and the final stages of an architect, in the order in which a Spring developer usually learns the technologies. Each stage can be learned and brought to a working result without a long break; a stage noticeably larger than its neighbours is split. The last stages call for an architectural decision based on trade-offs and measurements rather than for one more technology.
 
-Stages are built strictly one after another. Work on a stage starts with a commit that copies the previous directory; every change after that is a separate commit, so the history reads as a step-by-step transition.
+Stages are built strictly one after another. Work on a stage starts with a commit that copies the previous directory, so the history shows what the stage changed.
 
 Every stage is ready to be tested, operated and shown to an employer, and reflects one pragmatic step in skills and technology stack — no more than the step needs. A stage is finished when the whole system starts with one command (in 01–06 the application with its database through `bootRun`, in 07 the application image with `docker run`, from 08 the whole stage from the Compose file), the acceptance tests and the tests of the stage pass, the `README.md` is complete and the key decisions are recorded in ADRs. A finished stage is frozen: only bugs and vulnerabilities are fixed in it, and Dependabot keeps its dependencies up to date.
 
@@ -63,7 +63,7 @@ Stages 08–28 run with Docker Compose, stages from 29 on Kubernetes (k3s), both
 
 The public repository is a portfolio, so its history is clean, tidy and linear. The work happens on the `auth` branch until `01-monolith` is implemented and has been tried on a server. At that point `main` starts a new history from the state of that moment, and the repository gets a `LICENSE`; the previous history, the `auth` branch and the `legacy-2026-11` tag move to a private archive repository and are removed from the public one. This rewrite of public history happens once, only on an explicit request of the user and after the archive has been checked.
 
-From then on the history stays linear: no merge commits, every change is rebased onto `main`, and the repository is configured to require a linear history. Commits are small and self-contained, each builds and passes the tests, and their messages follow Conventional Commits in English (`feat:`, `fix:`, `docs:`, `build:`, `ci:`, `test:`, `refactor:`). A stage starts with a commit that copies the previous stage and continues with one commit per change, so the history reads as the evolution itself.
+From then on the history stays linear: no merge commits, every change is rebased onto `main`, and the repository is configured to require a linear history. Every commit builds and passes the tests, and its message follows Conventional Commits in English (`feat:`, `fix:`, `docs:`, `build:`, `ci:`, `test:`, `refactor:`).
 
 ### Acceptance tests
 
