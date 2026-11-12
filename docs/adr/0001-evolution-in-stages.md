@@ -41,7 +41,7 @@ Considered and not included, because they are outside the current Spring portfol
 
 - MapStruct — records with hand-written mapping cover the application
 - Liquibase — Flyway covers migrations
-- SonarQube and JaCoCo — static analysis and coverage are not a Spring concern; the build fails on compiler warnings instead
+- SonarQube and JaCoCo — static analysis and coverage are not a Spring concern
 - Gatling — load is generated in the stages that need a measurement
 - Terraform and Argo CD — the actual deployment is postponed; the pipelines carry the deployment step
 - HashiCorp Vault — Spring Cloud Config encryption covers secrets
@@ -73,6 +73,11 @@ Costs:
 - code is duplicated between stages on purpose: each directory is a snapshot, and thirty-four snapshots make the repository large
 - some stages change only the build or the infrastructure, not the application code
 - frozen stages still need dependency updates
-- the image of a backing service is declared twice, in the Compose file used by `bootRun` and in the Testcontainers configuration used by the tests, because neither tool reads the configuration of the other and automatic dependency updates reach only the Compose file; the two declarations are kept equal by hand, and a way to synchronise them that keeps automatic updates replaces this compromise as soon as one is found
-- the Compose file of the development-time services keeps the defaults of Spring Initializr — the database port mapped to an ephemeral host port and placeholder credentials written in the file — which suit local development only; they must not reach a deployed system, so when the Compose file describes the whole stage and becomes deployable in 08, the credentials leave the public repository and the database port stops being published to the host
 - AWS costs nothing until the deployment starts; prices and free tier conditions are checked at that moment
+
+The project starts from what Spring Initializr generates and keeps the default behaviour of its tools; custom configuration is added only when a task cannot be solved without it. The known consequences, each with the point at which it is revisited:
+
+- the group `com.example` and the package `com.example.notes` are the placeholders of Spring Initializr; they stay identical in all stages and are replaced in all of them at once before the project is published
+- the tests run with the warnings that Mockito and the JVM emit by default: Mockito attaches itself to the running JVM as an agent, and the JVM reports the dynamic agent loading and limits class data sharing to boot loader classes because Mockito appends to the bootstrap classpath; passing the Mockito jar to the test JVM as `-javaagent`, as the Mockito documentation recommends for Java 21 and later, removes the first three, and `-Xshare:off` removes the last one by switching class data sharing off; neither is configured, because both are custom build configuration and the warnings do not affect the results of the tests
+- the image of a backing service is declared twice, in the Compose file used by `bootRun` and in the Testcontainers configuration used by the tests, because neither tool reads the configuration of the other; the two declarations are kept equal by hand, and a way to synchronise them that keeps automatic dependency updates replaces this compromise as soon as one is found
+- the Compose file of the development-time services keeps the defaults of Spring Initializr — the image tag `latest`, so the database version changes whenever a newer image is pulled, the database port mapped to an ephemeral host port, and placeholder credentials written in the file — which suit local development only; they must not reach a deployed system, so when the Compose file describes the whole stage and becomes deployable in 08, the credentials leave the public repository, the database port stops being published to the host, and the floating image tag is revisited
