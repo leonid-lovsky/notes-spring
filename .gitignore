@@ -4,15 +4,17 @@ build/
 
 ### IntelliJ IDEA ###
 .idea/
+out/
+*.iml
 
 ### VS Code ###
 .vscode/
 
+### Junie ###
+.junie/
+
 ### Claude Code ###
 .claude/
 
-### JetBrains AI ###
-.junie/
-
-### macOS ####
+### macOS ###
 .DS_Store

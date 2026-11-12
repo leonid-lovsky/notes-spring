@@ -95,6 +95,6 @@ Between commits existing records are only edited in place; new records are not a
 
 ## Code and build
 
-Builds and tests pass without errors and warnings. Indentation is four spaces. Intermediate results go into local variables with clear names instead of nested calls. Abbreviations in identifiers are written in capitals, except `Id`.
+Builds and tests pass without errors and warnings caused by the project's own code and configuration; warnings that a tool emits in its default behaviour are accepted and not suppressed by custom configuration. Indentation is four spaces. Intermediate results go into local variables with clear names instead of nested calls. Abbreviations in identifiers are written in capitals, except `Id`.
 
-Commits and pushes are made only on an explicit request of the user; requests such as "do it", "apply" or "go" are not requests to commit. The Russian command `Зафиксируй` ("commit it") means: synchronise the documentation, commit and push. Dates in the documentation are taken from the `date` command.
+Commits and pushes are made only on an explicit request of the user; requests such as "do it", "apply" or "go" are not requests to commit. The Russian command `Зафиксируй` ("commit it") means: synchronise the documentation, commit and push. Every request to commit and push starts with a review of the repository: the assistant first reports what needs attention, if anything, and only after the user has considered those points records in the documentation what the commit requires, commits and pushes. Dates in the documentation are taken from the `date` command.

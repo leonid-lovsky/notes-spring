@@ -73,4 +73,6 @@ Costs:
 - code is duplicated between stages on purpose: each directory is a snapshot, and thirty-four snapshots make the repository large
 - some stages change only the build or the infrastructure, not the application code
 - frozen stages still need dependency updates
+- the image of a backing service is declared twice, in the Compose file used by `bootRun` and in the Testcontainers configuration used by the tests, because neither tool reads the configuration of the other and automatic dependency updates reach only the Compose file; the two declarations are kept equal by hand, and a way to synchronise them that keeps automatic updates replaces this compromise as soon as one is found
+- the Compose file of the development-time services keeps the defaults of Spring Initializr — the database port mapped to an ephemeral host port and placeholder credentials written in the file — which suit local development only; they must not reach a deployed system, so when the Compose file describes the whole stage and becomes deployable in 08, the credentials leave the public repository and the database port stops being published to the host
 - AWS costs nothing until the deployment starts; prices and free tier conditions are checked at that moment

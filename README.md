@@ -4,7 +4,7 @@ The evolution of one application — notes with users, sharing, notifications an
 
 Every project, once finished, is a tested application in its own directory, ready to be run, operated and shown to an employer, and from stage 09 ready to be deployed on AWS; the actual deployment is postponed until it is needed. The first project is always the monolith; the next project starts as a copy of the previous one and adds one key technology, so the application grows iteratively and evenly. Functionality and HTTP API are fixed in the first project; stage 11 changes the authentication method once, from HTTP Basic to OAuth 2.0 / OpenID Connect, and the contract does not change afterwards.
 
-Status: the plan is complete; no stage is implemented yet. Work starts with 01.
+Status: the plan is complete; work on 01 is in progress.
 
 | # | Project | Change | Level |
 |---|---|---|---|

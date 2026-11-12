@@ -1,6 +1,6 @@
 # 01 · Monolith
 
-Level: junior. Status: not started.
+Level: junior. Status: in progress.
 
 ## Change
 
@@ -16,7 +16,7 @@ Every later stage is measured against a working, tested, conventional Spring app
 - Data: Spring Data JPA, PostgreSQL; the schema is created by Spring Boot SQL initialization from `schema.sql`. Search is a PostgreSQL full-text query.
 - Security: Spring Security with users and BCrypt password hashes in the database, HTTP Basic for the API, role checks for note sharing.
 - Tests: JUnit, Mockito, slice tests, Testcontainers with `@ServiceConnection`.
-- Run: `./gradlew bootRun` starts the application and its PostgreSQL through Spring Boot Docker Compose support.
+- Run: `./gradlew bootRun` starts the application and its PostgreSQL through Spring Boot Docker Compose support. Spring Boot looks for `compose.yaml` in the working directory, so the application is started with the stage directory as its working directory, also from an IDE.
 
 ## Proof
 
