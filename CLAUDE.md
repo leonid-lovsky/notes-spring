@@ -77,16 +77,17 @@ Every stage is a standalone application in its own directory. The first stage is
 | `63-gateway-rate-limiting` | request rate limiter of the gateway | senior |
 | `64-graphql` | combined reads across services next to the unchanged REST API | senior |
 | `65-grpc` | hot internal call over gRPC | senior |
-| `66-kubernetes` | k3s (local, ready for EC2), manifests, Spring Boot Kubernetes support | senior |
-| `67-horizontal-pod-autoscaling` | services scale with load | senior |
-| `68-graalvm` | native images with Spring AOT | senior |
-| `69-domain-driven-design` | aggregates, value objects, domain events | architect |
-| `70-hexagonal-architecture` | storage port and contract test; PostgreSQL, MySQL, H2 | architect |
-| `71-mongodb` | second storage adapter on Spring Data MongoDB | architect |
-| `72-command-query-responsibility-segregation` | separate read and write models of the notes service | architect |
-| `73-event-sourcing` | notes stored as a sequence of events | architect |
-| `74-spring-ai` | semantic search with Spring AI, Ollama, Elasticsearch vector store | architect |
-| `75-spring-webflux` | second web stack, choice by measurement | architect |
+| `66-kubernetes` | the same services on k3s (local, ready for EC2), manifests, probes | senior |
+| `67-kubernetes-service-discovery-and-configuration` | Kubernetes Services, ConfigMaps and Secrets instead of Eureka and Spring Cloud Config | senior |
+| `68-horizontal-pod-autoscaling` | services scale with load | senior |
+| `69-graalvm` | native images with Spring AOT | senior |
+| `70-domain-driven-design` | aggregates, value objects, domain events | architect |
+| `71-hexagonal-architecture` | storage port and contract test; PostgreSQL, MySQL, H2 | architect |
+| `72-mongodb` | second storage adapter on Spring Data MongoDB | architect |
+| `73-command-query-responsibility-segregation` | separate read and write models of the notes service | architect |
+| `74-event-sourcing` | notes stored as a sequence of events | architect |
+| `75-spring-ai` | semantic search with Spring AI, Ollama, Elasticsearch vector store | architect |
+| `76-spring-webflux` | second web stack, choice by measurement | architect |
 
 ### How a stage is built
 

@@ -1,4 +1,4 @@
-# 71 · MongoDB
+# 72 · MongoDB
 
 Level: architect. Status: not started.
 
@@ -8,7 +8,7 @@ A second adapter of the storage port, on Spring Data MongoDB, proves that the po
 
 ## Why
 
-In 70 every adapter is relational, so the port has not yet been tested against a different data model.
+In 71 every adapter is relational, so the port has not yet been tested against a different data model.
 
 ## Tools
 
@@ -17,4 +17,4 @@ In 70 every adapter is relational, so the port has not yet been tested against a
 ## Proof
 
 - The acceptance tests pass.
-- The contract test of 70 passes on MongoDB without changes.
+- The contract test of 71 passes on MongoDB without changes.

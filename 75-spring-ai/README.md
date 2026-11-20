@@ -1,4 +1,4 @@
-# 74 · Spring AI
+# 75 · Spring AI
 
 Level: architect. Status: not started.
 
@@ -8,7 +8,7 @@ Search gains semantic matching: notes are turned into embeddings and found by me
 
 ## Why
 
-In 73 search finds words, not meaning: a note about a meeting is not found by a query for an appointment. The stage is about weighing the quality of results against the cost and latency of a model.
+In 74 search finds words, not meaning: a note about a meeting is not found by a query for an appointment. The stage is about weighing the quality of results against the cost and latency of a model.
 
 ## Tools
 

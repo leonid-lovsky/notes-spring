@@ -1,10 +1,10 @@
-# 70 · Hexagonal Architecture
+# 71 · Hexagonal Architecture
 
 Level: architect. Status: not started.
 
 ## Change
 
-A storage port is introduced in the notes service, with the existing Spring Data JPA adapter behind it; the domain model of 69 no longer depends on the persistence technology.
+A storage port is introduced in the notes service, with the existing Spring Data JPA adapter behind it; the domain model of 70 no longer depends on the persistence technology.
 
 ## Why
 

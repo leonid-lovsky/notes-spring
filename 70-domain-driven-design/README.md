@@ -1,4 +1,4 @@
-# 69 · Domain-Driven Design
+# 70 · Domain-Driven Design
 
 Level: architect. Status: not started.
 
@@ -8,7 +8,7 @@ The domain model of the notes service follows domain-driven design: a note with 
 
 ## Why
 
-In 68 the rules of the domain are spread over service classes and security expressions, and entities are bags of fields that any service can put into an invalid state.
+In 69 the rules of the domain are spread over service classes and security expressions, and entities are bags of fields that any service can put into an invalid state.
 
 ## Tools
 

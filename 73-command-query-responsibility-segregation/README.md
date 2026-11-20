@@ -1,4 +1,4 @@
-# 72 · Command Query Responsibility Segregation
+# 73 · Command Query Responsibility Segregation
 
 Level: architect. Status: not started.
 

@@ -1,4 +1,4 @@
-# 68 · GraalVM
+# 69 · GraalVM
 
 Level: senior. Status: not started.
 
@@ -8,7 +8,7 @@ The services are built as native images.
 
 ## Why
 
-In 67 a service starts in seconds and needs much memory, so the cluster reacts slowly when it has to scale out under a sudden load.
+In 68 a service starts in seconds and needs much memory, so the cluster reacts slowly when it has to scale out under a sudden load.
 
 ## Tools
 

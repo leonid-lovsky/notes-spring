@@ -1,4 +1,4 @@
-# 67 · Horizontal Pod Autoscaling
+# 68 · Horizontal Pod Autoscaling
 
 Level: senior. Status: not started.
 
@@ -8,7 +8,7 @@ The services scale out under load and scale back in when it ends.
 
 ## Why
 
-In 66 the number of instances is fixed in the manifests.
+In 67 the number of instances is fixed in the manifests.
 
 ## Tools
 
