@@ -12,7 +12,7 @@ In 08 users exist only as test data; the application cannot get new users.
 
 ## Tools
 
-- A sign-up form with Jakarta Validation, a unique user name enforced by the database, the password hashed with the `PasswordEncoder` of 07.
+- A sign-up form with Jakarta Validation, a unique user name enforced by the database, the password hashed with the `PasswordEncoder` of 08.
 
 ## Proof
 
