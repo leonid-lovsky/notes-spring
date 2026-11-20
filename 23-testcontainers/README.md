@@ -13,6 +13,8 @@ In 22 the tests run on H2, which differs from PostgreSQL in types, SQL and locki
 ## Tools
 
 - Testcontainers with `@ServiceConnection` through Spring Boot auto-configuration.
+- H2 and the H2 console module, added by Spring Initializr in 01, leave the build.
+- From this stage the image of PostgreSQL is declared twice, in the Compose file and in the Testcontainers configuration, and the two are kept equal by hand; the compromise is recorded in ADR 0001.
 
 ## Proof
 

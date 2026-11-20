@@ -14,7 +14,7 @@ Spring Authorization Server of 40–43 covers the protocol, but many companies r
 
 - Keycloak in the Compose file with a realm imported from a file; the Keycloak Testcontainers module for tests.
 - Spring Security OAuth2 Resource Server and Client, unchanged.
-- Open question: how Keycloak confirms a phone number by SMS is checked when the stage starts.
+- Open question, recorded in ADR 0001: how Keycloak confirms a phone number by SMS, as `auth-server` did in 42, is checked against the Keycloak documentation when the stage starts.
 
 ## Proof
 

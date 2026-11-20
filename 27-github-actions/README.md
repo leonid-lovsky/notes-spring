@@ -13,6 +13,7 @@ In 26 building, testing and packaging depend on a developer running the right co
 ## Tools
 
 - GitHub Actions workflow per stage, triggered by changes in the stage directory, calling Gradle tasks.
+- A toolchain repository in `settings.gradle`, so that a clean runner can provision the Java toolchain; this resolves the first known warning of 01. The way Gradle recommends is checked when the stage starts.
 
 ## Proof
 

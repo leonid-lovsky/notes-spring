@@ -13,6 +13,7 @@ In 24 credentials are written in the configuration files of the public repositor
 ## Tools
 
 - Spring Boot externalized configuration from environment variables, an `.env` file outside the repository, graceful shutdown, the image of 21 unchanged between environments.
+- The URL and the credentials of the database, written in `application.properties` since 01, leave the repository; this closes the compromise recorded in ADR 0001.
 
 ## Proof
 

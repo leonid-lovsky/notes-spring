@@ -32,7 +32,7 @@ The questions below are decided while the stage is developed; a decided question
 
 The build, the tests and the running application emit the warnings below, ordered by how critical they are. They are resolved in that order as the application is developed; a resolved warning is removed from the list.
 
-1. Gradle: the build declares no toolchain repository. The Java 25 toolchain on the developer machine was installed earlier by auto-provisioning, which Gradle has deprecated and which fails with an error from Gradle 10; on a clean machine, such as a CI runner, the toolchain is not found.
+1. Gradle: the build declares no toolchain repository. The Java 25 toolchain on the developer machine was installed earlier by auto-provisioning, which Gradle has deprecated and which fails with an error from Gradle 10; on a clean machine, such as a CI runner, the toolchain is not found. The warning is resolved in `27-github-actions`, the first stage that builds on a clean machine.
 2. Mockito and the JVM, in the tests: Mockito attaches itself as an agent to the running JVM, the JVM reports the dynamic agent loading, and class data sharing is limited to boot loader classes. These warnings come from the default behaviour of the tools and are accepted; the reason and the configuration that would remove them are recorded in [ADR 0001](../docs/adr/0001-evolution-in-stages.md).
 
 ## Proof

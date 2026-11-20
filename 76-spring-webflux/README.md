@@ -14,7 +14,7 @@ A live feed keeps thousands of connections open. The stage is about choosing a t
 
 - Spring WebFlux, reactive Spring Data MongoDB, `WebTestClient`.
 - A load test of the live feed with many open connections, measured on the Grafana dashboard.
-- Multi-factor authentication of Spring Security is not supported in reactive applications; the second factor stays in Keycloak, outside the service.
+- Open question, recorded in ADR 0001: multi-factor authentication of Spring Security is not supported in reactive applications; the plan keeps the second factor in Keycloak, outside the service, and this is checked against the Spring Security reference when the stage starts.
 
 ## Proof
 
