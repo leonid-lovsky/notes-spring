@@ -53,7 +53,7 @@ Status: the plan is complete; work on 01 is in progress.
 | 43 | [multi-factor-authentication](43-multi-factor-authentication) | second factor with Spring Security | middle |
 | 44 | [keycloak](44-keycloak) | Keycloak instead of `auth-server`, realm as code | middle |
 | 45 | [google-docs-export](45-google-docs-export) | export of a note to Google Docs | middle |
-| 46 | [spring-cloud-gateway](46-spring-cloud-gateway) | single entry point, seam for extracting services | senior |
+| 46 | [spring-cloud-gateway](46-spring-cloud-gateway) | single entry point that hides how the system is split | senior |
 | 47 | [token-relay](47-token-relay) | browser sign-in at the gateway, token relay | senior |
 | 48 | [react](48-react) | single-page application behind the gateway | senior |
 | 49 | [progressive-web-app](49-progressive-web-app) | installable application that works offline | senior |

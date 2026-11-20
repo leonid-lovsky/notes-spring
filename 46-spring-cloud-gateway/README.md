@@ -4,7 +4,7 @@ Level: senior. Status: not started.
 
 ## Change
 
-A gateway becomes the single entry point in front of the application: it routes the requests of the pages and of the API. The gateway is also the seam along which the next stages extract services one by one (strangler fig pattern).
+A gateway becomes the single entry point in front of the application: it routes the requests of the pages and of the API. Behind the gateway, parts of the application can later move into separate services without changing the address that clients use.
 
 ## Why
 
