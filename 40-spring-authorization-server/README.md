@@ -13,7 +13,7 @@ In 39 the application stores credentials and checks passwords itself, and every 
 ## Tools
 
 - Spring Security OAuth2 Resource Server (JWT) for the API, OAuth2 Client with the authorization code flow for the pages.
-- Spring Authorization Server as a further service in the Compose file, with the users and the sign-up form of 09.
+- Spring Authorization Server as a further service in the Compose file, with the users and the sign-up form of 07.
 - Tests: Spring Security test support for slice tests; the acceptance tests obtain a token through standard OpenID Connect discovery.
 
 ## Proof

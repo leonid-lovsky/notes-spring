@@ -1,4 +1,4 @@
-# 06 · Spring Boot SQL Initialization
+# 08 · Spring Boot SQL Initialization
 
 Level: junior. Status: not started.
 
@@ -8,7 +8,7 @@ The schema is created by Spring Boot SQL initialization from `schema.sql` instea
 
 ## Why
 
-In 05 Hibernate generates the schema from the entities: the schema is never written down, an update never removes or renames anything, so the database drifts away from the code, and nothing reports the difference.
+Since 01 Hibernate generates the schema from the entities, and with the users of 06 and 07 the schema has started to grow: it is never written down, an update never removes or renames anything, so the database drifts away from the code, and nothing reports the difference.
 
 ## Tools
 

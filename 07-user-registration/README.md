@@ -1,4 +1,4 @@
-# 09 · User Registration
+# 07 · User Registration
 
 Level: junior. Status: not started.
 
@@ -8,11 +8,11 @@ A visitor creates an account through a sign-up form and signs in with it.
 
 ## Why
 
-In 08 users exist only as test data; the application cannot get new users.
+In 06 users exist only as test data; the application cannot get new users.
 
 ## Tools
 
-- A sign-up form with Jakarta Validation, a unique user name enforced by the database, the password hashed with the `PasswordEncoder` of 08.
+- A sign-up form with Jakarta Validation, a unique user name enforced by the database, the password hashed with the `PasswordEncoder` of 06.
 
 ## Proof
 

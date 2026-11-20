@@ -12,7 +12,7 @@ In 09 every signed-in user still sees the notes of all users.
 
 ## Tools
 
-- The owner of a note taken from the authenticated principal; repository queries restricted to the current user.
+- A Flyway migration adds the owner column and assigns the existing notes to an owner; the owner of a new note is taken from the authenticated principal; repository queries are restricted to the current user.
 
 ## Proof
 

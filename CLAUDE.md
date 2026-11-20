@@ -17,10 +17,10 @@ Every stage is a standalone application in its own directory. The first stage is
 | `03-markdown` | notes in Markdown | junior |
 | `04-pagination` | paginated and sorted list of notes | junior |
 | `05-command-query-separation` | commands and queries separated in the services | junior |
-| `06-spring-boot-sql-initialization` | schema from `schema.sql`, entities validated against it | junior |
-| `07-flyway` | versioned schema migrations | junior |
-| `08-spring-security` | form login, session, users in the database with one role | junior |
-| `09-user-registration` | sign-up | junior |
+| `06-spring-security` | form login, session, users in the database with one role | junior |
+| `07-user-registration` | sign-up | junior |
+| `08-spring-boot-sql-initialization` | schema from `schema.sql`, entities validated against it | junior |
+| `09-flyway` | versioned schema migrations | junior |
 | `10-note-ownership` | notes owned by users | junior |
 | `11-method-security` | note sharing with roles | junior |
 | `12-in-app-notifications` | notifications from Spring application events | junior |
