@@ -19,6 +19,14 @@ Every later stage is measured against a working, tested, conventional Spring app
 - Tests: JUnit, Mockito, slice tests, page tests with MockMvc. The tests run on the embedded H2, which Spring Boot puts in place of the configured database by default; the SQL of the stage is therefore kept valid on both H2 and PostgreSQL. Testcontainers replaces H2 in 22.
 - Run: `./gradlew bootRun` with a local PostgreSQL whose URL and credentials are set in `application.properties`. Docker Compose starts the database in 21.
 
+## Open questions
+
+The questions below are decided while the stage is developed; a decided question moves into the sections above.
+
+- Database connection: Spring Initializr adds H2 with runtime scope, so without a URL of the local PostgreSQL in `application.properties` `bootRun` silently starts the application on the embedded H2. The URL and the credentials are the first step of the code. They can be set in `application.properties` (`spring.datasource.url`, `spring.datasource.username`, `spring.datasource.password`), the simplest way, which puts the password of the local database into the repository until `24-twelve-factor-app`, or in environment variables such as `SPRING_DATASOURCE_URL`, which keep it out of the repository but must be set before every run; the database, its user and its password may all be named `notes` after the application.
+- Editing and deleting notes from a form, which can send only `GET` and `POST`: separate `POST` endpoints, such as `POST /notes/{id}/delete`, or the hidden method filter of Spring MVC (`spring.mvc.hiddenmethod.filter.enabled`, off by default), which turns a hidden `_method` field into `PUT` or `DELETE`.
+- Generation of the UUID identifiers: the standard strategy of Jakarta Persistence, `@GeneratedValue(strategy = GenerationType.UUID)`, where Hibernate creates the value on save; a value created by the application, such as `UUID.randomUUID()` in the constructor of the entity, which exists before the entity is saved; or a default of the database, which `schema.sql` would have to express for both H2 and PostgreSQL. Random UUIDs of version 4 land at random places of an index, while UUIDs of version 7 are ordered by time.
+
 ## Known warnings
 
 The build, the tests and the running application emit the warnings below, ordered by how critical they are. They are resolved in that order as the application is developed; a resolved warning is removed from the list.
