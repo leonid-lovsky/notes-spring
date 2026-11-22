@@ -4,17 +4,17 @@ Level: junior. Status: not started.
 
 ## Change
 
-The HTTP API is documented from its tests: every documented request and response is a passing test.
+The API is documented from its tests.
 
 ## Why
 
-In 16 the API is described nowhere except in the code, and a description written by hand would drift from the implementation.
+In 16 a description written by hand would drift from the API.
 
 ## Tools
 
-- Spring REST Docs with MockMvc; Asciidoctor renders the documentation during the build.
+Spring REST Docs with Asciidoctor.
 
 ## Proof
 
 - The acceptance tests pass.
-- A change of the API that is not reflected in the documentation fails a test.
+- A change of the API that the documentation does not reflect fails a test.

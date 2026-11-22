@@ -4,16 +4,15 @@ Level: junior. Status: not started.
 
 ## Change
 
-Every change is built, tested and packaged by a pipeline, which starts the stage and runs the acceptance tests against it.
+A pipeline builds and tests every change and runs the acceptance tests against the started stage.
 
 ## Why
 
-In 26 building, testing and packaging depend on a developer running the right commands.
+In 26 the result depends on a developer running the right commands.
 
 ## Tools
 
-- GitHub Actions workflow per stage, triggered by changes in the stage directory, calling Gradle tasks.
-- A toolchain repository in `settings.gradle`, so that a clean runner can provision the Java toolchain; this resolves the first known warning of 01. The way Gradle recommends is checked when the stage starts.
+A GitHub Actions workflow per stage. A toolchain repository resolves the first known warning of 01.
 
 ## Proof
 

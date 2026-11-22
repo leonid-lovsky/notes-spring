@@ -4,17 +4,17 @@ Level: middle. Status: not started.
 
 ## Change
 
-The application runs in two instances behind NGINX, and the browser session is kept in Redis instead of the memory of one instance.
+Two instances run behind NGINX, and the session is kept in Redis.
 
 ## Why
 
-In 31 the session lives in one instance: a second instance does not know a signed-in user, and a restart signs everyone out.
+In 31 a session lives in one instance.
 
 ## Tools
 
-- Spring Session with Redis through Spring Boot auto-configuration; Redis of 31; NGINX of 26 spreads the requests.
+Spring Session with Redis.
 
 ## Proof
 
 - The acceptance tests pass.
-- A user stays signed in when requests alternate between the instances and after a restart of one of them.
+- A user stays signed in across both instances and a restart.

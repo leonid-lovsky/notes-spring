@@ -4,17 +4,17 @@ Level: middle. Status: not started.
 
 ## Change
 
-The cache moves from the memory of the application to Redis; the code of 30 does not change.
+The cache moves to Redis without a change of code.
 
 ## Why
 
-In 30 every instance keeps its own cache, which is lost on restart and grows with the heap.
+In 30 the cache is lost on restart and competes for the heap, and the next stage needs Redis for two instances anyway.
 
 ## Tools
 
-- Redis as the cache provider of Spring Cache through Spring Boot auto-configuration; Redis in the Compose file and in Testcontainers.
+Redis as the provider of Spring Cache.
 
 ## Proof
 
 - The acceptance tests pass.
-- The cache survives a restart of the application, and the code of the services is unchanged.
+- The cache survives a restart of the application.

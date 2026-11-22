@@ -8,11 +8,11 @@ The gateway limits the request rate of every user.
 
 ## Why
 
-In 62 the services protect themselves from each other, but one client can still flood the whole system.
+In 62 one client can still flood the system.
 
 ## Tools
 
-- The request rate limiter of Spring Cloud Gateway with Redis.
+The request rate limiter of Spring Cloud Gateway with Redis.
 
 ## Proof
 

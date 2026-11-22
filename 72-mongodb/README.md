@@ -4,17 +4,17 @@ Level: architect. Status: not started.
 
 ## Change
 
-A second adapter of the storage port, on Spring Data MongoDB, proves that the port does not depend on SQL.
+A second adapter of the storage port runs on MongoDB.
 
 ## Why
 
-In 71 every adapter is relational, so the port has not yet been tested against a different data model.
+In 71 the port is tested only on relational stores.
 
 ## Tools
 
-- Spring Data MongoDB, MongoDB in Testcontainers and in the cluster.
+Spring Data MongoDB.
 
 ## Proof
 
 - The acceptance tests pass.
-- The contract test of 71 passes on MongoDB without changes.
+- The contract test of 71 passes on MongoDB unchanged.

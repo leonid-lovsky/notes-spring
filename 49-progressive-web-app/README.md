@@ -4,17 +4,17 @@ Level: senior. Status: not started.
 
 ## Change
 
-The single-page application becomes a Progressive Web App: it can be installed and shows the notes read before when the network is gone.
+The single-page application can be installed and shows read notes offline.
 
 ## Why
 
-In 48 the application is a browser tab and shows nothing without a network.
+In 48 nothing works without a network.
 
 ## Tools
 
-- A web app manifest and a service worker caching the application and the last read notes.
+A web app manifest and a service worker.
 
 ## Proof
 
 - The acceptance tests pass.
-- The installed application opens and shows cached notes offline.
+- The installed application shows cached notes offline.

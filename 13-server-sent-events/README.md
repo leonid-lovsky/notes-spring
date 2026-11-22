@@ -4,15 +4,15 @@ Level: junior. Status: not started.
 
 ## Change
 
-Notifications reach the user at once through a live feed: the server streams them over Server-Sent Events, and the pages receive them through `EventSource`.
+Notifications reach open pages at once through a live feed.
 
 ## Why
 
-In 12 a user sees a new notification only after reloading the list.
+In 12 a new notification appears only after a reload.
 
 ## Tools
 
-- `SseEmitter` of Spring MVC; the browser `EventSource` API on the pages.
+`SseEmitter` of Spring MVC and `EventSource` in the browser.
 
 ## Proof
 

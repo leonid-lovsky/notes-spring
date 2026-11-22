@@ -4,17 +4,17 @@ Level: senior. Status: not started.
 
 ## Change
 
-The services scale out under load and scale back in when it ends.
+The services scale with load.
 
 ## Why
 
-In 67 the number of instances is fixed in the manifests.
+In 67 the number of instances is fixed.
 
 ## Tools
 
-- Horizontal Pod Autoscaler on metrics from Prometheus; a load test.
+Horizontal Pod Autoscaler on Prometheus metrics.
 
 ## Proof
 
 - The acceptance tests pass.
-- Under load the services scale out and scale back in when it ends.
+- Under load the services scale out and back in.

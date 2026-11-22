@@ -4,17 +4,17 @@ Level: senior. Status: not started.
 
 ## Change
 
-Platform features replace Spring Cloud infrastructure: services find each other through Kubernetes Services instead of Eureka, and their settings come from ConfigMaps and Secrets instead of the Config Server. Eureka and the Config Server leave the system.
+Kubernetes Services, ConfigMaps and Secrets replace Eureka and Spring Cloud Config.
 
 ## Why
 
-In 66 the cluster runs service discovery and configuration twice: Kubernetes provides both, and Eureka and the Config Server repeat them as services of their own.
+In 66 the cluster provides discovery and configuration twice.
 
 ## Tools
 
-- Kubernetes Services addressed by their DNS names; ConfigMaps and Secrets mounted as files and read through `spring.config.import=configtree:`; the encrypted values of 59 move to Kubernetes Secrets.
+Kubernetes Services and `configtree:` imports.
 
 ## Proof
 
 - The acceptance tests pass.
-- No Eureka server and no Config Server run in the cluster, and a changed ConfigMap reaches a service.
+- No Eureka and no Config Server run in the cluster.

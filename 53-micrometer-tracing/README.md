@@ -4,17 +4,17 @@ Level: senior. Status: not started.
 
 ## Change
 
-Requests and events carry a trace context across processes and the broker, and every log event carries the identifiers of its trace and span, so the logs of one request can be found together in Grafana Loki.
+A trace context crosses processes and the broker, and every log event carries its trace identifier.
 
 ## Why
 
-Since 51 a request crosses several processes and a broker, and the logs of one request are scattered over several services with nothing that links them.
+Since 51 the logs of one request are scattered over several processes.
 
 ## Tools
 
-- Micrometer Tracing with the OpenTelemetry bridge through Spring Boot auto-configuration; trace identifiers in the structured logs of 20.
+Micrometer Tracing with the OpenTelemetry bridge.
 
 ## Proof
 
 - The acceptance tests pass.
-- The logs of one request in all services are found in Grafana Loki by its trace identifier.
+- The logs of one request are found together by its trace identifier.

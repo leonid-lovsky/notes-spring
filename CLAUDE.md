@@ -82,7 +82,7 @@ Every stage is a standalone application in its own directory. The first stage is
 | `68-horizontal-pod-autoscaling` | services scale with load | senior |
 | `69-graalvm` | native images with Spring AOT | senior |
 | `70-domain-driven-design` | aggregates, value objects, domain events | architect |
-| `71-hexagonal-architecture` | storage port and contract test; PostgreSQL, MySQL, H2 | architect |
+| `71-hexagonal-architecture` | storage port and contract test; PostgreSQL and MySQL | architect |
 | `72-mongodb` | second storage adapter on Spring Data MongoDB | architect |
 | `73-command-query-responsibility-segregation` | separate read and write models of the notes service | architect |
 | `74-event-sourcing` | notes stored as a sequence of events | architect |
@@ -109,7 +109,7 @@ From then on the history stays linear: no merge commits, every change is rebased
 
 ### Acceptance tests
 
-The `acceptance-tests/` directory contains one black-box test suite for every stage from 16, which introduces it after the REST API of 14 and its error format of 15. It talks to a running system over HTTP only and proves that behaviour defined in an earlier stage does not change while new behaviour is added; only the authentication method changes once, in 40. The tests are grouped by capability — notes, sharing, notifications, live feed, search — and a stage runs the capabilities its API contains. The suite does not check the browser interface — page tests inside the stages do that. It does not know the technologies of the implementation: the framework, the databases, the message broker, the authorization server product, the structure of the system or the number of the stage. It knows only the base URL of the system, the credentials of a test user, the issuer URL for a system that accepts tokens, the capabilities to run, and the public API — HTTP, JSON, Server-Sent Events, OAuth 2.0 / OpenID Connect. Test data is created and verified only through the API; asynchronous behaviour is verified by polling the API. The tests inside a stage — unit, slice, page and integration tests — stay in the stage and check its technologies. Details are in `acceptance-tests/README.md`.
+The `acceptance-tests/` directory contains one black-box test suite that runs against every stage from 16 over HTTP only and proves that behaviour defined in an earlier stage does not change; only the authentication method changes once, in 40. It is grouped by capability — notes, sharing, notifications, live feed, search — and knows only the public API and its parameters: the base URL, the credentials of a test user, the issuer URL for a system that accepts tokens and the capabilities to run. It knows nothing about the implementation, creates and verifies test data only through the API and verifies asynchronous behaviour by polling. The browser interface and the technologies of a stage are checked by the unit, slice, page and integration tests inside the stage. Details are in `acceptance-tests/README.md`.
 
 ## Decision priorities
 
@@ -137,8 +137,24 @@ Documentation is written for its reader: coherent text organised in sections wit
 
 Between commits existing records are only edited in place; new records are not added next to them, and a new record appears only after a commit. Until the first stage has working code, decisions are written into the existing records even after a commit, because the plan is still being shaped. For ADRs this means that a decision made after the last commit goes into an existing record, and a new ADR is created only for a decision made after a commit. ADRs live in `docs/adr/`, one decision per file `NNNN-title.md`.
 
+## Code style
+
+The rules below apply to every file of the project, whatever its format or language — Java, Gradle, properties or any other — including the files that a generator such as Spring Initializr produces, which are brought in line with them after generation.
+
+- Indentation is four spaces; tabs are not used.
+- Two blank lines never stand in a row.
+- A file ends with exactly one line break after its last line, with no blank lines at its end.
+- Exactly one blank line follows the line that opens a class.
+- No blank line precedes a closing brace, except in an empty class or method body, which holds exactly one blank line between its braces.
+- Intermediate results go into local variables with clear names instead of nested calls.
+- Abbreviations in identifiers are written in capitals, except `Id`.
+
+For now the rules are kept with the tools at hand — `.editorconfig` and the formatter of the editor — and with discipline. A later stage of its own, not yet placed in the sequence, chooses, adds and tries one flexible tool that both checks the formatting in the build and formats the code, and that integrates equally with every development environment, preferably highlighting violations while the code is edited rather than only in the build, so that no editor is the source of truth.
+
 ## Code and build
 
-Builds and tests pass without errors and warnings caused by the project's own code and configuration; warnings that a tool emits in its default behaviour are accepted and not suppressed by custom configuration. Indentation is four spaces. Intermediate results go into local variables with clear names instead of nested calls. Abbreviations in identifiers are written in capitals, except `Id`.
+The repository is named `notes-spring`; the application is named `notes` in every stage — the Gradle project, `spring.application.name` and the package `com.example.notes`.
+
+Builds and tests pass without errors and warnings caused by the project's own code and configuration; warnings that a tool emits in its default behaviour are accepted and not suppressed by custom configuration.
 
 Commits and pushes are made only on an explicit request of the user; requests such as "do it", "apply" or "go" are not requests to commit. The Russian command `Зафиксируй` ("commit it") means: synchronise the documentation, commit and push. Every request to commit and push starts with a review of the repository: the assistant first reports what needs attention, if anything, and only after the user has considered those points records in the documentation what the commit requires, commits and pushes. Dates in the documentation are taken from the `date` command.

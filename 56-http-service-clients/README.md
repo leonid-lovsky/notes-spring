@@ -4,15 +4,15 @@ Level: senior. Status: not started.
 
 ## Change
 
-The OpenFeign clients are replaced by declarative HTTP service clients of Spring Framework. The services do not change otherwise.
+Spring HTTP service clients replace OpenFeign.
 
 ## Why
 
-Spring Cloud OpenFeign is feature-complete, and Spring recommends HTTP service clients instead.
+Spring Cloud OpenFeign is feature-complete.
 
 ## Tools
 
-- Spring HTTP service clients (`@HttpExchange` interfaces on `RestClient`).
+`@HttpExchange` interfaces on `RestClient`.
 
 ## Proof
 

@@ -1,8 +1,8 @@
 # notes-spring
 
-The evolution of one application — notes with users, sharing, notifications and search — from a classic monolith to a distributed, configurable, resilient system. The sequence of projects shows three lines at once: the development of the application, the mastering of technologies, and the growth from junior to senior and architect.
+One application — notes in Markdown with users, sharing, notifications and search — evolves from a classic monolith into a distributed, configurable, resilient system. Each stage is a finished, tested application in its own directory that adds one step to the previous stage, so the sequence shows the development of the application, the mastering of Spring technologies and the path from junior to architect.
 
-Every project, once finished, is a tested application in its own directory, ready to be run, operated and shown to an employer, and from stage 29 ready to be deployed on Amazon Web Services; the actual deployment is postponed until it is needed. The first project is always an elementary monolith with server-rendered pages; the next project starts as a copy of the previous one and adds one atomic step — a technology, a pattern or a function — so the application grows linearly from simple and elementary steps to complex and advanced ones. The REST API appears in stage 14, its contract is fixed by the acceptance tests in 16 and from then on grows only by addition; stage 40 changes the authentication method once, from HTTP Basic to OAuth 2.0 / OpenID Connect.
+The REST API appears in 14 and is fixed by the acceptance tests in 16; from then on it grows only by addition, and only the authentication method changes once, in 40. From 29 every stage is ready to be deployed on Amazon Web Services, with the deployment switched off until it is needed.
 
 Status: the plan is complete; work on 01 is in progress.
 
@@ -78,13 +78,11 @@ Status: the plan is complete; work on 01 is in progress.
 | 68 | [horizontal-pod-autoscaling](68-horizontal-pod-autoscaling) | services scale with load | senior |
 | 69 | [graalvm](69-graalvm) | native images with Spring AOT | senior |
 | 70 | [domain-driven-design](70-domain-driven-design) | aggregates, value objects, domain events | architect |
-| 71 | [hexagonal-architecture](71-hexagonal-architecture) | storage port and contract test; PostgreSQL, MySQL, H2 | architect |
+| 71 | [hexagonal-architecture](71-hexagonal-architecture) | storage port and contract test; PostgreSQL and MySQL | architect |
 | 72 | [mongodb](72-mongodb) | second storage adapter on Spring Data MongoDB | architect |
 | 73 | [command-query-responsibility-segregation](73-command-query-responsibility-segregation) | separate read and write models of the notes service | architect |
 | 74 | [event-sourcing](74-event-sourcing) | notes stored as a sequence of events | architect |
 | 75 | [spring-ai](75-spring-ai) | semantic search with Spring AI, Ollama, Elasticsearch vector store | architect |
 | 76 | [spring-webflux](76-spring-webflux) | second web stack, choice by measurement | architect |
 
-The same black-box [acceptance tests](acceptance-tests) run against every stage from 16 and prove that behaviour defined in an earlier stage does not change.
-
-Architecture decisions are recorded in [docs/adr](docs/adr). The previous attempt of the project is kept under the tag `legacy-2026-11`.
+The black-box [acceptance tests](acceptance-tests) run against every stage from 16. Architecture decisions are recorded in [docs/adr](docs/adr); the previous attempt of the project is kept under the tag `legacy-2026-11`.

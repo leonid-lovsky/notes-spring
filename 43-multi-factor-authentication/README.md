@@ -8,13 +8,13 @@ Level: middle. Status: not started.
 
 ## Why
 
-In 42 a stolen password is enough to take over an account.
+In 42 a stolen password is enough.
 
 ## Tools
 
-- Multi-factor authentication of Spring Security 7 (`@EnableMultiFactorAuthentication`) with a one-time token as the second factor, delivered through the channels of 41 and 42.
+Multi-factor authentication of Spring Security.
 
 ## Proof
 
 - The acceptance tests pass.
-- Sign-in without the second factor does not issue a token.
+- Sign-in without the second factor issues no token.

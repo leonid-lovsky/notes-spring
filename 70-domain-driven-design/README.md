@@ -4,17 +4,17 @@ Level: architect. Status: not started.
 
 ## Change
 
-The domain model of the notes service follows domain-driven design: a note with its access rights is one aggregate that guards its own invariants, such as the last owner that cannot be removed; roles and identifiers are value objects; the aggregate registers domain events when it changes, and Spring Data publishes them when the aggregate is saved.
+A note with its access rights becomes an aggregate that guards its invariants and registers domain events.
 
 ## Why
 
-In 69 the rules of the domain are spread over service classes and security expressions, and entities are bags of fields that any service can put into an invalid state.
+In 69 the rules of the domain are spread over services.
 
 ## Tools
 
-- Spring Data JPA aggregate roots with `AbstractAggregateRoot` and domain events published on save; value objects as records; the invariants tested without Spring.
+`AbstractAggregateRoot` of Spring Data, value objects as records.
 
 ## Proof
 
 - The acceptance tests pass.
-- The invariants of the aggregate hold for every way of changing it, checked by plain unit tests.
+- Plain unit tests prove the invariants of the aggregate.

@@ -4,17 +4,16 @@ Level: junior. Status: not started.
 
 ## Change
 
-The application is packaged as a container image. The application code does not change.
+The application is packaged as a container image without a hand-written `Dockerfile`.
 
 ## Why
 
-In 20 the application runs only from the source code on a developer machine; it cannot be shipped to a server.
+In 20 the application runs only from source code.
 
 ## Tools
 
-- Container image built by the Spring Boot Gradle plugin (`bootBuildImage` with Cloud Native Buildpacks), without a hand-written `Dockerfile`; configuration through environment variables.
+`bootBuildImage` with Cloud Native Buildpacks.
 
 ## Proof
 
-- The acceptance tests pass against the application started from the image with `docker run`.
-- The same image runs locally and is ready for Amazon EC2.
+- The acceptance tests pass against the image started with `docker run`.

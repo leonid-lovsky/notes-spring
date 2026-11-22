@@ -4,17 +4,17 @@ Level: junior. Status: not started.
 
 ## Change
 
-One Compose file describes the stage. PostgreSQL in it is started by Spring Boot Docker Compose support during `bootRun`, so the database no longer has to be installed on the developer machine; the application image runs from the same file under a Compose profile, so `docker compose up` with that profile starts the whole stage.
+One Compose file describes the stage: `bootRun` starts PostgreSQL from it, and a Compose profile starts the whole stage; the database connection leaves `application.properties`.
 
 ## Why
 
-In 21 the database is installed by hand on every machine, and the application container and its database are started and wired together by hand.
+In 21 the database is installed and wired by hand.
 
 ## Tools
 
-- Spring Boot Docker Compose support (`spring-boot-docker-compose`, development only); Compose profiles for the services that `bootRun` must not start, checked against the Spring Boot reference when the stage starts; start order driven by the Actuator health checks of 19.
+Spring Boot Docker Compose support.
 
 ## Proof
 
-- The acceptance tests pass against the stage started from the Compose file.
-- `bootRun` starts the application with its database on a machine without a local PostgreSQL.
+- The acceptance tests pass.
+- `bootRun` works on a machine without PostgreSQL, and the acceptance tests pass against the stage started by Compose.

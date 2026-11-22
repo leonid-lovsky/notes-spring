@@ -4,17 +4,17 @@ Level: junior. Status: not started.
 
 ## Change
 
-The list of notes is shown page by page, sorted by title, with navigation between pages.
+The list of notes is shown page by page in a stable order.
 
 ## Why
 
-In 03 the list shows every note at once, and the page grows without limit with the number of notes.
+In 03 the list shows every note at once.
 
 ## Tools
 
-- `Pageable` and `Page` of Spring Data in the repository and the service, page navigation in Thymeleaf.
+`Pageable` and `Page` of Spring Data.
 
 ## Proof
 
 - The page tests pass.
-- The list shows one page of notes at a time in a stable order.
+- The list shows one page at a time with navigation between pages.

@@ -4,17 +4,17 @@ Level: junior. Status: not started.
 
 ## Change
 
-The application writes its logs to standard output as structured JSON events.
+Logs are written to standard output as structured JSON.
 
 ## Why
 
-In 19 the logs are lines of text that a tool cannot filter by field.
+In 19 a tool cannot filter the lines of text by field.
 
 ## Tools
 
-- Spring Boot structured logging, configured through properties.
+Spring Boot structured logging.
 
 ## Proof
 
 - The acceptance tests pass.
-- Every log event is a JSON object with the fields of the chosen format.
+- Every log event is a JSON object.

@@ -4,15 +4,15 @@ Level: senior. Status: not started.
 
 ## Change
 
-A single-page application in React works with the same REST API behind the gateway, next to the server-rendered pages.
+A single-page application works with the REST API behind the gateway.
 
 ## Why
 
-In 47 the browser interface reloads a page for every action.
+In 47 every action reloads a page.
 
 ## Tools
 
-- React built by its own toolchain inside the stage; the gateway signs the browser in and relays the token, so the application never holds a token.
+React.
 
 ## Proof
 

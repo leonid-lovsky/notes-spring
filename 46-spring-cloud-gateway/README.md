@@ -4,15 +4,15 @@ Level: senior. Status: not started.
 
 ## Change
 
-A gateway becomes the single entry point in front of the application: it routes the requests of the pages and of the API. Behind the gateway, parts of the application can later move into separate services without changing the address that clients use.
+A gateway becomes the single entry point, so parts of the system can later move behind it unnoticed by clients.
 
 ## Why
 
-In 45 clients address the application directly, and the next stages are about to add processes that clients would have to know.
+In 45 clients address the application directly.
 
 ## Tools
 
-- Spring Cloud Gateway with routes in properties, behind NGINX.
+Spring Cloud Gateway.
 
 ## Proof
 

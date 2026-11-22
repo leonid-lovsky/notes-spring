@@ -4,17 +4,16 @@ Level: junior. Status: not started.
 
 ## Change
 
-A black-box acceptance test suite talks to the running system over HTTP only. From this stage it runs against every stage and fixes the contract of the API: later stages only add to it.
+A black-box acceptance test suite runs against the system over HTTP and fixes the contract of the API.
 
 ## Why
 
-In 15 the API is tested only from inside the application; nothing proves that the next stages keep its behaviour.
+In 15 nothing proves that later stages keep the behaviour of the API.
 
 ## Tools
 
-- The separate Gradle project `acceptance-tests/` with JUnit, REST Assured and Awaitility, the capabilities notes, sharing, notifications and live feed; asynchronous behaviour is verified by polling the API; the suite knows only the base URL and the credentials of a test user.
+REST Assured and Awaitility in the separate project `acceptance-tests/`.
 
 ## Proof
 
-- The acceptance tests pass.
-- The suite runs against the application started with `bootRun`.
+- The suite passes against the application started with `bootRun`.

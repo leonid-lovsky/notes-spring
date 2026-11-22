@@ -4,18 +4,17 @@ Level: middle. Status: not started.
 
 ## Change
 
-The metrics that Actuator already exposes are collected by Prometheus. The application code changes only by the dependency that exports metrics in Prometheus format.
+Prometheus collects the metrics of all instances and raises alerts.
 
 ## Why
 
-In 33 the metrics of two instances exist but nobody collects them. A system needs basic monitoring before it is distributed (Martin Fowler, "MicroservicePrerequisites").
+In 33 nobody collects the metrics, and a system needs monitoring before it is distributed.
 
 ## Tools
 
-- Micrometer with the Prometheus registry on the Actuator endpoint of 19.
-- Prometheus in the Compose file with scrape configuration and alerting rules.
+Micrometer with the Prometheus registry.
 
 ## Proof
 
 - The acceptance tests pass.
-- Prometheus scrapes the running stage, and an alert fires when the error rate exceeds its threshold.
+- An alert fires when the error rate exceeds its threshold.

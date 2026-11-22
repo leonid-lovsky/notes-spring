@@ -4,19 +4,17 @@ Level: architect. Status: not started.
 
 ## Change
 
-A second web stack for the notifications service. The live feed over Server-Sent Events, built on `SseEmitter` since 13, is reimplemented on Spring WebFlux with reactive MongoDB. The Spring MVC and WebFlux versions are two applications; the cluster manifests select which one is deployed.
+The live feed of the notifications service is reimplemented on a reactive web stack, and a measurement decides which version is deployed.
 
 ## Why
 
-A live feed keeps thousands of connections open. The stage is about choosing a technology on measured trade-offs rather than on fashion.
+A live feed holds thousands of open connections, and the web stack is chosen by measurement rather than by fashion.
 
 ## Tools
 
-- Spring WebFlux, reactive Spring Data MongoDB, `WebTestClient`.
-- A load test of the live feed with many open connections, measured on the Grafana dashboard.
-- Open question, recorded in ADR 0001: multi-factor authentication of Spring Security is not supported in reactive applications; the plan keeps the second factor in Keycloak, outside the service, and this is checked against the Spring Security reference when the stage starts.
+Spring WebFlux with Spring Data R2DBC; how the second factor works in a reactive application is an open question recorded in ADR 0001.
 
 ## Proof
 
-- Both versions pass the same acceptance tests.
-- A load test compares them, and an ADR records the choice.
+- The acceptance tests pass.
+- Both versions pass the acceptance tests, and an ADR records the choice from a load test.

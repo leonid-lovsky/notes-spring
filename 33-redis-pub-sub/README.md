@@ -4,17 +4,17 @@ Level: middle. Status: not started.
 
 ## Change
 
-The live feed works across instances: a notification created on one instance reaches open feeds on every instance.
+The live feed works across instances.
 
 ## Why
 
-In 32 the live feed of 13 reaches only the connections held by the instance that handled the change.
+In 32 a notification reaches only the feeds held by its own instance.
 
 ## Tools
 
-- Redis publish/subscribe through Spring Data Redis; Redis of 31.
+Redis publish/subscribe through Spring Data Redis.
 
 ## Proof
 
 - The acceptance tests pass.
-- A notification created through one instance appears in a feed opened on the other one.
+- A notification from one instance appears in a feed opened on the other.

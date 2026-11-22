@@ -4,18 +4,17 @@ Level: middle. Status: not started.
 
 ## Change
 
-The same application split into application modules — users, notes, sharing and notifications. Modules talk to each other only through their public API and application events; an event is stored in the same transaction as the change that caused it and is delivered again until its listener succeeds. Each table belongs to one module; there are no foreign keys across modules.
+The application is split into modules that talk through their APIs and events, and an event is delivered again until its listener succeeds.
 
 ## Why
 
-In 36 the packages are entangled, and a notification is lost when its listener fails after the sharing was committed.
+In 36 the packages are entangled, and a failed notification is lost.
 
 ## Tools
 
-- Spring Modulith: `ApplicationModules.verify()`, `@ApplicationModuleTest`, `@ApplicationModuleListener`, event publication registry, generated module documentation.
+Spring Modulith with the event publication registry.
 
 ## Proof
 
 - The acceptance tests pass.
-- The module structure test passes.
-- A notification that failed is delivered again after a restart, while the sharing stays committed.
+- The module structure is verified, and a failed notification is delivered after a restart.

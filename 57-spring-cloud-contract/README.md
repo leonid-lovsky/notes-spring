@@ -4,17 +4,17 @@ Level: senior. Status: not started.
 
 ## Change
 
-Every client–provider pair of services is protected by consumer-driven contract tests.
+Consumer-driven contract tests protect every pair of services.
 
 ## Why
 
-In 56 a provider can change its API and break a client that only the acceptance tests of the whole system would notice.
+In 56 only the acceptance tests notice a provider breaking its client.
 
 ## Tools
 
-- Spring Cloud Contract: contracts in the provider, generated provider tests, stubs used by the client tests.
+Spring Cloud Contract.
 
 ## Proof
 
 - The acceptance tests pass.
-- An incompatible change of a provider fails its build.
+- An incompatible change fails the build of the provider.

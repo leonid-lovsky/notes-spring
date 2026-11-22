@@ -4,17 +4,17 @@ Level: junior. Status: not started.
 
 ## Change
 
-The API also publishes an OpenAPI description with an interactive console.
+The API publishes an OpenAPI description with an interactive console.
 
 ## Why
 
-In 17 the documentation is readable by people but not by tools: clients cannot generate code from it or try requests in a browser.
+In 17 tools cannot read the documentation, and requests cannot be tried in a browser.
 
 ## Tools
 
-- springdoc-openapi with Swagger UI.
+springdoc-openapi with Swagger UI.
 
 ## Proof
 
 - The acceptance tests pass.
-- The OpenAPI description validates, and every endpoint can be called from Swagger UI.
+- The description validates, and every endpoint can be called from Swagger UI.

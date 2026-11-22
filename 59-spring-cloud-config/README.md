@@ -4,18 +4,17 @@ Level: senior. Status: not started.
 
 ## Change
 
-Settings of all services come from a central configuration server backed by a Git repository; passwords and keys are stored there encrypted and decrypted by the server.
+Settings come from a central configuration server, with secrets stored encrypted.
 
 ## Why
 
-In 58 every service carries its own settings; changing one means rebuilding or redeploying the service.
+In 58 every service carries its own settings.
 
 ## Tools
 
-- Spring Cloud Config Server and Client, refresh without restart, encrypted values (`{cipher}`) with a server-side key.
+Spring Cloud Config with encryption.
 
 ## Proof
 
 - The acceptance tests pass.
-- A changed setting reaches a running service without a restart.
-- No secret is stored in plain text in the repository.
+- A changed setting reaches a running service, and no secret is in plain text.

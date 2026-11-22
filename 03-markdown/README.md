@@ -4,17 +4,17 @@ Level: junior. Status: not started.
 
 ## Change
 
-The body of a note is written in Markdown and shown as formatted HTML; the stored text does not change.
+The body of a note is written in Markdown and shown as sanitised HTML.
 
 ## Why
 
-In 02 a note is plain text: lists, links and headings are shown as raw characters.
+In 02 lists, links and headings are shown as raw characters.
 
 ## Tools
 
-- A CommonMark implementation for Java, chosen when the stage starts; the rendered HTML is sanitised before Thymeleaf writes it unescaped.
+A CommonMark library for Java, chosen when the stage starts.
 
 ## Proof
 
 - The page tests pass.
-- Markdown is rendered, and script tags in a note are not executed.
+- Markdown is rendered, and a script in a note is not executed.

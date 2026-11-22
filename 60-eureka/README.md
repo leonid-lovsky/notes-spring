@@ -4,17 +4,17 @@ Level: senior. Status: not started.
 
 ## Change
 
-Services find each other through a registry instead of fixed addresses.
+Services find each other through a registry.
 
 ## Why
 
-In 59 every service knows the addresses of the others; adding an instance means changing the configuration of its callers.
+In 59 every service knows the addresses of the others.
 
 ## Tools
 
-- Eureka server and clients through Spring Cloud Netflix, Spring Cloud LoadBalancer in the HTTP clients and the gateway.
+Eureka and Spring Cloud LoadBalancer.
 
 ## Proof
 
 - The acceptance tests pass.
-- A second instance of a service is used without changing any other service.
+- A second instance is used without changing other services.

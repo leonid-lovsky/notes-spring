@@ -4,17 +4,17 @@ Level: architect. Status: not started.
 
 ## Change
 
-A storage port is introduced in the notes service, with the existing Spring Data JPA adapter behind it; the domain model of 70 no longer depends on the persistence technology.
+A storage port separates the domain from the persistence technology.
 
 ## Why
 
-Delivery to infrastructure owned by someone else may require a store that JPA does not cover. The stage is about designing for replaceability and deciding where an abstraction pays off.
+Delivery to foreign infrastructure may require a store that JPA does not cover.
 
 ## Tools
 
-- A storage port and one contract test of it, run against PostgreSQL, MySQL and H2.
+A storage port with one contract test.
 
 ## Proof
 
 - The acceptance tests pass.
-- The same contract test passes on PostgreSQL, MySQL and H2.
+- The contract test passes on PostgreSQL and MySQL.

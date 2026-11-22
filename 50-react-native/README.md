@@ -4,7 +4,7 @@ Level: senior. Status: not started.
 
 ## Change
 
-A mobile client in React Native works with the same REST API.
+A mobile client works with the REST API as a public OAuth2 client with PKCE.
 
 ## Why
 
@@ -12,7 +12,7 @@ In 49 the system has no native mobile client.
 
 ## Tools
 
-- React Native; the client signs in to Keycloak as a public OAuth2 client with PKCE and calls the API through the gateway with a bearer token.
+React Native.
 
 ## Proof
 
