@@ -8,7 +8,7 @@ One Compose file describes the stage: `bootRun` starts PostgreSQL from it, and a
 
 ## Why
 
-In 21 the database is installed and wired by hand.
+In 21 the database container is started and wired by hand.
 
 ## Tools
 
@@ -17,4 +17,4 @@ Spring Boot Docker Compose support.
 ## Proof
 
 - The acceptance tests pass.
-- `bootRun` works on a machine without PostgreSQL, and the acceptance tests pass against the stage started by Compose.
+- `bootRun` starts PostgreSQL by itself, and the acceptance tests pass against the stage started by Compose.
