@@ -8,7 +8,7 @@ Status: the plan is complete; work on 01 is in progress.
 
 | # | Project | Change | Level |
 |---|---|---|---|
-| 01 | [monolith](01-monolith) | notes in the browser: Gradle, Spring MVC, Thymeleaf, Spring Data JPA on Hibernate, PostgreSQL in a Docker container with the schema from `schema-postgresql.sql`, `@Transactional`; tests on H2 | junior |
+| 01 | [monolith](01-monolith) | notes in the browser: Gradle, Spring MVC, Thymeleaf, Spring Data JPA on Hibernate, PostgreSQL in a Docker container with the schema from `schema-postgresql.sql`, `@Transactional`; tests on PostgreSQL with Testcontainers | junior |
 | 02 | [jakarta-validation](02-jakarta-validation) | form validation | junior |
 | 03 | [markdown](03-markdown) | notes in Markdown | junior |
 | 04 | [pagination](04-pagination) | paginated and sorted list of notes | junior |
