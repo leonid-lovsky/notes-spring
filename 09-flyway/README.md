@@ -4,7 +4,7 @@ Level: junior. Status: not started.
 
 ## Change
 
-The schema is managed by versioned migrations.
+The schema is managed by versioned migrations, one set for every DBMS.
 
 ## Why
 
@@ -12,9 +12,9 @@ In 08 `schema.sql` cannot change a database that already holds data, and the nex
 
 ## Tools
 
-Flyway through Spring Boot auto-configuration.
+Flyway through Spring Boot auto-configuration, with a migration location for every DBMS.
 
 ## Proof
 
 - The page tests pass.
-- A migration changes an existing database without losing data.
+- A migration changes an existing database without losing data, in every DBMS.

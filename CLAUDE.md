@@ -2,7 +2,7 @@
 
 This repository shows the evolution of one application from a classic monolith to a distributed, configurable, resilient system. Its purpose is to master Spring technologies and to demonstrate them to employers, following the path from junior to senior and architect with standard tools and without exotic choices.
 
-The application is the same in every stage: notes written in Markdown, users with registration, note sharing with roles, notifications with a live feed over Server-Sent Events, and full-text search of notes. The first stage is an elementary monolith with server-rendered pages; every following stage adds one step — a technology, a pattern or a function — so the functionality grows stage by stage. The HTTP API appears in stage 14, its contract is fixed by the acceptance tests in 16, and from then on it grows only by addition: behaviour defined in an earlier stage does not change. Stage 39 changes the authentication method once, from HTTP Basic to OAuth 2.0 / OpenID Connect.
+The application is the same in every stage: notes written in Markdown, users with registration, note sharing with roles, notifications with a live feed over Server-Sent Events, and full-text search of notes. The first stage is an elementary monolith with server-rendered pages; every following stage adds one step — a technology, a pattern or a function — so the functionality grows stage by stage. The HTTP API appears in stage 14, its contract is fixed by the acceptance tests in 16, and from then on it grows only by addition: behaviour defined in an earlier stage does not change. Stage 38 changes the authentication method once, from HTTP Basic to OAuth 2.0 / OpenID Connect.
 
 The code and the documentation of the previous attempt of the project are kept under the tag `legacy-2026-11` and serve as a reference only.
 
@@ -12,7 +12,7 @@ Every stage is a standalone application in its own directory. The first stage is
 
 | Directory | Change | Level |
 |---|---|---|
-| `01-monolith` | notes in the browser: Gradle, Spring MVC, Thymeleaf, Spring Data JPA on Hibernate, PostgreSQL in a Docker container with the schema from `schema-postgresql.sql`, `@Transactional`; tests on PostgreSQL with Testcontainers | junior |
+| `01-monolith` | notes in the browser: Gradle, Spring MVC, Thymeleaf, Spring Data JPA on Hibernate, PostgreSQL or MySQL selected by profile, its server in a Docker container, the schema from `schema-postgresql.sql` or `schema-mysql.sql`, `@Transactional`; tests against every DBMS with Testcontainers | junior |
 | `02-jakarta-validation` | form validation | junior |
 | `03-markdown` | notes in Markdown | junior |
 | `04-pagination` | paginated and sorted list of notes | junior |
@@ -20,7 +20,7 @@ Every stage is a standalone application in its own directory. The first stage is
 | `06-spring-security` | form login, session, users in the database with one role | junior |
 | `07-user-registration` | sign-up | junior |
 | `08-spring-boot-sql-initialization` | schema from `schema.sql`, entities validated against it | junior |
-| `09-flyway` | versioned schema migrations | junior |
+| `09-flyway` | versioned schema migrations for every DBMS | junior |
 | `10-note-ownership` | notes owned by users | junior |
 | `11-method-security` | note sharing with roles | junior |
 | `12-in-app-notifications` | notifications from Spring application events | junior |
@@ -33,74 +33,73 @@ Every stage is a standalone application in its own directory. The first stage is
 | `19-spring-boot-actuator` | health, info and metrics endpoints | junior |
 | `20-structured-logging` | structured JSON logs | junior |
 | `21-docker` | container image with `bootBuildImage` | junior |
-| `22-docker-compose` | one Compose file: PostgreSQL for `bootRun`, the whole stage for `docker compose up` | junior |
-| `23-mysql` | MySQL or PostgreSQL by profile, migrations per vendor | junior |
-| `24-twelve-factor-app` | configuration from the environment, stateless processes, one image for every environment | junior |
-| `25-nginx` | TLS reverse proxy in front of the application | junior |
-| `26-github-actions` | build and test pipeline | junior |
-| `27-jenkins` | second equal pipeline, Configuration as Code | junior |
-| `28-amazon-web-services` | deployment step to Amazon Web Services (OIDC, ECR, EC2), switched off | junior |
-| `29-spring-cache-abstraction` | cache of frequent reads in memory | middle |
-| `30-redis-cache` | the same cache in Redis | middle |
-| `31-spring-session` | session in Redis, two instances | middle |
-| `32-redis-pub-sub` | live feed across instances | middle |
-| `33-prometheus` | metrics collection and alerts | middle |
-| `34-grafana` | dashboards | middle |
-| `35-grafana-loki` | logs collected in Grafana Loki | middle |
-| `36-spring-modulith` | module boundaries, event publication registry | middle |
-| `37-elasticsearch` | full-text search in a separate read model | middle |
-| `38-spring-batch` | rebuild of the search index by a batch job | middle |
-| `39-spring-authorization-server` | OAuth2 instead of passwords: `auth-server`, Resource Server and Client | middle |
-| `40-email-verification` | email confirmation in `auth-server` | middle |
-| `41-phone-verification` | phone confirmation in `auth-server` through Amazon SNS | middle |
-| `42-multi-factor-authentication` | second factor with Spring Security | middle |
-| `43-keycloak` | Keycloak instead of `auth-server`, realm as code | middle |
-| `44-google-docs-export` | export of a note to Google Docs | middle |
-| `45-spring-cloud-gateway` | single entry point that hides how the system is split | senior |
-| `46-token-relay` | browser sign-in at the gateway, token relay | senior |
-| `47-react` | single-page application behind the gateway | senior |
-| `48-progressive-web-app` | installable application that works offline | senior |
-| `49-react-native` | mobile client, public OAuth2 client with PKCE | senior |
-| `50-rabbitmq` | notifications as the first separate service | senior |
-| `51-apache-kafka` | Apache Kafka as the alternative broker selected by configuration | senior |
-| `52-micrometer-tracing` | trace context across processes, trace identifiers in the logs | senior |
-| `53-grafana-tempo` | traces stored and shown in Grafana | senior |
-| `54-spring-cloud-openfeign` | every module a service, calls through OpenFeign as an intermediate step | senior |
-| `55-http-service-clients` | Spring HTTP service clients instead of OpenFeign | senior |
-| `56-spring-cloud-contract` | consumer-driven contract tests | senior |
-| `57-saga` | sagas over broker events with compensation | senior |
-| `58-spring-cloud-config` | central configuration and encrypted secrets | senior |
-| `59-eureka` | service discovery, Spring Cloud LoadBalancer | senior |
-| `60-spring-framework-resilience-features` | timeouts and retries with Spring Framework | senior |
-| `61-resilience4j` | circuit breakers and bulkheads through Spring Cloud Circuit Breaker | senior |
-| `62-gateway-rate-limiting` | request rate limiter of the gateway | senior |
-| `63-graphql` | combined reads across services next to the unchanged REST API | senior |
-| `64-grpc` | hot internal call over gRPC | senior |
-| `65-kubernetes` | the same services on k3s (local, ready for EC2), manifests, probes | senior |
-| `66-kubernetes-service-discovery-and-configuration` | Kubernetes Services, ConfigMaps and Secrets instead of Eureka and Spring Cloud Config | senior |
-| `67-horizontal-pod-autoscaling` | services scale with load | senior |
-| `68-graalvm` | native images with Spring AOT | senior |
-| `69-domain-driven-design` | aggregates, value objects, domain events | architect |
-| `70-hexagonal-architecture` | storage port and contract test; PostgreSQL and MySQL | architect |
-| `71-mongodb` | second storage adapter on Spring Data MongoDB | architect |
-| `72-command-query-responsibility-segregation` | separate read and write models of the notes service | architect |
-| `73-event-sourcing` | notes stored as a sequence of events | architect |
-| `74-spring-ai` | semantic search with Spring AI, Ollama, Elasticsearch vector store | architect |
-| `75-spring-webflux` | second web stack, choice by measurement | architect |
+| `22-docker-compose` | one Compose file: the DBMS servers for `bootRun`, the whole stage for `docker compose up` | junior |
+| `23-twelve-factor-app` | configuration from the environment, stateless processes, one image for every environment | junior |
+| `24-nginx` | TLS reverse proxy in front of the application | junior |
+| `25-github-actions` | build and test pipeline | junior |
+| `26-jenkins` | second equal pipeline, Configuration as Code | junior |
+| `27-amazon-web-services` | deployment step to Amazon Web Services (OIDC, ECR, EC2), switched off | junior |
+| `28-spring-cache-abstraction` | cache of frequent reads in memory | middle |
+| `29-redis-cache` | the same cache in Redis | middle |
+| `30-spring-session` | session in Redis, two instances | middle |
+| `31-redis-pub-sub` | live feed across instances | middle |
+| `32-prometheus` | metrics collection and alerts | middle |
+| `33-grafana` | dashboards | middle |
+| `34-grafana-loki` | logs collected in Grafana Loki | middle |
+| `35-spring-modulith` | module boundaries, event publication registry | middle |
+| `36-elasticsearch` | full-text search in a separate read model | middle |
+| `37-spring-batch` | rebuild of the search index by a batch job | middle |
+| `38-spring-authorization-server` | OAuth2 instead of passwords: `auth-server`, Resource Server and Client | middle |
+| `39-email-verification` | email confirmation in `auth-server` | middle |
+| `40-phone-verification` | phone confirmation in `auth-server` through Amazon SNS | middle |
+| `41-multi-factor-authentication` | second factor with Spring Security | middle |
+| `42-keycloak` | Keycloak instead of `auth-server`, realm as code | middle |
+| `43-google-docs-export` | export of a note to Google Docs | middle |
+| `44-spring-cloud-gateway` | single entry point that hides how the system is split | senior |
+| `45-token-relay` | browser sign-in at the gateway, token relay | senior |
+| `46-react` | single-page application behind the gateway | senior |
+| `47-progressive-web-app` | installable application that works offline | senior |
+| `48-react-native` | mobile client, public OAuth2 client with PKCE | senior |
+| `49-rabbitmq` | notifications as the first separate service | senior |
+| `50-apache-kafka` | Apache Kafka as the alternative broker selected by configuration | senior |
+| `51-micrometer-tracing` | trace context across processes, trace identifiers in the logs | senior |
+| `52-grafana-tempo` | traces stored and shown in Grafana | senior |
+| `53-spring-cloud-openfeign` | every module a service, calls through OpenFeign as an intermediate step | senior |
+| `54-http-service-clients` | Spring HTTP service clients instead of OpenFeign | senior |
+| `55-spring-cloud-contract` | consumer-driven contract tests | senior |
+| `56-saga` | sagas over broker events with compensation | senior |
+| `57-spring-cloud-config` | central configuration and encrypted secrets | senior |
+| `58-eureka` | service discovery, Spring Cloud LoadBalancer | senior |
+| `59-spring-framework-resilience-features` | timeouts and retries with Spring Framework | senior |
+| `60-resilience4j` | circuit breakers and bulkheads through Spring Cloud Circuit Breaker | senior |
+| `61-gateway-rate-limiting` | request rate limiter of the gateway | senior |
+| `62-graphql` | combined reads across services next to the unchanged REST API | senior |
+| `63-grpc` | hot internal call over gRPC | senior |
+| `64-kubernetes` | the same services on k3s (local, ready for EC2), manifests, probes | senior |
+| `65-kubernetes-service-discovery-and-configuration` | Kubernetes Services, ConfigMaps and Secrets instead of Eureka and Spring Cloud Config | senior |
+| `66-horizontal-pod-autoscaling` | services scale with load | senior |
+| `67-graalvm` | native images with Spring AOT | senior |
+| `68-domain-driven-design` | aggregates, value objects, domain events | architect |
+| `69-hexagonal-architecture` | storage port and contract test; PostgreSQL and MySQL | architect |
+| `70-mongodb` | second storage adapter on Spring Data MongoDB | architect |
+| `71-command-query-responsibility-segregation` | separate read and write models of the notes service | architect |
+| `72-event-sourcing` | notes stored as a sequence of events | architect |
+| `73-spring-ai` | semantic search with Spring AI, Ollama, Elasticsearch vector store | architect |
+| `74-spring-webflux` | second web stack, choice by measurement | architect |
 
 ### How a stage is built
 
-The project grows iteratively, smoothly, linearly and atomically. Every milestone is a working application, a separate project and a separate directory; there are no milestones inside a directory. Each stage adds the smallest step that still gives a working result, and a stage that does two things is split. Simple and elementary technologies and patterns come first, complex and advanced ones last; the first stage contains only what a junior uses in a first application, and a tool that needs knowledge from a later stage — Docker Compose needs the Docker images of 21 — comes after that stage. Within that order a step comes after the step it builds on, the Spring way comes before an external technology for the same task, alternatives come next to each other — the first one, then the second one selected by configuration or replacing the first (PostgreSQL and MySQL, Spring Cache Abstraction in memory and Redis, GitHub Actions and Jenkins, Spring Authorization Server and Keycloak, RabbitMQ and Apache Kafka, Spring Cloud OpenFeign and HTTP service clients) — and a step that needs several processes comes after the system is distributed. Every requirement of the application is a visible stage of its own rather than a detail of another stage. The sequence of directories shows three lines at once: the development of the project, the mastering of technologies, and the roadmap of a developer — junior, middle, senior and architect stages in the order in which a Spring developer usually learns the technologies. The last stages call for an architectural decision based on trade-offs and measurements rather than for one more technology.
+The project grows iteratively, smoothly, linearly and atomically. Every milestone is a working application, a separate project and a separate directory; there are no milestones inside a directory. Each stage adds the smallest step that still gives a working result, and a stage that does two things is split. Simple and elementary technologies and patterns come first, complex and advanced ones last; the first stage contains only what a junior uses in a first application, and a tool that needs knowledge from a later stage — Docker Compose needs the Docker images of 21 — comes after that stage. Within that order a step comes after the step it builds on, the Spring way comes before an external technology for the same task, alternatives come next to each other — the first one, then the second one selected by configuration or replacing the first (Spring Cache Abstraction in memory and Redis, GitHub Actions and Jenkins, Spring Authorization Server and Keycloak, RabbitMQ and Apache Kafka, Spring Cloud OpenFeign and HTTP service clients) — and a step that needs several processes comes after the system is distributed. Every requirement of the application is a visible stage of its own rather than a detail of another stage. The sequence of directories shows three lines at once: the development of the project, the mastering of technologies, and the roadmap of a developer — junior, middle, senior and architect stages in the order in which a Spring developer usually learns the technologies. The last stages call for an architectural decision based on trade-offs and measurements rather than for one more technology.
 
 Stages are built strictly one after another. Work on a stage starts with a commit that copies the previous directory, so the history shows what the stage changed.
 
 Inside a stage the work goes in vertical slices: each function is built through every layer at once, from the database to the user interface, so that something working can be tried in the browser as early as possible. The user interface of a function is written together with the backend that serves it, never after the whole backend.
 
-Every stage is ready to be tested, operated and shown to an employer, and reflects one pragmatic step in skills and technology stack — no more than the step needs. A stage is finished when the system starts with one command — in 01–20 the application through `bootRun` against PostgreSQL started by hand in a Docker container with `docker run`, in 21 the application image with `docker run`, from 22 `bootRun` with the database started by Spring Boot Docker Compose support and the whole stage from the Compose file; the application always runs against its real database, and the tests against the database that Testcontainers starts — the acceptance tests (from 16) and the tests of the stage pass, the `README.md` is complete and the key decisions are recorded in ADRs. A finished stage is frozen: only bugs and vulnerabilities are fixed in it, and Dependabot keeps its dependencies up to date.
+Every stage is ready to be tested, operated and shown to an employer, and reflects one pragmatic step in skills and technology stack — no more than the step needs. A stage is finished when the system starts with one command — in 01–20 the application through `bootRun` against the server of its DBMS started by hand in a Docker container with `docker run`, in 21 the application image with `docker run`, from 22 `bootRun` with the DBMS server started by Spring Boot Docker Compose support and the whole stage from the Compose file; the application always runs against a real DBMS server, and the tests against the server that Testcontainers starts — the acceptance tests (from 16) and the tests of the stage pass, the `README.md` is complete and the key decisions are recorded in ADRs. A finished stage is frozen: only bugs and vulnerabilities are fixed in it, and Dependabot keeps its dependencies up to date.
 
-Every stage is a standalone Gradle build with its own `settings.gradle` and wrapper, in the Groovy DSL that Spring Initializr generates; there is no root build and no shared `build-logic`. CI follows the same layout: one pipeline per stage, triggered only by changes in the stage directory. The pipeline appears in 26 (GitHub Actions); Jenkins joins in 27 as an equal pipeline with the same steps. Both pipelines call the same Gradle tasks, so the build logic is not duplicated.
+Every stage is a standalone Gradle build with its own `settings.gradle` and wrapper, in the Groovy DSL that Spring Initializr generates; there is no root build and no shared `build-logic`. CI follows the same layout: one pipeline per stage, triggered only by changes in the stage directory. The pipeline appears in 25 (GitHub Actions); Jenkins joins in 26 as an equal pipeline with the same steps. Both pipelines call the same Gradle tasks, so the build logic is not duplicated.
 
-Stages 22–64 run with Docker Compose, stages from 65 on Kubernetes (k3s), both locally and in CI. From 28 every stage is ready for deployment on Amazon Web Services: the Compose files or Kubernetes manifests and the deployment step of the pipelines are in place, but the deployment step stays switched off. It is switched on when the job search starts, because a link to a running system is worth more than a link to code.
+Stages 22–63 run with Docker Compose, stages from 64 on Kubernetes (k3s), both locally and in CI. From 27 every stage is ready for deployment on Amazon Web Services: the Compose files or Kubernetes manifests and the deployment step of the pipelines are in place, but the deployment step stays switched off. It is switched on when the job search starts, because a link to a running system is worth more than a link to code.
 
 ### Repository history
 
@@ -110,7 +109,7 @@ From then on the history stays linear: no merge commits, every change is rebased
 
 ### Acceptance tests
 
-The `acceptance-tests/` directory contains one black-box test suite that runs against every stage from 16 over HTTP only and proves that behaviour defined in an earlier stage does not change; only the authentication method changes once, in 39. It is grouped by capability — notes, sharing, notifications, live feed, search — and knows only the public API and its parameters: the base URL, the credentials of a test user, the issuer URL for a system that accepts tokens and the capabilities to run. It knows nothing about the implementation, creates and verifies test data only through the API and verifies asynchronous behaviour by polling. The browser interface and the technologies of a stage are checked by the unit, slice, page and integration tests inside the stage. Details are in `acceptance-tests/README.md`.
+The `acceptance-tests/` directory contains one black-box test suite that runs against every stage from 16 over HTTP only and proves that behaviour defined in an earlier stage does not change; only the authentication method changes once, in 38. It is grouped by capability — notes, sharing, notifications, live feed, search — and knows only the public API and its parameters: the base URL, the credentials of a test user, the issuer URL for a system that accepts tokens and the capabilities to run. It knows nothing about the implementation, creates and verifies test data only through the API and verifies asynchronous behaviour by polling. The browser interface and the technologies of a stage are checked by the unit, slice, page and integration tests inside the stage. Details are in `acceptance-tests/README.md`.
 
 ## Decision priorities
 
@@ -133,6 +132,8 @@ Facts about Spring — whether a starter exists, its name, its version, its stat
 ## Documentation
 
 All documentation, comments and project content are written in correct technical English. Conversation with the user is in Russian.
+
+Every place of the project — code, configuration and documentation — uses the most precise term and keeps related concepts apart according to their context: for example, the DBMS (PostgreSQL, MySQL), selected by a profile; its server, a Docker or Testcontainers container; and the `notes` database on that server.
 
 Documentation is written for its reader: coherent text organised in sections with an introduction, recording the outcome of a decision and its reason, without a chronicle of the discussion, quotations or notes such as "as requested by the user".
 
