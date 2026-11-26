@@ -17,4 +17,4 @@ Spring application events with `@TransactionalEventListener`.
 ## Proof
 
 - The page tests pass.
-- A failed notification does not roll back the sharing; the lost notification is the gap that 37 closes.
+- A failed notification does not roll back the sharing; the lost notification is the gap that 36 closes.
