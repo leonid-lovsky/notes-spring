@@ -12,7 +12,7 @@ In 13 only a browser can use the application.
 
 ## Tools
 
-`@RestController` with records, a second `SecurityFilterChain` for `/api/**`.
+`@RestController` with records, a second `SecurityFilterChain` for `/api/**`. The API has controllers of its own next to those of the pages, over the same services: `NoteController` keeps serving the pages under `/notes`, and `NoteRESTController` serves the API under `/api/notes`, so the bean names and the mappings do not collide.
 
 ## Proof
 
