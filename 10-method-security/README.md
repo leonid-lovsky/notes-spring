@@ -4,7 +4,7 @@ Level: junior. Status: not started.
 
 ## Change
 
-A note is shared with other users in a role — owner, editor or viewer — and the last owner cannot be removed.
+A note is shared with other users in a role — owner, editor or viewer; a user has at most one role on a note, and the last owner cannot be demoted or removed.
 
 ## Why
 
