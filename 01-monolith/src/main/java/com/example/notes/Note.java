@@ -1,5 +1,6 @@
 package com.example.notes;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
@@ -29,6 +30,7 @@ public class Note {
     }
 
     public Note(String content) {
+        Objects.requireNonNull(content, "content must not be null");
         this.uuid = UUID.randomUUID();
         this.content = content;
     }
