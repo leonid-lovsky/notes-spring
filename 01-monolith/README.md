@@ -28,6 +28,7 @@ A question moves into the sections above once it is decided.
 
 - Equal names of the test tasks for every DBMS: `testPostgreSQL` next to `testMySQL` whichever DBMS is the default, the task of the default DBMS only depending on the standard `test` task, so that no DBMS runs twice. Not critical now.
 - Editing and deleting from a form, which sends only `GET` and `POST`: separate `POST` endpoints such as `POST /notes/{id}/delete`, or the hidden method filter of Spring MVC (`spring.mvc.hiddenmethod.filter.enabled`, off by default).
+- A taken username: for now only the unique constraint of the schema rejects it, with a `DataIntegrityViolationException` whose message depends on the DBMS; a clear rejection is needed at the latest in 07, when visitors create accounts.
 
 ## Known warnings
 
