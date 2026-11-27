@@ -8,7 +8,7 @@ Status: the plan is complete; work on 01 is in progress.
 
 | # | Project | Change | Level |
 |---|---|---|---|
-| 01 | [monolith](01-monolith) | notes in the browser: Gradle, Spring MVC, Thymeleaf, Spring Data JPA on Hibernate, PostgreSQL or MySQL selected by profile, its server in a Docker container, the schema from `schema-postgresql.sql` or `schema-mysql.sql`, `@Transactional`; tests against every DBMS with Testcontainers | junior |
+| 01 | [monolith](01-monolith) | notes in the browser and the user model with its invariants: Gradle, Spring MVC, Thymeleaf, Spring Data JPA on Hibernate, PostgreSQL or MySQL selected by profile, its server in a Docker container, the schema from `schema-postgresql.sql` or `schema-mysql.sql`, `@Transactional`; tests against every DBMS with Testcontainers | junior |
 | 02 | [jakarta-validation](02-jakarta-validation) | form validation | junior |
 | 03 | [markdown](03-markdown) | notes in Markdown | junior |
 | 04 | [pagination](04-pagination) | paginated and sorted list of notes | junior |
