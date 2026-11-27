@@ -4,7 +4,7 @@ Level: junior. Status: not started.
 
 ## Change
 
-Pages require sign-in through a form; users with one role and BCrypt password hashes are stored in the database.
+Pages require sign-in through a form; the users of 01 get one role and a BCrypt password hash in the database.
 
 ## Why
 

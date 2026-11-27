@@ -17,4 +17,4 @@ A validated sign-up form and the `PasswordEncoder` of 06.
 ## Proof
 
 - The page tests pass.
-- A new account signs in, and a taken user name is rejected.
+- A new account signs in, and a taken username is rejected.
