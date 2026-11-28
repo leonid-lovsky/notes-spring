@@ -18,7 +18,7 @@ public class User {
 
     private static final int USERNAME_MAX_LENGTH = 32;
 
-    private static final Pattern USERNAME_PATTERN = Pattern.compile("[a-z](-?[a-z0-9])*+");
+    private static final Pattern USERNAME_PATTERN = Pattern.compile("[a-zA-Z](-?[a-zA-Z0-9])*+");
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,21 +31,24 @@ public class User {
     @Column(name = "username", nullable = false, unique = true, length = USERNAME_MAX_LENGTH)
     private String username;
 
+    @Column(name = "normalized_username", nullable = false, unique = true, length = USERNAME_MAX_LENGTH)
+    private String normalizedUsername;
+
     protected User() {
 
     }
 
     public User(String username) {
         Objects.requireNonNull(username, "username must not be null");
-        String normalizedUsername = username.toLowerCase(Locale.ROOT);
-        if (normalizedUsername.length() > USERNAME_MAX_LENGTH) {
+        if (username.length() > USERNAME_MAX_LENGTH) {
             throw new IllegalArgumentException("username must not be longer than " + USERNAME_MAX_LENGTH + " characters");
         }
-        if (!USERNAME_PATTERN.matcher(normalizedUsername).matches()) {
+        if (!USERNAME_PATTERN.matcher(username).matches()) {
             throw new IllegalArgumentException("username must start with a Latin letter and contain only Latin letters, digits and single hyphens, not at the end");
         }
         this.uuid = UUID.randomUUID();
-        this.username = normalizedUsername;
+        this.username = username;
+        this.normalizedUsername = username.toLowerCase(Locale.ROOT);
     }
 
     public UUID getUUID() {
