@@ -29,6 +29,7 @@ A question moves into the sections above once it is decided.
 - Equal names of the test tasks for every DBMS: `testPostgreSQL` next to `testMySQL` whichever DBMS is the default, the task of the default DBMS only depending on the standard `test` task, so that no DBMS runs twice. Not critical now.
 - Editing and deleting from a form, which sends only `GET` and `POST`: separate `POST` endpoints such as `POST /notes/{id}/delete`, or the hidden method filter of Spring MVC (`spring.mvc.hiddenmethod.filter.enabled`, off by default).
 - A taken username: for now only the unique constraint of the schema rejects it, with a `DataIntegrityViolationException` whose message depends on the DBMS; a clear rejection belongs to this stage and is the next decision.
+- The case of a username. The model converts it to lowercase, so `Bob` becomes `bob` and the case typed at sign-in does not matter, but the conversion is a decision about helping the user, which belongs to the interface rather than to the model. The alternatives are a model that only rejects `Bob`, with the conversion or a hint in the sign-up form of 07 and a message about the format that names lowercase letters, or the way of GitHub, which keeps the typed case and compares without it, at the cost of a second column. The tests of `User` show the behaviours and decide.
 
 ## Known warnings
 
@@ -36,8 +37,8 @@ The warnings are ordered by how critical they are and resolved in that order; a 
 
 1. Gradle declares no toolchain repository. The local Java 25 toolchain was installed by auto-provisioning, which Gradle has deprecated and which fails from Gradle 10; a clean machine does not find the toolchain. Resolved in 27, the first stage that builds on a clean machine.
 2. Mockito attaches itself to the test JVM as an agent, and the JVM reports the dynamic agent loading and limits class data sharing. The warnings come from the default behaviour of the tools and are accepted, as recorded in [ADR 0001](../docs/adr/0001-evolution-in-stages.md).
-
 3. IntelliJ IDEA checks the names in `@Table` and `@Column` against the data source assigned to the JPA facet and reports `Cannot resolve table` while none is assigned, although Hibernate validates the schema at startup. The project settings of the IDE stay outside the repository, so each developer creates a DDL data source from `schema-postgresql.sql` once — by dragging the file into the Database tool window — and assigns it to the module with Assign Data Sources; unlike a connection to the server, it follows the schema script and needs no running server.
+
 ## Proof
 
 - The tests pass on PostgreSQL and on MySQL that Testcontainers starts, with the local servers stopped.
