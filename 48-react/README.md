@@ -12,7 +12,7 @@ In 47 every action reloads a page.
 
 ## Tools
 
-React.
+React; whether Storybook and Web Components join it is an open question recorded in ADR 0001.
 
 ## Proof
 

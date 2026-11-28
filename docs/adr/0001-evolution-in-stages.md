@@ -30,6 +30,8 @@ The database is designed so that a move to another DBMS, to an identity provider
 Open questions, answered when their stage starts:
 
 - how Keycloak confirms a phone number by SMS (44);
+- whether the components of the React client of 48 are developed and tested in isolation with Storybook;
+- whether Web Components, the browser standard for custom HTML elements, take a place in the browser interface next to React (48);
 - how the server of 49 obtains the merged Markdown text of a note from the updates of Yjs;
 - which library sends Web Push messages in 51, since Spring has no Web Push support;
 - whether Spring Cloud AWS supports the mobile push of Amazon SNS (53) or the AWS SDK is used directly;
