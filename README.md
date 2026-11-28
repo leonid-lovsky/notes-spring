@@ -1,8 +1,8 @@
 # notes-spring
 
-One application — notes in Markdown with users, sharing, notifications and search — evolves from a classic monolith into a distributed, configurable, resilient system. Each stage is a finished, tested application in its own directory that adds one step to the previous stage, so the sequence shows the development of the application, the mastering of Spring technologies and the path from junior to architect.
+One application — notes in Markdown with users, sharing, collaborative editing, notifications and search — evolves from a classic monolith into a distributed, configurable, resilient system. Each stage is a finished, tested application in its own directory that adds one step to the previous stage, so the sequence shows the development of the application, the mastering of Spring technologies and the path from junior to architect.
 
-The REST API appears in 13 and is fixed by the acceptance tests in 15; from then on it grows only by addition, and only the authentication method changes once, in 37. From 26 every stage is ready to be deployed on Amazon Web Services, with the deployment switched off until it is needed.
+The REST API appears in 16 and is fixed by the acceptance tests in 18; from then on it grows only by addition, and only the authentication method changes once, in 40. From 29 every stage is ready to be deployed on Amazon Web Services, with the deployment switched off until it is needed.
 
 Status: the plan is complete; work on 01 is in progress.
 
@@ -18,68 +18,74 @@ Status: the plan is complete; work on 01 is in progress.
 | 08 | [flyway](08-flyway) | versioned schema migrations for every DBMS | junior |
 | 09 | [note-ownership](09-note-ownership) | notes owned by users | junior |
 | 10 | [method-security](10-method-security) | note sharing with roles | junior |
-| 11 | [in-app-notifications](11-in-app-notifications) | notifications from Spring application events | junior |
-| 12 | [server-sent-events](12-server-sent-events) | live notification feed | junior |
-| 13 | [rest-api](13-rest-api) | JSON REST API with HTTP Basic next to the pages | junior |
-| 14 | [problem-details](14-problem-details) | errors of the API as `ProblemDetail` (RFC 9457) | junior |
-| 15 | [rest-assured](15-rest-assured) | black-box acceptance tests; the contract of the API is fixed | junior |
-| 16 | [spring-rest-docs](16-spring-rest-docs) | API documentation from tests | junior |
-| 17 | [openapi](17-openapi) | springdoc-openapi, Swagger UI | junior |
-| 18 | [spring-boot-actuator](18-spring-boot-actuator) | health, info and metrics endpoints | junior |
-| 19 | [structured-logging](19-structured-logging) | structured JSON logs | junior |
-| 20 | [docker](20-docker) | container image with `bootBuildImage` | junior |
-| 21 | [docker-compose](21-docker-compose) | one Compose file: the DBMS servers for `bootRun`, the whole stage for `docker compose up` | junior |
-| 22 | [twelve-factor-app](22-twelve-factor-app) | configuration from the environment, stateless processes, one image for every environment | junior |
-| 23 | [nginx](23-nginx) | TLS reverse proxy in front of the application | junior |
-| 24 | [github-actions](24-github-actions) | build and test pipeline | junior |
-| 25 | [jenkins](25-jenkins) | second equal pipeline, Configuration as Code | junior |
-| 26 | [amazon-web-services](26-amazon-web-services) | deployment step to Amazon Web Services (OIDC, ECR, EC2), switched off | junior |
-| 27 | [spring-cache-abstraction](27-spring-cache-abstraction) | cache of frequent reads in memory | middle |
-| 28 | [redis-cache](28-redis-cache) | the same cache in Redis | middle |
-| 29 | [spring-session](29-spring-session) | session in Redis, two instances | middle |
-| 30 | [redis-pub-sub](30-redis-pub-sub) | live feed across instances | middle |
-| 31 | [prometheus](31-prometheus) | metrics collection and alerts | middle |
-| 32 | [grafana](32-grafana) | dashboards | middle |
-| 33 | [grafana-loki](33-grafana-loki) | logs collected in Grafana Loki | middle |
-| 34 | [spring-modulith](34-spring-modulith) | module boundaries, event publication registry | middle |
-| 35 | [elasticsearch](35-elasticsearch) | full-text search in a separate read model | middle |
-| 36 | [spring-batch](36-spring-batch) | rebuild of the search index by a batch job | middle |
-| 37 | [spring-authorization-server](37-spring-authorization-server) | OAuth2 instead of passwords: `auth-server`, Resource Server and Client | middle |
-| 38 | [email-verification](38-email-verification) | email confirmation in `auth-server` | middle |
-| 39 | [phone-verification](39-phone-verification) | phone confirmation in `auth-server` through Amazon SNS | middle |
-| 40 | [multi-factor-authentication](40-multi-factor-authentication) | second factor with Spring Security | middle |
-| 41 | [keycloak](41-keycloak) | Keycloak instead of `auth-server`, realm as code | middle |
-| 42 | [google-docs-export](42-google-docs-export) | export of a note to Google Docs | middle |
-| 43 | [spring-cloud-gateway](43-spring-cloud-gateway) | single entry point that hides how the system is split | senior |
-| 44 | [token-relay](44-token-relay) | browser sign-in at the gateway, token relay | senior |
-| 45 | [react](45-react) | single-page application behind the gateway | senior |
-| 46 | [progressive-web-app](46-progressive-web-app) | installable application that works offline | senior |
-| 47 | [react-native](47-react-native) | mobile client, public OAuth2 client with PKCE | senior |
-| 48 | [rabbitmq](48-rabbitmq) | notifications as the first separate service | senior |
-| 49 | [apache-kafka](49-apache-kafka) | Apache Kafka as the alternative broker selected by configuration | senior |
-| 50 | [micrometer-tracing](50-micrometer-tracing) | trace context across processes, trace identifiers in the logs | senior |
-| 51 | [grafana-tempo](51-grafana-tempo) | traces stored and shown in Grafana | senior |
-| 52 | [spring-cloud-openfeign](52-spring-cloud-openfeign) | every module a service, calls through OpenFeign as an intermediate step | senior |
-| 53 | [http-service-clients](53-http-service-clients) | Spring HTTP service clients instead of OpenFeign | senior |
-| 54 | [spring-cloud-contract](54-spring-cloud-contract) | consumer-driven contract tests | senior |
-| 55 | [saga](55-saga) | sagas over broker events with compensation | senior |
-| 56 | [spring-cloud-config](56-spring-cloud-config) | central configuration and encrypted secrets | senior |
-| 57 | [eureka](57-eureka) | service discovery, Spring Cloud LoadBalancer | senior |
-| 58 | [spring-framework-resilience-features](58-spring-framework-resilience-features) | timeouts and retries with Spring Framework | senior |
-| 59 | [resilience4j](59-resilience4j) | circuit breakers and bulkheads through Spring Cloud Circuit Breaker | senior |
-| 60 | [gateway-rate-limiting](60-gateway-rate-limiting) | request rate limiter of the gateway | senior |
-| 61 | [graphql](61-graphql) | combined reads across services next to the unchanged REST API | senior |
-| 62 | [grpc](62-grpc) | hot internal call over gRPC | senior |
-| 63 | [kubernetes](63-kubernetes) | the same services on k3s (local, ready for EC2), manifests, probes | senior |
-| 64 | [kubernetes-service-discovery-and-configuration](64-kubernetes-service-discovery-and-configuration) | Kubernetes Services, ConfigMaps and Secrets instead of Eureka and Spring Cloud Config | senior |
-| 65 | [horizontal-pod-autoscaling](65-horizontal-pod-autoscaling) | services scale with load | senior |
-| 66 | [graalvm](66-graalvm) | native images with Spring AOT | senior |
-| 67 | [domain-driven-design](67-domain-driven-design) | aggregates, value objects, domain events | architect |
-| 68 | [hexagonal-architecture](68-hexagonal-architecture) | storage port and contract test; PostgreSQL and MySQL | architect |
-| 69 | [mongodb](69-mongodb) | second storage adapter on Spring Data MongoDB | architect |
-| 70 | [command-query-responsibility-segregation](70-command-query-responsibility-segregation) | separate read and write models of the notes service | architect |
-| 71 | [event-sourcing](71-event-sourcing) | notes stored as a sequence of events | architect |
-| 72 | [spring-ai](72-spring-ai) | semantic search with Spring AI, Ollama, Elasticsearch vector store | architect |
-| 73 | [spring-webflux](73-spring-webflux) | second web stack, choice by measurement | architect |
+| 11 | [optimistic-locking](11-optimistic-locking) | a save over a newer change of a note is refused | junior |
+| 12 | [in-app-notifications](12-in-app-notifications) | notifications on the pages of the application from Spring application events | junior |
+| 13 | [server-sent-events](13-server-sent-events) | live notification feed | junior |
+| 14 | [websocket](14-websocket) | who has a note open and who edits it, saved changes at once on every open page | junior |
+| 15 | [email-notifications](15-email-notifications) | notifications by email | junior |
+| 16 | [rest-api](16-rest-api) | JSON REST API with HTTP Basic next to the pages | junior |
+| 17 | [problem-details](17-problem-details) | errors of the API as `ProblemDetail` (RFC 9457) | junior |
+| 18 | [rest-assured](18-rest-assured) | black-box acceptance tests; the contract of the API is fixed | junior |
+| 19 | [spring-rest-docs](19-spring-rest-docs) | API documentation from tests | junior |
+| 20 | [openapi](20-openapi) | springdoc-openapi, Swagger UI | junior |
+| 21 | [spring-boot-actuator](21-spring-boot-actuator) | health, info and metrics endpoints | junior |
+| 22 | [structured-logging](22-structured-logging) | structured JSON logs | junior |
+| 23 | [docker](23-docker) | container image with `bootBuildImage` | junior |
+| 24 | [docker-compose](24-docker-compose) | one Compose file: the DBMS servers for `bootRun`, the whole stage for `docker compose up` | junior |
+| 25 | [twelve-factor-app](25-twelve-factor-app) | configuration from the environment, stateless processes, one image for every environment | junior |
+| 26 | [nginx](26-nginx) | TLS reverse proxy in front of the application | junior |
+| 27 | [github-actions](27-github-actions) | build and test pipeline | junior |
+| 28 | [jenkins](28-jenkins) | second equal pipeline, Configuration as Code | junior |
+| 29 | [amazon-web-services](29-amazon-web-services) | deployment step to Amazon Web Services (OIDC, ECR, EC2), switched off | junior |
+| 30 | [spring-cache-abstraction](30-spring-cache-abstraction) | cache of frequent reads in memory | middle |
+| 31 | [redis-cache](31-redis-cache) | the same cache in Redis | middle |
+| 32 | [spring-session](32-spring-session) | session in Redis, two instances | middle |
+| 33 | [redis-pub-sub](33-redis-pub-sub) | live feed and note presence across instances | middle |
+| 34 | [prometheus](34-prometheus) | metrics collection and alerts | middle |
+| 35 | [grafana](35-grafana) | dashboards | middle |
+| 36 | [grafana-loki](36-grafana-loki) | logs collected in Grafana Loki | middle |
+| 37 | [spring-modulith](37-spring-modulith) | module boundaries, event publication registry | middle |
+| 38 | [elasticsearch](38-elasticsearch) | full-text search in a separate read model | middle |
+| 39 | [spring-batch](39-spring-batch) | rebuild of the search index by a batch job | middle |
+| 40 | [spring-authorization-server](40-spring-authorization-server) | OAuth2 instead of passwords: `auth-server`, Resource Server and Client | middle |
+| 41 | [email-verification](41-email-verification) | email confirmation in `auth-server` | middle |
+| 42 | [phone-verification](42-phone-verification) | phone confirmation in `auth-server` through Amazon SNS | middle |
+| 43 | [multi-factor-authentication](43-multi-factor-authentication) | second factor with Spring Security | middle |
+| 44 | [keycloak](44-keycloak) | Keycloak instead of `auth-server`, realm as code | middle |
+| 45 | [google-docs-export](45-google-docs-export) | export of a note to Google Docs | middle |
+| 46 | [spring-cloud-gateway](46-spring-cloud-gateway) | single entry point that hides how the system is split | senior |
+| 47 | [token-relay](47-token-relay) | browser sign-in at the gateway, token relay | senior |
+| 48 | [react](48-react) | single-page application behind the gateway | senior |
+| 49 | [collaborative-editing](49-collaborative-editing) | several editors type in one note at the same time, merged by a CRDT | senior |
+| 50 | [progressive-web-app](50-progressive-web-app) | installable application that works offline | senior |
+| 51 | [web-push](51-web-push) | desktop notifications by Web Push, also with the application closed | senior |
+| 52 | [react-native](52-react-native) | mobile client, public OAuth2 client with PKCE | senior |
+| 53 | [mobile-push-notifications](53-mobile-push-notifications) | push notifications to the mobile client through Amazon SNS | senior |
+| 54 | [rabbitmq](54-rabbitmq) | notifications as the first separate service | senior |
+| 55 | [apache-kafka](55-apache-kafka) | Apache Kafka as the alternative broker selected by configuration | senior |
+| 56 | [micrometer-tracing](56-micrometer-tracing) | trace context across processes, trace identifiers in the logs | senior |
+| 57 | [grafana-tempo](57-grafana-tempo) | traces stored and shown in Grafana | senior |
+| 58 | [spring-cloud-openfeign](58-spring-cloud-openfeign) | every module a service, calls through OpenFeign as an intermediate step | senior |
+| 59 | [http-service-clients](59-http-service-clients) | Spring HTTP service clients instead of OpenFeign | senior |
+| 60 | [spring-cloud-contract](60-spring-cloud-contract) | consumer-driven contract tests | senior |
+| 61 | [saga](61-saga) | sagas over broker events with compensation | senior |
+| 62 | [spring-cloud-config](62-spring-cloud-config) | central configuration and encrypted secrets | senior |
+| 63 | [eureka](63-eureka) | service discovery, Spring Cloud LoadBalancer | senior |
+| 64 | [spring-framework-resilience-features](64-spring-framework-resilience-features) | timeouts and retries with Spring Framework | senior |
+| 65 | [resilience4j](65-resilience4j) | circuit breakers and bulkheads through Spring Cloud Circuit Breaker | senior |
+| 66 | [gateway-rate-limiting](66-gateway-rate-limiting) | request rate limiter of the gateway | senior |
+| 67 | [graphql](67-graphql) | combined reads across services next to the unchanged REST API | senior |
+| 68 | [grpc](68-grpc) | hot internal call over gRPC | senior |
+| 69 | [kubernetes](69-kubernetes) | the same services on k3s (local, ready for EC2), manifests, probes | senior |
+| 70 | [kubernetes-service-discovery-and-configuration](70-kubernetes-service-discovery-and-configuration) | Kubernetes Services, ConfigMaps and Secrets instead of Eureka and Spring Cloud Config | senior |
+| 71 | [horizontal-pod-autoscaling](71-horizontal-pod-autoscaling) | services scale with load | senior |
+| 72 | [graalvm](72-graalvm) | native images with Spring AOT | senior |
+| 73 | [domain-driven-design](73-domain-driven-design) | aggregates, value objects, domain events | architect |
+| 74 | [hexagonal-architecture](74-hexagonal-architecture) | storage port and contract test; PostgreSQL and MySQL | architect |
+| 75 | [mongodb](75-mongodb) | second storage adapter on Spring Data MongoDB | architect |
+| 76 | [command-query-responsibility-segregation](76-command-query-responsibility-segregation) | separate read and write models of the notes service | architect |
+| 77 | [event-sourcing](77-event-sourcing) | notes stored as a sequence of events | architect |
+| 78 | [spring-ai](78-spring-ai) | semantic search with Spring AI, Ollama, Elasticsearch vector store | architect |
+| 79 | [spring-webflux](79-spring-webflux) | second web stack, choice by measurement | architect |
 
-The black-box [acceptance tests](acceptance-tests) run against every stage from 15. Architecture decisions are recorded in [docs/adr](docs/adr); the previous attempt of the project is kept under the tag `legacy-2026-11`.
+The black-box [acceptance tests](acceptance-tests) run against every stage from 18. Architecture decisions are recorded in [docs/adr](docs/adr); the previous attempt of the project is kept under the tag `legacy-2026-11`.
