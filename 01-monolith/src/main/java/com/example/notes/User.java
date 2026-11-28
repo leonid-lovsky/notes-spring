@@ -48,7 +48,11 @@ public class User {
         }
         this.uuid = UUID.randomUUID();
         this.username = username;
-        this.normalizedUsername = username.toLowerCase(Locale.ROOT);
+        this.normalizedUsername = normalize(username);
+    }
+
+    public static String normalize(String username) {
+        return username.toLowerCase(Locale.ROOT);
     }
 
     public UUID getUUID() {
