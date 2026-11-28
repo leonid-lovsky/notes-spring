@@ -18,7 +18,7 @@ public class User {
 
     private static final int USERNAME_MAX_LENGTH = 32;
 
-    private static final Pattern USERNAME_PATTERN = Pattern.compile("[a-z](-?[a-z0-9])*");
+    private static final Pattern USERNAME_PATTERN = Pattern.compile("[a-z](-?[a-z0-9])*+");
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,8 +41,7 @@ public class User {
         if (normalizedUsername.length() > USERNAME_MAX_LENGTH) {
             throw new IllegalArgumentException("username must not be longer than " + USERNAME_MAX_LENGTH + " characters");
         }
-        boolean wellFormed = USERNAME_PATTERN.matcher(normalizedUsername).matches();
-        if (!wellFormed) {
+        if (!USERNAME_PATTERN.matcher(normalizedUsername).matches()) {
             throw new IllegalArgumentException("username must start with a Latin letter and contain only Latin letters, digits and single hyphens, not at the end");
         }
         this.uuid = UUID.randomUUID();
